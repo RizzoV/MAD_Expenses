@@ -4,28 +4,37 @@
     android:layout_width="match_parent"
     android:layout_height="70dp">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1"
+        >
 
+        <ImageView
+            android:id="@+id/group_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            />
 
-    <ImageView
-        android:id="@+id/group_image"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_margin="10dp"
-        android:layout_weight="0.3"
-        />
+    </RelativeLayout>
+
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
-        android:orientation="vertical"
-        >
+        android:layout_weight="0.6"
+        android:orientation="vertical">
 
 
         <TextView
             android:id="@+id/group_name_tv"
             android:layout_width="match_parent"
+            android:textSize="25sp"
+            android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
+            android:textColor="#000"
             android:layout_weight="0.7" />
 
         <LinearLayout
@@ -39,24 +48,51 @@
                 android:id="@+id/debits_amount_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/redMaterial"
                 android:layout_weight="0.5" />
 
             <TextView
                 android:id="@+id/credits_amount_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/greenMaterial"
                 android:layout_weight="0.5" />
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/notification_cnt_tv"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="0.2"
-        android:text="2"
-        android:gravity="center"
-        />
+
+        >
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/circle"
+            android:layout_centerInParent="true"
+            android:gravity="center">
+
+        </ImageView>
+
+        <TextView
+            android:id="@+id/notification_cnt_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:text="2"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textColor="#fff"/>
+
+
+
+    </RelativeLayout>
+
+
 
 
 
