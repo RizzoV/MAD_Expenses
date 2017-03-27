@@ -19,6 +19,7 @@ public class GroupsListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups_list);
+        getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
 
         groupListView = (ListView) findViewById(R.id.groups_lv);
 
