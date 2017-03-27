@@ -1,4 +1,4 @@
-package it.polito.mad.team19.mad_expenses;
+package it.polito.mad.team19.mad_expenses.Classes;
 
 import android.graphics.Bitmap;
 

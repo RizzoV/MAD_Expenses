@@ -2,18 +2,15 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import it.polito.mad.team19.mad_expenses.Group;
+import it.polito.mad.team19.mad_expenses.Classes.Group;
 import it.polito.mad.team19.mad_expenses.R;
 
 /**
@@ -50,7 +47,7 @@ public class GroupsAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView==null) {
-            convertView=context.getLayoutInflater().inflate(R.layout.group_row,parent,false);
+            convertView=context.getLayoutInflater().inflate(R.layout.groups_list_row,parent,false);
         }
         TextView name=(TextView)convertView.findViewById(R.id.group_name_tv);
         TextView credits=(TextView)convertView.findViewById(R.id.credits_amount_tv);

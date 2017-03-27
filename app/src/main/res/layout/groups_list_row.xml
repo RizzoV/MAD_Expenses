@@ -88,12 +88,6 @@
             android:gravity="center"
             android:textColor="#fff"/>
 
-
-
     </RelativeLayout>
-
-
-
-
 
 </LinearLayout>
