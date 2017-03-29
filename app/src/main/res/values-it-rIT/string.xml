@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MAD_Expenses</string>
+    <string name="app_name">MAD Expenses</string>
     <string name="title_activity_main">MAD Expenses</string>
     <string name="title_activity_group">GroupActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
-    <string name="tab_expenses">Spese</string>
-    <string name="tab_proposal">Proposte</string>
 </resources>
