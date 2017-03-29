@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">MAD_Expenses</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">MAD Expenses</string>
     <string name="title_activity_group">GroupActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="tab_expenses">Expenses</string>
+    <string name="tab_proposal">Proposals</string>
 </resources>

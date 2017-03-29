@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="it.polito.mad.team19.mad_expenses.GroupActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/notifications"
+        android:icon="@drawable/notificationsicon"
+        app:showAsAction="always"
+        android:title="notifications"
+        />
 </menu>
