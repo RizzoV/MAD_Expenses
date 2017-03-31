@@ -68,7 +68,7 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
         public void setData (Me current, int position) {
             this.name.setText(current.getName());
             this.amount.setText(current.getAmount()+"");
-            this.image.setImageResource(R.drawable.circle);
+            this.image.setImageResource(R.drawable.icona_a_caso);
             this.position = position;
             this.current = current;
 
