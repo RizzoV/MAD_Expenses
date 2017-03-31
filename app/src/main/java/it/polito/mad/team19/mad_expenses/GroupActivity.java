@@ -2,9 +2,9 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 
 public class GroupActivity extends AppCompatActivity {
@@ -51,8 +52,6 @@ public class GroupActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Nome Gruppo");
-
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -61,16 +60,13 @@ public class GroupActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.setupWithViewPager(mViewPager);
-
-        // Selected news from shared preference
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //add new expenses
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
@@ -132,15 +128,25 @@ public class GroupActivity extends AppCompatActivity {
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
             ArrayList<Expense> expenses = new ArrayList<Expense>();
-            ExpensesAdapter ep = new ExpensesAdapter(getActivity(), expenses);
+
 
             for(int i = 0; i<5; i++) {
                 Expense e = new Expense("Expense" + i, Integer.valueOf(i*i).floatValue());
                 expenses.add(e);
             }
 
-            ListView expensesList = (ListView) rootView.findViewById(R.id.expenses_lv);
-            expensesList.setAdapter(ep);
+
+
+            RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
+            ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+            mRecyclerView.setAdapter(adapter);
+
+            LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
+            mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+            //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
+            //expensesList.setAdapter(adapter);
             return rootView;
         }
     }
@@ -159,30 +165,24 @@ public class GroupActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-
-            switch (position) {
-                case 0:
-                    return ExpensesListFragment.newInstance(position + 1);
-                case 1:
-                    //nuovo fragment delle proposte
-                    return ExpensesListFragment.newInstance(position + 1);
-            }
-            return null;
+            return ExpensesListFragment.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 2;
+            return 3;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return getResources().getString(R.string.tab_expenses);
+                    return "SECTION 1";
                 case 1:
-                    return getResources().getString(R.string.tab_proposal);
+                    return "SECTION 2";
+                case 2:
+                    return "SECTION 3";
             }
             return null;
         }

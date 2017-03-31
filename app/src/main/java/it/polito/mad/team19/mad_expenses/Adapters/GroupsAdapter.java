@@ -54,7 +54,9 @@ public class GroupsAdapter extends BaseAdapter {
         TextView debits=(TextView)convertView.findViewById(R.id.debits_amount_tv);
         TextView notifications=(TextView)convertView.findViewById(R.id.notification_cnt_tv);
         ImageView image = (ImageView) convertView.findViewById(R.id.group_image);
+
         Group group=groupList.get(position);
+
         name.setText(group.getName());
         credits.setText(group.getCredits().toString());
         debits.setText(group.getDebits().toString());
