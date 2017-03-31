@@ -28,7 +28,11 @@
                 android:value=".GroupsListActivity" />
 
             </activity>
-        <activity android:name=".MeActivity"></activity>
+        <activity android:name=".MeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GroupExpensesActivity" />
+        </activity>
     </application>
 
 </manifest>
