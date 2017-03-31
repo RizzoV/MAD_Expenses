@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="it.polito.mad.team19.mad_expenses.GroupActivity">
+    tools:context="it.polito.mad.team19.mad_expenses.GroupExpensesActivity">
     <item
         android:id="@+id/notifications"
         android:icon="@drawable/notificationsicon"

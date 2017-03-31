@@ -16,7 +16,7 @@ public class Group {
     Float credits;
     Float debits;
     Integer notifyCnt;
-    HashMap<String,GroupComponent> components;
+    //HashMap<String,GroupComponent> components;
 
 
     public Group(String name, Float credits, Float debits, Integer notifyCnt) {

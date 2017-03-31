@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView android:id="@+id/expense_cv"
+<android.support.v7.widget.CardView android:id="@+id/proposal_cv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginRight="5dp"
@@ -18,7 +18,7 @@
             >
 
             <ImageView
-                android:id="@+id/expense_image"
+                android:id="@+id/proposal_image"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_margin="10dp"
@@ -37,7 +37,7 @@
 
 
             <TextView
-                android:id="@+id/expense_name_tv"
+                android:id="@+id/proposal_name_tv"
                 android:layout_width="wrap_content"
                 android:textSize="25sp"
                 android:layout_height="wrap_content"
@@ -45,11 +45,11 @@
                 android:ellipsize="end"
                 android:maxEms="1"
                 android:maxLines="1"
-                android:text="bolz puzza demmerda, ammazza se svuota l'aula"
                 android:layout_weight="0.7" />
 
+
             <TextView
-                android:id="@+id/cost_amount_tv"
+                android:id="@+id/proposal_extimated_cost_amount_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textAlignment="center"

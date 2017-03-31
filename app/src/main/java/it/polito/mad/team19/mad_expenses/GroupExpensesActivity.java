@@ -1,10 +1,12 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -18,16 +20,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import it.polito.mad.team19.mad_expenses.Adapters.ExpensesAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
+import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
-public class GroupActivity extends AppCompatActivity {
+public class GroupExpensesActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -51,7 +53,7 @@ public class GroupActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Nome Gruppo");
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_back_button));
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -64,13 +66,12 @@ public class GroupActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(mViewPager);
 
-        // Selected news from shared preference
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //add new expenses
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
@@ -91,12 +92,22 @@ public class GroupActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.notifications) {
-            return true;
+        switch(id)
+        {
+            case R.id.notifications:
+                return true;
+
+            case android.R.id.home:
+                finish();
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+
+
         }
 
-        return super.onOptionsItemSelected(item);
+
     }
 
     /**
@@ -124,23 +135,105 @@ public class GroupActivity extends AppCompatActivity {
             return fragment;
         }
 
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_group, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_expenses, container, false);
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
             ArrayList<Expense> expenses = new ArrayList<Expense>();
-            ExpensesAdapter ep = new ExpensesAdapter(getActivity(), expenses);
 
-            for(int i = 0; i<5; i++) {
+
+            for(int i = 0; i<16; i++) {
                 Expense e = new Expense("Expense" + i, Integer.valueOf(i*i).floatValue());
                 expenses.add(e);
             }
 
-            ListView expensesList = (ListView) rootView.findViewById(R.id.expenses_lv);
-            expensesList.setAdapter(ep);
+
+
+            RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
+            ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+            mRecyclerView.setAdapter(adapter);
+
+            LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
+            mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+            //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
+            //expensesList.setAdapter(adapter);
+
+            LinearLayout meCardViewLayout = (LinearLayout) rootView.findViewById(R.id.credits_cv_ll);
+            meCardViewLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), MeActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
+
+
+            return rootView;
+        }
+    }
+
+    public static class ProposalsListFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public ProposalsListFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static ProposalsListFragment newInstance(int sectionNumber) {
+            ProposalsListFragment fragment = new ProposalsListFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_proposals, container, false);
+            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            ArrayList<Proposal> proposals = new ArrayList<Proposal>();
+
+
+            for(int i = 0; i<16; i++) {
+                Proposal p = new Proposal ("Proposal " + i, "Description " + i, Integer.valueOf(i*i).floatValue(), null);
+                proposals.add(p);
+            }
+
+
+
+            RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.proposals_rv);
+            ProposalsRecyclerAdapter adapter = new ProposalsRecyclerAdapter(getActivity(), proposals);
+            mRecyclerView.setAdapter(adapter);
+
+            LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
+            mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+            //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
+            //expensesList.setAdapter(adapter);
+
+            //final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
+
+
             return rootView;
         }
     }
@@ -159,13 +252,12 @@ public class GroupActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-
             switch (position) {
                 case 0:
                     return ExpensesListFragment.newInstance(position + 1);
                 case 1:
                     //nuovo fragment delle proposte
-                    return ExpensesListFragment.newInstance(position + 1);
+                    return ProposalsListFragment.newInstance(position + 1);
             }
             return null;
         }
