@@ -5,7 +5,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,20 +17,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import it.polito.mad.team19.mad_expenses.Adapters.ExpensesAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
+import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
 public class GroupExpensesActivity extends AppCompatActivity {
 
@@ -143,7 +139,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_group, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_expenses, container, false);
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
@@ -184,6 +180,64 @@ public class GroupExpensesActivity extends AppCompatActivity {
         }
     }
 
+    public static class ProposalsListFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public ProposalsListFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static ProposalsListFragment newInstance(int sectionNumber) {
+            ProposalsListFragment fragment = new ProposalsListFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_proposals, container, false);
+            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            ArrayList<Proposal> proposals = new ArrayList<Proposal>();
+
+
+            for(int i = 0; i<16; i++) {
+                Proposal p = new Proposal ("Proposal " + i, "Description " + i, Integer.valueOf(i*i).floatValue(), null);
+                proposals.add(p);
+            }
+
+
+
+            RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.proposals_rv);
+            ProposalsRecyclerAdapter adapter = new ProposalsRecyclerAdapter(getActivity(), proposals);
+            mRecyclerView.setAdapter(adapter);
+
+            LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
+            mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+            //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
+            //expensesList.setAdapter(adapter);
+
+            //final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
+
+
+            return rootView;
+        }
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -203,7 +257,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
                     return ExpensesListFragment.newInstance(position + 1);
                 case 1:
                     //nuovo fragment delle proposte
-                    return ExpensesListFragment.newInstance(position + 1);
+                    return ProposalsListFragment.newInstance(position + 1);
             }
             return null;
         }
