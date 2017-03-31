@@ -29,7 +29,7 @@ import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
-public class GroupExpensesActivity extends AppCompatActivity {
+public class GroupActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -51,6 +51,13 @@ public class GroupExpensesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
 
+        // Get the intent which has started this activity
+        Intent intent = getIntent();
+
+        // Set the activity name retrieving it by the extras of the intent
+        String name = intent.getStringExtra("group");
+        setTitle(name);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_back_button));
@@ -66,6 +73,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(mViewPager);
 
+        // Set the click listener on the FAB
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,20 +102,19 @@ public class GroupExpensesActivity extends AppCompatActivity {
 
         switch(id)
         {
-            case R.id.notifications:
+            case R.id.notifications_icon:
                 return true;
 
             case android.R.id.home:
                 finish();
 
+            case R.id.personal_profile_icon:
+                Intent intent = new Intent (GroupActivity.this, MeActivity.class);
+                startActivity(intent);
+
             default:
                 return super.onOptionsItemSelected(item);
-
-
-
         }
-
-
     }
 
     /**
@@ -151,8 +158,6 @@ public class GroupExpensesActivity extends AppCompatActivity {
                 expenses.add(e);
             }
 
-
-
             RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
             ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
             mRecyclerView.setAdapter(adapter);
@@ -174,7 +179,6 @@ public class GroupExpensesActivity extends AppCompatActivity {
             });
 
             final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
-
 
             return rootView;
         }
@@ -274,7 +278,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
                 case 0:
                     return getResources().getString(R.string.tab_expenses);
                 case 1:
-                    return getResources().getString(R.string.tab_proposal);
+                    return getResources().getString(R.string.tab_proposals);
             }
             return null;
         }

@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GroupExpensesActivity"
+            android:name=".GroupActivity"
             android:label="@string/title_activity_group"
             android:theme="@style/AppTheme.NoActionBar" >
 
@@ -31,7 +31,7 @@
         <activity android:name=".MeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".GroupExpensesActivity" />
+                android:value=".GroupActivity" />
         </activity>
     </application>
 

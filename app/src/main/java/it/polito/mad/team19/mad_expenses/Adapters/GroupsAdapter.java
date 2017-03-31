@@ -22,7 +22,6 @@ public class GroupsAdapter extends BaseAdapter {
     ArrayList<Group> groupList;
     Activity context;
 
-
     public GroupsAdapter(Context context, ArrayList<Group> groupList) {
         this.groupList = groupList;
         this.context = (Activity) context;

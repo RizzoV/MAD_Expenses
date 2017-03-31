@@ -1,11 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="it.polito.mad.team19.mad_expenses.GroupExpensesActivity">
+    tools:context="it.polito.mad.team19.mad_expenses.GroupActivity">
     <item
-        android:id="@+id/notifications"
-        android:icon="@drawable/notificationsicon"
+        android:id="@+id/personal_profile_icon"
+        android:icon="@drawable/ic_person"
+        app:showAsAction="always"
+        android:title="personal_profile"
+        />
+    <item
+        android:id="@+id/notifications_icon"
+        android:icon="@drawable/ic_notifications"
         app:showAsAction="always"
         android:title="notifications"
         />
+
 </menu>

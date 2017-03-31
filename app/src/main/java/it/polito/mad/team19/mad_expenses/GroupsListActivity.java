@@ -45,8 +45,8 @@ public class GroupsListActivity extends AppCompatActivity {
         groupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(GroupsListActivity.this, GroupExpensesActivity.class);
-                intent.putExtra("group", parent.getItemAtPosition(position).toString());
+                Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
+                intent.putExtra("group", ((Group)parent.getItemAtPosition(position)).getName());
                 startActivity(intent);
 
             }
