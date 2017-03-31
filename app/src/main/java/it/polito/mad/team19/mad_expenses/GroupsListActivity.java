@@ -1,6 +1,5 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +45,7 @@ public class GroupsListActivity extends AppCompatActivity {
         groupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
+                Intent intent = new Intent(GroupsListActivity.this, GroupExpensesActivity.class);
                 intent.putExtra("group", parent.getItemAtPosition(position).toString());
                 startActivity(intent);
 

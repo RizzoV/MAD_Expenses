@@ -1,9 +1,11 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,9 +18,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,7 +33,7 @@ import it.polito.mad.team19.mad_expenses.Adapters.ExpensesAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 
-public class GroupActivity extends AppCompatActivity {
+public class GroupExpensesActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -53,6 +57,8 @@ public class GroupActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_back_button));
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -90,12 +96,22 @@ public class GroupActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.notifications) {
-            return true;
+        switch(id)
+        {
+            case R.id.notifications:
+                return true;
+
+            case android.R.id.home:
+                finish();
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+
+
         }
 
-        return super.onOptionsItemSelected(item);
+
     }
 
     /**
@@ -123,6 +139,7 @@ public class GroupActivity extends AppCompatActivity {
             return fragment;
         }
 
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -133,7 +150,7 @@ public class GroupActivity extends AppCompatActivity {
             ArrayList<Expense> expenses = new ArrayList<Expense>();
 
 
-            for(int i = 0; i<5; i++) {
+            for(int i = 0; i<16; i++) {
                 Expense e = new Expense("Expense" + i, Integer.valueOf(i*i).floatValue());
                 expenses.add(e);
             }
@@ -150,6 +167,19 @@ public class GroupActivity extends AppCompatActivity {
 
             //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
             //expensesList.setAdapter(adapter);
+
+            LinearLayout meCardViewLayout = (LinearLayout) rootView.findViewById(R.id.credits_cv_ll);
+            meCardViewLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), MeActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
+
+
             return rootView;
         }
     }

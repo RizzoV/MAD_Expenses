@@ -20,9 +20,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GroupActivity"
+            android:name=".GroupExpensesActivity"
             android:label="@string/title_activity_group"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" >
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GroupsListActivity" />
+
+            </activity>
+        <activity android:name=".MeActivity"></activity>
     </application>
 
 </manifest>
