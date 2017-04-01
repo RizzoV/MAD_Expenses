@@ -1,6 +1,8 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -46,6 +48,8 @@ public class GroupActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    String name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,12 +59,18 @@ public class GroupActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         // Set the activity name retrieving it by the extras of the intent
-        String name = intent.getStringExtra("group");
+        name = intent.getStringExtra("group");
         setTitle(name);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_back_button));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -116,6 +126,7 @@ public class GroupActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     /**
      * A placeholder fragment containing a simple view.
@@ -242,6 +253,8 @@ public class GroupActivity extends AppCompatActivity {
         }
     }
 
+
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -283,4 +296,6 @@ public class GroupActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
 }
