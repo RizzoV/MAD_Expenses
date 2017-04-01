@@ -1,11 +1,13 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,13 +18,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -100,8 +106,27 @@ public class GroupActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_group, menu);
+
+        MenuItem item = menu.findItem(R.id.notifications_icon);
+
+        MenuItemCompat.setActionView(item, R.layout.notifications_ab_layout);
+        RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
+
+
+        int notCount=10;
+
+        TextView tv = (TextView) notifCount.findViewById(R.id.counter);
+        ImageView im = (ImageView) notifCount.findViewById(R.id.notifications_icon_action);
+
+        if(notCount>0)
+            tv.setText(notCount+"");
+        else
+            tv.setVisibility(View.INVISIBLE);
+
+
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -168,6 +193,7 @@ public class GroupActivity extends AppCompatActivity {
                 Expense e = new Expense("Expense" + i, Integer.valueOf(i*i).floatValue());
                 expenses.add(e);
             }
+
 
             RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
             ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);

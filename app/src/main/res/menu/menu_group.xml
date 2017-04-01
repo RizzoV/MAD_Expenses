@@ -10,6 +10,7 @@
         />
     <item
         android:id="@+id/notifications_icon"
+        app:actionLayout="@layout/notifications_ab_layout"
         android:icon="@drawable/ic_notifications"
         app:showAsAction="always"
         android:title="notifications"
