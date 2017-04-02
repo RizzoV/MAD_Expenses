@@ -26,7 +26,7 @@
             android:textColor="#000"
             android:layout_gravity="center"
             android:textSize="30sp"
-            android:text="Nome Utente"
+            android:text="NomeUtente"
             android:layout_weight="0.6"/>
 
     </LinearLayout>
@@ -65,7 +65,7 @@
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:textAllCaps="true"
-                android:text="3000"/>
+                android:text="+3000,00€"/>
             </LinearLayout>
 
         </android.support.v7.widget.CardView>
@@ -98,7 +98,7 @@
                     android:textAlignment="center"
                     android:textSize="20sp"
                     android:textAllCaps="true"
-                    android:text="3000"/>
+                    android:text="-3000,00€"/>
             </LinearLayout>
 
         </android.support.v7.widget.CardView>

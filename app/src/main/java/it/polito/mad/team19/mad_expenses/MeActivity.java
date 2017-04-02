@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.Currency;
 
 import it.polito.mad.team19.mad_expenses.Adapters.MeRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
@@ -27,7 +28,7 @@ public class MeActivity extends AppCompatActivity {
 
 
         for(int i = 0; i<4; i++) {
-            Me e = new Me("Nome", Integer.valueOf(1000).floatValue());
+            Me e = new Me("Nome", Integer.valueOf(1000).floatValue(), Currency.getInstance("EUR"));
             me.add(e);
         }
 

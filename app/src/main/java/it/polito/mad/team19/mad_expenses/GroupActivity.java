@@ -31,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Currency;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
@@ -190,7 +191,7 @@ public class GroupActivity extends AppCompatActivity {
 
 
             for(int i = 0; i<16; i++) {
-                Expense e = new Expense("Expense" + i, Integer.valueOf(i*i).floatValue());
+                Expense e = new Expense("Expense " + i, Integer.valueOf(i*i).floatValue(), Currency.getInstance("EUR"), "Description of the expense # " + i, null); // Currency string given by ISO 4217
                 expenses.add(e);
             }
 
@@ -255,7 +256,7 @@ public class GroupActivity extends AppCompatActivity {
 
 
             for(int i = 0; i<16; i++) {
-                Proposal p = new Proposal ("Proposal " + i, "Description " + i, Integer.valueOf(i*i).floatValue(), null);
+                Proposal p = new Proposal ("Proposal " + i, "Description of the proposal # " + i, Integer.valueOf(i*i).floatValue(), null, Currency.getInstance("EUR"));
                 proposals.add(p);
             }
 

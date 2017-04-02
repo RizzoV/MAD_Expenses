@@ -57,8 +57,8 @@ public class GroupsAdapter extends BaseAdapter {
         Group group=groupList.get(position);
 
         name.setText(group.getName());
-        credits.setText("+" + group.getCredits().toString());
-        debits.setText("-" + group.getDebits().toString());
+        credits.setText("+" + String.format("%.2f", group.getCredits()));
+        debits.setText("-" + String.format("%.2f", group.getDebits()));
         notifications.setText(group.getNotifyCnt().toString());
         image.setImageResource(R.drawable.icona_a_caso);
         return convertView;

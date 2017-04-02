@@ -31,7 +31,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Riepilogo"
+                    android:text="@string/summary"
                     android:textColor="#000"
                     android:textAlignment="center"
                     android:layout_marginTop="10dp"
@@ -44,7 +44,7 @@
                     android:textAlignment="center"
                     android:textAllCaps="true"
                     android:paddingTop="5dp"
-                    android:text="Totale"
+                    android:text="@string/total"
                     />
                 <TextView
                     android:layout_width="match_parent"
@@ -84,7 +84,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Profilo Personale"
+                    android:text="@string/personal_profile"
                     android:textColor="#000"
                     android:textAlignment="center"
                     android:layout_marginTop="10dp"
@@ -102,7 +102,7 @@
                         android:textAlignment="center"
                         android:textAllCaps="true"
                         android:paddingTop="5dp"
-                        android:text="Credito"
+                        android:text="@string/credit"
                         />
 
                     <TextView
@@ -113,7 +113,7 @@
                         android:textAlignment="center"
                         android:paddingTop="5dp"
                         android:textAllCaps="true"
-                        android:text="Debito"
+                        android:text="@string/debit"
                         />
                 </LinearLayout>
                 <LinearLayout

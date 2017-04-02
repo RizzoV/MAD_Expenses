@@ -67,12 +67,10 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
 
         public void setData (Expense current, int position) {
             this.name.setText(current.getName());
-            this.amount.setText(current.getCost().toString());
+            this.amount.setText(String.format("%.2f", current.getCost()) + current.getCurrency().getSymbol());
             this.image.setImageResource(R.drawable.circle);
             this.position = position;
             this.current = current;
-
-
         }
     }
 }
