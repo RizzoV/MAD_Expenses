@@ -20,14 +20,16 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:titleMarginStart="25dp"
+            >
 
         </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tab_layout">
+            android:layout_height="wrap_content">
 
         </android.support.design.widget.TabLayout>
 
@@ -48,6 +50,4 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/plus" />
     
-
-
 </android.support.design.widget.CoordinatorLayout>

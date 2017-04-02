@@ -41,7 +41,7 @@
             <TextView
                 android:id="@+id/expense_name_tv"
                 android:layout_width="wrap_content"
-                android:textSize="25sp"
+                android:textSize="@dimen/titles_size"
                 android:layout_height="wrap_content"
                 android:textColor="#000"
                 android:ellipsize="end"
@@ -57,7 +57,7 @@
                 android:textAlignment="center"
                 android:gravity="center"
                 android:textColor="@color/redMaterial"
-                android:textSize="25sp"
+                android:textSize="@dimen/titles_size"
                 android:text="3"
                 android:layout_weight="0.3" />
 
