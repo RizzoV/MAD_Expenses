@@ -36,7 +36,7 @@ public class GroupsListActivity extends AppCompatActivity {
         groupListView = (ListView) findViewById(R.id.groups_lv);
 
         for (Float i = Float.valueOf(1); i < 4 ; i++) {
-            Group g = new Group("group "+i, i*10+i, i, i.intValue());
+            Group g = new Group("Group "+i, i*10+i, i, i.intValue());
             groups.add(g);
         }
         GroupsAdapter ga = new GroupsAdapter(GroupsListActivity.this, groups);

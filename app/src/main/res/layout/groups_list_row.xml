@@ -16,6 +16,7 @@
             android:layout_height="50dp"
             android:layout_margin="10dp"
             android:layout_gravity="center"
+            android:src="@drawable/circle"
             />
 
     </RelativeLayout>
@@ -35,7 +36,12 @@
             android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
             android:textColor="#000"
-            android:layout_weight="0.7" />
+            android:layout_weight="0.7"
+            android:maxEms="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Gruppo con un nome particolarmente lungo"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,20 +51,37 @@
             android:layout_weight="0.3">
 
             <TextView
-                android:id="@+id/debits_amount_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textColor="@color/redMaterial"
-                android:layout_weight="0.5" />
-
-            <TextView
                 android:id="@+id/credits_amount_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:maxEms="9"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:textColor="@color/greenMaterial"
-                android:layout_weight="0.5" />
+                android:text="6546511"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/debits_amount_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:textColor="@color/redMaterial"
+                android:maxEms="9"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="6546511"
+                android:textSize="15sp"
+                />
         </LinearLayout>
     </LinearLayout>
 
@@ -66,7 +89,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0.2"
-
         >
 
         <ImageView
