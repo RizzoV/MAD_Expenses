@@ -11,4 +11,13 @@
     <string name="debit">Debit</string>
     <string name="summary">Summary</string>
     <string name="total">Total</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to the creation of a new group -->
+    <string name="group_name">Group name</string>
+    <string name="group_members">Group members</string>
+    <string name="group_structure">Group structure</string>
+    <string name="centralized">Centralized</string>
+    <string name="distributed">Distributed</string>
+    <string name="search_person">Search person</string>
 </resources>
