@@ -70,7 +70,7 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
         public void setData (Proposal current, int position) {
             this.current = current;
             this.name.setText(current.getName());
-            this.amount.setText(String.format("%.2f", current.getExtimatedCost()) + current.getCurrency().getSymbol());
+            this.amount.setText(current.getCurrency().getSymbol().toString() + " " + String.format("%.2f", current.getExtimatedCost()));
             //this.description.setText(current.getDescription());
             this.image.setImageResource(R.drawable.circle);
             this.position = position;

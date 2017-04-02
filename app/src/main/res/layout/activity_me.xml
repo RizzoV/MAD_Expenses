@@ -56,7 +56,7 @@
                 android:textAlignment="center"
                 android:textAllCaps="true"
                 android:paddingTop="5dp"
-                android:text="Credito"/>
+                android:text="@string/credit"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -65,7 +65,7 @@
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:textAllCaps="true"
-                android:text="+3000,00€"/>
+                android:text="€ 3000,00"/>
             </LinearLayout>
 
         </android.support.v7.widget.CardView>
@@ -89,7 +89,7 @@
                     android:textAlignment="center"
                     android:textAllCaps="true"
                     android:paddingTop="5dp"
-                    android:text="Debito"/>
+                    android:text="@string/debit"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -98,7 +98,7 @@
                     android:textAlignment="center"
                     android:textSize="20sp"
                     android:textAllCaps="true"
-                    android:text="-3000,00€"/>
+                    android:text="€ 150,25"/>
             </LinearLayout>
 
         </android.support.v7.widget.CardView>

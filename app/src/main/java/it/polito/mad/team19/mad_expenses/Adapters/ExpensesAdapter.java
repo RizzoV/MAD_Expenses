@@ -53,7 +53,7 @@ public class ExpensesAdapter extends BaseAdapter {
         Expense expense = expenses.get(position);
 
         name.setText(expense.getName());
-        cost.setText(String.format("%.2f", expense.getCost()) + expense.getCurrency().getSymbol().toString());
+        cost.setText(expense.getCurrency().getSymbol().toString() + " " + String.format("%.2f", expense.getCost()));
 
         return convertView;
     }
