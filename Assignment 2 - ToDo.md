@@ -6,3 +6,7 @@
 ## Me activity
 
 - Nome utente, credito & debito e grafico devono collassare nella toolbar
+
+## New expense/proposal layout
+
+- Mostrarlo arrivandoci dal FAB
