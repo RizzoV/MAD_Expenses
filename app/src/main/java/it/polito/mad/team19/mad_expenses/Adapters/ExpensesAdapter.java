@@ -16,12 +16,14 @@ import it.polito.mad.team19.mad_expenses.R;
  * Created by Jured on 27/03/17.
  */
 
-public class ExpensesAdapter extends BaseAdapter {
+public class ExpensesAdapter extends BaseAdapter
+{
 
     ArrayList<Expense> expenses;
     Activity context;
 
-    public ExpensesAdapter(Context context, ArrayList<Expense> expenses) {
+    public ExpensesAdapter(Context context, ArrayList<Expense> expenses)
+    {
         this.expenses = expenses;
         this.context = (Activity) context;
     }
@@ -42,8 +44,10 @@ public class ExpensesAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView==null) {
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
+        if (convertView==null)
+        {
             convertView=context.getLayoutInflater().inflate(R.layout.expenses_list_row,parent,false);
         }
 

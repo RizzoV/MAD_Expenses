@@ -8,7 +8,8 @@ import java.util.HashMap;
  * Created by Jured on 24/03/17.
  */
 
-public class Group {
+public class Group
+{
 
     String name;
     Bitmap icon;
@@ -19,12 +20,15 @@ public class Group {
     //HashMap<String,GroupComponent> components;
 
 
-    public Group(String name, Float credits, Float debits, Integer notifyCnt) {
+    public Group(String name, Float credits, Float debits, Integer notifyCnt)
+    {
         this.name = name;
         this.credits = credits;
         this.debits = debits;
         this.notifyCnt = notifyCnt;
     }
+
+    //setter and getter methods
 
     public String getName() {
         return name;
@@ -70,7 +74,8 @@ public class Group {
         return notifyCnt;
     }
 
-    public void setNotifyCnt(Integer notifyCnt) {
+    public void setNotifyCnt(Integer notifyCnt)
+    {
         this.notifyCnt = notifyCnt;
     }
 }

@@ -18,38 +18,44 @@ import it.polito.mad.team19.mad_expenses.R;
  * Created by ikkoyeah on 31/03/17.
  */
 
-public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.MyViewHolder> {
+public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.MyViewHolder>
+{
 
     ArrayList<Me> me;
     Activity context;
     private LayoutInflater mInflater;
 
-    public MeRecyclerAdapter(Context context, ArrayList<Me> me) {
+    public MeRecyclerAdapter(Context context, ArrayList<Me> me)
+    {
         this.me = me;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(context);
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
         View view = mInflater.inflate(R.layout.me_list_fromto_row, parent, false);
         MyViewHolder holder = new MeRecyclerAdapter.MyViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, int position)
+    {
         Me currentObj = me.get(position);
         holder.setData(currentObj,position);
     }
 
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return me.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder
+    {
 
         ImageView image;
         TextView name;
@@ -57,7 +63,8 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
         int position;
         Me current;
 
-        public MyViewHolder(View itemView) {
+        public MyViewHolder(View itemView)
+        {
             super(itemView);
             image = (ImageView) itemView.findViewById(R.id.me_image);
             name = (TextView) itemView.findViewById(R.id.me_fromto);
@@ -65,13 +72,13 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
 
         }
 
-        public void setData (Me current, int position) {
+        public void setData (Me current, int position)
+        {
             this.name.setText(current.getName());
             this.amount.setText(current.getCurrency().getSymbol().toString() + " " + String.format("%.2f", current.getAmount()));
             this.image.setImageResource(R.drawable.icona_a_caso);
             this.position = position;
             this.current = current;
-
 
         }
     }

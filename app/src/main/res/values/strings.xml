@@ -20,4 +20,10 @@
     <string name="centralized">Centralized</string>
     <string name="distributed">Distributed</string>
     <string name="search_person">Search person</string>
+
+    <!-- Strings related to the creation of a new expense -->
+    <string name="expense_name">Expense name</string>
+    <string name="description">Description</string>
+    <string name="price">Price</string>
+
 </resources>
