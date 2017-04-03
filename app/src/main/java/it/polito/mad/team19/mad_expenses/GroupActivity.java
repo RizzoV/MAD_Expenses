@@ -199,7 +199,7 @@ public class GroupActivity extends AppCompatActivity {
 
             for(int i = 0; i<16; i++) {
                 Expense e = new Expense("Expense " + i, Integer.valueOf(i*i).floatValue(), Currency.getInstance("EUR"),
-                        "Description of the expense # " + i + "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
+                        "Description of the expense #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
                         null); // Currency string given by ISO 4217
                 expenses.add(e);
             }
@@ -243,10 +243,12 @@ public class GroupActivity extends AppCompatActivity {
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy){
                     if (dy > 0) {
                         fab.hide();
-                        meCardsViewLayout.setVisibility(View.GONE);}
+                        //meCardsViewLayout.setVisibility(View.GONE);
+                    }
                     else if (dy < 0) {
                         fab.show();
-                        meCardsViewLayout.setVisibility(View.VISIBLE);}
+                        //meCardsViewLayout.setVisibility(View.VISIBLE);
+                    }
                 }
             });
 
@@ -287,15 +289,12 @@ public class GroupActivity extends AppCompatActivity {
 
             ArrayList<Proposal> proposals = new ArrayList<Proposal>();
 
-
             for(int i = 0; i<16; i++) {
                 Proposal p = new Proposal ("Proposal " + i,
-                        "Description of the proposal # " + i + "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
+                        "Description of the proposal #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
                         Integer.valueOf(i*i).floatValue(), null, Currency.getInstance("EUR"));
                 proposals.add(p);
             }
-
-
 
             RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.proposals_rv);
             ProposalsRecyclerAdapter adapter = new ProposalsRecyclerAdapter(getActivity(), proposals);
@@ -310,7 +309,6 @@ public class GroupActivity extends AppCompatActivity {
 
             //final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
 
-
             final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
 
             fab.setOnClickListener(new View.OnClickListener() {
@@ -321,7 +319,6 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
-
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy){
@@ -331,7 +328,6 @@ public class GroupActivity extends AppCompatActivity {
                         fab.show();
                 }
             });
-
 
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
                 @Override
