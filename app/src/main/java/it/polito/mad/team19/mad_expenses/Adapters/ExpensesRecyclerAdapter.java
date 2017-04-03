@@ -57,12 +57,14 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
         TextView amount;
         int position;
         Expense current;
+        TextView description;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.expense_image);
+            image = (ImageView) itemView.findViewById(R.id.expense_imageView);
             name = (TextView) itemView.findViewById(R.id.expense_name_tv);
-            amount = (TextView) itemView.findViewById(R.id.cost_amount_tv);
+            amount = (TextView) itemView.findViewById(R.id.expense_cost_amount_tv);
+            description = (TextView) itemView.findViewById(R.id.expense_description_tv);
         }
 
         public void setData (Expense current, int position) {
@@ -71,6 +73,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             this.image.setImageResource(R.drawable.circle);
             this.position = position;
             this.current = current;
+            this.description.setText(current.getDescritpion());
         }
     }
 }

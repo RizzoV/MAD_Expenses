@@ -26,4 +26,7 @@
     <string name="description">Description</string>
     <string name="price">Price</string>
 
+    <!-- Personal profile -->
+    <string name="debits_and_credits">Debits and credits</string>
+
 </resources>

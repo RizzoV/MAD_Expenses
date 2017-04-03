@@ -52,12 +52,14 @@ public class ExpensesAdapter extends BaseAdapter
         }
 
         TextView name = (TextView) convertView.findViewById(R.id.expense_name_tv);
-        TextView cost = (TextView) convertView.findViewById(R.id.cost_amount_tv);
+        TextView cost = (TextView) convertView.findViewById(R.id.expense_cost_amount_tv);
+        TextView description = (TextView) convertView.findViewById(R.id.expense_description_tv);
 
         Expense expense = expenses.get(position);
 
         name.setText(expense.getName());
         cost.setText(expense.getCurrency().getSymbol().toString() + " " + String.format("%.2f", expense.getCost()));
+        description.setText(expense.getDescritpion());
 
         return convertView;
     }

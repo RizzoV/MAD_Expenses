@@ -61,17 +61,17 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.proposal_image);
+            image = (ImageView) itemView.findViewById(R.id.proposal_imageView);
             name = (TextView) itemView.findViewById(R.id.proposal_name_tv);
-            amount = (TextView) itemView.findViewById(R.id.proposal_extimated_cost_amount_tv);
-            //description = (TextView) itemView.findViewById(R.id.proposal_description_tv);
+            amount = (TextView) itemView.findViewById(R.id.proposal_cost_amount_tv);
+            description = (TextView) itemView.findViewById(R.id.proposal_description_tv);
         }
 
         public void setData (Proposal current, int position) {
             this.current = current;
             this.name.setText(current.getName());
             this.amount.setText(current.getCurrency().getSymbol().toString() + " " + String.format("%.2f", current.getExtimatedCost()));
-            //this.description.setText(current.getDescription());
+            this.description.setText(current.getDescription());
             this.image.setImageResource(R.drawable.circle);
             this.position = position;
 
