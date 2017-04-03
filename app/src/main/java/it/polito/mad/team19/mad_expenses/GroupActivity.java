@@ -1,11 +1,14 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.content.Intent;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -48,7 +51,7 @@ public class GroupActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private PagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -69,6 +72,7 @@ public class GroupActivity extends AppCompatActivity {
         name = intent.getStringExtra("group");
         setTitle(name);
 
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.drawable.circle);
@@ -84,6 +88,7 @@ public class GroupActivity extends AppCompatActivity {
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
+
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -92,14 +97,14 @@ public class GroupActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         // Set the click listener on the FAB
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
     }
 
@@ -217,9 +222,33 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
-            final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
+            final AppBarLayout meCardsViewLayout = (AppBarLayout) rootView.findViewById(R.id.collapsing_cards);
+
+            final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+
+
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+                    if (dy > 0) {
+                        fab.hide();
+                        meCardsViewLayout.setVisibility(View.GONE);}
+                    else if (dy < 0) {
+                        fab.show();
+                        meCardsViewLayout.setVisibility(View.VISIBLE);}
+                }
+            });
 
             return rootView;
+
         }
     }
 
@@ -276,6 +305,38 @@ public class GroupActivity extends AppCompatActivity {
 
             //final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
 
+
+            final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+
+
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+                    if (dy > 0)
+                        fab.hide();
+                    else if (dy < 0)
+                        fab.show();
+                }
+            });
+
+
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+                    if (dy > 0)
+                        fab.hide();
+                    else if (dy < 0)
+                        fab.show();
+                }
+            });
 
             return rootView;
         }

@@ -105,6 +105,19 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/me_graph"
+        android:layout_below="@+id/details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            app:seriesType="line"
+            app:seriesColor="#ee0000"
+            android:id="@+id/graph" />
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -112,6 +125,6 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_marginTop="5dp"
-        android:layout_below="@+id/details"/>
+        android:layout_below="@+id/me_graph"/>
 
 </RelativeLayout>
