@@ -47,7 +47,6 @@
                 android:ellipsize="end"
                 android:maxEms="1"
                 android:maxLines="1"
-                android:text="bolz puzza demmerda, ammazza se svuota l'aula"
                 android:layout_weight="0.7" />
 
             <TextView
