@@ -28,8 +28,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -42,6 +40,11 @@ import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
+
+enum TabsList {
+    EXPENSES,
+    PROPOSALS
+}
 
 public class GroupActivity extends AppCompatActivity {
 
@@ -61,10 +64,10 @@ public class GroupActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     String name;
+    TabsList selectedTab;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
 
@@ -75,6 +78,8 @@ public class GroupActivity extends AppCompatActivity {
         name = intent.getStringExtra("group");
         setTitle(name);
 
+        // Initially the displayed tab will be the EXPENSES one
+        selectedTab = TabsList.EXPENSES;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,16 +104,52 @@ public class GroupActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(mViewPager);
 
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                switch (position) {
+                    case 0:
+                        selectedTab = TabsList.EXPENSES;
+                        break;
+                    case 1:
+                        selectedTab = TabsList.PROPOSALS;
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                // Nothing (for now)
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Nothing (for now)
+            }
+        });
+
+
         // Set the click listener on the FAB
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
+                Intent i;
+                switch (selectedTab) {
+                    case EXPENSES:
+                        i = new Intent(GroupActivity.this, AddExpenseActivity.class);
+                        break;
+                    case PROPOSALS:
+                        i = new Intent(GroupActivity.this, AddProposalActivity.class);
+                        break;
+                    default:
+                        i = new Intent(GroupActivity.this, AddExpenseActivity.class);
+                        break;
+                }
 
+                startActivity(i);
+            }
+        });
     }
 
 
@@ -123,16 +164,15 @@ public class GroupActivity extends AppCompatActivity {
         RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
 
 
-        int notCount=10;
+        int notCount = 10;
 
         TextView tv = (TextView) notifCount.findViewById(R.id.counter);
         ImageView im = (ImageView) notifCount.findViewById(R.id.notifications_icon_action);
 
-        if(notCount>0)
-            tv.setText(notCount+"");
+        if (notCount > 0)
+            tv.setText(notCount + "");
         else
             tv.setVisibility(View.INVISIBLE);
-
 
         return true;
     }
@@ -145,8 +185,7 @@ public class GroupActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        switch(id)
-        {
+        switch (id) {
             case R.id.notifications_icon:
                 return true;
 
@@ -154,7 +193,7 @@ public class GroupActivity extends AppCompatActivity {
                 finish();
 
             case R.id.personal_profile_icon:
-                Intent intent = new Intent (GroupActivity.this, MeActivity.class);
+                Intent intent = new Intent(GroupActivity.this, MeActivity.class);
                 startActivity(intent);
 
             default:
@@ -199,8 +238,8 @@ public class GroupActivity extends AppCompatActivity {
             ArrayList<Expense> expenses = new ArrayList<Expense>();
 
 
-            for(int i = 0; i<16; i++) {
-                Expense e = new Expense("Expense " + i, Integer.valueOf(i*i).floatValue(), Currency.getInstance("EUR"),
+            for (int i = 0; i < 16; i++) {
+                Expense e = new Expense("Expense " + i, Integer.valueOf(i * i).floatValue(), Currency.getInstance("EUR"),
                         "Description of the expense #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
                         null); // Currency string given by ISO 4217
                 expenses.add(e);
@@ -227,37 +266,19 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
+            final AppBarLayout meCardsViewLayout = (AppBarLayout) rootView.findViewById(R.id.collapsing_cards);
 
-            final LinearLayout cards = (LinearLayout) rootView.findViewById(R.id.cards);
             final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
 
-
-            fab.setOnClickListener(new View.OnClickListener() {
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
-
-
-            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if (dy > 0) {
                         fab.hide();
-                        if(!fab.isShown()) {
-                            cards.animate().translationY(-cards.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-                            cards.setVisibility(View.GONE);
-                        }
-                    }
-                    else if (dy < 0) {
+                        //meCardsViewLayout.setVisibility(View.GONE);
+                    } else if (dy < 0) {
                         fab.show();
-                        if(fab.isShown()) {
-                            cards.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-                            cards.setVisibility(View.VISIBLE);
-                        }
+                        //meCardsViewLayout.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -299,10 +320,10 @@ public class GroupActivity extends AppCompatActivity {
 
             ArrayList<Proposal> proposals = new ArrayList<Proposal>();
 
-            for(int i = 0; i<16; i++) {
-                Proposal p = new Proposal ("Proposal " + i,
+            for (int i = 0; i < 16; i++) {
+                Proposal p = new Proposal("Proposal " + i,
                         "Description of the proposal #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
-                        Integer.valueOf(i*i).floatValue(), null, Currency.getInstance("EUR"));
+                        Integer.valueOf(i * i).floatValue(), null, Currency.getInstance("EUR"));
                 proposals.add(p);
             }
 
@@ -321,17 +342,17 @@ public class GroupActivity extends AppCompatActivity {
 
             final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
 
-            fab.setOnClickListener(new View.OnClickListener() {
+            /*fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    //Intent i = new Intent(getActivity(), AddExpenseActivity.class);
+                    //startActivity(i);
                 }
-            });
+            });*/
 
-            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if (dy > 0)
                         fab.hide();
                     else if (dy < 0)
@@ -339,9 +360,9 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
-            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if (dy > 0)
                         fab.hide();
                     else if (dy < 0)
@@ -352,7 +373,6 @@ public class GroupActivity extends AppCompatActivity {
             return rootView;
         }
     }
-
 
 
     /**

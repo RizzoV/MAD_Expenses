@@ -3,7 +3,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.polito.mad.team19.mad_expenses">
 
-     <application
+    <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -23,8 +23,8 @@
         <activity
             android:name=".GroupActivity"
             android:label="@string/title_activity_group"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupsListActivity" />
@@ -35,6 +35,16 @@
                 android:value=".GroupActivity" />
         </activity>
         <activity android:name=".CreateGroupActivity" />
+        <activity android:name=".AddExpenseActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GroupActivity" />
+        </activity>
+        <activity android:name=".AddProposalActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GroupActivity" />
+        </activity>
     </application>
 
 </manifest>

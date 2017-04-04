@@ -1,5 +1,4 @@
-## Group activity
-#### Expenses fragment
+## Group activity - Expenses fragment
 
 - Le due card in alto devono collassare nella toolbar
 
@@ -7,6 +6,6 @@
 
 - Nome utente, credito & debito e grafico devono collassare nella toolbar
 
-## New expense/proposal layout
+## Scegliere i colori
 
-- Mostrarlo arrivandoci dal FAB
+# Database locale e crediti/debiti consistenti con costo spese
