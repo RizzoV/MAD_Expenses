@@ -7,6 +7,10 @@
 
 - Nome utente, credito & debito e grafico devono collassare nella toolbar
 
-## New expense/proposal layout
+## New proposal layout
 
 - Mostrarlo arrivandoci dal FAB
+
+## Scegliere i colori
+
+# Database locale e crediti/debiti consistenti con costo spese
