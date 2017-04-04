@@ -4,10 +4,16 @@ import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -30,7 +36,7 @@ public class MeActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ArrayList<Me> me = new ArrayList<Me>();
-        GraphView graph = (GraphView) findViewById(R.id.graph);
+        final GraphView graph = (GraphView) findViewById(R.id.graph);
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
         });
 
@@ -41,13 +47,14 @@ public class MeActivity extends AppCompatActivity {
         }
         graph.addSeries(series);
 
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.fromto_rv);
+        final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.fromto_rv);
         MeRecyclerAdapter adapter = new MeRecyclerAdapter(this, me);
         mRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(this);
         mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
     }
 
     @Override

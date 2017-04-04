@@ -28,6 +28,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -266,8 +268,7 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
-            final AppBarLayout meCardsViewLayout = (AppBarLayout) rootView.findViewById(R.id.collapsing_cards);
-
+            final LinearLayout cards = (LinearLayout) rootView.findViewById(R.id.cards);
             final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
 
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -275,11 +276,16 @@ public class GroupActivity extends AppCompatActivity {
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if (dy > 0) {
                         fab.hide();
-                        //meCardsViewLayout.setVisibility(View.GONE);
-                    } else if (dy < 0) {
+                        if(!fab.isShown()) {
+                            cards.animate().translationY(-cards.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+                            cards.setVisibility(View.GONE);
+                        }                    } else if (dy < 0) {
                         fab.show();
-                        //meCardsViewLayout.setVisibility(View.VISIBLE);
-                    }
+                        if(fab.isShown()) {
+                            cards.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                            cards.setVisibility(View.VISIBLE);
+                        }
+                        }
                 }
             });
 
