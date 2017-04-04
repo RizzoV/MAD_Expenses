@@ -25,6 +25,15 @@
     <string name="expense_name">Expense name</string>
     <string name="description">Description</string>
     <string name="price">Price</string>
+    <string name="create_new_expense">Create a new expense</string>
+    <string name="add_expense_image">Add an image to the expense</string>
+    <string name="create_expense_button">Create expense</string>
+
+    <!-- Strings related to the creation of a new proposal -->
+    <string name="proposal_name">Proposal name</string>
+    <string name="create_new_proposal">Create a new proposal</string>
+    <string name="add_proposal_image">Add an image to the proposal</string>
+    <string name="create_proposal_button">Create proposal</string>
 
     <!-- Personal profile -->
     <string name="debits_and_credits">Debits and credits</string>

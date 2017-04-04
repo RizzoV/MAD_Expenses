@@ -23,6 +23,8 @@ public class AddExpenseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
+        setTitle(R.string.create_new_expense);
+
         //imageButton = (ImageButton) findViewById(R.id.image);
 
         addListenerOnButton();

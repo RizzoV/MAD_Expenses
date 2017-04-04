@@ -134,17 +134,20 @@ public class GroupActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent i;
                 switch (selectedTab) {
                     case EXPENSES:
-                        Intent i = new Intent(GroupActivity.this, AddExpenseActivity.class);
-                        startActivity(i);
+                        i = new Intent(GroupActivity.this, AddExpenseActivity.class);
                         break;
                     case PROPOSALS:
-                        // TODO: add new proposal activity
-                        Snackbar.make(view, "Dobbiamo ancora creare l'activity per la nuova proposta!", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
+                        i = new Intent(GroupActivity.this, AddProposalActivity.class);
+                        break;
+                    default:
+                        i = new Intent(GroupActivity.this, AddExpenseActivity.class);
                         break;
                 }
+
+                startActivity(i);
             }
         });
     }
