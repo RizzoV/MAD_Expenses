@@ -35,6 +35,11 @@
                 android:value=".GroupActivity" />
         </activity>
         <activity android:name=".CreateGroupActivity" />
+         <activity android:name=".AddExpenseActivity">
+             <meta-data
+                 android:name="android.support.PARENT_ACTIVITY"
+                 android:value=".GroupActivity" />
+         </activity>
     </application>
 
 </manifest>
