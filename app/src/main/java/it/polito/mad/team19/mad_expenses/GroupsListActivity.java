@@ -25,11 +25,12 @@ public class GroupsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_groups_list);
         getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.groups_list_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               //Create Group
+                Intent i = new Intent(GroupsListActivity.this, CreateGroupActivity.class);
+                startActivity(i);
             }
         });
 

@@ -117,6 +117,10 @@ public class GroupActivity extends AppCompatActivity {
                         selectedTab = TabsList.PROPOSALS;
                         break;
                 }
+
+                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+                if(!fab.isShown())
+                    fab.show();
             }
 
             @Override
@@ -276,16 +280,17 @@ public class GroupActivity extends AppCompatActivity {
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if (dy > 0) {
                         fab.hide();
-                        if(!fab.isShown()) {
+                        if (!fab.isShown()) {
                             cards.animate().translationY(-cards.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
                             cards.setVisibility(View.GONE);
-                        }                    } else if (dy < 0) {
+                        }
+                    } else if (dy < 0) {
                         fab.show();
-                        if(fab.isShown()) {
+                        if (fab.isShown()) {
                             cards.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
                             cards.setVisibility(View.VISIBLE);
                         }
-                        }
+                    }
                 }
             });
 
