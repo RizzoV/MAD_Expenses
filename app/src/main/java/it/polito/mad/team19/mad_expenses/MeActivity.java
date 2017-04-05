@@ -10,9 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
@@ -34,6 +36,19 @@ public class MeActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getResources().getString(R.string.personal_profile));
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        final ScrollView sw = (ScrollView) findViewById(R.id.scrollView);
+
+        sw.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                sw.post(new Runnable() {
+                    public void run() {
+                        sw.fullScroll(View.FOCUS_UP);
+                    }
+                });
+            }
+        });
 
         ArrayList<Me> me = new ArrayList<Me>();
         final GraphView graph = (GraphView) findViewById(R.id.graph);
