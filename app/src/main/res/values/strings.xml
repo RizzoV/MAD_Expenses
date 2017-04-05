@@ -38,4 +38,7 @@
     <!-- Personal profile -->
     <string name="debits_and_credits">Debits and credits</string>
 
+    <string name="mandatory_field">Mandatory Field!</string>
+
+
 </resources>

@@ -12,4 +12,33 @@
     <string name="debit">Debito</string>
     <string name="summary">Riepilogo</string>
     <string name="total">Totale</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to the creation of a new group -->
+    <string name="group_name">Nome del Gruppo</string>
+    <string name="group_members">Membri del gruppo</string>
+    <string name="group_structure">Struttura del gruppo</string>
+    <string name="centralized">Centralizzato</string>
+    <string name="distributed">Distribuito</string>
+    <string name="search_person">Cerca persona</string>
+
+    <!-- Strings related to the creation of a new expense -->
+    <string name="expense_name">Nome della Spesa</string>
+    <string name="description">Descrizione</string>
+    <string name="price">Prezzo</string>
+    <string name="create_new_expense">Crea una nuova spesa</string>
+    <string name="add_expense_image">Aggiungi una immagine alla spesa</string>
+    <string name="create_expense_button">Crea Spesa</string>
+
+    <!-- Strings related to the creation of a new proposal -->
+    <string name="proposal_name">Nome della Proposta</string>
+    <string name="create_new_proposal">Crea una nuova proposta</string>
+    <string name="add_proposal_image">Aggiungi una immagine alla rpoposta</string>
+    <string name="create_proposal_button">Crea proposta</string>
+
+    <!-- Personal profile -->
+    <string name="debits_and_credits">Debiti e crediti</string>
+
+    <string name="mandatory_field">Campo Obbligatorio!</string>
+
 </resources>

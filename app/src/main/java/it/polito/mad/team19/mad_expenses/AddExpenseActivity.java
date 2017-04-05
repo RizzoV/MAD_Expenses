@@ -61,17 +61,17 @@ public class AddExpenseActivity extends AppCompatActivity
                 EditText costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
 
                 if(TextUtils.isEmpty(nameEditText.getText().toString())) {
-                    nameEditText.setError("Mandatory field");
+                    nameEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
                 if(TextUtils.isEmpty(descriptionEditText.getText().toString())) {
-                    descriptionEditText.setError("Mandatory field");
+                    nameEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
                 if(TextUtils.isEmpty(costEditText.getText().toString())) {
-                    costEditText.setError("Mandatory field");
+                    nameEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
