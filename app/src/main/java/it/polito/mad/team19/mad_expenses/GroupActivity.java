@@ -119,6 +119,10 @@ public class GroupActivity extends AppCompatActivity {
                         selectedTab = TabsList.PROPOSALS;
                         break;
                 }
+
+                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+                if(!fab.isShown())
+                    fab.show();
             }
 
             @Override
