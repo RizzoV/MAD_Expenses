@@ -176,6 +176,7 @@ public class GroupActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
 
 
+
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
