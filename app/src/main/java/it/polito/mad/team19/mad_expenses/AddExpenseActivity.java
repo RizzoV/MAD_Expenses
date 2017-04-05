@@ -4,10 +4,19 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by Bolz on 03/04/2017.
@@ -16,6 +25,8 @@ import android.widget.ImageButton;
 public class AddExpenseActivity extends AppCompatActivity
 {
     ImageButton imageButton;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,11 +38,49 @@ public class AddExpenseActivity extends AppCompatActivity
 
         //imageButton = (ImageButton) findViewById(R.id.image);
 
-        addListenerOnButton();
+        addListenerOnDoneButton();
+        addListenerOnImageButton();
 
     }
 
-    public void addListenerOnButton()
+    private void addListenerOnDoneButton() {
+
+        final String TAG = "firebaseAuth";
+
+        Button doneBtn = (Button) findViewById(R.id.new_expense_done_btn);
+        doneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                EditText nameEditText = (EditText) findViewById(R.id.expense_name_et);
+
+                mAuth = FirebaseAuth.getInstance();
+                mAuthListener = new FirebaseAuth.AuthStateListener() {
+
+
+                    @Override
+                    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        if (user != null) {
+                            // User is signed in
+                            Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                        } else {
+                            // User is signed out
+                            Log.d(TAG, "onAuthStateChanged:signed_out");
+                        }
+                        // ...
+                    }
+                };
+
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("expenses");
+                DatabaseReference newExpenseRef = myRef.child("1");
+                newExpenseRef.setValue(nameEditText.getText());
+            }
+        });
+    }
+
+    public void addListenerOnImageButton()
     {
 
         imageButton = (ImageButton) findViewById(R.id.image);
