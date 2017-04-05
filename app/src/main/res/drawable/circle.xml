@@ -4,7 +4,7 @@
     android:shape="oval">
 
     <solid
-        android:color="@color/notificationCircle"/>
+        android:color="@color/lightPrimary"/>
 
     <size
         android:width="30dp"

@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -307,13 +308,18 @@ public class GroupActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_expenses, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_expenses, container, false);
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
+            final ProgressBar pBar = (ProgressBar) rootView.findViewById(R.id.pBar);
+
             final ArrayList<Expense> expenses = new ArrayList<Expense>();
 
+            final RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
 
+
+/*
             for (int i = 0; i < 16; i++) {
                 Expense e = new Expense("Expense " + i, Integer.valueOf(i * i).floatValue(), Currency.getInstance("EUR"),
                         "Description of the expense #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
@@ -328,7 +334,7 @@ public class GroupActivity extends AppCompatActivity {
 
             LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
             mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);*/
 
             //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
             //expensesList.setAdapter(adapter);
@@ -389,17 +395,17 @@ public class GroupActivity extends AppCompatActivity {
 
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("expenses");
-            myRef.addValueEventListener(new ValueEventListener() {
+        /*    myRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
-                    /*
+                    *//*
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         FirebaseExpense fe = ds.getValue(FirebaseExpense.class);
                         expenses.add(new Expense(fe.getName(),fe.getCost(), Currency.getInstance(Locale.ITALY),fe.getDescription(),null));
 
-                    }*/
+                    }*//*
 
                 }
 
@@ -408,7 +414,7 @@ public class GroupActivity extends AppCompatActivity {
                     // Failed to read value
                     Log.w(TAG, "Failed to read value.", error.toException());
                 }
-            });
+            });*/
 
             myRef.addChildEventListener(new ChildEventListener() {
                 @Override
@@ -416,6 +422,15 @@ public class GroupActivity extends AppCompatActivity {
                     //for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         FirebaseExpense fe = dataSnapshot.getValue(FirebaseExpense.class);
                         expenses.add(new Expense(fe.getName(),fe.getCost(), Currency.getInstance(Locale.ITALY),fe.getDescription(),null));
+
+                    ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+                    mRecyclerView.setAdapter(adapter);
+
+                    LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
+                    mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+                    mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+                    pBar.setVisibility(View.GONE);
 
                     //}
 

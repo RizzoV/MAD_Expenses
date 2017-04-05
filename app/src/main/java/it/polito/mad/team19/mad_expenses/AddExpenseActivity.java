@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -53,40 +54,58 @@ public class AddExpenseActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
+                boolean empty = false;
+
                 EditText nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
                 EditText descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
                 EditText costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
 
-                mAuth = FirebaseAuth.getInstance();
-                mAuthListener = new FirebaseAuth.AuthStateListener() {
+                if(TextUtils.isEmpty(nameEditText.getText().toString())) {
+                    nameEditText.setError("Mandatory field");
+                    empty = true;
+                }
+
+                if(TextUtils.isEmpty(descriptionEditText.getText().toString())) {
+                    descriptionEditText.setError("Mandatory field");
+                    empty = true;
+                }
+
+                if(TextUtils.isEmpty(costEditText.getText().toString())) {
+                    costEditText.setError("Mandatory field");
+                    empty = true;
+                }
+
+                if(!empty) {
+                    mAuth = FirebaseAuth.getInstance();
+                    mAuthListener = new FirebaseAuth.AuthStateListener() {
 
 
-
-                    @Override
-                    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        if (user != null) {
-                            // User is signed in
-                            Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                        } else {
-                            // User is signed out
-                            Log.d(TAG, "onAuthStateChanged:signed_out");
+                        @Override
+                        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            if (user != null) {
+                                // User is signed in
+                                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                            } else {
+                                // User is signed out
+                                Log.d(TAG, "onAuthStateChanged:signed_out");
+                            }
+                            // ...
                         }
-                        // ...
-                    }
-                };
+                    };
 
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("expenses");
-                String uuid = UUID.randomUUID().toString();
-                DatabaseReference newExpenseRef = myRef.child(uuid);
-                newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(),descriptionEditText.getText().toString(),Float.valueOf(costEditText.getText().toString()),"link_png"));
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference("expenses");
+                    String uuid = UUID.randomUUID().toString();
+                    DatabaseReference newExpenseRef = myRef.child(uuid);
+                    newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(), Float.valueOf(costEditText.getText().toString()), "link_png"));
                 /*DatabaseReference newExpenseNameRef = newExpenseRef.child("name");
                 DatabaseReference newExpenseDescriptionRef = newExpenseRef.child("description");
                 newExpenseNameRef.setValue(nameEditText.getText().toString());
                 newExpenseDescriptionRef.setValue(nameEditText.getText().toString());*/
 
-                finish();
+                    finish();
+                }
             }
         });
     }
