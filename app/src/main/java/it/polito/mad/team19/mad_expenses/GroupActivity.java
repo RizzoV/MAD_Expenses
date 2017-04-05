@@ -299,6 +299,7 @@ public class GroupActivity extends AppCompatActivity {
                                     });
                         }
                     }
+                    
                     else if (dy < 0) {
                         fab.show();
                         if(previous[0] < -cards.getHeight())
