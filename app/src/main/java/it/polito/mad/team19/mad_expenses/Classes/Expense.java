@@ -16,6 +16,12 @@ public class Expense {
     private Currency currency;
     private Image image;
 
+
+
+    public Expense(String name, Float cost, String description, Image image) {
+       new  Expense( name,  cost,  null,  description,  image);
+    }
+
     public Expense(String name, Float cost, Currency currency, String description, Image image) {
         this.name = name;
         this.cost = cost;
