@@ -1,5 +1,7 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -270,21 +272,43 @@ public class GroupActivity extends AppCompatActivity {
 
             final LinearLayout cards = (LinearLayout) rootView.findViewById(R.id.cards);
             final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+            final int[] previous ={0};
+            final boolean[] set = {false};
 
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    previous[0]+=dy;
                     if (dy > 0) {
                         fab.hide();
-                        if(!fab.isShown()) {
-                            cards.animate().translationY(-cards.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-                            cards.setVisibility(View.GONE);
-                        }                    } else if (dy < 0) {
-                        fab.show();
-                        if(fab.isShown()) {
-                            cards.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-                            cards.setVisibility(View.VISIBLE);
+                        if(previous[0] > cards.getHeight()) {
+                            cards.animate()
+                                    .translationY(0)
+                                    .alpha(0.0f)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            cards.setVisibility(View.GONE);
+                                            previous[0] = 0;
+                                        }
+                                    });
                         }
+                    }
+                    else if (dy < 0) {
+                        fab.show();
+                        if(previous[0] < -cards.getHeight())
+                        cards.animate()
+                                .translationY(1)
+                                .alpha(1f)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        cards.setVisibility(View.VISIBLE);
+                                        previous[0] = 0;
+                                    }
+                                });
                         }
                 }
             });
