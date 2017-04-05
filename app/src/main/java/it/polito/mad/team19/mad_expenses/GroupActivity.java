@@ -44,9 +44,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
@@ -79,6 +85,8 @@ public class GroupActivity extends AppCompatActivity {
     TabsList selectedTab;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    protected static final String TAG = "firebaseAuth";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,8 +179,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     private void firebaseAuth() {
-
-        final String TAG = "firebaseAuth";
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -310,7 +316,7 @@ public class GroupActivity extends AppCompatActivity {
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
-            ArrayList<Expense> expenses = new ArrayList<Expense>();
+            final ArrayList<Expense> expenses = new ArrayList<Expense>();
 
 
             for (int i = 0; i < 16; i++) {
@@ -382,6 +388,26 @@ public class GroupActivity extends AppCompatActivity {
                                     }
                                 });
                         }
+                }
+            });
+
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("expenses");
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // This method is called once with the initial value and again
+                    // whenever data at this location is updated.
+                    String value = dataSnapshot.getValue(String.class);
+                    expenses.add(new Expense(value,Float.valueOf("100.00"),Currency.getInstance(Locale.ITALY),value,null));
+                    Log.d(TAG, "Value is: " + value);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w(TAG, "Failed to read value.", error.toException());
                 }
             });
 
