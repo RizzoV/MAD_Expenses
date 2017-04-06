@@ -40,5 +40,6 @@
     <string name="debits_and_credits">Debiti e crediti</string>
 
     <string name="mandatory_field">Campo Obbligatorio!</string>
+    <string name="invalid_cost_field">Campo Invalido!</string>
 
 </resources>

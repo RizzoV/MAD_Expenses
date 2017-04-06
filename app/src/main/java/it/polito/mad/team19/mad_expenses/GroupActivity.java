@@ -289,9 +289,13 @@ public class GroupActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Float totalAmount;
+        private Float debitAmount;
+        private Float creditAmount;
 
         public ExpensesListFragment() {
             totalAmount = new Float(0);
+            debitAmount = new Float(0);
+            creditAmount = new Float(0);
         }
 
         /**
@@ -319,8 +323,6 @@ public class GroupActivity extends AppCompatActivity {
             final ArrayList<Expense> expenses = new ArrayList<Expense>();
 
             final RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-
-            totalAmount = new Float(0);
 
 /*
             for (int i = 0; i < 16; i++) {
@@ -434,10 +436,17 @@ public class GroupActivity extends AppCompatActivity {
                     mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
 
                     //Jured: aggiunto aggiornamento totale nella card Summary
+                    // aggiunto aggiornamento barbaro di crediti come se pagassi sempre io
                     //TODO generalizzare l'utilizzo della valuta
+                    //TODO calcolo dei miei crediti e debiti con intelligenza
                     totalAmount += Float.valueOf(fe.getCost());
                     TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_card_tv);
                     totalTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", totalAmount));
+                    creditAmount += Float.valueOf(fe.getCost());
+                    TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
+                    creditTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", creditAmount));
+                    TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
+                    debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", debitAmount));
 
                     pBar.setVisibility(View.GONE);
 

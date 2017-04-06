@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 
@@ -24,11 +26,14 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
  * Created by Bolz on 03/04/2017.
  */
 
+
 public class AddExpenseActivity extends AppCompatActivity
 {
     ImageButton imageButton;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -66,12 +71,20 @@ public class AddExpenseActivity extends AppCompatActivity
                 }
 
                 if(TextUtils.isEmpty(descriptionEditText.getText().toString())) {
-                    nameEditText.setError(getString(R.string.mandatory_field));
+                    descriptionEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
                 if(TextUtils.isEmpty(costEditText.getText().toString())) {
-                    nameEditText.setError(getString(R.string.mandatory_field));
+                    costEditText.setError(getString(R.string.mandatory_field));
+                    empty = true;
+                }
+
+                //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
+                Pattern pattern = Pattern.compile(COST_REGEX);
+                Matcher matcher = pattern.matcher(costEditText.getText().toString());
+                if(!matcher.matches()) {
+                    costEditText.setError(getString(R.string.invalid_cost_field));
                     empty = true;
                 }
 
@@ -98,7 +111,7 @@ public class AddExpenseActivity extends AppCompatActivity
                     DatabaseReference myRef = database.getReference("expenses");
                     String uuid = UUID.randomUUID().toString();
                     DatabaseReference newExpenseRef = myRef.child(uuid);
-                    newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(), Float.valueOf(costEditText.getText().toString()), "link_png"));
+                    newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(), Float.valueOf(costEditText.getText().toString().replace(",",".")), "link_png"));
                 /*DatabaseReference newExpenseNameRef = newExpenseRef.child("name");
                 DatabaseReference newExpenseDescriptionRef = newExpenseRef.child("description");
                 newExpenseNameRef.setValue(nameEditText.getText().toString());
