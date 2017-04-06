@@ -81,9 +81,7 @@ public class AddExpenseActivity extends AppCompatActivity
                 }
 
                 //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
-                Pattern pattern = Pattern.compile(COST_REGEX);
-                Matcher matcher = pattern.matcher(costEditText.getText().toString());
-                if(!matcher.matches()) {
+                if(!costEditText.getText().toString().matches(COST_REGEX)) {
                     costEditText.setError(getString(R.string.invalid_cost_field));
                     empty = true;
                 }
