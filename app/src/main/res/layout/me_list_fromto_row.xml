@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:textSize="@dimen/titles_size"
                 android:layout_height="wrap_content"
-                android:textColor="#000"
+                android:textColor="@color/primaryText"
                 android:ellipsize="end"
                 android:maxEms="1"
                 android:maxLines="1"

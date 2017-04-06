@@ -86,7 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/add_proposal_image"
-                    android:textColor="@color/grey"
+                    android:textColor="@color/secondaryText"
                     android:textSize="@dimen/normal_text_size" />
             </LinearLayout>
         </LinearLayout>

@@ -37,8 +37,8 @@
                 android:gravity="center_vertical"
                 android:maxEms="1"
                 android:maxLines="1"
-                android:text="bolz puzza demmerda, ammazza se svuota l'aula"
-                android:textColor="#000"
+                android:text="bolz"
+                android:textColor="@color/primaryText"
                 android:textSize="@dimen/titles_size" />
 
             <TextView

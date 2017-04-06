@@ -36,7 +36,7 @@
             android:textSize="@dimen/titles_size"
             android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
-            android:textColor="#000"
+            android:textColor="@color/primaryText"
             android:layout_weight="0.7"
             android:maxEms="1"
             android:maxLines="1"
