@@ -288,8 +288,10 @@ public class GroupActivity extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private Float totalAmount;
 
         public ExpensesListFragment() {
+            totalAmount = new Float(0);
         }
 
         /**
@@ -318,6 +320,7 @@ public class GroupActivity extends AppCompatActivity {
 
             final RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
 
+            totalAmount = new Float(0);
 
 /*
             for (int i = 0; i < 16; i++) {
@@ -420,8 +423,8 @@ public class GroupActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     //for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        FirebaseExpense fe = dataSnapshot.getValue(FirebaseExpense.class);
-                        expenses.add(new Expense(fe.getName(),fe.getCost(), Currency.getInstance(Locale.ITALY),fe.getDescription(),null));
+                    FirebaseExpense fe = dataSnapshot.getValue(FirebaseExpense.class);
+                    expenses.add(new Expense(fe.getName(),fe.getCost(), Currency.getInstance(Locale.ITALY),fe.getDescription(),null));
 
                     ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
                     mRecyclerView.setAdapter(adapter);
@@ -429,6 +432,12 @@ public class GroupActivity extends AppCompatActivity {
                     LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
                     mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
                     mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+                    //Jured: aggiunto aggiornamento totale nella card Summary
+                    //TODO generalizzare l'utilizzo della valuta
+                    totalAmount += Float.valueOf(fe.getCost());
+                    TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_card_tv);
+                    totalTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", totalAmount));
 
                     pBar.setVisibility(View.GONE);
 
