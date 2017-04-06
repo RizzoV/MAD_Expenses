@@ -27,7 +27,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
     public ExpensesRecyclerAdapter(Context context, ArrayList<Expense> expenses) {
         this.expenses = expenses;
         this.context = (Activity) context;
-        this.mInflater = LayoutInflater.from(context);
+        this.mInflater = LayoutInflater.from(this.context);
     }
 
     @Override
