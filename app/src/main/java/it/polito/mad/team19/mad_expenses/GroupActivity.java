@@ -421,6 +421,8 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });*/
 
+            final boolean[] firsttime = {true};
+
             myRef.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -428,12 +430,15 @@ public class GroupActivity extends AppCompatActivity {
                     FirebaseExpense fe = dataSnapshot.getValue(FirebaseExpense.class);
                     expenses.add(new Expense(fe.getName(),fe.getCost(), Currency.getInstance(Locale.ITALY),fe.getDescription(),null));
 
-                    ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
-                    mRecyclerView.setAdapter(adapter);
+                    if(firsttime[0]) {
+                        ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+                        mRecyclerView.setAdapter(adapter);
 
-                    LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
-                    mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-                    mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+                        LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
+                        mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+                        mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+                        firsttime[0] = false;
+                    }
 
                     //Jured: aggiunto aggiornamento totale nella card Summary
                     // aggiunto aggiornamento barbaro di crediti come se pagassi sempre io
