@@ -10,8 +10,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-
             <LinearLayout
                 android:id="@+id/cards"
                 android:layout_width="match_parent"
@@ -25,7 +23,7 @@
                     android:layout_marginBottom="1dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:layout_weight="0.33"
+                    android:layout_weight="0.4"
                     android:clickable="true">
 
 
@@ -59,7 +57,10 @@
                             android:text="-"
                             android:textAlignment="center"
                             android:textColor="@color/primaryText"
-                            android:textSize="20sp" />
+                            android:textSize="20sp"
+                            android:maxLines="1"
+                            android:maxEms="1"
+                            android:ellipsize="end"/>
 
                     </LinearLayout>
 
@@ -72,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:layout_marginRight="5dp"
-                    android:layout_weight="0.66"
+                    android:layout_weight="0.6"
                     card_view:contentPaddingBottom="0dp">
 
 
@@ -161,8 +162,7 @@
             android:layout_marginTop="50dp"
             android:layout_gravity="center" />
 
-        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/expenses_lv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

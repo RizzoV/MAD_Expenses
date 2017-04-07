@@ -44,7 +44,7 @@
             android:text="Gruppo con un nome particolarmente lungo"
             />
 
-        <LinearLayout
+        <!-- <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -84,6 +84,7 @@
                 android:textSize="15sp"
                 />
         </LinearLayout>
+        -->
     </LinearLayout>
 
     <RelativeLayout

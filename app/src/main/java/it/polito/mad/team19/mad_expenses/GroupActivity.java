@@ -88,7 +88,10 @@ public class GroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
-        firebaseAuth();
+
+        //Autenticazione anonima provvisoria
+        //firebaseAuth();
+
         // Get the intent which has started this activity
         Intent intent = getIntent();
 
@@ -213,6 +216,7 @@ public class GroupActivity extends AppCompatActivity {
                 });
     }
 
+    /*
     @Override
     protected void onStart() {
         super.onStart();
@@ -226,6 +230,7 @@ public class GroupActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+    */
 
 
     @Override
@@ -317,29 +322,25 @@ public class GroupActivity extends AppCompatActivity {
 
             final ProgressBar pBar = (ProgressBar) rootView.findViewById(R.id.pBar);
 
-            final ArrayList<Expense> expenses = new ArrayList<Expense>();
+            final ArrayList<Expense> expenses = new ArrayList<>();
 
             final RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
 
-/*
+            ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+            mRecyclerView.setAdapter(adapter);
+
+            LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
+            mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+            /*
             for (int i = 0; i < 16; i++) {
                 Expense e = new Expense("Expense " + i, Integer.valueOf(i * i).floatValue(), Currency.getInstance("EUR"),
                         "Description of the expense #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
                         null); // Currency string given by ISO 4217
                 expenses.add(e);
             }
-
-
-            RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-            ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
-            mRecyclerView.setAdapter(adapter);
-
-            LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
-            mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);*/
-
-            //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-            //expensesList.setAdapter(adapter);
+           */
 
             LinearLayout meCardViewLayout = (LinearLayout) rootView.findViewById(R.id.credits_cv_ll);
             meCardViewLayout.setOnClickListener(new View.OnClickListener() {
@@ -418,24 +419,25 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });*/
 
-            final boolean[] firsttime = {true};
+            //final boolean[] firsttime = {true};
 
             myRef.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     //for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     FirebaseExpense fe = dataSnapshot.getValue(FirebaseExpense.class);
+                    fe.setKey(dataSnapshot.getKey());
                     expenses.add(new Expense(fe.getName(),fe.getCost(), Currency.getInstance(Locale.ITALY),fe.getDescription(),null));
 
-                    if(firsttime[0]) {
+                    /* if(firsttime[0]) {
                         ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
-                        mRecyclerView.setAdapter(adapter);
+                        //mRecyclerView.setAdapter(adapter);
 
                         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
                         mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
                         mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
                         firsttime[0] = false;
-                    }
+                    }*/
 
                     //Jured: aggiunto aggiornamento totale nella card Summary
                     // aggiunto aggiornamento barbaro di crediti come se pagassi sempre io
@@ -443,13 +445,13 @@ public class GroupActivity extends AppCompatActivity {
                     //TODO calcolo dei miei crediti e debiti con intelligenza
                     totalAmount += Float.valueOf(fe.getCost());
                     TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_card_tv);
-                    totalTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", totalAmount));
+                    totalTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol()+" "+String.format("%.2f", totalAmount));
                     creditAmount += Float.valueOf(fe.getCost());
                     TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
-                    creditTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", creditAmount));
+                    creditTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol()+" "+String.format("%.2f", creditAmount));
                     //debitAmount += Float.valueOf(fe.getCost()); //TO ADD?
                     TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
-                    debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", debitAmount));
+                    debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol()+" "+String.format("%.2f", debitAmount));
 
                     pBar.setVisibility(View.GONE);
 

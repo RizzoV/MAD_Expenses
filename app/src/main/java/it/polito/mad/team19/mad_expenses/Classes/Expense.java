@@ -15,6 +15,7 @@ public class Expense {
     private Float cost;
     private Currency currency;
     private Image image;
+    private String imagelink;
 
 
 

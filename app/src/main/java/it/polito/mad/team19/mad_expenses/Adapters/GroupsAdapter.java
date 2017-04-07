@@ -52,16 +52,16 @@ public class GroupsAdapter extends BaseAdapter {
         }
 
         TextView name=(TextView)convertView.findViewById(R.id.group_name_tv);
-        TextView credits=(TextView)convertView.findViewById(R.id.credits_amount_tv);
-        TextView debits=(TextView)convertView.findViewById(R.id.debits_amount_tv);
+        //TextView credits=(TextView)convertView.findViewById(R.id.credits_amount_tv);
+        //TextView debits=(TextView)convertView.findViewById(R.id.debits_amount_tv);
         TextView notifications=(TextView)convertView.findViewById(R.id.notification_cnt_tv);
         ImageView image = (ImageView) convertView.findViewById(R.id.group_image);
 
         Group group=groupList.get(position);
 
         name.setText(group.getName());
-        credits.setText("+" + String.format("%.2f", group.getCredits()));
-        debits.setText("-" + String.format("%.2f", group.getDebits()));
+        //credits.setText("+" + String.format("%.2f", group.getCredits()));
+        //debits.setText("-" + String.format("%.2f", group.getDebits()));
         notifications.setText(group.getNotifyCnt().toString());
         image.setImageResource(R.drawable.icona_a_caso);
 

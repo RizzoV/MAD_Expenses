@@ -9,6 +9,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class FirebaseExpense {
 
+    private String key;
     private String name;
     private String description;
     private Float cost;
@@ -21,6 +22,15 @@ public class FirebaseExpense {
         this.description = description;
         this.cost = cost;
         this.image = image;
+        this.key = null;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getName() {
