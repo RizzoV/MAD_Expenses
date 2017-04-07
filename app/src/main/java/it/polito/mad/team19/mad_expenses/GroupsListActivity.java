@@ -36,6 +36,7 @@ public class GroupsListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         userLogVerification();
 
         setContentView(R.layout.activity_groups_list);
@@ -76,7 +77,7 @@ public class GroupsListActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
+                if (user != null && !firebaseAuth.getCurrentUser().isAnonymous()) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
