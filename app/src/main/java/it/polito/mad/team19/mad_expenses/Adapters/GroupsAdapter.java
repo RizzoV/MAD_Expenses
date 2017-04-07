@@ -44,10 +44,13 @@ public class GroupsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView==null) {
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
+        if (convertView==null)
+        {
             convertView=context.getLayoutInflater().inflate(R.layout.groups_list_row,parent,false);
         }
+
         TextView name=(TextView)convertView.findViewById(R.id.group_name_tv);
         TextView credits=(TextView)convertView.findViewById(R.id.credits_amount_tv);
         TextView debits=(TextView)convertView.findViewById(R.id.debits_amount_tv);
@@ -61,6 +64,7 @@ public class GroupsAdapter extends BaseAdapter {
         debits.setText("-" + String.format("%.2f", group.getDebits()));
         notifications.setText(group.getNotifyCnt().toString());
         image.setImageResource(R.drawable.icona_a_caso);
+
         return convertView;
     }
 }

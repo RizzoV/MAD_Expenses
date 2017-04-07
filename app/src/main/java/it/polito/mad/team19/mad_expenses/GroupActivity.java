@@ -179,8 +179,6 @@ public class GroupActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
 
-
-
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -239,7 +237,6 @@ public class GroupActivity extends AppCompatActivity {
 
         MenuItemCompat.setActionView(item, R.layout.notifications_ab_layout);
         RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
-
 
         int notCount = 10;
 
@@ -450,6 +447,7 @@ public class GroupActivity extends AppCompatActivity {
                     creditAmount += Float.valueOf(fe.getCost());
                     TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
                     creditTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", creditAmount));
+                    //debitAmount += Float.valueOf(fe.getCost()); //TO ADD?
                     TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
                     debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol().toString()+" "+String.format("%.2f", debitAmount));
 

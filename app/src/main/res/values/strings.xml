@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">MAD_Expenses</string>
     <string name="title_activity_main">MAD Expenses</string>
     <string name="title_activity_group">GroupActivity</string>
@@ -40,5 +41,12 @@
 
     <string name="mandatory_field">Mandatory Field!</string>
     <string name="invalid_cost_field">Invalid Field!</string>
+
+    <!-- Authentication -->
+    <string name="welcome">Welcome in Mad Expenses !</string>
+    <string name="username">Choose an username</string>
+    <string name="password">Choose a password</string>
+    <string name="email">Enter your e-mail</string>
+    <string name="profile_image">Choose your profile image</string>
 
 </resources>
