@@ -75,13 +75,11 @@ public class AddExpenseActivity extends AppCompatActivity
                     empty = true;
                 }
 
+                //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
                 if(TextUtils.isEmpty(costEditText.getText().toString())) {
                     costEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
-                }
-
-                //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
-                if(!costEditText.getText().toString().matches(COST_REGEX)) {
+                } else if(!costEditText.getText().toString().matches(COST_REGEX)) {
                     costEditText.setError(getString(R.string.invalid_cost_field));
                     empty = true;
                 }

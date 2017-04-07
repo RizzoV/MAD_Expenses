@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.polito.mad.team19.mad_expenses">
 
@@ -45,6 +44,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
+        <activity android:name=".GoogleSignInActivity"
+                  android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
     </application>
 
 </manifest>
