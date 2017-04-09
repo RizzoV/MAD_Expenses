@@ -4,8 +4,12 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -23,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseSignUpActivity;
+
 public class GoogleSignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final int RC_SIGN_IN = 9001;
@@ -30,13 +36,22 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    EditText email;
+    EditText pswd;
+    TextView register;
+    Button signIn;
+    boolean empty = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in);
+
+        email = (EditText) findViewById(R.id.login_fire_email_et);
+        pswd = (EditText) findViewById(R.id.login_fire_pswd_et);
+        signIn = (Button) findViewById(R.id.btn_sign_in);
+        register = (TextView) findViewById(R.id.register_tv);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -51,8 +66,34 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
         gsi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Uao","clicked");
                 signIn();
+            }
+        });
+
+        signIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(TextUtils.isEmpty(email.getText().toString())) {
+                    email.setError(getString(R.string.mandatory_field));
+                    empty = true;
+                }
+
+                if(TextUtils.isEmpty(pswd.getText().toString())) {
+                    pswd.setError(getString(R.string.mandatory_field));
+                    empty = true;
+                }
+
+                if(!empty)
+                signInWithEmailAndPswd(email.getText().toString(),pswd.getText().toString());
+            }
+        });
+
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(GoogleSignInActivity.this, FirebaseSignUpActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -60,7 +101,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
+                if (user != null && !user.isAnonymous()) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     finish();
@@ -140,5 +181,27 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    public void signInWithEmailAndPswd(String email, String password)
+    {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithEmail:failed", task.getException());
+                            Toast.makeText(GoogleSignInActivity.this, R.string.auth_failed,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
     }
 }

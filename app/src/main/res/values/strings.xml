@@ -48,5 +48,7 @@
     <string name="password">Choose a password</string>
     <string name="email">Enter your e-mail</string>
     <string name="profile_image">Choose your profile image</string>
+    <string name="auth_failed">Authentication failed!</string>
+
 
 </resources>

@@ -33,10 +33,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
-        <activity android:name=".CreateGroupActivity" >
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".GroupActivity" />
+        <activity android:name=".CreateGroupActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GroupActivity" />
         </activity>
         <activity android:name=".AddExpenseActivity">
             <meta-data
@@ -48,10 +48,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
-        <activity android:name=".GoogleSignInActivity"
-                  android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
+        <activity
+            android:name=".GoogleSignInActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".Classes.FirebaseSignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+           </activity>
     </application>
 
 </manifest>

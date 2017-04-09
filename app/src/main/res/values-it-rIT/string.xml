@@ -41,5 +41,6 @@
 
     <string name="mandatory_field">Campo Obbligatorio!</string>
     <string name="invalid_cost_field">Campo Invalido!</string>
+    <string name="auth_failed">Autenticazione fallita!</string>
 
 </resources>
