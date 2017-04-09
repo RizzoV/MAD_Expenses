@@ -51,6 +51,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
         gsi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("Uao","clicked");
                 signIn();
             }
         });
@@ -62,6 +63,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    finish();
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -106,6 +108,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...
+                Log.e("ErrorGoogle",result.getStatus()+"");
             }
         }
     }

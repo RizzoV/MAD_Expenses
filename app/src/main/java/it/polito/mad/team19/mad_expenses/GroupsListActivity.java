@@ -81,12 +81,12 @@ public class GroupsListActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null && !user.isAnonymous()) {
                     // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Log.d(TAG, "onAuthStateChanged:signed_inGroup:" + user.getUid());
 
 
                 } else {
                     // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                    Log.d(TAG, "onAuthStateChanged:signed_outGroup");
                     Intent intent = new Intent(GroupsListActivity.this,GoogleSignInActivity.class);
                     startActivity(intent);
 
