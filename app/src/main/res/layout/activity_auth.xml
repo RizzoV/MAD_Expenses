@@ -26,7 +26,7 @@
                 android:gravity="center"
                 android:text="@string/welcome"
                 android:textColor="@color/secondaryText"
-                android:textSize="@dimen/medium_titles_size" />
+                android:textSize="@dimen/titles_size" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
