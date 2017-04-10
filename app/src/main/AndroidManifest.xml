@@ -50,10 +50,15 @@
         </activity>
         <activity
             android:name=".GoogleSignInActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Classes.FirebaseSignUpActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Classes.FirebaseSignUpActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-           </activity>
+        <activity android:name=".AccountActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GroupsListActivity" />
+    </activity>
     </application>
 
 </manifest>
