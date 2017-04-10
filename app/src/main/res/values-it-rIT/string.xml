@@ -41,6 +41,22 @@
 
     <string name="mandatory_field">Campo Obbligatorio!</string>
     <string name="invalid_cost_field">Campo Invalido!</string>
+
+    <!-- Authentication -->
+    <string name="welcome">Benvenuto in Mad Expenses!</string>
+    <string name="username_choose">Scegli un username</string>
+    <string name="password">Scegli una password</string>
+    <string name="email">Inserisci la tua email</string>
+    <string name="profile_image">Scegli un\'immagine personale</string>
     <string name="auth_failed">Autenticazione fallita!</string>
+    <string name="or">Oppure</string>
+    <string name="new_here_sign_up">Sei nuovo? Registrati!</string>
+    <string name="forgot_pwd">Password dimenticata?</string>
+    <string name="sign_in">Accedi</string>
+    <string name="sign_up">Registrati</string>
+
+    <!-- Personal Profile -->
+    <string name="sign_out">Disconnettiti</string>
+    <string name="username">Nome utente</string>
 
 </resources>
