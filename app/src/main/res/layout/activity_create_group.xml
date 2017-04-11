@@ -5,18 +5,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <fragment
+    <FrameLayout
         android:id="@+id/users_list_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="it.polito.mad.team19.mad_expenses.ContactsListFragment"
         tools:layout="@layout/activity_create_group_frag1" />
 
-    <fragment
+    <FrameLayout
         android:id="@+id/group_setting_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="it.polito.mad.team19.mad_expenses.CreateGroupActivity$UsersListFragment"
+        android:name="it.polito.mad.team19.mad_expenses.CreateGroupActivity$UsersListFragment"
         tools:layout="@layout/activity_create_group_frag2" />
 
 </LinearLayout>

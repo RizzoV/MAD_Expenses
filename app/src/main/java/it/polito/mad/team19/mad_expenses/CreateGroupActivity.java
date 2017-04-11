@@ -1,6 +1,8 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.FragmentManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +16,9 @@ public class CreateGroupActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.users_list_fragment, new UsersListFragment()).commit();
 
         getSupportActionBar().setHomeButtonEnabled(true);
     }
