@@ -1,5 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -8,8 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -17,8 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 
@@ -27,17 +28,17 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
  */
 
 
-public class AddExpenseActivity extends AppCompatActivity
-{
+public class AddExpenseActivity extends AppCompatActivity {
     ImageButton imageButton;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
+    Boolean isContributorsClicked = true;
+    Boolean isExcludedClicked = true;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
@@ -48,7 +49,38 @@ public class AddExpenseActivity extends AppCompatActivity
         addListenerOnDoneButton();
         addListenerOnImageButton();
 
+        PopupWindow excludedPopupWindow = new PopupWindow(this);
+
+        addListenerOnContributorsButton();
+        addListenerOnExcludedButton();
+
     }
+
+
+    private void addListenerOnContributorsButton() {
+        Button contributorsButton = (Button) findViewById(R.id.contributors_button);
+
+        contributorsButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(AddExpenseActivity.this, ContributorsPopupActivity.class);
+                startActivity(i);
+            }
+        });
+    }
+
+    private void addListenerOnExcludedButton() {
+        Button contributorsButton = (Button) findViewById(R.id.excluded_button);
+
+        contributorsButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(AddExpenseActivity.this, ExcludedPopupActivity.class);
+                startActivity(i);
+            }
+        });
+    }
+
 
     private void addListenerOnDoneButton() {
 
@@ -65,26 +97,22 @@ public class AddExpenseActivity extends AppCompatActivity
                 EditText descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
                 EditText costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
 
-                if(TextUtils.isEmpty(nameEditText.getText().toString())) {
+                if (TextUtils.isEmpty(nameEditText.getText().toString())) {
                     nameEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
-                if(TextUtils.isEmpty(descriptionEditText.getText().toString())) {
-                    descriptionEditText.setError(getString(R.string.mandatory_field));
-                    empty = true;
-                }
-
                 //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
-                if(TextUtils.isEmpty(costEditText.getText().toString())) {
+                if (TextUtils.isEmpty(costEditText.getText().toString())) {
                     costEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
-                } else if(!costEditText.getText().toString().matches(COST_REGEX)) {
+
+                } else if (!costEditText.getText().toString().matches(COST_REGEX)) {
                     costEditText.setError(getString(R.string.invalid_cost_field));
                     empty = true;
                 }
 
-                if(!empty) {
+                if (!empty) {
                     mAuth = FirebaseAuth.getInstance();
                     mAuthListener = new FirebaseAuth.AuthStateListener() {
 
@@ -107,7 +135,7 @@ public class AddExpenseActivity extends AppCompatActivity
                     DatabaseReference myRef = database.getReference("expenses");
                     String uuid = UUID.randomUUID().toString();
                     DatabaseReference newExpenseRef = myRef.child(uuid);
-                    newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(), Float.valueOf(costEditText.getText().toString().replace(",",".")), "link_png"));
+                    newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(), Float.valueOf(costEditText.getText().toString().replace(",", ".")), "link_png"));
                 /*DatabaseReference newExpenseNameRef = newExpenseRef.child("name");
                 DatabaseReference newExpenseDescriptionRef = newExpenseRef.child("description");
                 newExpenseNameRef.setValue(nameEditText.getText().toString());
@@ -119,18 +147,15 @@ public class AddExpenseActivity extends AppCompatActivity
         });
     }
 
-    public void addListenerOnImageButton()
-    {
+    public void addListenerOnImageButton() {
 
         imageButton = (ImageButton) findViewById(R.id.image);
 
-        imageButton.setOnClickListener(new View.OnClickListener()
-        {
+        imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 //FOR EXAMPLE
-               // Toast.makeText(MyAndroidAppActivity.this,"ImageButton is clicked!", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(MyAndroidAppActivity.this,"ImageButton is clicked!", Toast.LENGTH_SHORT).show();
 
                 // TO REPLACE WITH THE CODE FOR THE UPLOAD OF THE IMAGE
                 Snackbar.make(view, "Replace with your image", Snackbar.LENGTH_LONG).setAction("Action", null).show();

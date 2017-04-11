@@ -29,16 +29,17 @@
 
     </RelativeLayout>
 
-        <TextView
-            android:id="@+id/id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:maxEms="1"
-            android:maxLines="1"
-            android:text="Nome Utente"
-            android:textSize="@dimen/titles_size"
-            android:textColor="@color/primaryText"/>
-</LinearLayout>
+    <CheckedTextView
+        android:id="@+id/username_checkedtv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxEms="1"
+        android:maxLines="1"
+        android:text="Nome Utente"
+        android:textSize="@dimen/titles_size"
+        android:textColor="@color/primaryText"/>
+
+    </LinearLayout>
