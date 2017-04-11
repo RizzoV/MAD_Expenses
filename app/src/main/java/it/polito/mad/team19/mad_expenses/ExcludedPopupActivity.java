@@ -13,7 +13,7 @@ public class ExcludedPopupActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         setContentView(R.layout.activity_excluded_popup);
 
         DisplayMetrics dm = new DisplayMetrics();

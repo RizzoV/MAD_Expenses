@@ -49,9 +49,7 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 
 
 public class AddExpenseActivity extends AppCompatActivity {
-    ImageButton imageButton;
-public class AddExpenseActivity extends AppCompatActivity
-{
+
     private ImageButton imageButton;
     private ImageView mImageView;
     private FirebaseAuth mAuth;
@@ -75,8 +73,6 @@ public class AddExpenseActivity extends AppCompatActivity
 
         addListenerOnDoneButton();
         addListenerOnImageButton();
-
-        PopupWindow excludedPopupWindow = new PopupWindow(this);
 
         addListenerOnContributorsButton();
         addListenerOnExcludedButton();
@@ -124,26 +120,26 @@ public class AddExpenseActivity extends AppCompatActivity
                 EditText descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
                 EditText costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
 
-                if(TextUtils.isEmpty(nameEditText.getText().toString())) {
+                if (TextUtils.isEmpty(nameEditText.getText().toString())) {
                     nameEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
-                if(TextUtils.isEmpty(descriptionEditText.getText().toString())) {
+                if (TextUtils.isEmpty(descriptionEditText.getText().toString())) {
                     descriptionEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
                 //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
-                if(TextUtils.isEmpty(costEditText.getText().toString())) {
+                if (TextUtils.isEmpty(costEditText.getText().toString())) {
                     costEditText.setError(getString(R.string.mandatory_field));
                     empty = true;
-                } else if(!costEditText.getText().toString().matches(COST_REGEX)) {
+                } else if (!costEditText.getText().toString().matches(COST_REGEX)) {
                     costEditText.setError(getString(R.string.invalid_cost_field));
                     empty = true;
                 }
 
-                if(!empty) {
+                if (!empty) {
                     mAuth = FirebaseAuth.getInstance();
                     mAuthListener = new FirebaseAuth.AuthStateListener() {
 
@@ -166,7 +162,7 @@ public class AddExpenseActivity extends AppCompatActivity
                     DatabaseReference myRef = database.getReference("expenses");
                     String uuid = UUID.randomUUID().toString();
                     DatabaseReference newExpenseRef = myRef.child(uuid);
-                    newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(), Float.valueOf(costEditText.getText().toString().replace(",",".")), "link_png"));
+                    newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(), Float.valueOf(costEditText.getText().toString().replace(",", ".")), "link_png"));
                 /*DatabaseReference newExpenseNameRef = newExpenseRef.child("name");
                 DatabaseReference newExpenseDescriptionRef = newExpenseRef.child("description");
                 newExpenseNameRef.setValue(nameEditText.getText().toString());
@@ -182,13 +178,11 @@ public class AddExpenseActivity extends AppCompatActivity
 
         imageButton = (ImageButton) findViewById(R.id.image);
 
-        imageButton.setOnClickListener(new View.OnClickListener()
-        {
+        imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 //FOR EXAMPLE
-               // Toast.makeText(MyAndroidAppActivity.this,"ImageButton is clicked!", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(MyAndroidAppActivity.this,"ImageButton is clicked!", Toast.LENGTH_SHORT).show();
 
                 // TO REPLACE WITH THE CODE FOR THE UPLOAD OF THE IMAGE
                 //Snackbar.make(view, "Replace with your image", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -244,7 +238,6 @@ public class AddExpenseActivity extends AppCompatActivity
     //su firebase in modo totalmente ignorante, sempre alla stessa locazione e per ora senza compressione;
 
 
-
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
 
@@ -258,7 +251,7 @@ public class AddExpenseActivity extends AppCompatActivity
 */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("DEBUG AGGIUNTA FOTO: ",mCurrentPhotoPath);
+        Log.d("DEBUG AGGIUNTA FOTO: ", mCurrentPhotoPath);
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
 
         //mImageView.setImageBitmap(bitmap);
@@ -387,7 +380,5 @@ public class AddExpenseActivity extends AppCompatActivity
         }
 
 
-
     }
-
 }
