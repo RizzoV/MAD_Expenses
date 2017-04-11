@@ -1,6 +1,12 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.*;
+import android.Manifest;
 import android.app.FragmentManager;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +27,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                 .add(R.id.users_list_fragment, new UsersListFragment()).commit();
 
         getSupportActionBar().setHomeButtonEnabled(true);
+        checkPermissions(10);
     }
 
     public static class UsersListFragment extends Fragment {
@@ -78,4 +85,34 @@ public class CreateGroupActivity extends AppCompatActivity {
             return rootView;
         }
     }
+
+    private boolean checkPermissions(int returnCode) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                ActivityCompat.requestPermissions(CreateGroupActivity.this, new String[]{Manifest.permission.READ_CONTACTS}
+                        , returnCode);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case 10: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                }
+                else {
+                    return;
+                }
+            }
+        }
+    }
+
+
 }
