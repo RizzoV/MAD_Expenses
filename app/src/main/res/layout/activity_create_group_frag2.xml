@@ -5,6 +5,13 @@
     android:orientation="vertical"
     android:padding="@dimen/activity_horizontal_margin">
 
+    <fragment
+        class="it.polito.mad.team19.mad_expenses.ContactsListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/contactlist_fragment"
+
+        />
 
     <LinearLayout
         android:layout_width="match_parent"

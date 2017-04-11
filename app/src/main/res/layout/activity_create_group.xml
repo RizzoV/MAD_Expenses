@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <fragment
         android:id="@+id/users_list_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="it.polito.mad.team19.mad_expenses.CreateGroupActivity$UsersListFragment"
+        class="it.polito.mad.team19.mad_expenses.ContactsListFragment"
         tools:layout="@layout/activity_create_group_frag1" />
 
     <fragment
