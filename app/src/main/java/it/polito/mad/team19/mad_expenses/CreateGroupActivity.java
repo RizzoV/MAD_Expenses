@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 public class CreateGroupActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {

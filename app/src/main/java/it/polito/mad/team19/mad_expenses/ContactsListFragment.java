@@ -11,20 +11,12 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.provider.ContactsContract;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
-import it.polito.mad.team19.mad_expenses.dummy.DummyContent;
-import it.polito.mad.team19.mad_expenses.dummy.DummyContent.DummyItem;
-
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -142,7 +134,7 @@ public class ContactsListFragment extends Fragment implements LoaderManager.Load
         // Gets a CursorAdapter
         mCursorAdapter = new SimpleCursorAdapter(
                 getActivity(),
-                R.layout.fragment_contactslist,
+                R.layout.fragment_contactslist_row,
                 null,
                 FROM_COLUMNS, TO_IDS,
                 0);
