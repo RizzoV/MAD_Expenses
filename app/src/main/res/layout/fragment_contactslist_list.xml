@@ -7,8 +7,6 @@
     android:name="it.polito.mad.team19.mad_expenses.ContactsListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="it.polito.mad.team19.mad_expenses.ContactsListFragment"
-    tools:listitem="@layout/fragment_contactslist" />
+    tools:listitem="@layout/fragment_contactslist_row" />
