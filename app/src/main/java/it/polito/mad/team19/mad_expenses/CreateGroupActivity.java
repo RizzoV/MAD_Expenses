@@ -1,21 +1,21 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.*;
 import android.Manifest;
-import android.app.FragmentManager;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import it.polito.mad.team19.mad_expenses.Fragments.UserListFragment;
 
 public class CreateGroupActivity extends AppCompatActivity {
+
+     MenuItem btn_get_contacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,67 +24,22 @@ public class CreateGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_group);
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.users_list_fragment, new UsersListFragment()).commit();
+                .add(R.id.create_group_fragment_frame, new UserListFragment()).commit();
 
         getSupportActionBar().setHomeButtonEnabled(true);
         checkPermissions(10);
     }
 
-    public static class UsersListFragment extends Fragment {
-
-        /** Variables */
-
-        public UsersListFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static UsersListFragment newInstance(int sectionNumber)
-        {
-            UsersListFragment fragment = new UsersListFragment();
-
-            return fragment;
-        }
-
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState)
-        {
-            final View rootView = inflater.inflate(R.layout.activity_create_group_frag1, container, false);
-            return rootView;
-        }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_addgroup, menu);
+        btn_get_contacts = menu.findItem(R.id.getContacts);
+        btn_get_contacts.setEnabled(false);
+        btn_get_contacts.setVisible(false);
+        return true;
     }
 
-    public static class GroupSettingFragment extends Fragment {
-
-        /** Variables */
-
-        public GroupSettingFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static GroupSettingFragment newInstance(int sectionNumber)
-        {
-            GroupSettingFragment fragment = new GroupSettingFragment();
-
-            return fragment;
-        }
-
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState)
-        {
-            final View rootView = inflater.inflate(R.layout.activity_create_group_frag2, container, false);
-            return rootView;
-        }
-    }
 
     private boolean checkPermissions(int returnCode) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
