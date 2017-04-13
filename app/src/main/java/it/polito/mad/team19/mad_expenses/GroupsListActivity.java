@@ -77,29 +77,31 @@ public class GroupsListActivity extends AppCompatActivity {
         });
     }
 
-    private void userLogVerification() {
-
+    private void userLogVerification()
+    {
         mAuth=FirebaseAuth.getInstance();
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+        mAuthStateListener = new FirebaseAuth.AuthStateListener()
+        {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth)
+            {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null && !user.isAnonymous()) {
+                if (user != null && !user.isAnonymous())
+                {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_inGroup:" + user.getUid());
+                }
 
-
-                } else {
+                else
+                    {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_outGroup");
                     Intent intent = new Intent(GroupsListActivity.this,GoogleSignInActivity.class);
                     startActivity(intent);
-
                 }
             }
         };
-
         mAuth.addAuthStateListener(mAuthStateListener);
     }
 

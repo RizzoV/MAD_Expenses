@@ -325,7 +325,6 @@ public class GroupActivity extends AppCompatActivity {
             final ArrayList<Expense> expenses = new ArrayList<>();
 
             final RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-
             ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
             mRecyclerView.setAdapter(adapter);
 

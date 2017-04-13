@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/smaller_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/smaller_vertical_margin">
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/user_img_contacts_list"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_weight="0.2"
+            android:src="@drawable/circle" />
+        <CheckBox
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:button="@drawable/custom_checkbox"
+            android:layout_alignBottom="@id/user_img_contacts_list"
+            android:layout_alignRight="@id/user_img_contacts_list"/>
+
+    </RelativeLayout>
+
+    <CheckedTextView
+        android:id="@+id/username_checkedtv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxEms="1"
+        android:maxLines="1"
+        android:text="Nome Utente"
+        android:textSize="@dimen/titles_size"
+        android:textColor="@color/primaryText"/>
+
+    </LinearLayout>
