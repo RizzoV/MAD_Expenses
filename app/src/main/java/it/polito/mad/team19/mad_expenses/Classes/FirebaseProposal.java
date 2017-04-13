@@ -3,22 +3,21 @@ package it.polito.mad.team19.mad_expenses.Classes;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
- * Created by Jured on 05/04/17.
+ * Created by Bolz on 13/04/2017.
  */
 
 @IgnoreExtraProperties
-public class FirebaseExpense
+public class FirebaseProposal
 {
-
     private String key;
     private String name;
     private String description;
     private Float cost;
     private String image;
 
-    public FirebaseExpense () {}
+    public FirebaseProposal () {}
 
-    public FirebaseExpense(String name, String description, Float cost, String image)
+    public FirebaseProposal(String name, String description, Float cost, String image)
     {
         this.name = name;
         this.description = description;
@@ -66,4 +65,5 @@ public class FirebaseExpense
     public void setImage(String image) {
         this.image = image;
     }
+
 }
