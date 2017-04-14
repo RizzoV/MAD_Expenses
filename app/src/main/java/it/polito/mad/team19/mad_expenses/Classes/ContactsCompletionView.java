@@ -47,7 +47,7 @@ public class ContactsCompletionView extends TokenCompleteTextView<UserContact> {
 
         setTokenClickStyle(TokenClickStyle.Delete);
 
-        name.setText(person.getName());
+        name.setText(person.getEmail());
         try {
 
             if (person.getThumb() != null) {
