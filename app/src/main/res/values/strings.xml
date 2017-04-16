@@ -66,5 +66,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!--- Invitation intent -->
+    <string name="invitation_title">Add friends</string>
+    <string name="invitation_message">Join the Group of MadExpenses and start sharing!</string>
+    <string name="invitation_deep_link">addPersonToGroup</string>
+    <string name="invitation_cta">Join the Group!</string>
 
 </resources>

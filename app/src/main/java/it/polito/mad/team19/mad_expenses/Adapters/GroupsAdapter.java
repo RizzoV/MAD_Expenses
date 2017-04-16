@@ -52,18 +52,33 @@ public class GroupsAdapter extends BaseAdapter {
         }
 
         TextView name=(TextView)convertView.findViewById(R.id.group_name_tv);
-        //TextView credits=(TextView)convertView.findViewById(R.id.credits_amount_tv);
-        //TextView debits=(TextView)convertView.findViewById(R.id.debits_amount_tv);
+        TextView balance=(TextView)convertView.findViewById(R.id.balance_tv);
         TextView notifications=(TextView)convertView.findViewById(R.id.notification_cnt_tv);
         ImageView image = (ImageView) convertView.findViewById(R.id.group_image);
+        ImageView notification_back = (ImageView) convertView.findViewById(R.id.notification_back);
+
 
         Group group=groupList.get(position);
 
         name.setText(group.getName());
-        //credits.setText("+" + String.format("%.2f", group.getCredits()));
-        //debits.setText("-" + String.format("%.2f", group.getDebits()));
-        notifications.setText(group.getNotifyCnt().toString());
-        image.setImageResource(R.drawable.icona_a_caso);
+
+        Float balanceAmount = group.getBalance();
+        if(balanceAmount>0)
+            balance.setText("Devi dare: " + String.format("%.2f", group.getBalance()));
+        if(balanceAmount<0)
+            balance.setText("Devi ricevere: " + String.format("%.2f", group.getBalance()));
+
+        if(balanceAmount==0)
+            balance.setText("Non hai nessun debito/credito");
+
+        if(group.getNotifyCnt()>0)
+            notifications.setText(group.getNotifyCnt().toString());
+        else {
+            notifications.setVisibility(View.INVISIBLE);
+            notification_back.setVisibility(View.INVISIBLE);
+        }
+
+        image.setImageResource(R.drawable.circle);
 
         return convertView;
     }

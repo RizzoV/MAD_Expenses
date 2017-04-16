@@ -3,6 +3,7 @@ package it.polito.mad.team19.mad_expenses;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -32,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -62,6 +64,7 @@ enum TabsList {
 
 public class GroupActivity extends AppCompatActivity {
 
+    private static final int REQUEST_INVITE = 66;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -78,6 +81,7 @@ public class GroupActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     String name;
+    String groupId;
     TabsList selectedTab;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -97,6 +101,7 @@ public class GroupActivity extends AppCompatActivity {
 
         // Set the activity name retrieving it by the extras of the intent
         name = intent.getStringExtra("group");
+        groupId = intent.getStringExtra("groupId");
         setTitle(name);
 
         // Initially the displayed tab will be the EXPENSES one
@@ -268,16 +273,34 @@ public class GroupActivity extends AppCompatActivity {
             case R.id.notifications_icon:
                 return true;
 
-            case android.R.id.home:
+            case android.R.id.home: {
                 finish();
+                return true;
+            }
 
-            case R.id.personal_profile_icon:
+            case R.id.person_add: {
+                onInviteClicked();
+                return true;
+            }
+
+            case R.id.personal_profile_icon: {
                 Intent intent = new Intent(GroupActivity.this, MeActivity.class);
                 startActivity(intent);
+                return true;
+            }
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void onInviteClicked() {
+        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                .setMessage(getString(R.string.invitation_message))
+                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)+"/"+groupId))
+                .setCallToActionText(getString(R.string.invitation_cta))
+                .build();
+        startActivityForResult(intent, REQUEST_INVITE);
     }
 
 

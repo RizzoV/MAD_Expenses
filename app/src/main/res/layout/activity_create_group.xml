@@ -3,12 +3,100 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="20dp"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/create_group_fragment_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+                <ImageView
+                    android:id="@+id/add_group_img"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/circle" />
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignBottom="@id/add_group_img"
+                    android:layout_alignRight="@+id/add_group_img"
+                    android:background="@mipmap/ic_add_img" />
+        </RelativeLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/new_group_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nome del gruppo"
+                android:inputType="text"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin" />
+        </android.support.design.widget.TextInputLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/type_hint"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/primaryText"
+            android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seleziona il tipo:"/>
+
+        <Button
+            android:layout_marginLeft="10dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/info_type_button"
+            android:text="i"
+            android:textColor="@color/icons"
+            android:background="@drawable/info_circle"/>
+
+    </LinearLayout>
+
+    <CheckBox
+        android:layout_below="@+id/type_hint"
+        android:id="@+id/type_1"
+        android:checked="true"
+        android:layout_width="match_parent"
+        android:text="Distribuito"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+    <CheckBox
+        android:layout_below="@+id/type_1"
+        android:id="@+id/type_2"
+        android:layout_width="match_parent"
+        android:text="Centralizzato"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+    </RelativeLayout>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:id="@+id/add_group_submit"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:text="Crea il gruppo"
+        android:textColor="@color/icons"
+        android:background="@color/colorAccent"/>
 
 </LinearLayout>

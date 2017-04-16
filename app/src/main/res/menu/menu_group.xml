@@ -3,6 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="it.polito.mad.team19.mad_expenses.GroupActivity">
 
+
+    <item
+        android:id="@+id/person_add"
+        android:icon="@drawable/ic_group_add"
+        app:showAsAction="always"
+        android:title="person_add"
+        />
+
     <item
         android:id="@+id/personal_profile_icon"
         android:icon="@drawable/ic_person"

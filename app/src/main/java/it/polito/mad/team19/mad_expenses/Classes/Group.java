@@ -13,19 +13,20 @@ public class Group
 
     String name;
     Bitmap icon;
-    Float total;
-    Float credits;
-    Float debits;
+    Float balance;
     Integer notifyCnt;
+    String thumbPath;
+    String groupId;
     //HashMap<String,GroupComponent> components;
 
 
-    public Group(String name, Float credits, Float debits, Integer notifyCnt)
+    public Group(String name, Float balance, Integer notifyCnt, String thumb, String groupId)
     {
         this.name = name;
-        this.credits = credits;
-        this.debits = debits;
+        this.balance = balance;
         this.notifyCnt = notifyCnt;
+        this.thumbPath = thumb;
+        this.groupId = groupId;
     }
 
     //setter and getter methods
@@ -46,29 +47,16 @@ public class Group
         this.icon = icon;
     }
 
-    public Float getTotal() {
-        return total;
+    public Float getBalance() {
+        return balance;
     }
 
-    public void setTotal(Float total) {
-        this.total = total;
+    public String getGroupId() {return groupId;}
+
+    public void setBalance(Float balance) {
+        this.balance = balance;
     }
 
-    public Float getCredits() {
-        return credits;
-    }
-
-    public void setCredits(Float credits) {
-        this.credits = credits;
-    }
-
-    public Float getDebits() {
-        return debits;
-    }
-
-    public void setDebits(Float debits) {
-        this.debits = debits;
-    }
 
     public Integer getNotifyCnt() {
         return notifyCnt;

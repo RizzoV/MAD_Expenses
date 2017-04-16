@@ -3,6 +3,9 @@
     package="it.polito.mad.team19.mad_expenses">
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -55,7 +58,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Classes.FirebaseSignUpActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AccountActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -76,21 +79,19 @@
                 android:value=".AddExpenseActivity" />
         </activity>
 
-    <provider
-        android:name="android.support.v4.content.FileProvider"
-        android:authorities="it.polito.mad.team19.mad_expenses.fileprovider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-        <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths"></meta-data>
-    </provider>
-</application>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="it.polito.mad.team19.mad_expenses.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
+        <activity android:name=".GroupTypeInfoActivity"
+            android:theme="@style/AppTheme.PopupTheme">
+        </activity>
+    </application>
 
-<uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-
-    </manifest>
+</manifest>

@@ -59,4 +59,10 @@
     <string name="sign_out">Disconnettiti</string>
     <string name="username">Nome utente</string>
 
+    <!--- Invitation intent -->
+    <string name="invitation_title">Aggiungi amici</string>
+    <string name="invitation_message">Unisciti al gruppo di Mad Expenses ed inizia a condividere le spese!</string>
+    <string name="invitation_deep_link">addPersonToGroup</string>
+    <string name="invitation_cta">Unisciti al gruppo!</string>
+
 </resources>
