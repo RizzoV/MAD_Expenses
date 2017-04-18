@@ -58,6 +58,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
     Boolean isContributorsClicked = true;
     Boolean isExcludedClicked = true;
+    private static final int EXP_CREATED = 1;
 
 
     @Override
@@ -167,7 +168,7 @@ public class AddExpenseActivity extends AppCompatActivity {
                 DatabaseReference newExpenseDescriptionRef = newExpenseRef.child("description");
                 newExpenseNameRef.setValue(nameEditText.getText().toString());
                 newExpenseDescriptionRef.setValue(nameEditText.getText().toString());*/
-
+                    setResult(EXP_CREATED);
                     finish();
                 }
             }

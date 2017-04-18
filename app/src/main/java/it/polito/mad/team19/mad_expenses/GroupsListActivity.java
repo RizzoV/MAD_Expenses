@@ -41,6 +41,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
     private static final String TAG = "FirebaseLogged";
     private static final int REQUEST_INVITE = 6666;
+    private static final int LOGIN_CHECK = 1;
     ListView groupListView;
     ArrayList<Group> groups = new ArrayList<>();
     protected FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -51,7 +52,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     TextView debug_tv;
     RelativeLayout debug_ll;
     boolean firstTimeCheck = true;
-    final int LOGIN_CHECK = 1;
 
 
     @Override
@@ -136,13 +136,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         }
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 666: {
-                updateList(uid);
+                if(resultCode == 1)
+                    updateList(uid);
                 break;
             }
             case LOGIN_CHECK: {
