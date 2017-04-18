@@ -5,8 +5,8 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true"
     android:clipChildren="true"
+    android:fillViewport="true"
     tools:context="it.polito.mad.team19.mad_expenses.MeActivity">
 
 
@@ -15,159 +15,158 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/smaller_vertical_margin"
-        android:layout_marginRight="@dimen/smaller_horizontal_margin"
-        android:layout_marginLeft="@dimen/smaller_horizontal_margin">
+        <android.support.v7.widget.CardView
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/smaller_horizontal_margin"
+            android:layout_marginRight="@dimen/smaller_horizontal_margin"
+            android:layout_marginTop="@dimen/smaller_vertical_margin">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/smaller_horizontal_margin">
+
+                    <LinearLayout
+                        android:id="@+id/top"
+                        android:layout_width="368dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:src="@drawable/circle" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.6"
+                            android:ellipsize="end"
+                            android:maxEms="1"
+                            android:maxLines="1"
+                            android:text="Nome Utente"
+                            android:textColor="@color/primaryText"
+                            android:textSize="@dimen/big_titles_size" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/top"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="5dp"
+                                android:text="@string/credit"
+                                android:textAlignment="center"
+                                android:textAllCaps="true"
+                                android:textColor="@color/primaryText" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="€ 3000,00"
+                                android:textAlignment="center"
+                                android:textAllCaps="true"
+                                android:textColor="@color/greenMaterial"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="5dp"
+                                android:text="@string/debit"
+                                android:textAlignment="center"
+                                android:textAllCaps="true"
+                                android:textColor="@color/primaryText" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="€ 150,25"
+                                android:textAlignment="center"
+                                android:textAllCaps="true"
+                                android:textColor="@color/redMaterial"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/me_graph"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/details"
+                    android:padding="@dimen/smaller_horizontal_margin">
+
+                    <com.jjoe64.graphview.GraphView
+                        android:id="@+id/graph"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dip"
+                        app:seriesColor="#ee0000"
+                        app:seriesType="line" />
+                </LinearLayout>
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@id/card">
 
-            <LinearLayout
-                android:id="@+id/details"
+            <TextView
+                android:id="@+id/debits_and_credits_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/smaller_horizontal_margin">
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="@string/debits_and_credits" />
 
-                <LinearLayout
-                    android:id="@+id/top"
-                    android:layout_width="368dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                        android:layout_marginRight="@dimen/activity_horizontal_margin"
-                        android:src="@drawable/circle"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.6"
-                        android:ellipsize="end"
-                        android:maxEms="1"
-                        android:maxLines="1"
-                        android:text="Nome Utente"
-                        android:textColor="@color/primaryText"
-                        android:textSize="@dimen/big_titles_size" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/top"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="5dp"
-                            android:text="@string/credit"
-                            android:textAlignment="center"
-                            android:textAllCaps="true"
-                            android:textColor="@color/primaryText"  />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="€ 3000,00"
-                            android:textAlignment="center"
-                            android:textAllCaps="true"
-                            android:textColor="@color/greenMaterial"
-                            android:textSize="20sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="5dp"
-                            android:text="@string/debit"
-                            android:textAlignment="center"
-                            android:textAllCaps="true"
-                            android:textColor="@color/primaryText"  />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="€ 150,25"
-                            android:textAlignment="center"
-                            android:textAllCaps="true"
-                            android:textColor="@color/redMaterial"
-                            android:textSize="20sp" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/me_graph"
+            <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/fromto_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/details"
-                android:padding="@dimen/smaller_horizontal_margin">
+                android:layout_alignParentBottom="true"
+                android:layout_below="@+id/debits_and_credits_tv"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin" />
 
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/graph"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dip"
-                    app:seriesColor="#ee0000"
-                    app:seriesType="line" />
-            </LinearLayout>
+
         </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <RelativeLayout
-        android:layout_below="@id/card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    <TextView
-        android:id="@+id/debits_and_credits_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/debits_and_credits"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"/>
-
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/fromto_rv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/debits_and_credits_tv"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"/>
-
-
-
-    </RelativeLayout>
     </LinearLayout>
-    </ScrollView>
+</ScrollView>

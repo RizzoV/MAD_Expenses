@@ -21,10 +21,13 @@
     <!-- Strings related to the creation of a new group -->
     <string name="group_name">Nome del Gruppo</string>
     <string name="group_members">Membri del gruppo</string>
-    <string name="group_structure">Struttura del gruppo</string>
+    <string name="group_structure">Struttura del gruppo:</string>
     <string name="centralized">Centralizzato</string>
     <string name="distributed">Distribuito</string>
+    <string name="centralized_description">Un gruppo centralizzato è caratterizzato da un singolo membro in grado di prendere le decisioni riguardanti tutti i membri del gruppo. Gli altri membri possono aprire topic, inserire nuove spese e fare proposte ma solo l\'autorità può accettarle o rifiutarle</string>
+    <string name="distributed_description">In un gruppo distribuito tutti i membri del gruppo possono inserire o contestare spese, creare, accettare o rifiutare proposte, ed aprire topic</string>
     <string name="search_person">Cerca persona</string>
+    <string name="create_new_group">Crea il gruppo</string>
 
     <!-- Strings related to the creation of a new expense -->
     <string name="expense_name">Nome della Spesa</string>
