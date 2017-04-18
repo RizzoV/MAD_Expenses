@@ -51,6 +51,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     TextView debug_tv;
     RelativeLayout debug_ll;
     boolean firstTimeCheck = true;
+    final int LOGIN_CHECK = 1;
 
 
     @Override
@@ -81,6 +82,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         groupListView = (ListView) findViewById(R.id.groups_lv);
     }
 
+
+
     private void userLogVerification() {
         mAuth = FirebaseAuth.getInstance();
 
@@ -92,16 +95,18 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_inGroup:" + user.getUid());
                     uid = user.getUid();
+                    if (firstTimeCheck) {
+                        updateList(uid);
+                        checkInvitations();
+                        firstTimeCheck = false;
+                    }
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_outGroup");
                     Intent intent = new Intent(GroupsListActivity.this, GoogleSignInActivity.class);
-                    startActivity(intent);
-                }
-                if (firstTimeCheck) {
-                    updateList(uid);
-                    checkInvitations();
-                    firstTimeCheck = false;
+                    startActivityForResult(intent, LOGIN_CHECK);
+
+
                 }
 
             }
@@ -138,6 +143,14 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         switch (requestCode) {
             case 666: {
                 updateList(uid);
+                break;
+            }
+            case LOGIN_CHECK: {
+                if (firstTimeCheck) {
+                    updateList(uid);
+                    checkInvitations();
+                    firstTimeCheck = false;
+                }
                 break;
             }
             default:
