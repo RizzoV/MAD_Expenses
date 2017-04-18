@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
@@ -48,7 +49,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
@@ -85,6 +85,7 @@ public class GroupActivity extends AppCompatActivity {
     TabsList selectedTab;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
     protected static final String TAG = "firebaseAuth";
 
@@ -92,9 +93,6 @@ public class GroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
-
-        //Autenticazione anonima provvisoria
-        //firebaseAuth();
 
         // Get the intent which has started this activity
         Intent intent = getIntent();
@@ -240,24 +238,38 @@ public class GroupActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_group, menu);
 
+        // Retrieve the notification count textView from the menu
         MenuItem item = menu.findItem(R.id.notifications_icon);
-
         MenuItemCompat.setActionView(item, R.layout.notifications_ab_layout);
         RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
 
-        int notCount = 10;
-
-        TextView tv = (TextView) notifCount.findViewById(R.id.counter);
+        // Set up a listener which is able to get the number of notifications for the user in this group
+        final TextView tv = (TextView) notifCount.findViewById(R.id.counter);
         ImageView im = (ImageView) notifCount.findViewById(R.id.notifications_icon_action);
+        DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("gruppi").child(groupId).child("notifiche");
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int notificationsCount = dataSnapshot.getValue(Integer.class);
+                if (notificationsCount > 0) {
+                    tv.setText(String.valueOf(notificationsCount));
+                    tv.setVisibility(View.VISIBLE);
+                }
+                else {
+                    tv.setVisibility(View.INVISIBLE);
+                }
+            }
 
-        if (notCount > 0)
-            tv.setText(notCount + "");
-        else
-            tv.setVisibility(View.INVISIBLE);
-
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "Notifications listener - The read failed: " + databaseError.getCode());
+            }
+        });
         return true;
     }
 

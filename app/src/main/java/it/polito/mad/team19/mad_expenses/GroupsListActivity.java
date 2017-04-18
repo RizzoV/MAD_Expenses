@@ -50,7 +50,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     ProgressBar progressBar;
     TextView debug_tv;
     RelativeLayout debug_ll;
-    boolean firstTimeCheck=true;
+    boolean firstTimeCheck = true;
 
 
     @Override
@@ -73,40 +73,32 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(GroupsListActivity.this, CreateGroupActivity.class);
-                startActivityForResult(i,666);
+                startActivityForResult(i, 666);
             }
         });
-
 
 
         groupListView = (ListView) findViewById(R.id.groups_lv);
     }
 
-    private void userLogVerification()
-    {
-        mAuth=FirebaseAuth.getInstance();
+    private void userLogVerification() {
+        mAuth = FirebaseAuth.getInstance();
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener()
-        {
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth)
-            {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null && !user.isAnonymous())
-                {
+                if (user != null && !user.isAnonymous()) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_inGroup:" + user.getUid());
                     uid = user.getUid();
-                }
-
-                else
-                    {
+                } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_outGroup");
-                    Intent intent = new Intent(GroupsListActivity.this,GoogleSignInActivity.class);
+                    Intent intent = new Intent(GroupsListActivity.this, GoogleSignInActivity.class);
                     startActivity(intent);
                 }
-                if(firstTimeCheck){
+                if (firstTimeCheck) {
                     updateList(uid);
                     checkInvitations();
                     firstTimeCheck = false;
@@ -130,7 +122,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.account:
-                Intent intent = new Intent(GroupsListActivity.this,AccountActivity.class);
+                Intent intent = new Intent(GroupsListActivity.this, AccountActivity.class);
                 startActivity(intent);
                 return true;
 
@@ -143,18 +135,16 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode){
-            case 666:
-            {
+        switch (requestCode) {
+            case 666: {
                 updateList(uid);
                 break;
             }
             default:
-                return;
         }
     }
 
-    void checkInvitations(){
+    void checkInvitations() {
         GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(AppInvite.API)
                 .enableAutoManage(this, this)
@@ -174,7 +164,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                     String invitationId = AppInviteReferral.getInvitationId(intent);
 
 
-                                    Log.e("Invitations",""+deepLink);
+                                    Log.e("Invitations", "" + deepLink);
                                     String deepLinkName;
                                     String groupIdName;
 
@@ -182,11 +172,11 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                                     deepLinkName = results[0];
 
-                                    if(deepLinkName.equals("addPersonToGroup")){
+                                    if (deepLinkName.equals("addPersonToGroup")) {
                                         groupIdName = results[1];
-                                        Log.e("Invitations","add person to group with id: "+groupIdName);
+                                        Log.e("Invitations", "add person to group with id: " + groupIdName);
 
-                                        addGroupToUser(uid,groupIdName);
+                                        addGroupToUser(uid, groupIdName);
 
                                     }
 
@@ -202,7 +192,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("utenti").child(uid);
 
-        //fai aggiornare la lista una volta che ha aggiunto il nuovo gruppo
+        // fai aggiornare la lista una volta che ha aggiunto il nuovo gruppo
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -237,9 +227,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         myRef2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.hasChildren())
-                {
-                    Log.e("Group",snapshot.getValue().toString());
+                if (snapshot.hasChildren()) {
+                    Log.e("Group", snapshot.getValue().toString());
 
                     DatabaseReference addGroupRef;
                     addGroupRef = FirebaseDatabase.getInstance().getReference();
@@ -262,32 +251,28 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
     }
 
-    void updateList(String uid)
-    {
+    void updateList(String uid) {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
 
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.hasChildren())
-                {
+                if (snapshot.hasChildren()) {
                     progressBar.setVisibility(View.GONE);
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.VISIBLE);
 
                     for (DataSnapshot child : snapshot.getChildren()) {
-                        groups.add(new Group(child.child("nome").getValue().toString(),Float.parseFloat(child.child("bilancio").getValue().toString()),Integer.parseInt(child.child("notifiche").getValue().toString()),child.child("immagine").getValue().toString(),child.getKey()));
+                        groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat(child.child("bilancio").getValue().toString()), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
                     }
-                }
-                else
-                {
+                } else {
                     progressBar.setVisibility(View.GONE);
                     groupListView.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.VISIBLE);
-                    debug_tv.setText("Non fai parte di nessun gruppo!");
+                    debug_tv.setText(R.string.youre_not_part_of_any_group);
                 }
             }
 
@@ -306,8 +291,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
-                intent.putExtra("group", ((Group)parent.getItemAtPosition(position)).getName());
-                intent.putExtra("groupId", ((Group)parent.getItemAtPosition(position)).getGroupId());
+                intent.putExtra("group", ((Group) parent.getItemAtPosition(position)).getName());
+                intent.putExtra("groupId", ((Group) parent.getItemAtPosition(position)).getGroupId());
                 startActivity(intent);
 
             }

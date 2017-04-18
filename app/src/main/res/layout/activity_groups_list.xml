@@ -11,8 +11,8 @@
         tools:context="it.polito.mad.team19.mad_expenses.GroupsListActivity">
 
         <ProgressBar
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:id="@+id/loading_pbar"/>
@@ -29,17 +29,17 @@
             android:layout_height="wrap_content"
             android:id="@+id/debug_tv"
             android:textColor="@color/secondaryText"
-            android:text="Nessun gruppo trovato!"
+            android:text="@string/no_group_found"
             android:textSize="18sp"
             />
 
-            <ImageView
+            <!-- <ImageView
                 android:layout_centerHorizontal="true"
                 android:id="@+id/debug_img"
                 android:layout_below="@+id/debug_tv"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/ic_sad"/>
+                android:src="@drawable/ic_sad"/> -->
         </RelativeLayout>
 
     <ListView

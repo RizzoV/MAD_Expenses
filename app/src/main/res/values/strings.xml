@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">MAD_Expenses</string>
+    <string name="app_name">MAD Expenses</string>
     <string name="title_activity_main">MAD Expenses</string>
     <string name="title_activity_group">GroupActivity</string>
     <string name="action_settings">Settings</string>
@@ -13,6 +13,10 @@
     <string name="summary">Summary</string>
     <string name="total">Total</string>
     <string name="title_activity_login">Sign in</string>
+
+    <!-- Group list activity -->
+    <string name="no_group_found">No group found!</string>
+    <string name="youre_not_part_of_any_group">You are not part of any group! :(</string>
 
     <!-- Strings related to the creation of a new group -->
     <string name="group_name">Group name</string>
