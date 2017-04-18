@@ -104,6 +104,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                 if (user != null && !user.isAnonymous()) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    setResult(1);
                     finish();
                 } else {
                     // User is signed out
@@ -145,6 +146,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
+                setResult(1);
                 finish();
             } else {
                 // Google Sign In failed, update UI appropriately

@@ -146,7 +146,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 break;
             }
             case LOGIN_CHECK: {
-                if (firstTimeCheck) {
+                if (firstTimeCheck && resultCode == 1) {
                     updateList(uid);
                     checkInvitations();
                     firstTimeCheck = false;
