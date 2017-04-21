@@ -146,12 +146,13 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
-                setResult(1);
-                finish();
+
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...
                 Log.e("ErrorGoogle",result.getStatus()+"");
+                setResult(0);
+                finish();
             }
         }
     }
@@ -174,14 +175,18 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(GoogleSignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                        } else {
+                            setResult(1);
+                            finish();
                         }
-                        // ...
+
                     }
                 });
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        setResult(0);
 
     }
 

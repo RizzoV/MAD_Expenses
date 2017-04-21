@@ -116,7 +116,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("nome").setValue(name);
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("notifiche").setValue(0);
 
-
+        setResult(1);
         finish();
 
     }

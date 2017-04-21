@@ -142,12 +142,22 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         switch (requestCode) {
             case 666: {
                 if(resultCode == 1)
+
+                    progressBar.setVisibility(View.VISIBLE);
+                    debug_tv.setVisibility(View.GONE);
+                    debug_ll.setVisibility(View.GONE);
+                    groupListView.setVisibility(View.INVISIBLE);
                     updateList(uid);
                 break;
             }
             case LOGIN_CHECK: {
                 if (firstTimeCheck && resultCode == 1) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    debug_tv.setVisibility(View.GONE);
+                    debug_ll.setVisibility(View.GONE);
+                    groupListView.setVisibility(View.INVISIBLE);
                     updateList(uid);
+
                     checkInvitations();
                     firstTimeCheck = false;
                 }
@@ -267,16 +277,23 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     void updateList(String uid) {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
 
+        Log.e("UpdateList", "messaggio che vuoi");
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+
+
+
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+
+                Log.e("ListenerForSingle", "messaggio che vuoi");
+
                 if (snapshot.hasChildren()) {
                     progressBar.setVisibility(View.GONE);
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.VISIBLE);
-
+                    groups.clear();
                     for (DataSnapshot child : snapshot.getChildren()) {
                         groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat(child.child("bilancio").getValue().toString()), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
                     }
