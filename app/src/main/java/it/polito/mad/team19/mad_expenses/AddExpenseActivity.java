@@ -179,7 +179,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    //DatabaseReference myRef =
                     DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
                     String uuid = UUID.randomUUID().toString();
                     final DatabaseReference newExpenseRef = myRef.child(uuid);
@@ -309,9 +308,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         if(requestCode == REQUEST_TAKE_PHOTO) {
 
-            Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-            mImageView.setImageBitmap(fileBitmap);
-
 
             //uploadImageToFirebase(mCurrentPhotoPath);
 
@@ -378,7 +374,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
     private void setImageView(String mCurrentPhotoPath) {
 
-        //TODO Bolz: fare la bitmap circolare
         Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
         mImageView.setImageBitmap(fileBitmap);
     }

@@ -363,7 +363,7 @@ public class GroupActivity extends AppCompatActivity {
             final ArrayList<Expense> expenses = new ArrayList<>();
 
             final RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-            ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+            final ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
             mRecyclerView.setAdapter(adapter);
 
             LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
@@ -434,80 +434,43 @@ public class GroupActivity extends AppCompatActivity {
 
 
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("expenses");
-        /*    myRef.addValueEventListener(new ValueEventListener() {
+            DatabaseReference myRef = database.getReference("gruppi").child(getActivity().getIntent().getStringExtra("groupId")).child("expenses");
+
+
+            myRef.addValueEventListener(new ValueEventListener() {
+
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    // This method is called once with the initial value and again
-                    // whenever data at this location is updated.
-                    *//*
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        FirebaseExpense fe = ds.getValue(FirebaseExpense.class);
-                        expenses.add(new Expense(fe.getName(),fe.getCost(), Currency.getInstance(Locale.ITALY),fe.getDescription(),null));
+                    if (dataSnapshot.hasChildren()) {
+                        Log.e("Uao",dataSnapshot.toString());
+                        //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
+                        expenses.clear();
+                        for(DataSnapshot child : dataSnapshot.getChildren()) {
+                            FirebaseExpense fe = child.getValue(FirebaseExpense.class);
+                            fe.setKey(child.getKey());
+                            expenses.add(new Expense(fe.getName(), fe.getCost(), Currency.getInstance(Locale.ITALY), fe.getDescription(), null));
+                            //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
+                            adapter.notifyDataSetChanged();
 
-                    }*//*
+                            //TODO generalizzare l'utilizzo della valuta
+                            //TODO calcolo dei miei crediti e debiti con intelligenza
+                            totalAmount += Float.valueOf(fe.getCost());
+                            TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_card_tv);
+                            totalTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", totalAmount));
+                            creditAmount += Float.valueOf(fe.getCost());
+                            TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
+                            creditTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", creditAmount));
+                            //debitAmount += Float.valueOf(fe.getCost()); //TO ADD?
+                            TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
+                            debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", debitAmount));
 
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w(TAG, "Failed to read value.", error.toException());
-                }
-            });*/
-
-            //final boolean[] firsttime = {true};
-
-            myRef.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    //for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    FirebaseExpense fe = dataSnapshot.getValue(FirebaseExpense.class);
-                    fe.setKey(dataSnapshot.getKey());
-                    expenses.add(new Expense(fe.getName(),fe.getCost(), Currency.getInstance(Locale.ITALY),fe.getDescription(),null));
-
-                    /* if(firsttime[0]) {
-                        ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
-                        //mRecyclerView.setAdapter(adapter);
-
-                        LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
-                        mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-                        mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
-                        firsttime[0] = false;
-                    }*/
-
-                    //Jured: aggiunto aggiornamento totale nella card Summary
-                    // aggiunto aggiornamento barbaro di crediti come se pagassi sempre io
-                    //TODO generalizzare l'utilizzo della valuta
-                    //TODO calcolo dei miei crediti e debiti con intelligenza
-                    totalAmount += Float.valueOf(fe.getCost());
-                    TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_card_tv);
-                    totalTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol()+" "+String.format("%.2f", totalAmount));
-                    creditAmount += Float.valueOf(fe.getCost());
-                    TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
-                    creditTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol()+" "+String.format("%.2f", creditAmount));
-                    //debitAmount += Float.valueOf(fe.getCost()); //TO ADD?
-                    TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
-                    debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol()+" "+String.format("%.2f", debitAmount));
-
-                    pBar.setVisibility(View.GONE);
-
-                    //}
-
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                            pBar.setVisibility(View.GONE);
+                        }
+                    }
+                    else {
+                        Log.e("No expenses", "no");
+                        pBar.setVisibility(View.GONE);
+                    }
 
                 }
 
@@ -518,6 +481,11 @@ public class GroupActivity extends AppCompatActivity {
             });
 
             return rootView;
+
+        }
+
+
+        void getDataFromFirebase(){
 
         }
     }
