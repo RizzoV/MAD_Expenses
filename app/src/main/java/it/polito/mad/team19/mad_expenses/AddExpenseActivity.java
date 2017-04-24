@@ -177,7 +177,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("expenses");
+                    //DatabaseReference myRef =
+                    DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
                     String uuid = UUID.randomUUID().toString();
                     final DatabaseReference newExpenseRef = myRef.child(uuid);
 
@@ -306,6 +307,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         if(requestCode == REQUEST_TAKE_PHOTO) {
 
+            Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+            mImageView.setImageBitmap(fileBitmap);
+
 
             //uploadImageToFirebase(mCurrentPhotoPath);
 
@@ -330,16 +334,15 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         if(requestCode == REQUEST_GALLERY_IMAGE){
 
-
+                if (data != null) {
 
                 Uri selectedImage = data.getData();
-                //final InputStream imageStream = getContentResolver().openInputStream(selectedImage);
 
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
-                Log.e("DebugGalleryImage:",selectedImage.getPath());
+                Log.e("DebugGalleryImage:", selectedImage.getPath());
 
-                String[] projection = { MediaStore.Images.Media.DATA };
+                String[] projection = {MediaStore.Images.Media.DATA};
                 @SuppressWarnings("deprecation")
                 Cursor cursor = managedQuery(selectedImage, projection, null, null, null);
                 int column_index = cursor
@@ -347,8 +350,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
 
-                Log.e("DebugGalleryImage:",mCurrentPhotoPath);
+                setImageView(mCurrentPhotoPath);
 
+
+                Log.e("DebugGalleryImage:", mCurrentPhotoPath);
+
+            }
                 //uploadImageToFirebase(mCurrentPhotoPath);
 
             /*
@@ -363,6 +370,13 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 */
 
         }
+    }
+
+    private void setImageView(String mCurrentPhotoPath) {
+
+        //TODO Bolz: fare la bitmap circolare
+        Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+        mImageView.setImageBitmap(fileBitmap);
     }
         /*if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
