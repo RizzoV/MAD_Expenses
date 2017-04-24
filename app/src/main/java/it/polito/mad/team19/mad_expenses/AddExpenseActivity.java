@@ -1,18 +1,23 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Path;
 import android.net.Uri;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +59,7 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 
 public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCameraDialog.NoticeDialogListener {
 
+    private static final int STORAGE_REQUEST = 666;
     private ImageButton imageButton;
     private ImageView mImageView;
     private FirebaseAuth mAuth;
@@ -88,12 +94,23 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(AddExpenseActivity.this,
+                        new String[]{Manifest.permission.READ_CONTACTS},
+                        STORAGE_REQUEST);
+
+            } else {
+                // The permission is granted, we can perform the action
+
         addListenerOnDoneButton();
         addListenerOnImageButton();
 
         // only done for the expenses
         addListenerOnContributorsButton();
         addListenerOnExcludedButton();
+            }
+        }
 
     }
 
@@ -133,6 +150,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onClick(View v) {
 
                 boolean empty = false;
+
 
                 nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
                 descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
@@ -520,4 +538,34 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(pickPhoto , REQUEST_GALLERY_IMAGE);
     }
-}
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case STORAGE_REQUEST:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    addListenerOnDoneButton();
+                    addListenerOnImageButton();
+
+                    // only done for the expenses
+                    addListenerOnContributorsButton();
+                    addListenerOnExcludedButton();
+
+                } else {
+                    ActivityCompat.requestPermissions(AddExpenseActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            STORAGE_REQUEST);
+
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+

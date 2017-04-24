@@ -53,6 +53,9 @@ public class Group
 
     public String getGroupId() {return groupId;}
 
+    public String getImage() {return thumbPath;}
+
+
     public void setBalance(Float balance) {
         this.balance = balance;
     }
