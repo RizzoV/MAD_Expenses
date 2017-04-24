@@ -43,7 +43,6 @@
         </RelativeLayout>
 
     <ListView
-        android:layout_below="@+id/debug_ll"
         android:visibility="gone"
         android:id="@+id/groups_lv"
         android:layout_width="match_parent"

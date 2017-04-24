@@ -177,7 +177,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("expenses");
+                    DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
                     String uuid = UUID.randomUUID().toString();
                     final DatabaseReference newExpenseRef = myRef.child(uuid);
 
