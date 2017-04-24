@@ -330,16 +330,15 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         if(requestCode == REQUEST_GALLERY_IMAGE){
 
-
+                if (data != null) {
 
                 Uri selectedImage = data.getData();
-                //final InputStream imageStream = getContentResolver().openInputStream(selectedImage);
 
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
-                Log.e("DebugGalleryImage:",selectedImage.getPath());
+                Log.e("DebugGalleryImage:", selectedImage.getPath());
 
-                String[] projection = { MediaStore.Images.Media.DATA };
+                String[] projection = {MediaStore.Images.Media.DATA};
                 @SuppressWarnings("deprecation")
                 Cursor cursor = managedQuery(selectedImage, projection, null, null, null);
                 int column_index = cursor
@@ -347,8 +346,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
 
-                Log.e("DebugGalleryImage:",mCurrentPhotoPath);
+                setImageView(mCurrentPhotoPath);
 
+
+                Log.e("DebugGalleryImage:", mCurrentPhotoPath);
+
+            }
                 //uploadImageToFirebase(mCurrentPhotoPath);
 
             /*
