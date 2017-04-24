@@ -87,9 +87,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         mImageView = (ImageView) findViewById(R.id.camera_img);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+
         addListenerOnDoneButton();
         addListenerOnImageButton();
 
+        // only done for the expenses
         addListenerOnContributorsButton();
         addListenerOnExcludedButton();
 
@@ -350,10 +352,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
 
-                setImageView(mCurrentPhotoPath);
+                    Log.e("DebugGalleryImage:2", mCurrentPhotoPath);
 
 
-                Log.e("DebugGalleryImage:", mCurrentPhotoPath);
+                    setImageView(mCurrentPhotoPath);
+
+
 
             }
                 //uploadImageToFirebase(mCurrentPhotoPath);

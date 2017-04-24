@@ -171,6 +171,7 @@ public class GroupActivity extends AppCompatActivity {
                         break;
                     case PROPOSALS:
                         i = new Intent(GroupActivity.this, AddProposalActivity.class);
+                        i.putExtra("groupId", groupId);
                         break;
                     default:
                         i = new Intent(GroupActivity.this, AddExpenseActivity.class);
