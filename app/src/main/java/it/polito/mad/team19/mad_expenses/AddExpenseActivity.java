@@ -367,6 +367,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         }
     }
+
+    private void setImageView(String mCurrentPhotoPath) {
+
+        Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+        mImageView.setImageBitmap(fileBitmap);
+    }
         /*if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
