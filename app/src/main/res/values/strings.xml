@@ -78,5 +78,6 @@
     <!-- Group list activity -->
     <string name="no_group_found">No group found!</string>
     <string name="youre_not_part_of_any_group">You are not part of any group! :(</string>
+    <string name="dialog_camera_or_gallery">Select image source</string>
 
 </resources>

@@ -55,6 +55,7 @@ import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
+import it.polito.mad.team19.mad_expenses.Classes.Group;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
 enum TabsList {
@@ -166,6 +167,7 @@ public class GroupActivity extends AppCompatActivity {
                 switch (selectedTab) {
                     case EXPENSES:
                         i = new Intent(GroupActivity.this, AddExpenseActivity.class);
+                        i.putExtra("groupId", groupId);
                         break;
                     case PROPOSALS:
                         i = new Intent(GroupActivity.this, AddProposalActivity.class);
