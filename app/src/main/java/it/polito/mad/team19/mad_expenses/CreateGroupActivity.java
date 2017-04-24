@@ -3,17 +3,12 @@ package it.polito.mad.team19.mad_expenses;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,13 +20,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.soundcloud.android.crop.Crop;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 
 
 public class CreateGroupActivity extends AppCompatActivity {
@@ -41,11 +44,15 @@ public class CreateGroupActivity extends AppCompatActivity {
     Button add_group;
     EditText group_name;
     Snackbar bar;
+    Bitmap currentGroupBitmap;
 
     private FirebaseAuth mAuth;
 
     private DatabaseReference mDatabase;
+    private StorageReference storageRef;
+    private FirebaseStorage storage;
 
+    private String mCurrentPhotoPath;
     private ImageButton imageButton;
     private static int RESULT_LOAD_IMAGE = 1;
 
@@ -60,6 +67,9 @@ public class CreateGroupActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         Log.e("User",mAuth.getCurrentUser().getUid());
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         distributed = (CheckBox) findViewById(R.id.distributed_checkbox);
         centralized = (CheckBox) findViewById(R.id.centralized_checkbox);
@@ -161,6 +171,10 @@ public class CreateGroupActivity extends AppCompatActivity {
 
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String picturePath = cursor.getString(columnIndex);
+                int column_index = cursor
+                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                mCurrentPhotoPath = cursor.getString(column_index);
                 cursor.close();
 
                 if(picturePath!=null)
@@ -174,7 +188,8 @@ public class CreateGroupActivity extends AppCompatActivity {
             {
                 ImageView imageView = (ImageView) findViewById(R.id.group_img);
                 try {
-                    imageView.setImageBitmap(getCircleBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputUri)));
+                    currentGroupBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputUri);
+                    imageView.setImageBitmap(getCircleBitmap(currentGroupBitmap));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -211,7 +226,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     private void addGroupToFirebase(String uid, String name, String img, int type) {
         String groupid = mDatabase.child("gruppi").push().getKey();
 
-        mDatabase.child("gruppi").child(groupid).child("immagine").setValue(img);
+        //mDatabase.child("gruppi").child(groupid).child("immagine").setValue(img);
         mDatabase.child("gruppi").child(groupid).child("membri").child(uid).setValue(1);
         mDatabase.child("gruppi").child(groupid).child("nome").setValue(name);
         mDatabase.child("gruppi").child(groupid).child("tipo").setValue(type);
@@ -219,12 +234,59 @@ public class CreateGroupActivity extends AppCompatActivity {
         mDatabase.child("gruppi").child(groupid).child("stato").setValue("created");
 
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("bilancio").setValue(0);
-        mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("immagine").setValue(img);
+        //mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("immagine").setValue(img);
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("nome").setValue(name);
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("notifiche").setValue(0);
 
-        setResult(1);
-        finish();
+        final DatabaseReference imageLinkGrpRef = mDatabase.child("gruppi").child(groupid).child("immagine");
+        final DatabaseReference imageLinkUsrRef = mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("immagine");
+        final StorageReference groupImagesRef;
+        groupImagesRef = storageRef.child("images").child(groupid);
+
+        File imageToUpload = new File(mCurrentPhotoPath);
+        Bitmap fileBitmap = currentGroupBitmap;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
+        byte[] datas = baos.toByteArray();
+        final String mCurrentPhotoName = imageToUpload.getName();
+        UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
+                groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
+
+                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+
+                                Log.e("DebugUriRequest",uri.toString());
+                                imageLinkGrpRef.setValue(uri.toString());
+                                imageLinkUsrRef.setValue(uri.toString());
+                                setResult(1);
+                                finish();
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                        // TODO handle failure
+                        //mCurrentPhotoFirebaseUri = Uri.EMPTY;
+                    }
+                });
+
+            }
+        });
+
+
 
     }
 
