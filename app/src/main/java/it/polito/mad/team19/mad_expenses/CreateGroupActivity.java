@@ -1,6 +1,19 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,10 +22,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.soundcloud.android.crop.Crop;
+
+import java.io.File;
+import java.io.IOException;
 
 
 public class CreateGroupActivity extends AppCompatActivity {
@@ -26,6 +45,9 @@ public class CreateGroupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private DatabaseReference mDatabase;
+
+    private ImageButton imageButton;
+    private static int RESULT_LOAD_IMAGE = 1;
 
 
     @Override
@@ -98,7 +120,92 @@ public class CreateGroupActivity extends AppCompatActivity {
             }
         });
 
+        addListenerOnImageButton();
 
+
+    }
+
+    private void addListenerOnImageButton()
+    {
+        imageButton = (ImageButton) findViewById(R.id.add_image_btn);
+
+        imageButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+
+                // TO REPLACE WITH THE CODE FOR THE UPLOAD OF THE IMAGE
+                //Snackbar.make(view, "Replace with your image", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
+                //TO LOAD IMAGE FROM GALLERY (error with RESULT_LOAD_IMAGE)
+                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+            }
+        });
+
+    }
+
+        @Override
+        protected void onActivityResult(int requestCode, int resultCode, Intent data)
+        {
+            super.onActivityResult(requestCode, resultCode, data);
+            Uri outputUri = Uri.fromFile(new File(getCacheDir(), "croppedImage"));
+
+            if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
+            {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
+
+                if(picturePath!=null)
+                {
+                    Uri inputUri = Uri.fromFile(new File(picturePath));
+                    Crop.of(inputUri, outputUri).asSquare().start(this);
+                }
+            }
+
+            if(requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK)
+            {
+                ImageView imageView = (ImageView) findViewById(R.id.group_img);
+                try {
+                    imageView.setImageBitmap(getCircleBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputUri)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    private Bitmap getCircleBitmap(Bitmap scaleBitmapImage)
+    {
+        float scale = getResources().getDisplayMetrics().density;
+        int targetHeight = (int)(150*scale + 0.5f);
+        int targetWidth = (int)(150*scale + 0.5f);
+
+        Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
+                targetHeight,Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(targetBitmap);
+        Path path = new Path();
+        path.addCircle(((float) targetWidth - 1) / 2,
+                ((float) targetHeight - 1) / 2,
+                (Math.min(((float) targetWidth),
+                        ((float) targetHeight)) / 2),
+                Path.Direction.CCW);
+
+        canvas.clipPath(path);
+        Bitmap sourceBitmap = scaleBitmapImage;
+        canvas.drawBitmap(sourceBitmap,
+                new Rect(0, 0, sourceBitmap.getWidth(),
+                        sourceBitmap.getHeight()),
+                new Rect(0, 0, targetWidth,
+                        targetHeight), null);
+        return targetBitmap;
     }
 
     private void addGroupToFirebase(String uid, String name, String img, int type) {

@@ -20,7 +20,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/add_group_img"
+            android:id="@+id/group_img"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_centerHorizontal="true"
@@ -28,10 +28,11 @@
             android:src="@drawable/circle" />
 
         <ImageButton
+            android:id="@+id/add_image_btn"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_alignBottom="@id/add_group_img"
-            android:layout_alignRight="@+id/add_group_img"
+            android:layout_alignBottom="@id/group_img"
+            android:layout_alignRight="@+id/group_img"
             android:background="@mipmap/ic_add_img" />
     </RelativeLayout>
 
@@ -118,7 +119,6 @@
             android:textSize="@dimen/little_text_size" />
 
     </RelativeLayout>
-
 
     <Button
         android:id="@+id/add_group_submit"

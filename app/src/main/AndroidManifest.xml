@@ -92,6 +92,8 @@
         <activity android:name=".GroupTypeInfoActivity"
             android:theme="@style/AppTheme.PopupTheme">
         </activity>
+
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
     </application>
 
 </manifest>
