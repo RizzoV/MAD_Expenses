@@ -72,6 +72,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
                 }
 
                 mAuth.signOut();
+                finish();
 
             }
         });

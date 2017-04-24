@@ -151,6 +151,10 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 break;
             }
             case LOGIN_CHECK: {
+                if(resultCode == 0)
+                {
+                    finish();
+                }
                 if (firstTimeCheck && resultCode == 1) {
                     progressBar.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.GONE);

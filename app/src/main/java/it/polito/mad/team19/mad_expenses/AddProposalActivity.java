@@ -72,6 +72,9 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_proposal);
 
+        mImageView = (ImageView) findViewById(R.id.camera_img);
+
+
         groupId = getIntent().getExtras().getString("groupId");
 
         setTitle(R.string.create_new_proposal);

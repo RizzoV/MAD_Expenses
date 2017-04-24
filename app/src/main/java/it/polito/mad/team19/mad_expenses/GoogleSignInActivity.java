@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -210,5 +211,13 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                         // ...
                     }
                 });
+    }
+
+    public boolean onKeyDown(int keycode, KeyEvent event) {
+        if (keycode == KeyEvent.KEYCODE_BACK) {
+            setResult(0);
+            finish();
+        }
+        return super.onKeyDown(keycode, event);
     }
 }
