@@ -72,4 +72,8 @@
     <string name="invitation_deep_link">addPersonToGroup</string>
     <string name="invitation_cta">Unisciti al gruppo!</string>
 
+    <!-- Group activity -->
+    <string name="noproposals">Non ci sono proposte associate al gruppo =(</string>
+    <string name="noexpenses">Non ci sono spese associate al gruppo =(</string>
+
 </resources>

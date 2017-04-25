@@ -76,7 +76,11 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
         {
             this.name.setText(current.getName());
             this.amount.setText(current.getCurrency().getSymbol().toString() + " " + String.format("%.2f", current.getAmount()));
-            this.image.setImageResource(R.drawable.icona_a_caso);
+            if((position%2)==0)
+                this.image.setImageResource(R.drawable.man1);
+            else
+                this.image.setImageResource(R.drawable.girl4);
+
             this.position = position;
             this.current = current;
 

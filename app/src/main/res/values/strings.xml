@@ -80,4 +80,9 @@
     <string name="youre_not_part_of_any_group">You are not part of any group! :(</string>
     <string name="dialog_camera_or_gallery">Select image source</string>
 
+    <!-- Group activity -->
+    <string name="noproposals">No proposals associated with the group =(</string>
+    <string name="noexpenses">No expenses associated with the group =(</string>
+
+
 </resources>

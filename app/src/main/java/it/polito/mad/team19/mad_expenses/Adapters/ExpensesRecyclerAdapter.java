@@ -2,6 +2,7 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,7 +71,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
         public void setData (Expense current, int position) {
             this.name.setText(current.getName());
             this.amount.setText(current.getCurrency().getSymbol().toString() + " " + String.format("%.2f", current.getCost()));
-            this.image.setImageResource(R.drawable.circle);
+            this.image.setImageResource(R.drawable.expenses_icon);
             this.position = position;
             this.current = current;
             this.description.setText(current.getDescritpion());

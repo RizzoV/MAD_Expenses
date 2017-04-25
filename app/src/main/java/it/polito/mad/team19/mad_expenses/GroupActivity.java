@@ -55,6 +55,7 @@ import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 import it.polito.mad.team19.mad_expenses.Classes.Group;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
@@ -433,6 +434,8 @@ public class GroupActivity extends AppCompatActivity {
             });
 
 
+            final TextView noexpensestv = (TextView) rootView.findViewById(R.id.noexpenses_tv);
+
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("gruppi").child(getActivity().getIntent().getStringExtra("groupId")).child("expenses");
 
@@ -442,7 +445,7 @@ public class GroupActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.hasChildren()) {
-                        Log.e("Uao",dataSnapshot.toString());
+                        noexpensestv.setVisibility(View.GONE);
                         //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
                         expenses.clear();
                         for(DataSnapshot child : dataSnapshot.getChildren()) {
@@ -468,8 +471,8 @@ public class GroupActivity extends AppCompatActivity {
                         }
                     }
                     else {
-                        Log.e("No expenses", "no");
                         pBar.setVisibility(View.GONE);
+                        noexpensestv.setVisibility(View.VISIBLE);
                     }
 
                 }
@@ -520,22 +523,64 @@ public class GroupActivity extends AppCompatActivity {
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
-            ArrayList<Proposal> proposals = new ArrayList<Proposal>();
-
-            for (int i = 0; i < 16; i++) {
-                Proposal p = new Proposal("Proposal " + i,
-                        "Description of the proposal #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
-                        Integer.valueOf(i * i).floatValue(), null, Currency.getInstance("EUR"));
-                proposals.add(p);
-            }
+            final ArrayList<Proposal> proposals = new ArrayList<Proposal>();
 
             RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.proposals_rv);
-            ProposalsRecyclerAdapter adapter = new ProposalsRecyclerAdapter(getActivity(), proposals);
+            final ProposalsRecyclerAdapter adapter = new ProposalsRecyclerAdapter(getActivity(), proposals);
             mRecyclerView.setAdapter(adapter);
 
             LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
             mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
             mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+
+        /*    for (int i = 0; i < 16; i++) {
+                Proposal p = new Proposal("Proposal " + i,
+                        "Description of the proposal #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
+                        Integer.valueOf(i * i).floatValue(), null, Currency.getInstance("EUR"));
+                proposals.add(p);
+            }*/
+
+            final TextView noproposalstv = (TextView) rootView.findViewById(R.id.noproposals_tv);
+
+
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("gruppi").child(getActivity().getIntent().getStringExtra("groupId")).child("proposals");
+
+
+            myRef.addValueEventListener(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChildren()) {
+                        noproposalstv.setVisibility(View.GONE);
+                        //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
+                        proposals.clear();
+                        for(DataSnapshot child : dataSnapshot.getChildren()) {
+                            FirebaseProposal fp = child.getValue(FirebaseProposal.class);
+                            proposals.add(new Proposal(fp.getName(), fp.getDescription(), fp.getCost(), null, Currency.getInstance("EUR")));
+                            //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
+                            adapter.notifyDataSetChanged();
+
+
+                            //pBar.setVisibility(View.GONE);
+                        }
+                    }
+                    else {
+                        //pBar.setVisibility(View.GONE);
+                        noproposalstv.setVisibility(View.VISIBLE);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
+
 
             //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
             //expensesList.setAdapter(adapter);
