@@ -71,7 +71,10 @@ public class MeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         String uname = mAuth.getCurrentUser().getDisplayName();
-        if(uname.trim().isEmpty() || uname == null)
+        if(uname == null)
+            uname = "User";
+        else
+        if(uname.trim().isEmpty())
             uname = "User";
 
         me_username_tv.setText(uname);

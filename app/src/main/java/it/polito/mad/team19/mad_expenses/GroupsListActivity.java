@@ -97,8 +97,12 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     Log.d(TAG, "onAuthStateChanged:signed_inGroup:" + user.getUid());
                     uid = user.getUid();
                     uname = user.getDisplayName();
-                    if(uname.trim().isEmpty() || uname == null)
+                    if(uname == null)
                         uname = "User";
+                    else
+                        if(uname.trim().isEmpty())
+                            uname = "User";
+
 
                     if (firstTimeCheck) {
                         updateList(uid);
