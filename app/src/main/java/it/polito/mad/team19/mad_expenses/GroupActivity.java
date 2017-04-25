@@ -380,6 +380,20 @@ public class GroupActivity extends AppCompatActivity {
             }
            */
 
+            adapter.SetOnItemClickListener(new ExpensesRecyclerAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Expense clicked = expenses.get(position);
+                    Intent intent = new Intent(getActivity(),ExpenseDetail.class);
+                    Log.e("Expenses",clicked.toString());
+                    intent.putExtra("ExpenseName",clicked.getName());
+                    intent.putExtra("ExpenseImgUrl",clicked.getImagelink());
+                    intent.putExtra("ExpenseDesc",clicked.getDescritpion());
+                    intent.putExtra("ExpenseCost",clicked.getCost().toString());
+                    startActivity(intent);
+                }
+            });
+
             LinearLayout meCardViewLayout = (LinearLayout) rootView.findViewById(R.id.credits_cv_ll);
             meCardViewLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -451,7 +465,7 @@ public class GroupActivity extends AppCompatActivity {
                         for(DataSnapshot child : dataSnapshot.getChildren()) {
                             FirebaseExpense fe = child.getValue(FirebaseExpense.class);
                             fe.setKey(child.getKey());
-                            expenses.add(new Expense(fe.getName(), fe.getCost(), Currency.getInstance(Locale.ITALY), fe.getDescription(), null));
+                            expenses.add(new Expense(fe.getName(), fe.getCost(), Currency.getInstance(Locale.ITALY), fe.getDescription(), fe.getImage()));
                             //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                             adapter.notifyDataSetChanged();
 

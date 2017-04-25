@@ -2,7 +2,6 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,8 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
     ArrayList<Expense> expenses;
     Activity context;
     private LayoutInflater mInflater;
+    //LUDO: aggiunto metodo onItemClickListener
+    OnItemClickListener mItemClickListener;
 
     public ExpensesRecyclerAdapter(Context context, ArrayList<Expense> expenses) {
         this.expenses = expenses;
@@ -51,7 +52,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
         return expenses.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView image;
         TextView name;
@@ -66,6 +67,17 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             name = (TextView) itemView.findViewById(R.id.expense_name_tv);
             amount = (TextView) itemView.findViewById(R.id.expense_cost_amount_tv);
             description = (TextView) itemView.findViewById(R.id.expense_description_tv);
+            //LUDO: aggiunto metodo onItemClickListener
+            itemView.setOnClickListener(this);
+        }
+
+        //LUDO: aggiunto metodo onItemClickListener
+
+        @Override
+        public void onClick(View v) {
+            if (mItemClickListener != null) {
+                mItemClickListener.onItemClick(v, position);
+            }
         }
 
         public void setData (Expense current, int position) {
@@ -76,5 +88,16 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             this.current = current;
             this.description.setText(current.getDescritpion());
         }
+
+    }
+    //LUDO: aggiunto metodo onItemClickListener
+
+
+    public interface OnItemClickListener {
+        void onItemClick(View view , int position);
+    }
+
+    public void SetOnItemClickListener(final OnItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
     }
 }

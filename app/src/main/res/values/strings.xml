@@ -63,8 +63,13 @@
     <string name="sign_up">Sign up</string>
 
     <!-- Personal Profile -->
+    <string name="account">Personal Profile</string>
     <string name="sign_out">Sign out</string>
     <string name="username">Username</string>
+    <string name="changename">Edit Displayed Name</string>
+    <string name="changeemail">Edit Account Email</string>
+    <string name="edit">Edit</string>
+    <string name="cancel">Cancel</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

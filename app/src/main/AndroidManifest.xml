@@ -87,11 +87,15 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".GroupTypeInfoActivity"
-            android:theme="@style/AppTheme.PopupTheme">
-        </activity>
-
+        <activity
+            android:name=".GroupTypeInfoActivity"
+            android:theme="@style/AppTheme.PopupTheme"></activity>
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity android:name=".ExpenseDetail">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GroupActivity" />
+        </activity>
     </application>
 
 </manifest>

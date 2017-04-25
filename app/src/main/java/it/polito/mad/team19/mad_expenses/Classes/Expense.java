@@ -19,21 +19,26 @@ public class Expense {
 
 
 
-    public Expense(String name, Float cost, String description, Image image) {
-       new  Expense( name,  cost,  null,  description,  image);
+    public Expense(String name, Float cost, String description, String imagelink) {
+       new  Expense( name,  cost,  null,  description,  imagelink);
     }
 
-    public Expense(String name, Float cost, Currency currency, String description, Image image) {
+    public Expense(String name, Float cost, Currency currency, String description, String imagelink) {
         this.name = name;
         this.cost = cost;
         this.currency = currency;
         this.descritpion = description;
-        this.image = image;
+        this.imagelink = imagelink;
     }
 
     public String getName() {
         return name;
     }
+
+    public String getImagelink() {
+        return imagelink;
+    }
+
 
     public void setName(String name) {
         this.name = name;
