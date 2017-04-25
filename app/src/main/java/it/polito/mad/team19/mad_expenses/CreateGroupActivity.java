@@ -109,7 +109,12 @@ public class CreateGroupActivity extends AppCompatActivity {
 
                 if(allset)
                 {
-                    addGroupToFirebase(mAuth.getCurrentUser().getUid(),group_name.getText().toString(),"path/immmagine.png",type);
+                    String uid = mAuth.getCurrentUser().getUid();
+                    String uname = mAuth.getCurrentUser().getDisplayName();
+                    if(uname.trim().isEmpty() || uname == null)
+                        uname = "User";
+
+                    addGroupToFirebase(uid,uname,group_name.getText().toString(),"path/immmagine.png",type);
                 }
 
 
@@ -223,11 +228,12 @@ public class CreateGroupActivity extends AppCompatActivity {
         return targetBitmap;
     }
 
-    private void addGroupToFirebase(String uid, String name, String img, int type) {
+    private void addGroupToFirebase(String uid, String uname, String name, String img, int type) {
         String groupid = mDatabase.child("gruppi").push().getKey();
 
         //mDatabase.child("gruppi").child(groupid).child("immagine").setValue(img);
-        mDatabase.child("gruppi").child(groupid).child("membri").child(uid).setValue(1);
+        mDatabase.child("gruppi").child(groupid).child("membri").child(uid).child("tipo").setValue(1);
+        mDatabase.child("gruppi").child(groupid).child("membri").child(uid).child("nome").setValue(uname);
         mDatabase.child("gruppi").child(groupid).child("nome").setValue(name);
         mDatabase.child("gruppi").child(groupid).child("tipo").setValue(type);
         mDatabase.child("gruppi").child(groupid).child("totale").setValue(0);

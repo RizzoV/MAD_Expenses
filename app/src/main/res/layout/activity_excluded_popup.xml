@@ -18,11 +18,9 @@
 
     <ListView
         android:id="@+id/excluded_lv"
-        android:name="it.polito.mad.team19.mad_expenses.ContributorsListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/select_excluded_description_tv"
-        tools:context="it.polito.mad.team19.mad_expenses.AddExpenseActivity"
         tools:listitem="@layout/contributors_list_row" />
 
     <android.support.design.widget.FloatingActionButton

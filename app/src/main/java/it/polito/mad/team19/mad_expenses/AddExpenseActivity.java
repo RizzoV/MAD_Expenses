@@ -122,6 +122,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ContributorsPopupActivity.class);
+                i.putExtra("groupId",groupId);
                 startActivity(i);
             }
         });
@@ -134,6 +135,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ExcludedPopupActivity.class);
+                i.putExtra("groupId",groupId);
                 startActivity(i);
             }
         });
@@ -198,7 +200,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
-                    String uuid = UUID.randomUUID().toString();
+                    String uuid = myRef.push().getKey();
                     final DatabaseReference newExpenseRef = myRef.child(uuid);
 
                     groupImagesRef = storageRef.child("images").child(groupId);

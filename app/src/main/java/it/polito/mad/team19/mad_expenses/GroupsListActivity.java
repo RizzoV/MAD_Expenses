@@ -48,6 +48,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     protected FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     String uid;
+    String uname;
     ProgressBar progressBar;
     TextView debug_tv;
     RelativeLayout debug_ll;
@@ -95,6 +96,10 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_inGroup:" + user.getUid());
                     uid = user.getUid();
+                    uname = user.getDisplayName();
+                    if(uname.trim().isEmpty() || uname == null)
+                        uname = "User";
+
                     if (firstTimeCheck) {
                         updateList(uid);
                         checkInvitations();
@@ -259,7 +264,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                     DatabaseReference addGroupRef;
                     addGroupRef = FirebaseDatabase.getInstance().getReference();
-                    addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).setValue(0);
+                    addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("tipo").setValue(0);
+                    addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uname);
 
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("bilancio").setValue(0);
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("immagine").setValue(snapshot.child("immagine").getValue().toString());
