@@ -335,8 +335,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
-                intent.putExtra("group", ((Group) parent.getItemAtPosition(position)).getName());
+                intent.putExtra("groupName", ((Group) parent.getItemAtPosition(position)).getName());
                 intent.putExtra("groupId", ((Group) parent.getItemAtPosition(position)).getGroupId());
+                intent.putExtra("groupImage", ((Group) parent.getItemAtPosition(position)).getImage());
                 startActivity(intent);
 
             }

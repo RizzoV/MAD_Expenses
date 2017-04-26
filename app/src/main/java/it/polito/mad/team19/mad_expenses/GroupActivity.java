@@ -82,8 +82,9 @@ public class GroupActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    String name;
-    String groupId;
+    private String groupName;
+    private String groupId;
+    private String groupImageUrl;
     TabsList selectedTab;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -100,9 +101,10 @@ public class GroupActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         // Set the activity name retrieving it by the extras of the intent
-        name = intent.getStringExtra("group");
+        groupName = intent.getStringExtra("groupName");
         groupId = intent.getStringExtra("groupId");
-        setTitle(name);
+        groupImageUrl = intent.getStringExtra("groupImage");
+        setTitle(groupName);
 
         // Initially the displayed tab will be the EXPENSES one
         selectedTab = TabsList.EXPENSES;
@@ -115,6 +117,16 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(GroupActivity.this,GroupInfoActivity.class);
+                intent.putExtra("groupImage",groupImageUrl);
+                intent.putExtra("groupName",groupName);
+                startActivity(intent);
+                Log.e("BolzDebug", "mannaiaBBolz");
             }
         });
 
