@@ -15,6 +15,7 @@
         <activity
             android:name=".GroupsListActivity"
             android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,6 +25,7 @@
         </activity>
         <activity
             android:name=".GroupActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_group"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
@@ -31,39 +33,47 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupsListActivity" />
         </activity>
-        <activity android:name=".MeActivity">
+        <activity android:name=".MeActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
-        <activity android:name=".CreateGroupActivity">
+        <activity android:name=".CreateGroupActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
-        <activity android:name=".AddExpenseActivity">
+        <activity android:name=".AddExpenseActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
-        <activity android:name=".AddProposalActivity">
+        <activity android:name=".AddProposalActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
         <activity
             android:name=".GoogleSignInActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Classes.FirebaseSignUpActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".AccountActivity">
+        <activity android:name=".AccountActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupsListActivity" />
         </activity>
         <activity
             android:name=".ContributorsPopupActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.PopupTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -71,6 +81,7 @@
         </activity>
         <activity
             android:name=".ExcludedPopupActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.PopupTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -89,14 +100,17 @@
 
         <activity
             android:name=".GroupTypeInfoActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.PopupTheme" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
-        <activity android:name=".ExpenseDetail">
+        <activity android:name=".ExpenseDetail"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
         <activity android:name=".GroupInfoActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
