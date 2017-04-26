@@ -125,6 +125,7 @@ public class GroupActivity extends AppCompatActivity {
                 Intent intent = new Intent(GroupActivity.this,GroupInfoActivity.class);
                 intent.putExtra("groupImage",groupImageUrl);
                 intent.putExtra("groupName",groupName);
+                intent.putExtra("groupId",groupId);
                 startActivity(intent);
                 Log.e("BolzDebug", "mannaiaBBolz");
             }

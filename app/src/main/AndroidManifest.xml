@@ -98,10 +98,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity
-            android:name=".GroupTypeInfoActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.PopupTheme" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity android:name=".ExpenseDetail"
             android:screenOrientation="portrait">

@@ -5,20 +5,40 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+
+import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMembers;
 
 public class GroupInfoActivity extends AppCompatActivity {
 
     ImageView image;
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbar;
+    private FirebaseAuth mAuth;
+    String uid;
+    RecyclerView members_lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +50,8 @@ public class GroupInfoActivity extends AppCompatActivity {
 
         String imageUrl = getIntent().getStringExtra("groupImage");
         String groupName = getIntent().getStringExtra("groupName");
+        String groupId = getIntent().getStringExtra("groupId");
+
         //setSupportActionBar(toolbar);
         //getSupportActionBar().setTitle(groupName.toString());
         Log.e("DebugGroupInfo",groupName);
@@ -55,6 +77,48 @@ public class GroupInfoActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle any errors
+            }
+        });
+
+        //LUDO: membri
+
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        members_lv = (RecyclerView) findViewById(R.id.members_lv);
+        final ArrayList<FirebaseGroupMembers> contributors = new ArrayList<FirebaseGroupMembers>();
+        final GroupMembersRecyclerAdapter adapter = new GroupMembersRecyclerAdapter(this,contributors);
+        members_lv.setAdapter(adapter);
+
+        LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(this);
+        mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+        members_lv.setLayoutManager(mLinearLayoutManagerVertical);
+
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int nMembers = 0;
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+                        contributors.add(new FirebaseGroupMembers(child.child("nome").getValue().toString(),null,child.getKey()));
+                        nMembers++;
+                }
+
+                if(nMembers==0)
+                    Log.e("Contributors","no other members in the group!");
+                else
+                {
+                    Log.e("no",contributors.toString());
+                    adapter.notifyDataSetChanged();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
