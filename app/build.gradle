@@ -1,15 +1,24 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        NinjaPirateInc {
+            keyAlias 'ninjapirateinc'
+            keyPassword 'M5N4o3p2o1'
+            storeFile file('/home/ikkoyeah/App/ninjapirateinc.jks')
+            storePassword 'M5N4o3p2o1'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "it.polito.mad.team19.mad_expenses"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 8
+        versionCode 9
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.NinjaPirateInc
     }
     buildTypes {
         release {
@@ -21,6 +30,8 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+    productFlavors {
+    }
 }
 
 
@@ -29,7 +40,6 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:25.3.1'
