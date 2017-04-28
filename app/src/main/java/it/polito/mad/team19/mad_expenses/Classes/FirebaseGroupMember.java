@@ -7,14 +7,14 @@ import com.google.firebase.database.IgnoreExtraProperties;
  */
 @IgnoreExtraProperties
 
-public class FirebaseGroupMembers {
+public class FirebaseGroupMember {
     private String uid;
     private String name;
     private String imgUrl;
 
-    public FirebaseGroupMembers () {}
+    public FirebaseGroupMember() {}
 
-    public FirebaseGroupMembers(String name, String imgUrl, String uid)
+    public FirebaseGroupMember(String name, String imgUrl, String uid)
     {
         this.name = name;
         this.uid = uid;
