@@ -46,7 +46,7 @@ public class ExpenseDetail extends AppCompatActivity {
 
 
 
-
+        //TODO gestire il caso in cui arrivi un link che indica l'assenza di immagine
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageReference = storage.getReferenceFromUrl(imgUrl);
 

@@ -67,6 +67,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private FirebaseStorage storage;
     static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
     private String groupId;
+    private String usrId;
     Boolean isContributorsClicked = true;
     Boolean isExcludedClicked = true;
     private static final int EXP_CREATED = 1;
@@ -85,7 +86,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
-        groupId = getIntent().getExtras().getString("groupId");
+        groupId = getIntent().getStringExtra("groupId");
+        usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //usrId = getIntent().getStringExtra("usrId");
 
         setTitle(R.string.create_new_expense);
 
@@ -203,57 +206,55 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     String uuid = myRef.push().getKey();
                     final DatabaseReference newExpenseRef = myRef.child(uuid);
 
-                    groupImagesRef = storageRef.child("images").child(groupId);
+                    if (mCurrentPhotoPath != null) {
+                        groupImagesRef = storageRef.child("images").child(groupId);
 
-                    File imageToUpload = new File(mCurrentPhotoPath);
+                        File imageToUpload = new File(mCurrentPhotoPath);
 
-                    //TODO chiedere i permessi di accesso alla memoria (Marshmallow+)
-                    //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
-                    Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-                    byte[] datas = baos.toByteArray();
-                    mImageView.setImageBitmap(fileBitmap);
-                    mCurrentPhotoName= imageToUpload.getName();
-                    UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
-                    // Register observers to listen for when the download is done or if it fails
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle unsuccessful uploads
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                            // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                            groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
+                        //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
+                        Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
+                        byte[] datas = baos.toByteArray();
+                        mImageView.setImageBitmap(fileBitmap);
+                        mCurrentPhotoName = imageToUpload.getName();
+                        UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
+                        // Register observers to listen for when the download is done or if it fails
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle unsuccessful uploads
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
+                                groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
 
-                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
+                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
 
-                                            Log.e("DebugUriRequest",uri.toString());
-                                            newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                                                    Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    // Handle any errors
-                                    mCurrentPhotoFirebaseUri = Uri.EMPTY;
-                                }
-                            });
+                                                Log.e("DebugUriRequest", uri.toString());
+                                                newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                                                        Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle any errors
+                                        mCurrentPhotoFirebaseUri = Uri.EMPTY;
+                                    }
+                                });
 
-                        }
-                    });
-
-
-                    //ADD TO REVERT
-                    //uploadImageToFirebase(mCurrentPhotoPath);
-
-                    //newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                    //        Float.valueOf(costEditText.getText().toString().replace(",", ".")), "sample/link.png"));
+                            }
+                        });
+                    } else {
+                        Log.e("DebugCaricamentoSpesa","NoImage");
+                        newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                                Float.valueOf(costEditText.getText().toString().replace(",", "."))));
+                    }
 
 
                     setResult(EXP_CREATED);

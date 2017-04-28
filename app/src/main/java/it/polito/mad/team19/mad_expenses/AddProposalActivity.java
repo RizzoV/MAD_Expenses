@@ -60,6 +60,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseStorage storage;
     private String groupId;
+    private String usrId;
     private String mCurrentPhotoPath;
     private String mCurrentPhotoName;
     private Uri mCurrentPhotoFirebaseUri;
@@ -81,6 +82,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 
 
         groupId = getIntent().getExtras().getString("groupId");
+        usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         setTitle(R.string.create_new_proposal);
 
@@ -194,7 +196,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                                         public void onSuccess(Uri uri) {
 
                                             Log.e("DebugUriRequest",uri.toString());
-                                            newProposalRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                                            newProposalRef.setValue(new FirebaseExpense(usrId,nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                                                     Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {

@@ -76,6 +76,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         add_group = (Button) findViewById(R.id.add_group_submit);
         group_name = (EditText) findViewById(R.id.new_group_name);
 
+        //TODO decidere come gestire l'immagine di default, se non inserita alla creazione del gruppo o deve essere caricato un link fittizio o deve esere gestito durante il caricamento della lista dei gruppi
         add_group.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
