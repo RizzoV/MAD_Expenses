@@ -3,6 +3,17 @@ package it.polito.mad.team19.mad_expenses;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -36,6 +47,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,12 +59,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.GroupsAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
@@ -109,9 +125,33 @@ public class GroupActivity extends AppCompatActivity {
         // Initially the displayed tab will be the EXPENSES one
         selectedTab = TabsList.EXPENSES;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setLogo(R.drawable.circle);
+
+        // Manage group image
+        if(groupImageUrl != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageReference = storage.getReferenceFromUrl(groupImageUrl);
+            final long ONE_MEGABYTE = 1024 * 1024;
+            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)), convertDipToPixels(40), convertDipToPixels(40), true));
+                    toolbar.setLogo(d);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    //TODO: Handle any errors
+                }
+            });
+        }
+        else {
+            Drawable d = getResources().getDrawable(R.mipmap.ic_group);
+            d.setBounds(0, 0, convertDipToPixels(40), convertDipToPixels(40));
+            toolbar.setLogo(d);
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,6 +235,34 @@ public class GroupActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    public int convertDipToPixels(float dips)
+    {
+        return (int) (dips * getApplicationContext().getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    private Bitmap getCircleBitmap(Bitmap bitmap) {
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawOval(rectF, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
     }
 
     private void firebaseAuth() {

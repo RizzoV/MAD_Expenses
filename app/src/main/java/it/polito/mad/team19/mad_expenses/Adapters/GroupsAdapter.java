@@ -110,7 +110,7 @@ public class GroupsAdapter extends BaseAdapter {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
+                    //TODO: Handle any errors
                 }
             });
         }
