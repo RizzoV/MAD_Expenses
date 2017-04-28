@@ -5,170 +5,173 @@
     android:layout_height="match_parent"
     tools:context="it.polito.mad.team19.mad_expenses.GroupActivity$ExpensesListFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/noexpenses_tv"
-        android:visibility="gone"
-        android:textColor="@color/secondaryText"
-        android:text="@string/noexpenses"/>
-
     <LinearLayout
+        android:id="@+id/frag_expenses_upper_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/cards"
-                android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/cards"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/total_cv"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.4"
+                android:clickable="true">
 
-                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/total_cv"
-                    android:layout_width="wrap_content"
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="0.4"
-                    android:clickable="true">
+                    android:orientation="vertical">
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/summary"
+                        android:textAlignment="center"
+                        android:textColor="@color/primaryText" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="5dp"
+                        android:text="@string/total"
+                        android:textAlignment="center"
+                        android:textAllCaps="true"
+                        android:textColor="@color/primaryText" />
+
+                    <TextView
+                        android:id="@+id/expenses_summary_card_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxEms="1"
+                        android:maxLines="1"
+                        android:padding="5dp"
+                        android:text="-"
+                        android:textAlignment="center"
+                        android:textColor="@color/primaryText"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/credits_cv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.6"
+                card_view:contentPaddingBottom="0dp">
+
+
+                <LinearLayout
+                    android:id="@+id/credits_cv_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:clickable="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/personal_profile"
+                        android:textAlignment="center"
+                        android:textColor="@color/primaryText" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="@string/summary"
-                            android:textAlignment="center"
-                            android:textColor="@color/primaryText" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
                             android:paddingTop="5dp"
-                            android:text="@string/total"
+                            android:text="@string/credit"
                             android:textAlignment="center"
                             android:textAllCaps="true"
                             android:textColor="@color/primaryText" />
 
                         <TextView
-                            android:id="@+id/expenses_summary_card_tv"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:paddingTop="5dp"
+                            android:text="@string/debit"
+                            android:textAlignment="center"
+                            android:textAllCaps="true"
+                            android:textColor="@color/primaryText" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/expenses_credit_card_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
                             android:padding="5dp"
                             android:text="-"
                             android:textAlignment="center"
-                            android:textColor="@color/primaryText"
-                            android:textSize="20sp"
-                            android:maxLines="1"
-                            android:maxEms="1"
-                            android:ellipsize="end"/>
-
-                    </LinearLayout>
-
-
-                </android.support.v7.widget.CardView>
-
-                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/credits_cv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="0.6"
-                    card_view:contentPaddingBottom="0dp">
-
-
-                    <LinearLayout
-                        android:id="@+id/credits_cv_ll"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="?android:selectableItemBackground"
-                        android:clickable="true"
-                        android:orientation="vertical">
+                            android:textColor="@color/greenMaterial"
+                            android:textSize="20sp" />
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:id="@+id/expenses_debit_card_tv"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="@string/personal_profile"
+                            android:layout_weight="0.5"
+                            android:padding="5dp"
+                            android:text="-"
                             android:textAlignment="center"
-                            android:textColor="@color/primaryText" />
+                            android:textColor="@color/redMaterial"
+                            android:textSize="20sp" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:paddingTop="5dp"
-                                android:text="@string/credit"
-                                android:textAlignment="center"
-                                android:textAllCaps="true"
-                                android:textColor="@color/primaryText"  />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:paddingTop="5dp"
-                                android:text="@string/debit"
-                                android:textAlignment="center"
-                                android:textAllCaps="true"
-                                android:textColor="@color/primaryText"  />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/expenses_credit_card_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:padding="5dp"
-                                android:text="-"
-                                android:textAlignment="center"
-                                android:textColor="@color/greenMaterial"
-                                android:textSize="20sp" />
-
-                            <TextView
-                                android:id="@+id/expenses_debit_card_tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:padding="5dp"
-                                android:text="-"
-                                android:textAlignment="center"
-                                android:textColor="@color/redMaterial"
-                                android:textSize="20sp" />
-
-                        </LinearLayout>
                     </LinearLayout>
+                </LinearLayout>
 
 
-                </android.support.v7.widget.CardView>
+            </android.support.v7.widget.CardView>
 
 
-            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/noexpenses_tv"
+            android:visibility="gone"
+            android:textColor="@color/secondaryText"
+            android:textSize="@dimen/normal_text_size"
+            android:padding="@dimen/smaller_horizontal_margin"
+            android:text="@string/noexpenses"/>
 
         <ProgressBar
             android:id="@+id/pBar"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="50dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/expenses_lv"
@@ -178,16 +181,16 @@
             android:layout_marginTop="5dp" />
 
     </LinearLayout>
-<!--
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        app:srcCompat="@drawable/plus"
-        />
--->
+    <!--
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            app:srcCompat="@drawable/plus"
+            />
+    -->
 </RelativeLayout>

@@ -9,10 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,9 +24,8 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
-import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMembers;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
 public class GroupInfoActivity extends AppCompatActivity {
 
@@ -60,7 +56,10 @@ public class GroupInfoActivity extends AppCompatActivity {
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.group_info_ctb);
         collapsingToolbar.setTitle(groupName.toString());
         setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageReference = storage.getReferenceFromUrl(imageUrl);
@@ -89,7 +88,7 @@ public class GroupInfoActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         members_lv = (RecyclerView) findViewById(R.id.members_lv);
-        final ArrayList<FirebaseGroupMembers> contributors = new ArrayList<FirebaseGroupMembers>();
+        final ArrayList<FirebaseGroupMember> contributors = new ArrayList<FirebaseGroupMember>();
         final GroupMembersRecyclerAdapter adapter = new GroupMembersRecyclerAdapter(this,contributors);
         members_lv.setAdapter(adapter);
 
@@ -103,8 +102,7 @@ public class GroupInfoActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int nMembers = 0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-
-                        contributors.add(new FirebaseGroupMembers(child.child("nome").getValue().toString(),null,child.getKey()));
+                        contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
                         nMembers++;
                 }
 

@@ -2,7 +2,6 @@ package it.polito.mad.team19.mad_expenses.Classes;
 
 import android.graphics.Bitmap;
 
-import java.util.HashMap;
 
 /**
  * Created by Jured on 24/03/17.
@@ -11,13 +10,18 @@ import java.util.HashMap;
 public class Group
 {
 
-    String name;
-    Bitmap icon;
-    Float balance;
-    Integer notifyCnt;
-    String thumbPath;
-    String groupId;
+    private String name;
+    private Bitmap icon;
+    private Float balance;
+    private Integer notifyCnt;
+    private  String thumbPath;
+    private  String groupId;
     //HashMap<String,GroupComponent> components;
+
+    public Group(String name, Float balance, Integer notifyCnt, String groupId)
+    {
+        this(name, balance, notifyCnt, null, groupId);
+    }
 
 
     public Group(String name, Float balance, Integer notifyCnt, String thumb, String groupId)

@@ -10,6 +10,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 public class FirebaseExpense
 {
 
+    private String author;
     private String key;
     private String name;
     private String description;
@@ -18,13 +19,27 @@ public class FirebaseExpense
 
     public FirebaseExpense () {}
 
-    public FirebaseExpense(String name, String description, Float cost, String image)
+    public FirebaseExpense(String author, String name, String description, Float cost)
     {
+        this(author, name, description, cost, null);
+    }
+
+    public FirebaseExpense(String author, String name, String description, Float cost, String image)
+    {
+        this.author = author;
         this.name = name;
         this.description = description;
         this.cost = cost;
         this.image = image;
         this.key = null;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getKey() {

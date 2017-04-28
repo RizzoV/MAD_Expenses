@@ -6,12 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMembers;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.R;
 
 /**
@@ -20,13 +19,13 @@ import it.polito.mad.team19.mad_expenses.R;
 
 public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembersRecyclerAdapter.MyViewHolder> {
 
-    ArrayList<FirebaseGroupMembers> members;
+    ArrayList<FirebaseGroupMember> members;
     Activity context;
     private LayoutInflater mInflater;
     //LUDO: aggiunto metodo onItemClickListener
     OnItemClickListener mItemClickListener;
 
-    public GroupMembersRecyclerAdapter(Context context, ArrayList<FirebaseGroupMembers> expenses) {
+    public GroupMembersRecyclerAdapter(Context context, ArrayList<FirebaseGroupMember> expenses) {
         this.members = expenses;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(this.context);
@@ -41,7 +40,7 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        FirebaseGroupMembers currentObj = members.get(position);
+        FirebaseGroupMember currentObj = members.get(position);
         holder.setData(currentObj, position);
     }
 
@@ -55,7 +54,7 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
 
         TextView name;
         int position;
-        FirebaseGroupMembers current;
+        FirebaseGroupMember current;
 
 
         public MyViewHolder(View itemView) {
@@ -74,7 +73,7 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
             }
         }
 
-        public void setData(FirebaseGroupMembers current, int position) {
+        public void setData(FirebaseGroupMember current, int position) {
             this.name.setText(current.getName());
             this.current = current;
             this.position = position;

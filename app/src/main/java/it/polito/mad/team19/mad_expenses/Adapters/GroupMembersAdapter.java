@@ -2,7 +2,6 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -10,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMembers;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.R;
 
 /**
@@ -18,10 +17,10 @@ import it.polito.mad.team19.mad_expenses.R;
  */
 
 public class GroupMembersAdapter extends BaseAdapter {
-    ArrayList<FirebaseGroupMembers> membersList;
+    ArrayList<FirebaseGroupMember> membersList;
     Activity context;
 
-    public GroupMembersAdapter(Context context, ArrayList<FirebaseGroupMembers> membersList) {
+    public GroupMembersAdapter(Context context, ArrayList<FirebaseGroupMember> membersList) {
         this.membersList = membersList;
         this.context = (Activity) context;
     }

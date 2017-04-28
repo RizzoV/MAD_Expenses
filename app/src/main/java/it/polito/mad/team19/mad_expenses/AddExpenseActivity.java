@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMembers;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
 /**
  * Created by Bolz on 03/04/2017.
@@ -74,6 +74,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private FirebaseStorage storage;
     static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
     private String groupId;
+    private String usrId;
     Boolean isContributorsClicked = true;
     Boolean isExcludedClicked = true;
     private static final int EXP_CREATED = 1;
@@ -89,7 +90,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     String idExpense;
 
 
-    final ArrayList<FirebaseGroupMembers> contributors = new ArrayList<FirebaseGroupMembers>();
+    final ArrayList<FirebaseGroupMember> contributors = new ArrayList<FirebaseGroupMember>();
 
 
     @Override
@@ -97,7 +98,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
-        groupId = getIntent().getExtras().getString("groupId");
+        groupId = getIntent().getStringExtra("groupId");
+        usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //usrId = getIntent().getStringExtra("usrId");
 
         setTitle(R.string.create_new_expense);
 
@@ -235,8 +238,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         idExpense= uuid;
 
         groupImagesRef = storageRef.child("images").child(groupId);
+                    if (mCurrentPhotoPath != null) {
+                        groupImagesRef = storageRef.child("images").child(groupId);
 
-        File imageToUpload = new File(mCurrentPhotoPath);
+                        File imageToUpload = new File(mCurrentPhotoPath);
 
         //TODO chiedere i permessi di accesso alla memoria (Marshmallow+)
         //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
@@ -290,7 +295,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Log.e("MembriSnap",dataSnapshot.getValue().toString());
-                    contributors.add(new FirebaseGroupMembers(child.child("nome").getValue().toString(),null,child.getKey()));
+                    contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
                 }
 
                 Log.e("MembriSnap",contributors.toString());
@@ -314,7 +319,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         for (int i=0;i<contributors.size();i++)
         {
-            final FirebaseGroupMembers currentMember;
+            final FirebaseGroupMember currentMember;
             currentMember = contributors.get(i);
             final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId);
 
@@ -327,7 +332,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         for (int j=0; j<contributors.size();j++)
                         {
                             found[0] = false;
-                            FirebaseGroupMembers temp = contributors.get(j);
+                            FirebaseGroupMember temp = contributors.get(j);
                             if(!temp.getUid().equals(expenseUid))
                             {
                                 for (DataSnapshot child : dataSnapshot.getChildren())

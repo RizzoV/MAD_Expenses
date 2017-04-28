@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
+            app:scrimAnimationDuration="150"
             android:fitsSystemWindows="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
@@ -33,6 +34,7 @@
                 android:id="@+id/group_info_tb"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|enterAlways">
             </android.support.v7.widget.Toolbar>
 

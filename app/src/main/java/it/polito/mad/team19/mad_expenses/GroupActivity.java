@@ -3,6 +3,17 @@ package it.polito.mad.team19.mad_expenses;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -36,6 +47,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,18 +59,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.GroupsAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 import it.polito.mad.team19.mad_expenses.Classes.Group;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
+
+import static java.lang.Thread.sleep;
 
 enum TabsList {
     EXPENSES,
@@ -109,9 +127,32 @@ public class GroupActivity extends AppCompatActivity {
         // Initially the displayed tab will be the EXPENSES one
         selectedTab = TabsList.EXPENSES;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setLogo(R.drawable.circle);
+
+        // Manage group image
+        if (groupImageUrl != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageReference = storage.getReferenceFromUrl(groupImageUrl);
+            final long ONE_MEGABYTE = 1024 * 1024;
+            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)), convertDipToPixels(40), convertDipToPixels(40), true));
+                    toolbar.setLogo(d);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    //TODO: Handle any errors
+                }
+            });
+        } else {
+            Drawable d = getResources().getDrawable(R.mipmap.ic_group);
+            d.setBounds(0, 0, convertDipToPixels(40), convertDipToPixels(40));
+            toolbar.setLogo(d);
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,10 +163,10 @@ public class GroupActivity extends AppCompatActivity {
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(GroupActivity.this,GroupInfoActivity.class);
-                intent.putExtra("groupImage",groupImageUrl);
-                intent.putExtra("groupName",groupName);
-                intent.putExtra("groupId",groupId);
+                Intent intent = new Intent(GroupActivity.this, GroupInfoActivity.class);
+                intent.putExtra("groupImage", groupImageUrl);
+                intent.putExtra("groupName", groupName);
+                intent.putExtra("groupId", groupId);
                 startActivity(intent);
                 Log.e("BolzDebug", "mannaiaBBolz");
             }
@@ -156,7 +197,7 @@ public class GroupActivity extends AppCompatActivity {
                 }
 
                 FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-                if(!fab.isShown())
+                if (!fab.isShown())
                     fab.show();
             }
 
@@ -195,6 +236,33 @@ public class GroupActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    public int convertDipToPixels(float dips) {
+        return (int) (dips * getApplicationContext().getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    private Bitmap getCircleBitmap(Bitmap bitmap) {
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawOval(rectF, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
     }
 
     private void firebaseAuth() {
@@ -276,8 +344,7 @@ public class GroupActivity extends AppCompatActivity {
                 if (notificationsCount > 0) {
                     tv.setText(String.valueOf(notificationsCount));
                     tv.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     tv.setVisibility(View.INVISIBLE);
                 }
             }
@@ -327,7 +394,7 @@ public class GroupActivity extends AppCompatActivity {
     private void onInviteClicked() {
         Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                 .setMessage(getString(R.string.invitation_message))
-                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)+"/"+groupId))
+                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link) + "/" + groupId))
                 .setCallToActionText(getString(R.string.invitation_cta))
                 .build();
         startActivityForResult(intent, REQUEST_INVITE);
@@ -365,7 +432,6 @@ public class GroupActivity extends AppCompatActivity {
             return fragment;
         }
 
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -398,12 +464,14 @@ public class GroupActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(View view, int position) {
                     Expense clicked = expenses.get(position);
-                    Intent intent = new Intent(getActivity(),ExpenseDetail.class);
-                    Log.e("Expenses",clicked.toString());
-                    intent.putExtra("ExpenseName",clicked.getName());
-                    intent.putExtra("ExpenseImgUrl",clicked.getImagelink());
-                    intent.putExtra("ExpenseDesc",clicked.getDescritpion());
-                    intent.putExtra("ExpenseCost",clicked.getCost().toString());
+                    final Intent intent = new Intent(getActivity(), ExpenseDetail.class);
+                    Log.e("Expenses", clicked.toString());
+                    intent.putExtra("ExpenseName", clicked.getName());
+                    intent.putExtra("ExpenseImgUrl", clicked.getImagelink());
+                    intent.putExtra("ExpenseDesc", clicked.getDescritpion());
+                    intent.putExtra("ExpenseCost", clicked.getCost().toString());
+                    intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
+                    intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                     startActivity(intent);
                 }
             });
@@ -420,16 +488,16 @@ public class GroupActivity extends AppCompatActivity {
 
             final LinearLayout cards = (LinearLayout) rootView.findViewById(R.id.cards);
             final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-            final int[] previous ={0};
+            final int[] previous = {0};
             final boolean[] set = {false};
 
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    previous[0]+=dy;
+                    previous[0] += dy;
                     if (dy > 0) {
                         fab.hide();
-                        if(previous[0] > cards.getHeight()) {
+                        if (previous[0] > cards.getHeight()) {
                             cards.animate()
                                     .translationY(0)
                                     .alpha(0.0f)
@@ -442,23 +510,21 @@ public class GroupActivity extends AppCompatActivity {
                                         }
                                     });
                         }
-                    }
-                    
-                    else if (dy < 0) {
+                    } else if (dy < 0) {
                         fab.show();
-                        if(previous[0] < -cards.getHeight())
-                        cards.animate()
-                                .translationY(1)
-                                .alpha(1f)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        super.onAnimationEnd(animation);
-                                        cards.setVisibility(View.VISIBLE);
-                                        previous[0] = 0;
-                                    }
-                                });
-                        }
+                        if (previous[0] < -cards.getHeight())
+                            cards.animate()
+                                    .translationY(1)
+                                    .alpha(1f)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            cards.setVisibility(View.VISIBLE);
+                                            previous[0] = 0;
+                                        }
+                                    });
+                    }
                 }
             });
 
@@ -477,10 +543,10 @@ public class GroupActivity extends AppCompatActivity {
                         noexpensestv.setVisibility(View.GONE);
                         //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
                         expenses.clear();
-                        for(DataSnapshot child : dataSnapshot.getChildren()) {
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
                             FirebaseExpense fe = child.getValue(FirebaseExpense.class);
                             fe.setKey(child.getKey());
-                            expenses.add(new Expense(fe.getName(), fe.getCost(), Currency.getInstance(Locale.ITALY), fe.getDescription(), fe.getImage()));
+                            expenses.add(new Expense(fe.getName(), fe.getCost(), Currency.getInstance(Locale.ITALY), fe.getDescription(), fe.getImage(), fe.getAuthor()));
                             //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                             adapter.notifyDataSetChanged();
 
@@ -498,8 +564,7 @@ public class GroupActivity extends AppCompatActivity {
 
                             pBar.setVisibility(View.GONE);
                         }
-                    }
-                    else {
+                    } else {
                         pBar.setVisibility(View.GONE);
                         noexpensestv.setVisibility(View.VISIBLE);
                     }
@@ -517,7 +582,7 @@ public class GroupActivity extends AppCompatActivity {
         }
 
 
-        void getDataFromFirebase(){
+        void getDataFromFirebase() {
 
         }
     }
@@ -585,7 +650,7 @@ public class GroupActivity extends AppCompatActivity {
                         noproposalstv.setVisibility(View.GONE);
                         //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
                         proposals.clear();
-                        for(DataSnapshot child : dataSnapshot.getChildren()) {
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
                             FirebaseProposal fp = child.getValue(FirebaseProposal.class);
                             proposals.add(new Proposal(fp.getName(), fp.getDescription(), fp.getCost(), null, Currency.getInstance("EUR")));
                             //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
@@ -594,8 +659,7 @@ public class GroupActivity extends AppCompatActivity {
 
                             //pBar.setVisibility(View.GONE);
                         }
-                    }
-                    else {
+                    } else {
                         //pBar.setVisibility(View.GONE);
                         noproposalstv.setVisibility(View.VISIBLE);
                     }
@@ -607,8 +671,6 @@ public class GroupActivity extends AppCompatActivity {
 
                 }
             });
-
-
 
 
             //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);

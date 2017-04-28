@@ -76,17 +76,19 @@ public class GroupsAdapter extends BaseAdapter {
 
         Group group=groupList.get(position);
 
+        /* Manage group name */
         name.setText(group.getName());
 
+        /* Manage personal balance in group */
         Float balanceAmount = group.getBalance();
         if(balanceAmount>0)
             balance.setText("Devi dare: " + String.format("%.2f", group.getBalance()));
         if(balanceAmount<0)
             balance.setText("Devi ricevere: " + String.format("%.2f", group.getBalance()));
-
         if(balanceAmount==0)
             balance.setText("Non hai nessun debito/credito");
 
+        /* Manage notifications count */
         if(group.getNotifyCnt()>0)
             notifications.setText(group.getNotifyCnt().toString());
         else {
@@ -94,24 +96,27 @@ public class GroupsAdapter extends BaseAdapter {
             notification_back.setVisibility(View.INVISIBLE);
         }
 
+        /* Manage group image */
         //TODO: prendere l'immagine dalla memoria e non direttamente da firebase (LUDO)
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReferenceFromUrl(group.getImage());
-
-        final long ONE_MEGABYTE = 1024 * 1024;
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                image.setImageBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0,bytes.length)));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
-
+        if(group.getImage() != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageReference = storage.getReferenceFromUrl(group.getImage());
+            final long ONE_MEGABYTE = 1024 * 1024;
+            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    image.setImageBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)));
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    //TODO: Handle any errors
+                }
+            });
+        }
+        else {
+            image.setImageResource(R.mipmap.ic_group);
+        }
 
         return convertView;
     }

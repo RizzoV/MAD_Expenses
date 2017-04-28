@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,10 +14,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMembers;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
 /**
  * Created by Valentino on 11/04/2017.
@@ -45,7 +43,7 @@ public class ContributorsPopupActivity extends Activity {
         uid = mAuth.getCurrentUser().getUid();
 
         contributors_lv = (ListView) findViewById(R.id.contributors_lv);
-        final ArrayList<FirebaseGroupMembers> contributors = new ArrayList<FirebaseGroupMembers>();
+        final ArrayList<FirebaseGroupMember> contributors = new ArrayList<FirebaseGroupMember>();
         final GroupMembersAdapter adapter = new GroupMembersAdapter(this,contributors);
         contributors_lv.setAdapter(adapter);
 
@@ -57,7 +55,7 @@ public class ContributorsPopupActivity extends Activity {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     if(!uid.equals(child.getKey()))
                     {
-                        contributors.add(new FirebaseGroupMembers(child.child("nome").getValue().toString(),null,child.getKey()));
+                        contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
                         nMembers++;
                     }
                 }

@@ -16,19 +16,19 @@ public class Expense {
     private Currency currency;
     private Image image;
     private String imagelink;
+    private String author;
 
-
-
-    public Expense(String name, Float cost, String description, String imagelink) {
-       new  Expense( name,  cost,  null,  description,  imagelink);
+    public Expense(String name, Float cost, String description, String imagelink, String author) {
+       this(name,  cost,  null,  description,  imagelink, author);
     }
 
-    public Expense(String name, Float cost, Currency currency, String description, String imagelink) {
+    public Expense(String name, Float cost, Currency currency, String description, String imagelink, String author) {
         this.name = name;
         this.cost = cost;
         this.currency = currency;
         this.descritpion = description;
         this.imagelink = imagelink;
+        this.author = author;
     }
 
     public String getName() {
@@ -63,4 +63,12 @@ public class Expense {
     public String getDescritpion() { return descritpion; }
 
     public void setDescritpion(String descritpion) { this.descritpion = descritpion; }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor (String author) {
+        this.author = author;
+    }
 }
