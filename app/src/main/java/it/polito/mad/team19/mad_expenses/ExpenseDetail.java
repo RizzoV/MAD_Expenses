@@ -45,23 +45,27 @@ public class ExpenseDetail extends AppCompatActivity {
         expense_cost.setText(cost);
 
 
+        //Jured: gestito il caso in cui arrivi un link che indica l'assenza di immagine
+        if(imgUrl == null) {
+            expense_img.setImageResource(R.drawable.circle);
+        } else {
+            Log.e("DebugExpenseDetails",imgUrl);
 
-        //TODO gestire il caso in cui arrivi un link che indica l'assenza di immagine
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReferenceFromUrl(imgUrl);
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageReference = storage.getReferenceFromUrl(imgUrl);
 
-        final long ONE_MEGABYTE = 1024 * 1024;
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                expense_img.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
-
+            final long ONE_MEGABYTE = 1024 * 1024;
+            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    expense_img.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        }
     }
 }

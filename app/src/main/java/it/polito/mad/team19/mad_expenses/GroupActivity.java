@@ -477,12 +477,6 @@ public class GroupActivity extends AppCompatActivity {
                         expenses.clear();
                         for(DataSnapshot child : dataSnapshot.getChildren()) {
                             FirebaseExpense fe = child.getValue(FirebaseExpense.class);
-                            if (fe.getImage() == null) {
-                                //Jured: gestione del caso in cui manchi l'immagine
-                                //TODO gestire coerentemente l'assenza di immagine in tutte le activity
-                                fe.setImage("link_fittizio");
-                                Log.e("DebugImageLinkSetting","Link fittizio aggiunto");
-                            }
                             fe.setKey(child.getKey());
                             expenses.add(new Expense(fe.getName(), fe.getCost(), Currency.getInstance(Locale.ITALY), fe.getDescription(), fe.getImage()));
                             //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
