@@ -88,6 +88,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     EditText costEditText;
     float expenseTotal;
     String idExpense;
+    String expenseUid;
+    String expenseUserName;
 
 
     final ArrayList<FirebaseGroupMember> contributors = new ArrayList<FirebaseGroupMember>();
@@ -211,12 +213,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                     Log.e("No","no");
 
-                    getMembers();
-
                    uploadInfos();
 
-
-                    setUserBalance();
 
 
                     //ADD TO REVERT
@@ -230,61 +228,69 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     private void uploadInfos() {
+
+        expenseUid = mAuth.getCurrentUser().getUid();
+        expenseUserName = mAuth.getCurrentUser().getDisplayName();
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         String uuid = myRef.push().getKey();
+        idExpense = uuid;
         final DatabaseReference newExpenseRef = myRef.child(uuid);
 
-        idExpense= uuid;
+        if (mCurrentPhotoPath != null) {
+            groupImagesRef = storageRef.child("images").child(groupId);
 
-        groupImagesRef = storageRef.child("images").child(groupId);
-                    if (mCurrentPhotoPath != null) {
-                        groupImagesRef = storageRef.child("images").child(groupId);
+            File imageToUpload = new File(mCurrentPhotoPath);
 
-                        File imageToUpload = new File(mCurrentPhotoPath);
+            //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
+            Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
+            byte[] datas = baos.toByteArray();
+            mImageView.setImageBitmap(fileBitmap);
+            mCurrentPhotoName = imageToUpload.getName();
+            UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
+            // Register observers to listen for when the download is done or if it fails
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
+                    groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
 
-        //TODO chiedere i permessi di accesso alla memoria (Marshmallow+)
-        //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
-        Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-        byte[] datas = baos.toByteArray();
-        mImageView.setImageBitmap(fileBitmap);
-        mCurrentPhotoName= imageToUpload.getName();
-        UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
+                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
 
-                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
+                                    Log.e("DebugUriRequest", uri.toString());
+                                    newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                                            Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
 
-                                Log.e("DebugUriRequest",uri.toString());
-                                newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                                        Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
-                                setUserBalance();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                        mCurrentPhotoFirebaseUri = Uri.EMPTY;
-                    }
-                });
+                                    getMembers();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                            mCurrentPhotoFirebaseUri = Uri.EMPTY;
+                        }
+                    });
 
-            }
-        });
+                }
+            });
+        } else {
+            Log.e("DebugCaricamentoSpesa","NoImage");
+            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                    Float.valueOf(costEditText.getText().toString().replace(",", "."))));
+        }
     }
+
 
     private void getMembers() {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -300,6 +306,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                 Log.e("MembriSnap",contributors.toString());
 
+                setUserBalance();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
