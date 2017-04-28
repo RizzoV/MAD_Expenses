@@ -314,6 +314,7 @@ public class GroupActivity extends AppCompatActivity {
 
             case R.id.personal_profile_icon: {
                 Intent intent = new Intent(GroupActivity.this, MeActivity.class);
+                intent.putExtra("groupId",groupId);
                 startActivity(intent);
                 return true;
             }
@@ -412,6 +413,7 @@ public class GroupActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), MeActivity.class);
+                    intent.putExtra("groupId",getActivity().getIntent().getStringExtra("groupId"));
                     startActivity(intent);
                 }
             });

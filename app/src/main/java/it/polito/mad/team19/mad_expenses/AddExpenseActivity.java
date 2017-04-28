@@ -28,13 +28,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -45,12 +49,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMembers;
 
 /**
  * Created by Bolz on 03/04/2017.
@@ -78,6 +85,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     EditText nameEditText;
     EditText descriptionEditText;
     EditText costEditText;
+    float expenseTotal;
+    String idExpense;
+
+
+    final ArrayList<FirebaseGroupMembers> contributors = new ArrayList<FirebaseGroupMembers>();
 
 
     @Override
@@ -102,7 +114,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             } else {
                 // The permission is granted, we can perform the action
-
         addListenerOnDoneButton();
         addListenerOnImageButton();
 
@@ -180,8 +191,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 if (!empty) {
                     mAuth = FirebaseAuth.getInstance();
                     mAuthListener = new FirebaseAuth.AuthStateListener() {
-
-
                         @Override
                         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                             FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -192,61 +201,19 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                                 // User is signed out
                                 Log.d(TAG, "onAuthStateChanged:signed_out");
                             }
-                            // ...
                         }
                     };
 
+                    expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",","."));
+
+                    Log.e("No","no");
+
+                    getMembers();
+
+                   uploadInfos();
 
 
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
-                    String uuid = myRef.push().getKey();
-                    final DatabaseReference newExpenseRef = myRef.child(uuid);
-
-                    groupImagesRef = storageRef.child("images").child(groupId);
-
-                    File imageToUpload = new File(mCurrentPhotoPath);
-
-                    //TODO chiedere i permessi di accesso alla memoria (Marshmallow+)
-                    //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
-                    Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-                    byte[] datas = baos.toByteArray();
-                    mImageView.setImageBitmap(fileBitmap);
-                    mCurrentPhotoName= imageToUpload.getName();
-                    UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
-                    // Register observers to listen for when the download is done or if it fails
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle unsuccessful uploads
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                            // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                            groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
-
-                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-
-                                            Log.e("DebugUriRequest",uri.toString());
-                                            newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                                                    Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    // Handle any errors
-                                    mCurrentPhotoFirebaseUri = Uri.EMPTY;
-                                }
-                            });
-
-                        }
-                    });
+                    setUserBalance();
 
 
                     //ADD TO REVERT
@@ -254,13 +221,166 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                     //newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     //        Float.valueOf(costEditText.getText().toString().replace(",", ".")), "sample/link.png"));
-
-
-                    setResult(EXP_CREATED);
-                    finish();
                 }
             }
         });
+    }
+
+    private void uploadInfos() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
+        String uuid = myRef.push().getKey();
+        final DatabaseReference newExpenseRef = myRef.child(uuid);
+
+        idExpense= uuid;
+
+        groupImagesRef = storageRef.child("images").child(groupId);
+
+        File imageToUpload = new File(mCurrentPhotoPath);
+
+        //TODO chiedere i permessi di accesso alla memoria (Marshmallow+)
+        //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
+        Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
+        byte[] datas = baos.toByteArray();
+        mImageView.setImageBitmap(fileBitmap);
+        mCurrentPhotoName= imageToUpload.getName();
+        UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
+                groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
+
+                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+
+                                Log.e("DebugUriRequest",uri.toString());
+                                newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                                        Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
+                                setUserBalance();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                        mCurrentPhotoFirebaseUri = Uri.EMPTY;
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void getMembers() {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Log.e("MembriSnap",dataSnapshot.getValue().toString());
+                    contributors.add(new FirebaseGroupMembers(child.child("nome").getValue().toString(),null,child.getKey()));
+                }
+
+                Log.e("MembriSnap",contributors.toString());
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setUserBalance() {
+        final String expenseUid = mAuth.getCurrentUser().getUid();
+        final String expenseUserName = mAuth.getCurrentUser().getDisplayName();
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        final boolean[] found = {false};
+
+
+        for (int i=0;i<contributors.size();i++)
+        {
+            final FirebaseGroupMembers currentMember;
+            currentMember = contributors.get(i);
+            final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId);
+
+            mAuth = FirebaseAuth.getInstance();
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(expenseUid.equals(currentMember.getUid()))
+                    {
+                        for (int j=0; j<contributors.size();j++)
+                        {
+                            found[0] = false;
+                            FirebaseGroupMembers temp = contributors.get(j);
+                            if(!temp.getUid().equals(expenseUid))
+                            {
+                                for (DataSnapshot child : dataSnapshot.getChildren())
+                                {
+
+                                    found[0] = true;
+                                    Float amount = Float.parseFloat(child.child("totale").getValue().toString());
+                                    amount += expenseTotal / contributors.size();
+
+                                    myRef.child(temp.getUid()).child("riepilogo").child(idExpense).setValue(expenseTotal / contributors.size());
+                                    myRef.child(temp.getUid()).child("totale").setValue(amount);
+                                }
+                            }
+                            if (!found[0])
+                            {
+                                    myRef.child(temp.getUid()).child("nome").setValue(temp.getName());
+                                    myRef.child(temp.getUid()).child("riepilogo").child(idExpense).setValue(expenseTotal / contributors.size());
+                                    myRef.child(temp.getUid()).child("totale").setValue(expenseTotal / contributors.size());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                            if (child.getKey().equals(expenseUid)) {
+                                found[0] = true;
+                                Float amount = Float.parseFloat(child.child("totale").getValue().toString());
+                                amount -= expenseTotal/contributors.size();
+
+                                myRef.child(expenseUid).child("nome").setValue(expenseUserName);
+                                myRef.child(expenseUid).child("riepilogo").child(idExpense).setValue(-expenseTotal / contributors.size());
+                                myRef.child(expenseUid).child("totale").setValue(amount);
+                            }
+
+                        }
+                        if(!found[0])
+                        {
+                            myRef.child(expenseUid).child("nome").setValue(expenseUserName);
+                            myRef.child(expenseUid).child("riepilogo").child(idExpense).setValue(-expenseTotal / contributors.size());
+                            myRef.child(expenseUid).child("totale").setValue(-expenseTotal/contributors.size());
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        setResult(EXP_CREATED);
+        finish();
     }
 
     public void addListenerOnImageButton() {
