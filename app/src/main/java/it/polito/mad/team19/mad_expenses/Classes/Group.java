@@ -19,6 +19,11 @@ public class Group
     String groupId;
     //HashMap<String,GroupComponent> components;
 
+    public Group(String name, Float balance, Integer notifyCnt, String groupId)
+    {
+        this(name, balance, notifyCnt, null, groupId);
+    }
+
 
     public Group(String name, Float balance, Integer notifyCnt, String thumb, String groupId)
     {

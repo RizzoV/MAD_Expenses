@@ -294,9 +294,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         Log.e("UpdateList", "messaggio che vuoi");
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-
-
-
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
@@ -309,7 +306,10 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     groupListView.setVisibility(View.VISIBLE);
                     groups.clear();
                     for (DataSnapshot child : snapshot.getChildren()) {
-                        groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat(child.child("bilancio").getValue().toString()), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
+                        if(child.hasChild("immagine"))
+                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat(child.child("bilancio").getValue().toString()), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
+                        else
+                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat(child.child("bilancio").getValue().toString()), Integer.parseInt(child.child("notifiche").getValue().toString()), child.getKey()));
                     }
                 } else {
                     progressBar.setVisibility(View.GONE);

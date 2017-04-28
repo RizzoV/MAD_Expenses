@@ -58,15 +58,14 @@ public class CreateGroupActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
         getSupportActionBar().setTitle("Crea un nuovo gruppo");
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        Log.e("User",mAuth.getCurrentUser().getUid());
+        Log.e("User", mAuth.getCurrentUser().getUid());
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
@@ -82,19 +81,18 @@ public class CreateGroupActivity extends AppCompatActivity {
             public void onClick(View v) {
                 boolean allset = true;
                 int type;
-                //aggiungere anche controllo su immagine
-                if(group_name.getText().toString().isEmpty()){
+
+                if (group_name.getText().toString().isEmpty()) {
                     allset = false;
                     group_name.setError("Devi inserire un nome!");
                 }
 
-                if(!distributed.isChecked() && !centralized.isChecked())
-                {
+                if (!distributed.isChecked() && !centralized.isChecked()) {
                     bar = Snackbar.make(v, "Devi selezionare almeno un tipo!", Snackbar.LENGTH_LONG)
                             .setAction("Ok", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                   bar.dismiss();
+                                    bar.dismiss();
                                 }
                             });
 
@@ -102,20 +100,19 @@ public class CreateGroupActivity extends AppCompatActivity {
                     allset = false;
                 }
 
-                if(distributed.isChecked())
+                if (distributed.isChecked())
                     type = 0;
                 else
                     type = 1;
 
 
-                if(allset)
-                {
+                if (allset) {
                     String uid = mAuth.getCurrentUser().getUid();
                     String uname = mAuth.getCurrentUser().getDisplayName();
-                    if(uname.trim().isEmpty() || uname == null)
+                    if (uname.trim().isEmpty() || uname == null)
                         uname = "User";
 
-                    addGroupToFirebase(uid,uname,group_name.getText().toString(),"path/immmagine.png",type);
+                    addGroupToFirebase(uid, uname, group_name.getText().toString(), "path/immmagine.png", type);
                 }
 
 
@@ -141,12 +138,10 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     }
 
-    private void addListenerOnImageButton()
-    {
+    private void addListenerOnImageButton() {
         imageButton = (ImageButton) findViewById(R.id.add_image_btn);
 
-        imageButton.setOnClickListener(new View.OnClickListener()
-        {
+        imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -161,55 +156,50 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     }
 
-        @Override
-        protected void onActivityResult(int requestCode, int resultCode, Intent data)
-        {
-            super.onActivityResult(requestCode, resultCode, data);
-            Uri outputUri = Uri.fromFile(new File(getCacheDir(), "croppedImage"));
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri outputUri = Uri.fromFile(new File(getCacheDir(), "croppedImage"));
 
-            if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
-            {
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                cursor.moveToFirst();
+            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+            cursor.moveToFirst();
 
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String picturePath = cursor.getString(columnIndex);
-                int column_index = cursor
-                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                cursor.moveToFirst();
-                mCurrentPhotoPath = cursor.getString(column_index);
-                cursor.close();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            mCurrentPhotoPath = cursor.getString(column_index);
+            cursor.close();
 
-                if(picturePath!=null)
-                {
-                    Uri inputUri = Uri.fromFile(new File(picturePath));
-                    Crop.of(inputUri, outputUri).asSquare().start(this);
-                }
-            }
-
-            if(requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK)
-            {
-                ImageView imageView = (ImageView) findViewById(R.id.group_img);
-                try {
-                    currentGroupBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputUri);
-                    imageView.setImageBitmap(getCircleBitmap(currentGroupBitmap));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            if (picturePath != null) {
+                Uri inputUri = Uri.fromFile(new File(picturePath));
+                Crop.of(inputUri, outputUri).asSquare().start(this);
             }
         }
 
-    private Bitmap getCircleBitmap(Bitmap scaleBitmapImage)
-    {
+        if (requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK) {
+            ImageView imageView = (ImageView) findViewById(R.id.group_img);
+            try {
+                currentGroupBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputUri);
+                imageView.setImageBitmap(getCircleBitmap(currentGroupBitmap));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Bitmap getCircleBitmap(Bitmap scaleBitmapImage) {
         float scale = getResources().getDisplayMetrics().density;
-        int targetHeight = (int)(150*scale + 0.5f);
-        int targetWidth = (int)(150*scale + 0.5f);
+        int targetHeight = (int) (150 * scale + 0.5f);
+        int targetWidth = (int) (150 * scale + 0.5f);
 
         Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
-                targetHeight,Bitmap.Config.ARGB_8888);
+                targetHeight, Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(targetBitmap);
         Path path = new Path();
@@ -245,56 +235,57 @@ public class CreateGroupActivity extends AppCompatActivity {
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("nome").setValue(name);
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("notifiche").setValue(0);
 
+        /* Group image management */
+
         final DatabaseReference imageLinkGrpRef = mDatabase.child("gruppi").child(groupid).child("immagine");
         final DatabaseReference imageLinkUsrRef = mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("immagine");
         final StorageReference groupImagesRef;
         groupImagesRef = storageRef.child("images").child(groupid);
+        if (mCurrentPhotoPath != null) {
+            File imageToUpload = new File(mCurrentPhotoPath);
+            Bitmap fileBitmap = currentGroupBitmap;
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
+            byte[] datas = baos.toByteArray();
+            final String mCurrentPhotoName = imageToUpload.getName();
+            UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
 
-        File imageToUpload = new File(mCurrentPhotoPath);
-        Bitmap fileBitmap = currentGroupBitmap;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-        byte[] datas = baos.toByteArray();
-        final String mCurrentPhotoName = imageToUpload.getName();
-        UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
+                    groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
 
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
+                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
 
-                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
+                                    Log.e("DebugUriRequest", uri.toString());
+                                    imageLinkGrpRef.setValue(uri.toString());
+                                    imageLinkUsrRef.setValue(uri.toString());
+                                    setResult(1);
+                                    finish();
 
-                                Log.e("DebugUriRequest",uri.toString());
-                                imageLinkGrpRef.setValue(uri.toString());
-                                imageLinkUsrRef.setValue(uri.toString());
-                                setResult(1);
-                                finish();
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                        // TODO handle failure
-                        //mCurrentPhotoFirebaseUri = Uri.EMPTY;
-                    }
-                });
-
-            }
-        });
-
-
-
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                            // TODO handle failure
+                            //mCurrentPhotoFirebaseUri = Uri.EMPTY;
+                        }
+                    });
+                }
+            });
+        }
+        setResult(1);
+        finish();
     }
 
 
