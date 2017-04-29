@@ -12,6 +12,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,10 +82,17 @@ public class GroupsAdapter extends BaseAdapter {
 
         /* Manage personal balance in group */
         Float balanceAmount = group.getBalance();
-        if(balanceAmount>0)
-            balance.setText("Devi dare: " + String.format("%.2f", group.getBalance()));
-        if(balanceAmount<0)
+        if(balanceAmount>0) {
             balance.setText("Devi ricevere: " + String.format("%.2f", group.getBalance()));
+            balance.setTextColor(ContextCompat.getColor(context, R.color.greenMaterial));
+
+        }
+        if(balanceAmount<0)
+        {
+            balance.setText("Devi dare: " + String.format("%.2f", group.getBalance()));
+            balance.setTextColor(ContextCompat.getColor(context, R.color.redMaterial));
+
+        }
         if(balanceAmount==0)
             balance.setText("Non hai nessun debito/credito");
 

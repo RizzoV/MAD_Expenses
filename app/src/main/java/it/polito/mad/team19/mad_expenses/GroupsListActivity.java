@@ -338,6 +338,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 intent.putExtra("groupName", ((Group) parent.getItemAtPosition(position)).getName());
                 intent.putExtra("groupId", ((Group) parent.getItemAtPosition(position)).getGroupId());
                 intent.putExtra("groupImage", ((Group) parent.getItemAtPosition(position)).getImage());
+                intent.putExtra("groupMyBalance", ((Group) parent.getItemAtPosition(position)).getBalance().toString());
                 startActivity(intent);
 
             }

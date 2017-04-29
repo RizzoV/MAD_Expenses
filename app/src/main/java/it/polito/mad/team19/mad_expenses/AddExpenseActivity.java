@@ -1,22 +1,18 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Path;
 import android.net.Uri;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.FileProvider;
@@ -28,7 +24,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,17 +40,11 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
@@ -88,11 +77,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     EditText costEditText;
     float expenseTotal;
     String idExpense;
-    String expenseUid;
-    String expenseUserName;
 
 
-    final ArrayList<FirebaseGroupMember> contributors = new ArrayList<FirebaseGroupMember>();
+    final ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
 
 
     @Override
@@ -229,8 +216,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
     private void uploadInfos() {
 
-        expenseUid = mAuth.getCurrentUser().getUid();
-        expenseUserName = mAuth.getCurrentUser().getDisplayName();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
@@ -301,12 +286,15 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Log.e("MembriSnap",dataSnapshot.getValue().toString());
-                    contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
+                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
                 }
 
-                Log.e("MembriSnap",contributors.toString());
+                Log.e("MembriSnap", groupMembersList.toString());
 
-                setUserBalance();
+                String expenseUserUid = mAuth.getCurrentUser().getUid();
+                String expenseUserName = mAuth.getCurrentUser().getDisplayName();
+
+                setUserBalance(expenseUserUid,expenseUserName,expenseTotal);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -315,84 +303,120 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         });
     }
 
-    private void setUserBalance() {
-        final String expenseUid = mAuth.getCurrentUser().getUid();
-        final String expenseUserName = mAuth.getCurrentUser().getDisplayName();
+    private void setUserBalance(final String expenseUserUid,final String expenseUserName, final float expenseTotal/*,ArrayList<String> uuidExcluded */)
+    {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        final boolean[] found = {false};
-
-
-        for (int i=0;i<contributors.size();i++)
-        {
+        for (int i = 0; i< groupMembersList.size(); i++) {
             final FirebaseGroupMember currentMember;
-            currentMember = contributors.get(i);
-            final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId);
-
-            mAuth = FirebaseAuth.getInstance();
-            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(expenseUid.equals(currentMember.getUid()))
+            currentMember = groupMembersList.get(i);
+            //Ludo: se sono chi ha sostenuto la spesa
+            if (expenseUserUid.equals(currentMember.getUid()))
+            {
+                //Ludo: devo aggiungere tutti i crediti escludendo me stesso
+                for (int j = 0; j < groupMembersList.size(); j++)
+                {
+                    final FirebaseGroupMember temp = groupMembersList.get(j);
+                    if (!temp.getUid().equals(expenseUserUid))
                     {
-                        for (int j=0; j<contributors.size();j++)
-                        {
-                            found[0] = false;
-                            FirebaseGroupMember temp = contributors.get(j);
-                            if(!temp.getUid().equals(expenseUid))
+                        final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(temp.getUid());
+                        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot)
                             {
-                                for (DataSnapshot child : dataSnapshot.getChildren())
+                                Float amount;
+                                //Ludo: se ho già un debito/credito verso questa persona devo aggiornare il totale
+                                if (dataSnapshot.hasChildren())
                                 {
+                                    amount = Float.parseFloat(dataSnapshot.child("totale").getValue().toString());
+                                    amount += expenseTotal / groupMembersList.size();
 
-                                    found[0] = true;
-                                    Float amount = Float.parseFloat(child.child("totale").getValue().toString());
-                                    amount += expenseTotal / contributors.size();
-
-                                    myRef.child(temp.getUid()).child("riepilogo").child(idExpense).setValue(expenseTotal / contributors.size());
-                                    myRef.child(temp.getUid()).child("totale").setValue(amount);
+                                    myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
+                                    myRef.child("totale").setValue(amount);
+                                } else {
+                                    amount = expenseTotal / groupMembersList.size();
+                                    myRef.child("nome").setValue(temp.getName());
+                                    myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
+                                    myRef.child("totale").setValue(expenseTotal / groupMembersList.size());
                                 }
                             }
-                            if (!found[0])
-                            {
-                                    myRef.child(temp.getUid()).child("nome").setValue(temp.getName());
-                                    myRef.child(temp.getUid()).child("riepilogo").child(idExpense).setValue(expenseTotal / contributors.size());
-                                    myRef.child(temp.getUid()).child("totale").setValue(expenseTotal / contributors.size());
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            if (child.getKey().equals(expenseUid)) {
-                                found[0] = true;
-                                Float amount = Float.parseFloat(child.child("totale").getValue().toString());
-                                amount -= expenseTotal/contributors.size();
 
-                                myRef.child(expenseUid).child("nome").setValue(expenseUserName);
-                                myRef.child(expenseUid).child("riepilogo").child(idExpense).setValue(-expenseTotal / contributors.size());
-                                myRef.child(expenseUid).child("totale").setValue(amount);
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
                             }
 
+                        });
+                    }
+                }
+                updateMyGroupBalance(expenseTotal-expenseTotal/groupMembersList.size(),currentMember.getUid(),groupId);
+            }
+            else
+            {
+                //Ludo: se invece non sono chi ha sostenuto la spesa ho un debito verso chi l'ha sostenuta
+                final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(expenseUserUid);
+
+                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Ludo: se ho già un debito/credito verso questa persona devo aggiornare il totale
+                        Float amount;
+                        if (dataSnapshot.hasChildren()) {
+                            amount = Float.parseFloat(dataSnapshot.child("totale").getValue().toString());
+                            amount -= expenseTotal / groupMembersList.size();
+
+                            myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
+                            myRef.child("totale").setValue(amount);
+
                         }
-                        if(!found[0])
-                        {
-                            myRef.child(expenseUid).child("nome").setValue(expenseUserName);
-                            myRef.child(expenseUid).child("riepilogo").child(idExpense).setValue(-expenseTotal / contributors.size());
-                            myRef.child(expenseUid).child("totale").setValue(-expenseTotal/contributors.size());
+                        else {
+                            amount = -expenseTotal / groupMembersList.size();
+                            myRef.child("nome").setValue(expenseUserName);
+                            myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
+                            myRef.child("totale").setValue(-expenseTotal / groupMembersList.size());
                         }
+                        updateMyGroupBalance(amount,currentMember.getUid(),groupId);
                     }
 
-                }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+                    }
+                });
+            }
         }
         setResult(EXP_CREATED);
         finish();
+    }
+
+    private void updateMyGroupBalance(final float amount, String uuid, String groupId)
+    {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("utenti").child(uuid).child("gruppi").child(groupId);
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()) {
+                    Float myGroupBalance = Float.parseFloat(dataSnapshot.child("bilancio").getValue().toString());
+                    myGroupBalance += amount;
+
+                    myRef.child("bilancio").setValue(myGroupBalance);
+
+                }
+                else
+                {
+                    myRef.child("bilancio").setValue(amount);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     public void addListenerOnImageButton() {

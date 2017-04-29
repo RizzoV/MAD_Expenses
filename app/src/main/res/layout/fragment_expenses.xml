@@ -24,7 +24,7 @@
                 android:layout_marginBottom="1dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_weight="0.4"
+                android:layout_weight="0.5"
                 android:clickable="true">
 
 
@@ -68,13 +68,14 @@
 
             </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/credits_cv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="1dp"
                 android:layout_marginRight="5dp"
-                android:layout_weight="0.6"
+                android:layout_weight="0.5"
                 card_view:contentPaddingBottom="0dp">
 
 
@@ -102,14 +103,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
+                            android:layout_weight="1"
                             android:paddingTop="5dp"
+                            android:id="@+id/expenses_credit_debit_title_tv"
                             android:text="@string/credit"
                             android:textAlignment="center"
                             android:textAllCaps="true"
                             android:textColor="@color/primaryText" />
 
-                        <TextView
+                   <!--     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -117,7 +119,7 @@
                             android:text="@string/debit"
                             android:textAlignment="center"
                             android:textAllCaps="true"
-                            android:textColor="@color/primaryText" />
+                            android:textColor="@color/primaryText" />-->
                     </LinearLayout>
 
                     <LinearLayout
@@ -126,17 +128,17 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/expenses_credit_card_tv"
+                            android:id="@+id/expenses_credit_debit_card_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
+                            android:layout_weight="1"
                             android:padding="5dp"
                             android:text="-"
                             android:textAlignment="center"
                             android:textColor="@color/greenMaterial"
                             android:textSize="20sp" />
 
-                        <TextView
+                    <!--    <TextView
                             android:id="@+id/expenses_debit_card_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -145,7 +147,7 @@
                             android:text="-"
                             android:textAlignment="center"
                             android:textColor="@color/redMaterial"
-                            android:textSize="20sp" />
+                            android:textSize="20sp" />-->
 
                     </LinearLayout>
                 </LinearLayout>

@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -539,6 +540,8 @@ public class GroupActivity extends AppCompatActivity {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    totalAmount = Float.valueOf(0);
+                    creditAmount = Float.valueOf(0);
                     if (dataSnapshot.hasChildren()) {
                         noexpensestv.setVisibility(View.GONE);
                         //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
@@ -555,12 +558,28 @@ public class GroupActivity extends AppCompatActivity {
                             totalAmount += Float.valueOf(fe.getCost());
                             TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_card_tv);
                             totalTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", totalAmount));
-                            creditAmount += Float.valueOf(fe.getCost());
-                            TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
-                            creditTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", creditAmount));
+
+                            TextView creditDebitTextView_amount = (TextView) rootView.findViewById(R.id.expenses_credit_debit_card_tv);
+                            TextView creditDebitTextView_title = (TextView) rootView.findViewById(R.id.expenses_credit_debit_title_tv);
+
+                            float myCreditDebitAmount = Float.parseFloat(getActivity().getIntent().getStringExtra("groupMyBalance"));
+
+                            if(myCreditDebitAmount>0)
+                            {
+                                creditDebitTextView_amount.setTextColor(ContextCompat.getColor(getContext(), R.color.greenMaterial));
+                                creditDebitTextView_title.setText(R.string.credit);
+                            }
+                            else
+                            {
+                                creditDebitTextView_amount.setTextColor(ContextCompat.getColor(getContext(), R.color.redMaterial));
+                                creditDebitTextView_title.setText(R.string.debit);
+                            }
+
+                            creditDebitTextView_amount.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", myCreditDebitAmount));
+
                             //debitAmount += Float.valueOf(fe.getCost()); //TO ADD?
-                            TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
-                            debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", debitAmount));
+                          /*  TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
+                            debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", debitAmount));*/
 
                             pBar.setVisibility(View.GONE);
                         }
