@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:gravity="center_horizontal">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/smaller_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_weight="0.35">
+
+        <TextView
+            android:id="@+id/debtor_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="@dimen/smaller_horizontal_margin"
+            android:ellipsize="end"
+            android:maxEms="1"
+            android:layout_weight="1"
+            android:maxLines="2"
+            android:text="Bruno Liegi Bastonliegi"
+            android:textAlignment="center"
+            android:textColor="@color/primaryText"
+            android:textSize="@dimen/normal_text_size" />
+
+        <ImageView
+            android:id="@+id/debtor_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:src="@drawable/circle" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/smaller_vertical_margin"
+        android:orientation="vertical"
+        android:layout_weight="0.2">
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_forward_arrow"
+            android:layout_marginTop="@dimen/smaller_vertical_margin"/>
+
+        <TextView
+            android:id="@+id/debt_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:maxEms="4"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="999.99 €"
+            android:textAlignment="center"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:background="@drawable/rounded_corners_red"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/smaller_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_weight="0.35">
+
+        <ImageView
+            android:id="@+id/creditor_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:src="@drawable/circle" />
+
+        <TextView
+            android:id="@+id/creditor_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/smaller_horizontal_margin"
+            android:ellipsize="end"
+            android:maxEms="1"
+            android:layout_weight="1"
+            android:maxLines="2"
+            android:text="Rupert Sciamenna"
+            android:textAlignment="center"
+            android:textColor="@color/primaryText"
+            android:textSize="@dimen/normal_text_size" />
+
+    </LinearLayout>
+</LinearLayout>

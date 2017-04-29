@@ -17,18 +17,20 @@ public class Expense {
     private Image image;
     private String imagelink;
     private String author;
+    private String firebaseId;
 
-    public Expense(String name, Float cost, String description, String imagelink, String author) {
-       this(name,  cost,  null,  description,  imagelink, author);
+    public Expense(String name, Float cost, String description, String imagelink, String author, String firebaseId) {
+       this(name,  cost,  null,  description,  imagelink, author, firebaseId);
     }
 
-    public Expense(String name, Float cost, Currency currency, String description, String imagelink, String author) {
+    public Expense(String name, Float cost, Currency currency, String description, String imagelink, String author, String firebaseId) {
         this.name = name;
         this.cost = cost;
         this.currency = currency;
         this.descritpion = description;
         this.imagelink = imagelink;
         this.author = author;
+        this.firebaseId = firebaseId;
     }
 
     public String getName() {
@@ -70,5 +72,17 @@ public class Expense {
 
     public void setAuthor (String author) {
         this.author = author;
+    }
+
+    public void setImagelink(String imagelink) {
+        this.imagelink = imagelink;
+    }
+
+    public String getFirebaseId() {
+        return firebaseId;
+    }
+
+    public void setFirebaseId(String firebaseId) {
+        this.firebaseId = firebaseId;
     }
 }
