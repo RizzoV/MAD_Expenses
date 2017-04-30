@@ -60,6 +60,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         super.onCreate(savedInstanceState);
 
         FirebaseApp.initializeApp(getApplicationContext());
+        
+        // Turn on caching
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         userLogVerification();
 
