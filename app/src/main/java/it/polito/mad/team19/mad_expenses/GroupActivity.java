@@ -242,8 +242,6 @@ public class GroupActivity extends AppCompatActivity {
         });
     }
 
-
-
     public int convertDipToPixels(float dips) {
         return (int) (dips * getApplicationContext().getResources().getDisplayMetrics().density + 0.5f);
     }
@@ -476,11 +474,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
 
-
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class ExpensesListFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this

@@ -91,5 +91,7 @@
 
     <string name="progressDialogText">Adding new expense...</string>
 
-
+    <!-- Expense details -->
+    <string name="confirmExpenseDeletion">Are you sure you want to delete the expense?</string>
+    <string name="yes">Yes</string>
 </resources>

@@ -1,16 +1,26 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,13 +37,15 @@ import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 
 public class ExpenseDetailsActivity extends AppCompatActivity {
 
-    TextView expense_name;
-    TextView expense_desc;
-    TextView expense_cost;
-    TextView expense_author;
-    ImageView expense_img;
-    ListView expense_details_listview;
-    String expenseAuthor;
+    private TextView expense_name;
+    private TextView expense_desc;
+    private TextView expense_cost;
+    private TextView expense_author;
+    private ImageView expense_img;
+    private ListView expense_details_listview;
+    private String expenseAuthor;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +61,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         String authorId = getIntent().getStringExtra("ExpenseAuthorId");
         final String groupId = getIntent().getStringExtra("groupId");
         final String expenseId = getIntent().getStringExtra("ExpenseId");
+
 
         expense_name = (TextView) findViewById(R.id.expense_name);
         expense_desc = (TextView) findViewById(R.id.expense_description);
@@ -85,8 +98,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         groupMembersDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot child: dataSnapshot.getChildren())
-                {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
                     /*Log.e("Childs",child.toString());
                     Log.e("Childs",child.child("riepilogo").child(expenseId).getValue().toString());
                     Log.e("Childs",child.child("nome").getValue().toString());*/
@@ -103,7 +115,90 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
             }
         });
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        final Menu finalMenu = menu;
+        String groupId = getIntent().getStringExtra("groupId");
+        String expenseId = getIntent().getStringExtra("ExpenseId");
+
+        DatabaseReference authorRef = FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("expenses").child(expenseId).child("author");
+        authorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String expenseAuthor = dataSnapshot.getValue(String.class);
+                if(expenseAuthor.equals(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()))
+                    // Inflate the menu; this adds items to the action bar if it is present.
+                    getMenuInflater().inflate(R.menu.menu_expense_details, finalMenu);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("ExpenseDetailsActivity", "Unable to read expense author");
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        String groupId = getIntent().getStringExtra("groupId");
+        String expenseId = getIntent().getStringExtra("ExpenseId");
+
+        switch (id) {
+            case R.id.deleteExpense: {
+                DialogFragment newFragment = new ConfirmExpenseDeletionDialogFragment(this, groupId, expenseId);
+                newFragment.show(getSupportFragmentManager(), "confirmExpenseDeletion");
+
+                return true;
+            }
+
+            default:
+                Log.e("ExpenseDetailsActivity", "Not finding a corresponding case to the menu item selected (" + id + ")");
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static class ConfirmExpenseDeletionDialogFragment extends DialogFragment {
+
+        private String groupId;
+        private String expenseId;
+        private Context context;
+
+        public ConfirmExpenseDeletionDialogFragment(Context context, String groupId, String expenseId) {
+            this.context = context;
+            this.groupId = groupId;
+            this.expenseId = expenseId;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.confirmExpenseDeletion)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("expenses").child(expenseId).removeValue();
+                            ((Activity) context).finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Nothing happens
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+}
 
 
 
@@ -236,6 +331,5 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         });*/
 
 
-    }
 
-}
+

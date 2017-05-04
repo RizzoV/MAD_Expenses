@@ -92,4 +92,8 @@
 
     <string name="progressDialogText">Aggiungo la nuova spesa...</string>
 
+    <!-- Expense details -->
+    <string name="confirmExpenseDeletion">Sei sicuro di voler cancellare la spesa?</string>
+    <string name="yes">Sì</string>
+
 </resources>
