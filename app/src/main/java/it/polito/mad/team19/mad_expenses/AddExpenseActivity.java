@@ -79,7 +79,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     String idExpense;
 
 
-    final ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
 
 
     @Override
@@ -257,7 +256,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                                     newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                                             Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
 
-                                    getMembers();
+                                    getIntent().putExtra("expenseId",idExpense.toString());
+                                    getIntent().putExtra("expenseTotal",expenseTotal+"");
+                                    getIntent().putExtra("expenseUId",mAuth.getCurrentUser().getUid().toString());
+                                    getIntent().putExtra("expenseUserName",mAuth.getCurrentUser().getDisplayName().toString());
+                                    setResult(RESULT_OK,getIntent());
+                                    finish();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -277,147 +281,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
 
-    private void getMembers() {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
 
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Log.e("MembriSnap",dataSnapshot.getValue().toString());
-                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
-                }
-
-                Log.e("MembriSnap", groupMembersList.toString());
-
-                String expenseUserUid = mAuth.getCurrentUser().getUid();
-                String expenseUserName = mAuth.getCurrentUser().getDisplayName();
-
-                setUserBalance(expenseUserUid,expenseUserName,expenseTotal);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void setUserBalance(final String expenseUserUid,final String expenseUserName, final float expenseTotal/*,ArrayList<String> uuidExcluded */)
-    {
-
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        for (int i = 0; i< groupMembersList.size(); i++) {
-            final FirebaseGroupMember currentMember;
-            currentMember = groupMembersList.get(i);
-            //Ludo: se sono chi ha sostenuto la spesa
-            if (expenseUserUid.equals(currentMember.getUid()))
-            {
-                //Ludo: devo aggiungere tutti i crediti escludendo me stesso
-                for (int j = 0; j < groupMembersList.size(); j++)
-                {
-                    final FirebaseGroupMember temp = groupMembersList.get(j);
-                    if (!temp.getUid().equals(expenseUserUid))
-                    {
-                        final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(temp.getUid());
-                        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot)
-                            {
-                                Float amount;
-                                //Ludo: se ho già un debito/credito verso questa persona devo aggiornare il totale
-                                if (dataSnapshot.hasChildren())
-                                {
-                                    amount = Float.parseFloat(dataSnapshot.child("totale").getValue().toString());
-                                    amount += expenseTotal / groupMembersList.size();
-
-                                    myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
-                                    myRef.child("totale").setValue(amount);
-                                } else {
-                                    amount = expenseTotal / groupMembersList.size();
-                                    myRef.child("nome").setValue(temp.getName());
-                                    myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
-                                    myRef.child("totale").setValue(expenseTotal / groupMembersList.size());
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-
-                        });
-                    }
-                }
-                updateMyGroupBalance(expenseTotal-expenseTotal/groupMembersList.size(),currentMember.getUid(),groupId);
-            }
-            else
-            {
-                //Ludo: se invece non sono chi ha sostenuto la spesa ho un debito verso chi l'ha sostenuta
-                final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(expenseUserUid);
-
-                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Ludo: se ho già un debito/credito verso questa persona devo aggiornare il totale
-                        Float amount;
-                        if (dataSnapshot.hasChildren()) {
-                            amount = Float.parseFloat(dataSnapshot.child("totale").getValue().toString());
-                            amount -= expenseTotal / groupMembersList.size();
-
-                            myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
-                            myRef.child("totale").setValue(amount);
-
-                        }
-                        else {
-                            amount = -expenseTotal / groupMembersList.size();
-                            myRef.child("nome").setValue(expenseUserName);
-                            myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
-                            myRef.child("totale").setValue(-expenseTotal / groupMembersList.size());
-                        }
-                        updateMyGroupBalance(amount,currentMember.getUid(),groupId);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        }
-        setResult(EXP_CREATED);
-        finish();
-    }
-
-    private void updateMyGroupBalance(final float amount, String uuid, String groupId)
-    {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("utenti").child(uuid).child("gruppi").child(groupId);
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    Float myGroupBalance = Float.parseFloat(dataSnapshot.child("bilancio").getValue().toString());
-                    myGroupBalance += amount;
-
-                    myRef.child("bilancio").setValue(myGroupBalance);
-
-                }
-                else
-                {
-                    myRef.child("bilancio").setValue(amount);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-    }
 
     public void addListenerOnImageButton() {
 

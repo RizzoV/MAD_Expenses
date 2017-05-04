@@ -39,6 +39,7 @@ import java.util.Currency;
 import java.util.List;
 
 import it.polito.mad.team19.mad_expenses.Adapters.MeRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
 
 public class MeActivity extends AppCompatActivity {
@@ -49,6 +50,7 @@ public class MeActivity extends AppCompatActivity {
     TextView credito_tv;
     TextView debito_tv;
     ArrayList<Me> me;
+    ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,36 @@ public class MeActivity extends AppCompatActivity {
 
 
 
+        getMembers();
+
+
+
+    }
+
+    private void getMembers(){
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Log.e("MembriSnap",dataSnapshot.getValue().toString());
+                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
+                }
+
+                getBalance();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getBalance() {
+
+
 
         me = new ArrayList<Me>();
 
@@ -103,8 +135,6 @@ public class MeActivity extends AppCompatActivity {
         final String myUid = mAuth.getCurrentUser().getUid();
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        final DatabaseReference myRef = database.getReference("utenti").child(myUid).child("bilancio").child(groupId);
 
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.fromto_rv);
         final MeRecyclerAdapter adapter = new MeRecyclerAdapter(this, me);
@@ -117,23 +147,31 @@ public class MeActivity extends AppCompatActivity {
         final float[] debito = {0};
         final float[] credito = {0};
 
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference myRef = database.getReference("utenti").child(myUid).child("bilancio").child(groupId);
 
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren())
                 {
-                    if(!child.getKey().equals(myUid))
+                    float currentBalance = 0;
+                    String currentName = child.child("nome").getValue().toString();
+                    Log.e("Child",child.child("nome").getValue().toString());
+                    for(DataSnapshot child2:  child.child("riepilogo").getChildren())
                     {
-                        float bilancio = Float.parseFloat(child.child("totale").getValue().toString());
-                        if(bilancio>0)
-                            credito[0] +=bilancio;
-                        else
-                            debito[0]+=bilancio;
-
-                        Me e = new Me(child.child("nome").getValue().toString(), Float.parseFloat(child.child("totale").getValue().toString()), Currency.getInstance("EUR"));
-                        me.add(e);
+                        Log.e("Expense "+child2.getKey().toString(),child2.getValue().toString());
+                        currentBalance+=Float.parseFloat(child2.getValue().toString());
                     }
+
+                    if(currentBalance>0)
+                        credito[0]+=currentBalance;
+                    else
+                        debito[0]+=currentBalance;
+
+                    Me e = new Me(currentName, currentBalance, Currency.getInstance("EUR"));
+                    me.add(e);
+
                 }
                 adapter.notifyDataSetChanged();
 
@@ -158,7 +196,7 @@ public class MeActivity extends AppCompatActivity {
                 if(debito[0]!=0 && credito[0]!=0)
                     set.setColors(new int[] { R.color.redMaterial, R.color.greenMaterial}, getApplicationContext());
                 else
-                    {
+                {
                     if (debito[0] != 0)
                         set.setColors(new int[]{R.color.redMaterial}, getApplicationContext());
                     if (credito[0] != 0)
@@ -188,9 +226,6 @@ public class MeActivity extends AppCompatActivity {
 
 
         });
-
-
-
     }
 
     @Override

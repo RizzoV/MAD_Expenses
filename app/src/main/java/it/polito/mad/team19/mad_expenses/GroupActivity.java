@@ -69,6 +69,7 @@ import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
@@ -104,6 +105,8 @@ public class GroupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
+    final ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
+
 
     protected static final String TAG = "firebaseAuth";
 
@@ -216,24 +219,30 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i;
+                int resultCode;
                 switch (selectedTab) {
                     case EXPENSES:
                         i = new Intent(GroupActivity.this, AddExpenseActivity.class);
+                        resultCode = 666;
                         i.putExtra("groupId", groupId);
                         break;
                     case PROPOSALS:
                         i = new Intent(GroupActivity.this, AddProposalActivity.class);
+                        resultCode = 6;
                         i.putExtra("groupId", groupId);
                         break;
                     default:
                         i = new Intent(GroupActivity.this, AddExpenseActivity.class);
+                        resultCode = 666;
                         break;
                 }
 
-                startActivity(i);
+                startActivityForResult(i,resultCode);
             }
         });
     }
+
+
 
     public int convertDipToPixels(float dips) {
         return (int) (dips * getApplicationContext().getResources().getDisplayMetrics().density + 0.5f);
@@ -388,6 +397,75 @@ public class GroupActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+            if(requestCode == 666 && resultCode == RESULT_OK){
+                Log.e("ExpenseIDActivity",data.getStringExtra("expenseId").toString());
+                if(groupMembersList.size() >0)
+                    groupMembersList.clear();
+
+                //TODO: far avviare tutto in un thread e g
+                getMembers(data.getStringExtra("expenseId").toString(),Float.parseFloat(data.getStringExtra("expenseTotal")),data.getStringExtra("expenseUId"),data.getStringExtra("expenseUserName"));
+            }
+    }
+
+    private void getMembers(final String expenseId, final float expenseTotal, final String expenseUuid, final String expenseUserName){
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Log.e("MembriSnap",dataSnapshot.getValue().toString());
+                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
+                }
+
+                setBalance(expenseId, expenseTotal,expenseUuid, expenseUserName);
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setBalance(String idExpense, float expenseTotal, String expenseUserUid, String expenseUserName) {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        for (int i = 0; i< groupMembersList.size(); i++) {
+            final FirebaseGroupMember currentMember;
+            currentMember = groupMembersList.get(i);
+            //Ludo: se sono chi ha sostenuto la spesa
+            if (expenseUserUid.equals(currentMember.getUid()))
+            {
+                //Ludo: devo aggiungere tutti i crediti escludendo me stesso
+                for (int j = 0; j < groupMembersList.size(); j++)
+                {
+                    final FirebaseGroupMember temp = groupMembersList.get(j);
+                    if (!temp.getUid().equals(expenseUserUid))
+                    {
+                        final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(temp.getUid());
+                        myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
+                        myRef.child("nome").setValue(temp.getName());
+                    }
+                }
+            }
+
+            else
+            {
+                //Ludo: se invece non sono chi ha sostenuto la spesa ho un debito verso chi l'ha sostenuta
+                final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(expenseUserUid);
+                myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
+                myRef.child("nome").setValue(expenseUserName);
+
+            }
+        }
+    }
+
     private void onInviteClicked() {
         Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                 .setMessage(getString(R.string.invitation_message))
@@ -396,6 +474,8 @@ public class GroupActivity extends AppCompatActivity {
                 .build();
         startActivityForResult(intent, REQUEST_INVITE);
     }
+
+
 
 
     /**
@@ -559,9 +639,9 @@ public class GroupActivity extends AppCompatActivity {
                             TextView creditDebitTextView_amount = (TextView) rootView.findViewById(R.id.expenses_credit_debit_card_tv);
                             TextView creditDebitTextView_title = (TextView) rootView.findViewById(R.id.expenses_credit_debit_title_tv);
 
-                            float myCreditDebitAmount = Float.parseFloat(getActivity().getIntent().getStringExtra("groupMyBalance"));
+                            float myCreditDebitAmount = 0;
 
-                            if(myCreditDebitAmount>0)
+                         /*   if(myCreditDebitAmount>0)
                             {
                                 creditDebitTextView_amount.setTextColor(ContextCompat.getColor(getContext(), R.color.greenMaterial));
                                 creditDebitTextView_title.setText(R.string.credit);
@@ -570,7 +650,7 @@ public class GroupActivity extends AppCompatActivity {
                             {
                                 creditDebitTextView_amount.setTextColor(ContextCompat.getColor(getContext(), R.color.redMaterial));
                                 creditDebitTextView_title.setText(R.string.debit);
-                            }
+                            }*/
 
                             creditDebitTextView_amount.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", myCreditDebitAmount));
 
