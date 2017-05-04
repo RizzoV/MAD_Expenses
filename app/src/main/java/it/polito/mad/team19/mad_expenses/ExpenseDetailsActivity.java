@@ -33,6 +33,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     TextView expense_author;
     ImageView expense_img;
     ListView expense_details_listview;
+    String expenseAuthor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         dbAuthorNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                expense_author.setText(dataSnapshot.getValue().toString());
+                expenseAuthor = dataSnapshot.getValue().toString();
+                expense_author.setText(expenseAuthor);
             }
 
             @Override
@@ -73,6 +75,38 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 Log.e("ExpenseDetailsActivity", "Expense author username reading cancelled");
             }
         });
+
+        final ArrayList<ExpenseDetail> expenseDetailsList = new ArrayList<>();
+        final ExpenseDetailsAdapter edAdapter = new ExpenseDetailsAdapter(this, expenseDetailsList);
+        expense_details_listview.setAdapter(edAdapter);
+
+        final FirebaseDatabase fbDatabase = FirebaseDatabase.getInstance();
+        final DatabaseReference groupMembersDbRef = fbDatabase.getReference("utenti").child(authorId).child("bilancio").child(groupId);
+        groupMembersDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot child: dataSnapshot.getChildren())
+                {
+                    /*Log.e("Childs",child.toString());
+                    Log.e("Childs",child.child("riepilogo").child(expenseId).getValue().toString());
+                    Log.e("Childs",child.child("nome").getValue().toString());*/
+
+                    expenseDetailsList.add(new ExpenseDetail(expenseAuthor, child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
+                    edAdapter.setListData(expenseDetailsList);
+                    edAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
 
 
         /*TODO: temporaneamente disattivato perchè faceva crashare
@@ -104,7 +138,9 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
          * Manage expense balance (debts and intersections)
          */
 
-        // Get group members
+
+
+/*        // Get group members
         final ArrayList<ExpenseDetail> expenseDetailsList = new ArrayList<>();
         final ExpenseDetailsAdapter edAdapter = new ExpenseDetailsAdapter(this, expenseDetailsList);
         expense_details_listview.setAdapter(edAdapter);
@@ -197,7 +233,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
                 Log.e("ExpenseDetailsActivity", "Group members read failed");
             }
-        });
+        });*/
 
 
     }
