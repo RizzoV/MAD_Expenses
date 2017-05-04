@@ -1,29 +1,36 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -77,6 +84,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     EditText costEditText;
     float expenseTotal;
     String idExpense;
+    ProgressDialog barProgressDialog;
 
 
 
@@ -104,6 +112,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         STORAGE_REQUEST);
 
             } else {
+
+
                 // The permission is granted, we can perform the action
         addListenerOnDoneButton();
         addListenerOnImageButton();
@@ -152,6 +162,20 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         doneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //LUDO: progressDialog a tutto schermo con sfondo sfocato
+                barProgressDialog = new ProgressDialog(AddExpenseActivity.this,R.style.full_screen_dialog){
+                    @Override
+                    protected void onCreate(Bundle savedInstanceState) {
+                        super.onCreate(savedInstanceState);
+                        setContentView(R.layout.progress_dialog_layout);
+                        getWindow().setLayout(AppBarLayout.LayoutParams.MATCH_PARENT,
+                                AppBarLayout.LayoutParams.MATCH_PARENT);
+                    }
+                };
+
+                barProgressDialog.setCancelable(false);
+                barProgressDialog.show();
 
                 boolean empty = false;
 
@@ -255,6 +279,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                                     Log.e("DebugUriRequest", uri.toString());
                                     newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                                             Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
+
+                                    barProgressDialog.dismiss();
 
                                     getIntent().putExtra("expenseId",idExpense.toString());
                                     getIntent().putExtra("expenseTotal",expenseTotal+"");

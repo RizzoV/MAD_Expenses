@@ -90,4 +90,6 @@
     <string name="noproposals">Non ci sono proposte associate al gruppo =(</string>
     <string name="noexpenses">Non ci sono spese associate al gruppo =(</string>
 
+    <string name="progressDialogText">Aggiungo la nuova spesa...</string>
+
 </resources>
