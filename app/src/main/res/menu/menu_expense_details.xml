@@ -10,4 +10,11 @@
         android:title="continue"
         />
 
+    <item
+        android:id="@+id/modifyExpense"
+        android:icon="@drawable/ic_modify_expense"
+        app:showAsAction="always"
+        android:title="continue"
+        />
+
 </menu>

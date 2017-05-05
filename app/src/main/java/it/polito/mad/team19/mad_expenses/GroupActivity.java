@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
@@ -548,6 +549,16 @@ public class GroupActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
+
+            adapter.SetOnItemLongClickListener(new ExpensesRecyclerAdapter.OnItemLongClickListener() {
+                @Override
+                public void onItemLongClick(View view, int position) {
+                    Log.e("DebugExpenseLongClicked", position + "item clicked");
+                    DialogFragment newFragment = new GalleryOrCameraDialog();
+                    newFragment.show(getActivity().getSupportFragmentManager(), "imageDialog");
+                }
+            });
+
 
             LinearLayout meCardViewLayout = (LinearLayout) rootView.findViewById(R.id.credits_cv_ll);
             meCardViewLayout.setOnClickListener(new View.OnClickListener() {
