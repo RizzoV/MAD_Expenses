@@ -57,7 +57,6 @@ public class ContributorsPopupActivity extends Activity {
                         nMembers++;
                     }
                 }
-
                 if (nMembers == 0)
                     Log.d("Contributors", "no other members in the group!");
                 else {
@@ -70,6 +69,8 @@ public class ContributorsPopupActivity extends Activity {
                 Log.e("ContributorsPopupActivi", "Could not read group members");
             }
         });
+
+
 
 
         DisplayMetrics dm = new DisplayMetrics();
