@@ -134,7 +134,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     //Jured: setta l'activity se vede che è stata chimata per modificare la spesa
     private void checkCallToModify() {
         Log.e("DebugModifyExpense", "CallToModifyCheck");
-        if(getIntent().getStringExtra("ModifyIntent").compareTo("1") == 0){
+        if(getIntent().getStringExtra("ModifyIntent") != null){
             Log.e("DebugModifyExpense", "CallToModifyDetected");
             String name = getIntent().getStringExtra("ExpenseName");
             String desc = getIntent().getStringExtra("ExpenseDesc");
