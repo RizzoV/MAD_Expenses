@@ -74,7 +74,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     Boolean isContributorsClicked = true;
     Boolean isExcludedClicked = true;
     private static final int EXP_CREATED = 1;
-    private String mCurrentPhotoPath;
+    private String mCurrentPhotoPath = null;
     private String mCurrentPhotoName;
     private Uri mCurrentPhotoFirebaseUri;
     StorageReference storageRef;
@@ -189,11 +189,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     empty = true;
                 }
 
-                if (TextUtils.isEmpty(descriptionEditText.getText().toString())) {
-                    descriptionEditText.setError(getString(R.string.mandatory_field));
-                    empty = true;
-                }
-
                 //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
                 if (TextUtils.isEmpty(costEditText.getText().toString())) {
                     costEditText.setError(getString(R.string.mandatory_field));
@@ -221,8 +216,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                     expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",","."));
 
-                    Log.e("No","no");
-
                    uploadInfos();
 
 
@@ -238,8 +231,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     private void uploadInfos() {
-
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         String uuid = myRef.push().getKey();
@@ -251,7 +242,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             File imageToUpload = new File(mCurrentPhotoPath);
 
-            //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
             Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
@@ -270,24 +260,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                    groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
-
-                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-
                                     Log.e("DebugUriRequest", uri.toString());
                                     newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                                             Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
-
-                                    barProgressDialog.dismiss();
-
-                                    getIntent().putExtra("expenseId",idExpense.toString());
-                                    getIntent().putExtra("expenseTotal",expenseTotal+"");
-                                    getIntent().putExtra("expenseUId",mAuth.getCurrentUser().getUid().toString());
-                                    getIntent().putExtra("expenseUserName",mAuth.getCurrentUser().getDisplayName().toString());
-                                    setResult(RESULT_OK,getIntent());
-                                    finish();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -296,7 +274,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                             mCurrentPhotoFirebaseUri = Uri.EMPTY;
                         }
                     });
-
                 }
             });
         } else {
@@ -304,6 +281,15 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
         }
+
+        barProgressDialog.dismiss();
+
+        getIntent().putExtra("expenseId",idExpense.toString());
+        getIntent().putExtra("expenseTotal",expenseTotal+"");
+        getIntent().putExtra("expenseUId",mAuth.getCurrentUser().getUid().toString());
+        getIntent().putExtra("expenseUserName",mAuth.getCurrentUser().getDisplayName().toString());
+        setResult(RESULT_OK,getIntent());
+        finish();
     }
 
 
@@ -316,19 +302,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //FOR EXAMPLE
-                // Toast.makeText(MyAndroidAppActivity.this,"ImageButton is clicked!", Toast.LENGTH_SHORT).show();
-
-                // TO REPLACE WITH THE CODE FOR THE UPLOAD OF THE IMAGE
-                //Snackbar.make(view, "Replace with your image", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
-                //TO LOAD IMAGE FROM GALLERY (error with RESULT_LOAD_IMAGE)
-                //Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                //startActivityForResult(i, RESULT_LOAD_IMAGE);
-
-                ////////////////////////////////////
-                ////dispatchTakePictureIntent();////
-                ////////////////////////////////////
                 DialogFragment newFragment = new GalleryOrCameraDialog();
                 newFragment.show(getSupportFragmentManager(), "imageDialog");
 

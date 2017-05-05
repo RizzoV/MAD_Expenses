@@ -75,6 +75,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_cost.setText(cost);
         expense_author.setText("loading...");
 
+        // TODO: monitorare tutti i contribuenti iniziali e non solo l'autore della spesa
         DatabaseReference dbAuthorNameRef = FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
         dbAuthorNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
