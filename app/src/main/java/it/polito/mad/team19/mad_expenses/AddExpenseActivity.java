@@ -1,6 +1,7 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -79,14 +80,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private Uri mCurrentPhotoFirebaseUri;
     StorageReference storageRef;
     StorageReference groupImagesRef;
-    EditText nameEditText;
-    EditText descriptionEditText;
-    EditText costEditText;
+    private EditText nameEditText;
+    private EditText descriptionEditText;
+    private EditText costEditText;
     float expenseTotal;
     String idExpense;
     ProgressDialog barProgressDialog;
-
-
 
 
     @Override
@@ -105,6 +104,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
+        nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
+        descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
+        costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(AddExpenseActivity.this,
@@ -113,17 +116,41 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             } else {
 
-
                 // The permission is granted, we can perform the action
-        addListenerOnDoneButton();
-        addListenerOnImageButton();
+                addListenerOnDoneButton();
+                addListenerOnImageButton();
 
-        // only done for the expenses
-        addListenerOnContributorsButton();
-        addListenerOnExcludedButton();
+                // only done for the expenses
+                addListenerOnContributorsButton();
+                addListenerOnExcludedButton();
+
+                checkCallToModify();
+
             }
         }
 
+    }
+
+    //Jured: setta l'activity se vede che è stata chimata per modificare la spesa
+    private void checkCallToModify() {
+        Log.e("DebugModifyExpense", "CallToModifyCheck");
+        if(getIntent().getStringExtra("ModifyIntent").compareTo("1") == 0){
+            Log.e("DebugModifyExpense", "CallToModifyDetected");
+            String name = getIntent().getStringExtra("ExpenseName");
+            String desc = getIntent().getStringExtra("ExpenseDesc");
+            String imgUrl = getIntent().getStringExtra("ExpenseImgUrl");
+            String authorId = getIntent().getStringExtra("ExpenseAuthorId");
+            String cost = getIntent().getStringExtra("ExpenseCost");
+            String groupId = getIntent().getStringExtra("groupId");
+            String expenseId = getIntent().getStringExtra("ExpenseId");
+
+            getSupportActionBar().setTitle("Modifica Spesa");
+            //getSupportActionBar().home
+
+            nameEditText.setText(name);
+            descriptionEditText.setText(desc);
+            costEditText.setText(cost);
+        }
     }
 
 
@@ -134,7 +161,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ContributorsPopupActivity.class);
-                i.putExtra("groupId",groupId);
+                i.putExtra("groupId", groupId);
                 startActivity(i);
             }
         });
@@ -147,7 +174,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ExcludedPopupActivity.class);
-                i.putExtra("groupId",groupId);
+                i.putExtra("groupId", groupId);
                 startActivity(i);
             }
         });
@@ -164,7 +191,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onClick(View v) {
 
                 //LUDO: progressDialog a tutto schermo con sfondo sfocato
-                barProgressDialog = new ProgressDialog(AddExpenseActivity.this,R.style.full_screen_dialog){
+                barProgressDialog = new ProgressDialog(AddExpenseActivity.this, R.style.full_screen_dialog) {
                     @Override
                     protected void onCreate(Bundle savedInstanceState) {
                         super.onCreate(savedInstanceState);
@@ -179,10 +206,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                 boolean invalidFields = false;
 
-
-                nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
+                //Jured: spostate nella onCreate();
+                /*nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
                 descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
-                costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
+                costEditText = (EditText) findViewById(R.id.new_expense_cost_et);*/
 
                 if (TextUtils.isEmpty(nameEditText.getText().toString())) {
                     nameEditText.setError(getString(R.string.mandatory_field));
@@ -214,11 +241,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         }
                     };
 
-                    expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",","."));
+                    expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
 
-                   uploadInfos();
-                }
-                else {
+                    uploadInfos();
+                } else {
                     // In modo da poter riscrivere qualcosa nel campo
                     barProgressDialog.dismiss();
                 }
@@ -257,13 +283,13 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
                     groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    Log.e("DebugUriRequest", uri.toString());
-                                    newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                                            Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Log.e("DebugUriRequest", uri.toString());
+                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                                    Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
                             // Handle any errors
@@ -273,22 +299,20 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 }
             });
         } else {
-            Log.e("DebugCaricamentoSpesa","NoImage");
+            Log.e("DebugCaricamentoSpesa", "NoImage");
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
         }
 
         barProgressDialog.dismiss();
 
-        getIntent().putExtra("expenseId",idExpense.toString());
-        getIntent().putExtra("expenseTotal",expenseTotal+"");
-        getIntent().putExtra("expenseUId",mAuth.getCurrentUser().getUid().toString());
-        getIntent().putExtra("expenseUserName",mAuth.getCurrentUser().getDisplayName().toString());
-        setResult(RESULT_OK,getIntent());
+        getIntent().putExtra("expenseId", idExpense.toString());
+        getIntent().putExtra("expenseTotal", expenseTotal + "");
+        getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid().toString());
+        getIntent().putExtra("expenseUserName", mAuth.getCurrentUser().getDisplayName().toString());
+        setResult(RESULT_OK, getIntent());
         finish();
     }
-
-
 
 
     public void addListenerOnImageButton() {
@@ -341,7 +365,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         StorageReference storageRef = storage.getReference();
         StorageReference groupImagesRef = storageRef.child("images").child(groupId);
 
-        if(requestCode == REQUEST_TAKE_PHOTO) {
+        if (requestCode == REQUEST_TAKE_PHOTO) {
 
 
             //uploadImageToFirebase(mCurrentPhotoPath);
@@ -365,9 +389,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             Log.d("DEBUG APP: ", mCurrentPhotoPath);
         }
 
-        if(requestCode == REQUEST_GALLERY_IMAGE){
+        if (requestCode == REQUEST_GALLERY_IMAGE) {
 
-                if (data != null) {
+            if (data != null) {
 
                 Uri selectedImage = data.getData();
 
@@ -383,15 +407,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
 
-                    Log.e("DebugGalleryImage:2", mCurrentPhotoPath);
+                Log.e("DebugGalleryImage:2", mCurrentPhotoPath);
 
 
-                    setImageView(mCurrentPhotoPath);
-
+                setImageView(mCurrentPhotoPath);
 
 
             }
-                //uploadImageToFirebase(mCurrentPhotoPath);
+            //uploadImageToFirebase(mCurrentPhotoPath);
 
             /*
                 File imageToUpload = new File(selectedImagePath);
@@ -452,7 +475,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }*/
 
-    private void uploadImageToFirebase(String filePath){
+    private void uploadImageToFirebase(String filePath) {
 
         groupImagesRef = storageRef.child("images").child(groupId);
 
@@ -464,7 +487,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
         byte[] datas = baos.toByteArray();
         mImageView.setImageBitmap(fileBitmap);
-        mCurrentPhotoName= imageToUpload.getName();
+        mCurrentPhotoName = imageToUpload.getName();
         UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -553,7 +576,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     public void onDialogGalleryClick(DialogFragment dialog) {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto , REQUEST_GALLERY_IMAGE);
+        startActivityForResult(pickPhoto, REQUEST_GALLERY_IMAGE);
     }
 
     @Override
@@ -579,10 +602,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                 }
                 return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
+
+        // other 'case' lines to check for other
+        // permissions this app might request
     }
+}
 

@@ -44,7 +44,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ImageView expense_img;
     private ListView expense_details_listview;
     private String expenseAuthor;
-
+    private String imgUrl;
+    private String name;
+    private String desc;
+    private String cost;
+    private String authorId;
+    private String groupId;
+    private String expenseId;
+    static final int MODIFY_CODE = 17;
 
 
     @Override
@@ -54,13 +61,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         setTitle("Dettagli Spesa");
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        String name = getIntent().getStringExtra("ExpenseName");
-        String desc = getIntent().getStringExtra("ExpenseDesc");
-        String imgUrl = getIntent().getStringExtra("ExpenseImgUrl");
-        String cost = getIntent().getStringExtra("ExpenseCost");
-        String authorId = getIntent().getStringExtra("ExpenseAuthorId");
-        final String groupId = getIntent().getStringExtra("groupId");
-        final String expenseId = getIntent().getStringExtra("ExpenseId");
+        name = getIntent().getStringExtra("ExpenseName");
+        desc = getIntent().getStringExtra("ExpenseDesc");
+        imgUrl = getIntent().getStringExtra("ExpenseImgUrl");
+        authorId = getIntent().getStringExtra("ExpenseAuthorId");
+        cost = getIntent().getStringExtra("ExpenseCost");
+        groupId = getIntent().getStringExtra("groupId");
+        expenseId = getIntent().getStringExtra("ExpenseId");
 
 
         expense_name = (TextView) findViewById(R.id.expense_name);
@@ -156,6 +163,20 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 newFragment.show(getSupportFragmentManager(), "confirmExpenseDeletion");
 
                 return true;
+            }
+            case R.id.modifyExpense: {
+                Log.d("ModifyExpense","starting modify activity");
+
+                Intent changeExpenseIntent = new Intent(this, AddExpenseActivity.class);
+                changeExpenseIntent.putExtra("ExpenseName", name);
+                changeExpenseIntent.putExtra("ExpenseImgUrl", imgUrl);
+                changeExpenseIntent.putExtra("ExpenseDesc", desc);
+                changeExpenseIntent.putExtra("ExpenseCost", cost);
+                changeExpenseIntent.putExtra("ExpenseAuthorId", expenseAuthor);
+                changeExpenseIntent.putExtra("groupId", groupId);
+                changeExpenseIntent.putExtra("ExpenseId", expenseId);
+                changeExpenseIntent.putExtra("ModifyIntent", "1");
+                startActivityForResult(changeExpenseIntent, MODIFY_CODE);
             }
 
             default:
