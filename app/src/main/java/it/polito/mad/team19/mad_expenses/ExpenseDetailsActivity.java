@@ -100,13 +100,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    /*Log.e("Childs",child.toString());
-                    Log.e("Childs",child.child("riepilogo").child(expenseId).getValue().toString());
-                    Log.e("Childs",child.child("nome").getValue().toString());*/
-
-                    expenseDetailsList.add(new ExpenseDetail(expenseAuthor, child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
-                    edAdapter.setListData(expenseDetailsList);
-                    edAdapter.notifyDataSetChanged();
+                    if(child.child("riepilogo").child(expenseId).exists()) {
+                        expenseDetailsList.add(new ExpenseDetail(expenseAuthor, child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
+                        edAdapter.setListData(expenseDetailsList);
+                        edAdapter.notifyDataSetChanged();
+                    }
                 }
 
             }
