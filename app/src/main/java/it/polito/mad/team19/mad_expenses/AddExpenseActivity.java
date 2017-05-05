@@ -177,7 +177,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 barProgressDialog.setCancelable(false);
                 barProgressDialog.show();
 
-                boolean empty = false;
+                boolean invalidFields = false;
 
 
                 nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
@@ -186,19 +186,19 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                 if (TextUtils.isEmpty(nameEditText.getText().toString())) {
                     nameEditText.setError(getString(R.string.mandatory_field));
-                    empty = true;
+                    invalidFields = true;
                 }
 
                 //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
                 if (TextUtils.isEmpty(costEditText.getText().toString())) {
                     costEditText.setError(getString(R.string.mandatory_field));
-                    empty = true;
+                    invalidFields = true;
                 } else if (!costEditText.getText().toString().matches(COST_REGEX)) {
                     costEditText.setError(getString(R.string.invalid_cost_field));
-                    empty = true;
+                    invalidFields = true;
                 }
 
-                if (!empty) {
+                if (!invalidFields) {
                     mAuth = FirebaseAuth.getInstance();
                     mAuthListener = new FirebaseAuth.AuthStateListener() {
                         @Override
@@ -217,14 +217,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",","."));
 
                    uploadInfos();
-
-
-
-                    //ADD TO REVERT
-                    //uploadImageToFirebase(mCurrentPhotoPath);
-
-                    //newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                    //        Float.valueOf(costEditText.getText().toString().replace(",", ".")), "sample/link.png"));
+                }
+                else {
+                    // In modo da poter riscrivere qualcosa nel campo
+                    barProgressDialog.dismiss();
                 }
             }
         });
