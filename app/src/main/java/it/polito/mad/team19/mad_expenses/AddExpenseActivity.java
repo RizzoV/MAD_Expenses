@@ -77,8 +77,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     float expenseTotal;
     String idExpense;
     ProgressDialog barProgressDialog;
-    private ArrayList<FirebaseGroupMember> contributorsList;
-    private ArrayList<FirebaseGroupMember> excludedList;
+    private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
+    private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
 
 
     @Override
@@ -289,14 +289,25 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             Log.e("DebugCaricamentoSpesa", "NoImage");
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
+            for(FirebaseGroupMember member : excludedList) {
+                newExpenseRef.child("excluded").child(member.getUid()).setValue(member.getName());
+            }
+            for(FirebaseGroupMember member : contributorsList) {
+                newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());
+            }
         }
 
         barProgressDialog.dismiss();
+
 
         getIntent().putExtra("expenseId", idExpense.toString());
         getIntent().putExtra("expenseTotal", expenseTotal + "");
         getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid().toString());
         getIntent().putExtra("expenseUserName", mAuth.getCurrentUser().getDisplayName().toString());
+        Bundle b = new Bundle();
+        b.putParcelableArrayList("contributors", contributorsList);
+        b.putParcelableArrayList("excluded", excludedList);
+        getIntent().putExtras(b);
         setResult(RESULT_OK, getIntent());
         finish();
     }

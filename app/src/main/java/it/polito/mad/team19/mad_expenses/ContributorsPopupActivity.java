@@ -50,11 +50,11 @@ public class ContributorsPopupActivity extends Activity {
         uid = mAuth.getCurrentUser().getUid();
 
         contributors_lv = (ListView) findViewById(R.id.contributors_lv);
-        final ArrayList<FirebaseGroupMember> contributors = new ArrayList<FirebaseGroupMember>();
+        final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
         final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors);
         contributors_lv.setAdapter(groupMembersAdapter);
 
-        contributors_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                contributors_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("DebugContributorsCheck", "Selected item no. " + position);
@@ -89,10 +89,8 @@ public class ContributorsPopupActivity extends Activity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int nMembers = 0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if (!uid.equals(child.getKey())) {
                         contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
                         nMembers++;
-                    }
                 }
                 if (nMembers == 0)
                     Log.d("Contributors", "no other members in the group!");
@@ -103,7 +101,7 @@ public class ContributorsPopupActivity extends Activity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e("ContributorsPopupActivi", "Could not read group members");
+                Log.e("ContributorsPopup", "Could not read group members");
             }
         });
 

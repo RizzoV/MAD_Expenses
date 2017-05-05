@@ -89,10 +89,8 @@ public class ExcludedPopupActivity extends Activity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int nMembers = 0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if (!uid.equals(child.getKey())) {
                         contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
                         nMembers++;
-                    }
                 }
                 if (nMembers == 0)
                     Log.d("Excluded", "no other members in the group!");
@@ -103,7 +101,7 @@ public class ExcludedPopupActivity extends Activity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e("ExcludedPopupActivi", "Could not read group members");
+                Log.e("ExcludedPopup", "Could not read group members");
             }
         });
 
