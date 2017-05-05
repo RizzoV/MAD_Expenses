@@ -24,6 +24,7 @@
             android:id="@+id/contributor_checkbox"
             android:layout_width="25dp"
             android:layout_height="25dp"
+            android:clickable="false"
             android:button="@drawable/custom_checkbox"
             android:layout_alignBottom="@id/user_img_contacts_list"
             android:layout_alignRight="@id/user_img_contacts_list"/>
