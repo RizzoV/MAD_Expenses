@@ -1,15 +1,12 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,27 +18,21 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -86,6 +77,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     float expenseTotal;
     String idExpense;
     ProgressDialog barProgressDialog;
+    private ArrayList<FirebaseGroupMember> contributorsList;
+    private ArrayList<FirebaseGroupMember> excludedList;
 
 
     @Override
@@ -113,9 +106,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 ActivityCompat.requestPermissions(AddExpenseActivity.this,
                         new String[]{Manifest.permission.READ_CONTACTS},
                         STORAGE_REQUEST);
-
             } else {
-
                 // The permission is granted, we can perform the action
                 addListenerOnDoneButton();
                 addListenerOnImageButton();
@@ -123,18 +114,15 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 // only done for the expenses
                 addListenerOnContributorsButton();
                 addListenerOnExcludedButton();
-
                 checkCallToModify();
-
             }
         }
-
     }
 
     //Jured: setta l'activity se vede che è stata chimata per modificare la spesa
     private void checkCallToModify() {
         Log.e("DebugModifyExpense", "CallToModifyCheck");
-        if(getIntent().getStringExtra("ModifyIntent") != null){
+        if (getIntent().getStringExtra("ModifyIntent") != null) {
             Log.e("DebugModifyExpense", "CallToModifyDetected");
             String name = getIntent().getStringExtra("ExpenseName");
             String desc = getIntent().getStringExtra("ExpenseDesc");
@@ -162,7 +150,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ContributorsPopupActivity.class);
                 i.putExtra("groupId", groupId);
-                startActivity(i);
+                startActivityForResult(i, REQUEST_CONTRIBUTORS);
             }
         });
     }
@@ -175,11 +163,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ExcludedPopupActivity.class);
                 i.putExtra("groupId", groupId);
-                startActivity(i);
+                startActivityForResult(i, REQUEST_EXCLUDED);
             }
         });
     }
-
 
     private void addListenerOnDoneButton() {
 
@@ -324,12 +311,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onClick(View view) {
                 DialogFragment newFragment = new GalleryOrCameraDialog();
                 newFragment.show(getSupportFragmentManager(), "imageDialog");
-
             }
-
         });
-
-
     }
 
 
@@ -355,8 +338,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     static final int REQUEST_IMAGE_CAPTURE = 0;
     static final int REQUEST_TAKE_PHOTO = 1;
     static final int REQUEST_GALLERY_IMAGE = 2;
+    static final int REQUEST_CONTRIBUTORS = 3;
+    static final int REQUEST_EXCLUDED = 4;
 
-    //TODO check sul resultCode
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Log.d("DEBUG AGGIUNTA FOTO: ", mCurrentPhotoPath);
@@ -366,7 +350,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         StorageReference groupImagesRef = storageRef.child("images").child(groupId);
 
         if (requestCode == REQUEST_TAKE_PHOTO) {
-
 
             //uploadImageToFirebase(mCurrentPhotoPath);
 
@@ -390,11 +373,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
 
         if (requestCode == REQUEST_GALLERY_IMAGE) {
-
             if (data != null) {
-
                 Uri selectedImage = data.getData();
-
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
                 Log.e("DebugGalleryImage:", selectedImage.getPath());
@@ -409,24 +389,26 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                 Log.e("DebugGalleryImage:2", mCurrentPhotoPath);
 
-
                 setImageView(mCurrentPhotoPath);
-
-
             }
-            //uploadImageToFirebase(mCurrentPhotoPath);
+        }
 
-            /*
-                File imageToUpload = new File(selectedImagePath);
+        if (requestCode == REQUEST_CONTRIBUTORS) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                contributorsList = extras.getParcelableArrayList("parceledContributors");
+                for (FirebaseGroupMember m : contributorsList)
+                    Log.d("ReceivedContributor", m.getName());
+            }
+        }
 
-                Bitmap fileBitmap = BitmapFactory.decodeFile(selectedImagePath);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-                byte[] datas = baos.toByteArray();
-                mImageView.setImageBitmap(fileBitmap);
-                UploadTask uploadTask = groupImagesRef.child(imageToUpload.getName()).putBytes(datas);
-                */
-
+        if (requestCode == REQUEST_EXCLUDED) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                excludedList = extras.getParcelableArrayList("parceledExcluded");
+                for (FirebaseGroupMember m : excludedList)
+                    Log.d("ReceivedExcluded", m.getName());
+            }
         }
     }
 

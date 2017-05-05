@@ -46,7 +46,7 @@ public class GroupMembersAdapter extends BaseAdapter {
     {
         if (convertView==null)
         {
-            convertView=context.getLayoutInflater().inflate(R.layout.contributors_list_row,parent,false);
+            convertView=context.getLayoutInflater().inflate(R.layout.group_members_popup_list_row,parent,false);
         }
 
         TextView username = (TextView) convertView.findViewById(R.id.username_checkedtv);

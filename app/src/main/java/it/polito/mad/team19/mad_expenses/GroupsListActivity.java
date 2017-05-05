@@ -153,7 +153,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         switch (requestCode) {
             case 666: {
                 if(resultCode == 1)
-
                     progressBar.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);

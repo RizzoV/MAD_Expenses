@@ -1,7 +1,9 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -28,8 +30,10 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 public class ContributorsPopupActivity extends Activity {
 
     private FirebaseAuth mAuth;
-    String uid;
-    ListView contributors_lv;
+    private String uid;
+    private ListView contributors_lv;
+
+    ArrayList<FirebaseGroupMember> selectedMembers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +57,29 @@ public class ContributorsPopupActivity extends Activity {
         contributors_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("DEBUG", "Item Clicked!");
+                Log.d("DebugContributorsCheck", "Selected item no. " + position);
                 CheckBox contributorCheckBox = (CheckBox) view.findViewById(R.id.contributor_checkbox);
-                if(contributorCheckBox.isChecked())
-                    contributorCheckBox.setChecked(false);
-                else
+                if (!contributorCheckBox.isChecked()) {
                     contributorCheckBox.setChecked(true);
+                    selectedMembers.add((FirebaseGroupMember) parent.getItemAtPosition(position));
+                } else {
+                    contributorCheckBox.setChecked(false);
+                    selectedMembers.remove(parent.getItemAtPosition(position));
+                }
+                contributorCheckBox.invalidate();
+            }
+        });
+
+        FloatingActionButton contributorsFab = (FloatingActionButton) findViewById(R.id.select_contributors_fab);
+        contributorsFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                Bundle b = new Bundle();
+                b.putParcelableArrayList("parceledContributors", selectedMembers);
+                intent.putExtras(b);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
 
