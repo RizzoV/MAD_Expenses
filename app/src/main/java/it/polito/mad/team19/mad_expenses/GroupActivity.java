@@ -61,6 +61,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
@@ -447,7 +449,7 @@ public class GroupActivity extends AppCompatActivity {
                     if (!temp.getUid().equals(expenseUserUid))
                     {
                         final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(temp.getUid());
-                        myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
+                        myRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", expenseTotal / groupMembersList.size()));
                         myRef.child("nome").setValue(temp.getName());
                     }
                 }
