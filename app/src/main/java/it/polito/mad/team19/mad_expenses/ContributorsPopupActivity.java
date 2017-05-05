@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +50,19 @@ public class ContributorsPopupActivity extends Activity {
         final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors);
         contributors_lv.setAdapter(groupMembersAdapter);
 
+        contributors_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("DEBUG", "Item Clicked!");
+                CheckBox contributorCheckBox = (CheckBox) view.findViewById(R.id.contributor_checkbox);
+                if(contributorCheckBox.isChecked())
+                    contributorCheckBox.setChecked(false);
+                else
+                    contributorCheckBox.setChecked(true);
+            }
+        });
+
+
         groupMembersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -70,15 +86,12 @@ public class ContributorsPopupActivity extends Activity {
             }
         });
 
-
-
-
+        // Non occupare tutto lo schermo
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-
         int width = dm.widthPixels;
         int height = dm.heightPixels;
-
         getWindow().setLayout((int) (width * .95), (int) (height * .9));
+
     }
 }
