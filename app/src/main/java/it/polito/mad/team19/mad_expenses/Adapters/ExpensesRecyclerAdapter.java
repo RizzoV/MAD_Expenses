@@ -6,10 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.R;
@@ -18,13 +20,14 @@ import it.polito.mad.team19.mad_expenses.R;
  * Created by Jured on 31/03/17.
  */
 
-public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecyclerAdapter.MyViewHolder> {
+public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecyclerAdapter.MyViewHolder>{
 
     ArrayList<Expense> expenses;
     Activity context;
     private LayoutInflater mInflater;
     //LUDO: aggiunto metodo onItemClickListener
-    OnItemClickListener mItemClickListener;
+    private OnItemClickListener mItemClickListener;
+    private OnItemLongClickListener mItemLongClickListener;
 
     public ExpensesRecyclerAdapter(Context context, ArrayList<Expense> expenses) {
         this.expenses = expenses;
@@ -52,6 +55,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
         return expenses.size();
     }
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView image;
@@ -60,6 +64,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
         int position;
         Expense current;
         TextView description;
+        View itemView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -68,6 +73,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             amount = (TextView) itemView.findViewById(R.id.expense_cost_amount_tv);
             description = (TextView) itemView.findViewById(R.id.expense_description_tv);
             //LUDO: aggiunto metodo onItemClickListener
+            this.itemView = itemView;
             itemView.setOnClickListener(this);
         }
 
@@ -89,6 +95,13 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             this.description.setText(current.getDescritpion());
         }
 
+        /*@Override
+        public boolean onLongClick(View v) {
+            if (mItemLongClickListener != null) {
+                mItemLongClickListener.onItemLongClick(v,position);
+            }
+            return true;
+        }*/
     }
     //LUDO: aggiunto metodo onItemClickListener
 
@@ -97,7 +110,32 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
         void onItemClick(View view , int position);
     }
 
+    public interface  OnItemLongClickListener {
+        void onItemLongClick(View view , int position);
+    }
+
+    //Jured: onItemLongClickListener
     public void SetOnItemClickListener(final OnItemClickListener mItemClickListener) {
         this.mItemClickListener = mItemClickListener;
     }
+
+    public void SetOnItemLongClickListener (final OnItemLongClickListener mItemLongClickListener){
+        this.mItemLongClickListener = mItemLongClickListener;
+    }
+
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, final int position, List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+
+        holder.itemView.setLongClickable(true);
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mItemLongClickListener.onItemLongClick(v, position);
+                return false;
+            }
+        });
+    }
+
 }
