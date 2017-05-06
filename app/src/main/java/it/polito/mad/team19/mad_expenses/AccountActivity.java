@@ -38,7 +38,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class AccountActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+public class AccountActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "FirebaseSignIn";
     FirebaseAuth.AuthStateListener mAuthListener;
@@ -63,7 +63,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
 
         //TODO: permettere di modificare anche l'immagine
 
-        if(mAuth.getCurrentUser().getProviders().contains("firebase")) {
+        if (mAuth.getCurrentUser().getProviders().contains("firebase")) {
             pswd_reset.setVisibility(View.VISIBLE);
         }
 
@@ -72,14 +72,13 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
                 .requestEmail()
                 .build();
         final GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this,this).addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
+                .enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(mAuth.getCurrentUser().getProviders().contains("google.com"))
-                {
+                if (mAuth.getCurrentUser().getProviders().contains("google.com")) {
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                             new ResultCallback<Status>() {
                                 @Override
@@ -98,20 +97,18 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
         edit_email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Email","edit");
-                showAddContactDialog(getString(R.string.changeemail),email.getText().toString(),0);
+                Log.e("Email", "edit");
+                showAddContactDialog(getString(R.string.changeemail), email.getText().toString(), 0);
             }
         });
 
         edit_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Name","edit");
-                showAddContactDialog(getString(R.string.changename),displayedName.getText().toString(),1);
+                Log.e("Name", "edit");
+                showAddContactDialog(getString(R.string.changename), displayedName.getText().toString(), 1);
             }
         });
-
-
 
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -126,7 +123,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
                     email = (TextView) findViewById(R.id.email_tv);
                     ImageView userImg = (ImageView) findViewById(R.id.user_img);
 
-                    if(user.getDisplayName()!=null)
+                    if (user.getDisplayName() != null)
                         displayedName.setText(user.getDisplayName());
 
                     email.setText(user.getEmail());
@@ -134,19 +131,16 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
 
-                    if(user.getPhotoUrl() !=null)
-                    {
+                    if (user.getPhotoUrl() != null) {
                         String photoUrl = user.getPhotoUrl().toString();
-                    try {
-                        InputStream input = new java.net.URL(photoUrl).openStream();
-                        Bitmap bitmap = BitmapFactory.decodeStream(input);
-                        userImg.setImageBitmap(getCircleBitmap(bitmap));
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        try {
+                            InputStream input = new java.net.URL(photoUrl).openStream();
+                            Bitmap bitmap = BitmapFactory.decodeStream(input);
+                            userImg.setImageBitmap(getCircleBitmap(bitmap));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    }
-
-
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -182,14 +176,11 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
                 buttonPositive.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(new_string.getText().toString().trim().isEmpty())
-                        {
+                        if (new_string.getText().toString().trim().isEmpty()) {
                             new_string.setError(getString(R.string.mandatory_field));
-                        }
-                        else
-                        {
+                        } else {
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            switch(type){
+                            switch (type) {
                                 case 0:
                                     user.updateEmail(new_string.getText().toString().trim())
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {

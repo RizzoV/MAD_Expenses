@@ -42,13 +42,14 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     private static final String TAG = "FirebaseLogged";
     private static final int REQUEST_INVITE = 6666;
     private static final int LOGIN_CHECK = 1;
+    private static final int REQUEST_GROUP_CREATION = 2;
     ListView groupListView;
     ArrayList<Group> groups = new ArrayList<>();
     protected FirebaseAuth.AuthStateListener mAuthStateListener;
     protected FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     String uid;
-    String uname;
+    String uName;
     ProgressBar progressBar;
     TextView debug_tv;
     RelativeLayout debug_ll;
@@ -78,7 +79,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(GroupsListActivity.this, CreateGroupActivity.class);
-                startActivityForResult(i, 666);
+                startActivityForResult(i, REQUEST_GROUP_CREATION);
             }
         });
 
@@ -98,12 +99,12 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_inGroup:" + user.getUid());
                     uid = user.getUid();
-                    uname = user.getDisplayName();
-                    if(uname == null)
-                        uname = "User";
+                    uName = user.getDisplayName();
+                    if(uName == null)
+                        uName = "User";
                     else
-                        if(uname.trim().isEmpty())
-                            uname = "User";
+                        if(uName.trim().isEmpty())
+                            uName = "User";
 
 
                     if (firstTimeCheck) {
@@ -151,7 +152,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case 666: {
+            case REQUEST_GROUP_CREATION: {
                 if(resultCode == 1)
                     progressBar.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.GONE);
@@ -227,7 +228,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     private void addGroupToUser(final String uid, final String groupIdName) {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("utenti").child(uid);
+        DatabaseReference myRef = database.getReference("utenti").child(uid).child("gruppi");
 
         // fai aggiornare la lista una volta che ha aggiunto il nuovo gruppo
         myRef.addChildEventListener(new ChildEventListener() {
@@ -238,22 +239,23 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                updateList(uid);
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                updateList(uid);
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                // Cannot happen?
+                Log.d("GroupListActivity", "User groups list - Child moved");
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("GroupListActivity", "Cannot read user's groups list");
             }
         });
 
@@ -270,7 +272,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     DatabaseReference addGroupRef;
                     addGroupRef = FirebaseDatabase.getInstance().getReference();
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("tipo").setValue(0);
-                    addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uname);
+                    addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uName);
 
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("bilancio").setValue(0);
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("immagine").setValue(snapshot.child("immagine").getValue().toString());
