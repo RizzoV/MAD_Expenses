@@ -409,7 +409,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Bundle extras = data.getExtras();
                 contributorsList = extras.getParcelableArrayList("parceledContributors");
                 for (FirebaseGroupMember m : contributorsList)
-                    Log.d("ReceivedContributor", m.getName());
+                    Log.d("CurrentContributor", m.getName());
             }
         }
 
@@ -418,7 +418,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Bundle extras = data.getExtras();
                 excludedList = extras.getParcelableArrayList("parceledExcluded");
                 for (FirebaseGroupMember m : excludedList)
-                    Log.d("ReceivedExcluded", m.getName());
+                    Log.d("CurrentExcluded", m.getName());
             }
         }
     }

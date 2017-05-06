@@ -102,17 +102,43 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_details_listview.setAdapter(edAdapter);
 
         final FirebaseDatabase fbDatabase = FirebaseDatabase.getInstance();
-        final DatabaseReference groupMembersDbRef = fbDatabase.getReference("utenti").child(authorId).child("bilancio").child(groupId);
-        groupMembersDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        DatabaseReference expenseContributorsRef = fbDatabase.getReference("gruppi").child(groupId).child("expenses").child(expenseId).child("contributors");
+        expenseContributorsRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if(child.child("riepilogo").child(expenseId).exists()) {
-                        expenseDetailsList.add(new ExpenseDetail(expenseAuthor, child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
-                        edAdapter.setListData(expenseDetailsList);
-                        edAdapter.notifyDataSetChanged();
+            public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
+                final DatabaseReference groupMembersDbRef = fbDatabase.getReference("utenti").child(dataSnapshot.getKey()).child("bilancio").child(groupId);
+                groupMembersDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot2) {
+                        for (DataSnapshot child : dataSnapshot2.getChildren()) {
+                            if(child.child("riepilogo").child(expenseId).exists()) {
+                                expenseDetailsList.add(new ExpenseDetail(dataSnapshot.getValue().toString(), child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
+                                edAdapter.setListData(expenseDetailsList);
+                                edAdapter.notifyDataSetChanged();
+                            }
+                        }
                     }
-                }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("ExpenseDetailsActivity","Unable to read group members");
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
             }
 
@@ -121,6 +147,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     @Override
