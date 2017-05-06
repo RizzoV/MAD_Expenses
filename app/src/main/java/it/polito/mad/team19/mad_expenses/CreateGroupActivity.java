@@ -109,7 +109,9 @@ public class CreateGroupActivity extends AppCompatActivity {
                 if (allset) {
                     String uid = mAuth.getCurrentUser().getUid();
                     String uname = mAuth.getCurrentUser().getDisplayName();
-                    if (uname.trim().isEmpty() || uname == null)
+                    if(uname == null)
+                        uname = "User";
+                    else if (uname.trim().isEmpty())
                         uname = "User";
 
                     addGroupToFirebase(uid, uname, group_name.getText().toString(), "path/immmagine.png", type);

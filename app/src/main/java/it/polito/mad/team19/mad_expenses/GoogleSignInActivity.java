@@ -27,13 +27,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseSignUpActivity;
 
 public class GoogleSignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final int RC_SIGN_IN = 9001;
-    private static final String TAG = "GoogleSignInActivity" ;
+    private static final String TAG = "GoogleSignInActivity";
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -60,7 +61,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this,this).addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
+                .enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
         mAuth = FirebaseAuth.getInstance();
 
         SignInButton gsi = (SignInButton) findViewById(R.id.google_sign_in_btn);
@@ -75,18 +76,18 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
             @Override
             public void onClick(View v) {
 
-                if(TextUtils.isEmpty(email.getText().toString())) {
+                if (TextUtils.isEmpty(email.getText().toString())) {
                     email.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
-                if(TextUtils.isEmpty(pswd.getText().toString())) {
+                if (TextUtils.isEmpty(pswd.getText().toString())) {
                     pswd.setError(getString(R.string.mandatory_field));
                     empty = true;
                 }
 
-                if(!empty)
-                signInWithEmailAndPswd(email.getText().toString(),pswd.getText().toString());
+                if (!empty)
+                    signInWithEmailAndPswd(email.getText().toString(), pswd.getText().toString());
             }
         });
 
@@ -151,7 +152,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...
-                Log.e("ErrorGoogle",result.getStatus()+"");
+                Log.e("ErrorGoogle", result.getStatus() + "");
                 setResult(0);
                 finish();
             }
@@ -191,8 +192,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
 
     }
 
-    public void signInWithEmailAndPswd(String email, String password)
-    {
+    public void signInWithEmailAndPswd(final String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -206,9 +206,10 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
                             Toast.makeText(GoogleSignInActivity.this, R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
+                        } else {
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(email).build();
+                            mAuth.getCurrentUser().updateProfile(profileUpdates);
                         }
-
-                        // ...
                     }
                 });
     }

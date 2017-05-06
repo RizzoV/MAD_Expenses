@@ -299,11 +299,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         barProgressDialog.dismiss();
 
-
-        getIntent().putExtra("expenseId", idExpense.toString());
+        getIntent().putExtra("expenseId", idExpense);
         getIntent().putExtra("expenseTotal", expenseTotal + "");
-        getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid().toString());
-        getIntent().putExtra("expenseUserName", mAuth.getCurrentUser().getDisplayName().toString());
+        getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid());
+        getIntent().putExtra("expenseUserName", mAuth.getCurrentUser().getDisplayName());
         Bundle b = new Bundle();
         b.putParcelableArrayList("contributors", contributorsList);
         b.putParcelableArrayList("excluded", excludedList);
