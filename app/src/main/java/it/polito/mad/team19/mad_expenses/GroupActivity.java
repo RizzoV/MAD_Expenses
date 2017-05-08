@@ -17,12 +17,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,15 +34,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.FrameLayout;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -69,11 +71,13 @@ import java.util.Currency;
 import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.NotificationsAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
+import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
 import static java.lang.Thread.sleep;
@@ -86,25 +90,16 @@ enum TabsList {
 public class GroupActivity extends AppCompatActivity {
 
     private static final int REQUEST_INVITE = 66;
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private PagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
 
+    private ViewPager mViewPager;
+    private DrawerLayout notificationsDrawer;
     private String groupName;
     private String groupId;
     private String groupImageUrl;
     TabsList selectedTab;
+    private ListView notificationsListView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
@@ -134,6 +129,9 @@ public class GroupActivity extends AppCompatActivity {
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        notificationsDrawer = (DrawerLayout) findViewById(R.id.notifications_drawer);
+        notificationsListView = (ListView) findViewById(R.id.notification_lv);
 
         // Manage group image
         if (groupImageUrl != null) {
@@ -341,24 +339,21 @@ public class GroupActivity extends AppCompatActivity {
         MenuItemCompat.setActionView(item, R.layout.notifications_ab_layout);
         RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
 
-        barProgressDialog = new ProgressDialog(GroupActivity.this,R.style.notifications_dialog){
-            @Override
-            protected void onCreate(Bundle savedInstanceState) {
-                super.onCreate(savedInstanceState);
-                setContentView(R.layout.dialog_notifications);
-                getWindow().setLayout(AppBarLayout.LayoutParams.MATCH_PARENT,
-                        AppBarLayout.LayoutParams.MATCH_PARENT);
-            }
-        };
+        final ArrayList<Notifications> notificationsList = new ArrayList<Notifications>();
+        for (int i = 0; i < 5; i++) {
+            notificationsList.add(new Notifications("Bbbbolz ha creato una nuova spesa","18 Apr"));
+        }
 
-        barProgressDialog.setCancelable(true);
+        final NotificationsAdapter adapter =  new NotificationsAdapter(this,notificationsList);
+        notificationsListView.setAdapter(adapter);
 
 
         notifCount.findViewById(R.id.notifications_icon_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.e("Clicked","click");
-                barProgressDialog.show();
+                //barProgressDialog.show();
+                notificationsDrawer.openDrawer(Gravity.RIGHT);
             }
         });
 
