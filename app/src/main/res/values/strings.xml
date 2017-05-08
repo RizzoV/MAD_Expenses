@@ -99,4 +99,5 @@
     <string name="yes">Yes</string>
     <string name="modify_expense">Modify expense</string>
     <string name="delete_expense">Delete expense</string>
+    <string name="menu_up_as_back">up_as_back</string>
 </resources>

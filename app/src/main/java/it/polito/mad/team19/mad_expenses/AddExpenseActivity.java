@@ -34,8 +34,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -87,11 +90,23 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
 
+    //Jured: modifyActivity variables
+    private Boolean isModifyActivity;
+    String oldName;
+    String oldDesc;
+    String oldImgUrl;
+    String oldAuthorId;
+    String oldCost;
+    String oldGroupId;
+    String oldExpenseId;
+    String oldExpenseVersionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
+
+        isModifyActivity = false;
 
         groupId = getIntent().getStringExtra("groupId");
         usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -109,7 +124,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
 
-                if(v.hasFocus()) {
+                if (v.hasFocus()) {
                     DialogFragment newFragment = new DatePickerFragment();
                     newFragment.show(getSupportFragmentManager(), "datePicker");
                 }
@@ -142,28 +157,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 addListenerOnExcludedButton();
                 checkCallToModify();
             }
-        }
-    }
-
-    //Jured: setta l'activity se vede che è stata chimata per modificare la spesa
-    private void checkCallToModify() {
-        Log.e("DebugModifyExpense", "CallToModifyCheck");
-        if (getIntent().getStringExtra("ModifyIntent") != null) {
-            Log.e("DebugModifyExpense", "CallToModifyDetected");
-            String name = getIntent().getStringExtra("ExpenseName");
-            String desc = getIntent().getStringExtra("ExpenseDesc");
-            String imgUrl = getIntent().getStringExtra("ExpenseImgUrl");
-            String authorId = getIntent().getStringExtra("ExpenseAuthorId");
-            String cost = getIntent().getStringExtra("ExpenseCost");
-            String groupId = getIntent().getStringExtra("groupId");
-            String expenseId = getIntent().getStringExtra("ExpenseId");
-
-            getSupportActionBar().setTitle("Modifica Spesa");
-            //getSupportActionBar().home
-
-            nameEditText.setText(name);
-            descriptionEditText.setText(desc);
-            costEditText.setText(cost);
         }
     }
 
@@ -254,6 +247,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         }
                     };
 
+                    //TODO tagliare il valore di cost a due cifre decimali
                     expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
 
                     uploadInfos();
@@ -298,9 +292,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            Log.e("DebugUriRequest", uri.toString());
+
+                            Log.e("DebugIsModifyFlag", oldExpenseVersionId);
                             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                                     Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
+
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -315,12 +311,18 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             Log.e("DebugCaricamentoSpesa", "NoImage");
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
-            for(FirebaseGroupMember member : excludedList) {
+            for (FirebaseGroupMember member : excludedList) {
                 newExpenseRef.child("excluded").child(member.getUid()).setValue(member.getName());
             }
-            for(FirebaseGroupMember member : contributorsList) {
+            for (FirebaseGroupMember member : contributorsList) {
                 newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());
             }
+
+            Log.e("DebugIsModifyFlag", isModifyActivity.toString());
+            if (isModifyActivity) {
+                newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
+            }
+
         }
 
         barProgressDialog.dismiss();
@@ -334,6 +336,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         b.putParcelableArrayList("excluded", excludedList);
         getIntent().putExtras(b);
         setResult(RESULT_OK, getIntent());
+
+        //Jured: gestione della modifica
+        if (isModifyActivity) {
+            moveFirebaseExpenseNode();
+        }
+
         finish();
     }
 
@@ -622,44 +630,138 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 return;
         }
 
-            // other 'case' lines to check for other
-            // permissions this app might request
+        // other 'case' lines to check for other
+        // permissions this app might request
+    }
+
+    // TODO : collegare il fragment all'activity per riportare la data nel campo corretto
+    // Bolz : for the date of the expense
+    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
         }
 
-        // TODO : collegare il fragment all'activity per riportare la data nel campo corretto
-        // Bolz : for the date of the expense
-        public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            Calendar c = Calendar.getInstance();
+            c.set(year, month, day);
 
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                // Use the current date as the default date in the picker
-                final Calendar c = Calendar.getInstance();
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH);
-                int day = c.get(Calendar.DAY_OF_MONTH);
-
-                // Create a new instance of DatePickerDialog and return it
-                return new DatePickerDialog(getActivity(), this, year, month, day);
-            }
-
-            public void onDateSet(DatePicker view, int year, int month, int day) {
-                // Do something with the date chosen by the user
-                Calendar c = Calendar.getInstance();
-                c.set(year, month, day);
-
-                //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                //String formattedDate = sdf.format(c.getTime());
-            }
-
-        }
-
-        public void showDatePickerDialog(View v) {
-            DialogFragment newFragment = new DatePickerFragment();
-            newFragment.show(getSupportFragmentManager(), "datePicker");
+            //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            //String formattedDate = sdf.format(c.getTime());
         }
 
     }
-        // other 'case' lines to check for other
-        // permissions this app might request
+
+    public void showDatePickerDialog(View v) {
+        DialogFragment newFragment = new DatePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    //Jured: setta l'activity se vede che è stata chimata per modificare la spesa
+    private void checkCallToModify() {
+        Log.e("DebugModifyExpense", "CallToModifyCheck");
+        if (getIntent().getStringExtra("ModifyIntent") != null) {
+            Log.e("DebugModifyExpense", "CallToModifyDetected");
+            oldName = getIntent().getStringExtra("ExpenseName");
+            oldDesc = getIntent().getStringExtra("ExpenseDesc");
+            oldImgUrl = getIntent().getStringExtra("ExpenseImgUrl");
+            oldAuthorId = getIntent().getStringExtra("ExpenseAuthorId");
+            oldCost = getIntent().getStringExtra("ExpenseCost");
+            oldGroupId = getIntent().getStringExtra("groupId");
+            oldExpenseId = getIntent().getStringExtra("ExpenseId");
+
+            getSupportActionBar().setTitle(R.string.modify_expense);
+            //getSupportActionBar().home
+
+            nameEditText.setText(oldName);
+            descriptionEditText.setText(oldDesc);
+            costEditText.setText(oldCost);
+
+            //TODO checkare i contributors ed excluded della spesa che sto modificando
+
+            isModifyActivity = true;
+        }
+    }
+
+    private void moveFirebaseExpenseNode() {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
+        final DatabaseReference oldExpenseRef = myRef.child(oldExpenseId);
+        final DatabaseReference newExpenseHistoryRef = database.getReference("storico")
+                .child(groupId).child("spese").child(oldExpenseId);
+
+        oldExpenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                newExpenseHistoryRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener() {
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            Log.d("moveNode() Failed", databaseError.toString());
+                        } else {
+                            Log.d("moveNode()", "Success");
+                            //delete old node
+                            oldExpenseRef.removeValue();
+                            oldExpenseVersionId = oldExpenseId;
+                        }
+                    }
+
+
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+
+        });
+    }
+
+    @Override
+    public Intent getSupportParentActivityIntent() {
+        if (getIntent().getStringExtra("ModifyIntent") != null) {
+            return getParentActivityIntentImpl();
+        }
+        else return super.getSupportParentActivityIntent();
+    }
+
+    @Override
+    public Intent getParentActivityIntent() {
+        if (getIntent().getStringExtra("ModifyIntent") != null) {
+            return getParentActivityIntentImpl();
+        }
+        else return super.getParentActivityIntent();
+    }
+
+    private Intent getParentActivityIntentImpl() {
+        Intent i = null;
+
+        // Here you need to do some logic to determine from which Activity you came.
+        // example: you could pass a variable through your Intent extras and check that.
+            i = new Intent(this, ExpenseDetailsActivity.class);
+            // set any flags or extras that you need.
+            // If you are reusing the previous Activity (i.e. bringing it to the top
+            // without re-creating a new instance) set these flags:
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            // if you are re-using the parent Activity you may not need to set any extras
+            //i.putExtra("someExtra", "whateverYouNeed");
+        return i;
+    }
+
+}
+// other 'case' lines to check for other
+// permissions this app might request
 
 

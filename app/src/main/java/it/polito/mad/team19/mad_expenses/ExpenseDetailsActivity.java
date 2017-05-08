@@ -112,7 +112,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot2) {
                         for (DataSnapshot child : dataSnapshot2.getChildren()) {
-                            if(child.child("riepilogo").child(expenseId).exists()) {
+                            if (child.child("riepilogo").child(expenseId).exists()) {
                                 expenseDetailsList.add(new ExpenseDetail(dataSnapshot.getValue().toString(), child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
                                 edAdapter.setListData(expenseDetailsList);
                                 edAdapter.notifyDataSetChanged();
@@ -122,7 +122,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.e("ExpenseDetailsActivity","Unable to read group members");
+                        Log.e("ExpenseDetailsActivity", "Unable to read group members");
                     }
                 });
             }
@@ -161,7 +161,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String expenseAuthor = dataSnapshot.getValue(String.class);
-                if(expenseAuthor.equals(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()))
+                if (expenseAuthor.equals(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()))
                     // Inflate the menu; this adds items to the action bar if it is present.
                     getMenuInflater().inflate(R.menu.menu_expense_details, finalMenu);
             }
@@ -192,7 +192,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 return true;
             }
             case R.id.modifyExpense: {
-                Log.d("ModifyExpense","starting modify activity");
+                Log.d("ModifyExpense", "starting modify activity");
 
                 Intent changeExpenseIntent = new Intent(this, AddExpenseActivity.class);
                 changeExpenseIntent.putExtra("ExpenseName", name);
@@ -245,6 +245,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MODIFY_CODE && resultCode == RESULT_OK) {
+            finish();
+        }
+    }
 }
 
 

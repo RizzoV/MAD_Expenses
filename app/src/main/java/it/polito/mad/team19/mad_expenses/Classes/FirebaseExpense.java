@@ -16,22 +16,28 @@ public class FirebaseExpense
     private String description;
     private Float cost;
     private String image;
+    private String isModified;
 
     public FirebaseExpense () {}
 
     public FirebaseExpense(String author, String name, String description, Float cost)
     {
-        this(author, name, description, cost, null);
+        this(author, name, description, cost, null, null);
     }
 
-    public FirebaseExpense(String author, String name, String description, Float cost, String image)
+    public FirebaseExpense(String author, String name, String description, Float cost, String image) {
+        this(author, name, description, cost, image, null);
+    }
+
+    public FirebaseExpense(String author, String name, String description, Float cost, String image, String isModified)
     {
         this.author = author;
         this.name = name;
         this.description = description;
         this.cost = cost;
         this.image = image;
-        this.key = null;
+        //this.key = null;
+        this.isModified = isModified;
     }
 
     public String getAuthor() {
