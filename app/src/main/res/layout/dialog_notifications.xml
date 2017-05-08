@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:background="@android:color/transparent"
+        android:layout_weight="2"
+        android:layout_height="match_parent">
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/ic_close"
+            android:layout_centerVertical="true"
+            />
+
+    </RelativeLayout>
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_weight="0.7"
+        android:orientation="vertical"
+        android:background="#eeeeee"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+
+            <LinearLayout
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_weight="0.7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primaryText"
+                    android:text="Bbbbolz ha aggiunto una nuova Spesa"/>
+                <TextView
+                    android:layout_weight="3"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    android:textSize="12sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/secondaryText"
+                    android:text="18 Apr"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_margin="5dp"
+                android:layout_height="0.5dp"
+                android:background="@color/dividers"/>
+
+
+            <LinearLayout
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="5dp"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_weight="0.7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primaryText"
+                    android:text="Bbbbolz ha aggiunto una nuova Spesa"/>
+                <TextView
+                    android:layout_weight="3"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    android:textSize="12sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/secondaryText"
+                    android:text="18 Apr"/>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_margin="5dp"
+                android:layout_height="0.5dp"
+                android:background="@color/dividers"/>
+
+        <LinearLayout
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_weight="0.7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/primaryText"
+                android:text="Bbbbolz ha aggiunto una nuova Spesa"/>
+            <TextView
+                android:layout_weight="3"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:textSize="12sp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/secondaryText"
+                android:text="18 Apr"/>
+
+        </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_margin="5dp"
+                android:layout_height="0.5dp"
+                android:background="@color/dividers"/>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

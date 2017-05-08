@@ -21,6 +21,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -83,7 +84,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     EditText nameEditText;
     EditText descriptionEditText;
     EditText costEditText;
-    EditText dateEditText;
+    public EditText dateEditText;
     float expenseTotal;
     String idExpense;
     ProgressDialog barProgressDialog;
@@ -120,11 +121,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         storageRef = storage.getReference();
 
         dateEditText = (EditText) findViewById(R.id.new_expense_data_et);
-        dateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+  /     dateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
 
-                if (v.hasFocus()) {
+                if(v.hasFocus()) {
                     DialogFragment newFragment = new DatePickerFragment();
                     newFragment.show(getSupportFragmentManager(), "datePicker");
                 }
@@ -137,6 +138,35 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                Intent i = new Intent(this, DatePickerFragment.class);
                startActivity(i);
        });*/
+
+        dateEditText.setInputType(InputType.TYPE_NULL);
+        dateEditText.setFocusable(false);
+
+       dateEditText.setOnClickListener(new View.OnClickListener(){
+           @Override
+           public void onClick(View view) {
+
+               String date[] = dateEditText.getText().toString().split("/");
+               Bundle argsbundle = new Bundle();
+
+               if(date.length==3)
+               {
+                   argsbundle.putInt("year",Integer.valueOf(date[2]));
+                   argsbundle.putInt("month",Integer.valueOf(date[1]));
+                   argsbundle.putInt("day",Integer.valueOf(date[0]));
+               }
+               else{
+                   Calendar c = Calendar.getInstance();
+                   argsbundle.putInt("year", c.get(Calendar.YEAR));
+                   argsbundle.putInt("month", c.get(Calendar.MONTH));
+                   argsbundle.putInt("day", c.get(Calendar.DAY_OF_MONTH));
+               }
+
+               DialogFragment newFragment = new DatePickerFragment();
+               newFragment.setArguments(argsbundle);
+               newFragment.show(getSupportFragmentManager(), "datePicker");
+           }
+       });
 
         nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
         descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
@@ -158,6 +188,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 checkCallToModify();
             }
         }
+    }
+
+
+    public void setDataEditText(String date)
+    {
+        dateEditText.setText(date);
     }
 
 
@@ -645,10 +681,34 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
+            Calendar c;
+            int year = 0, month = 0, day = 0;
+
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                // Use the current date as the default date in the picker
 
             // Create a new instance of DatePickerDialog and return it
             return new DatePickerDialog(getActivity(), this, year, month, day);
         }
+                if (getArguments() != null) {
+                    c = Calendar.getInstance();
+                    year = getArguments().getInt("year");
+                    month = getArguments().getInt("month");
+                    day = getArguments().getInt("day");
+                    c.set(year, month, day);
+                }/* else { // If the DueDate EditText line is empty (no previously selected date by the user then
+                    // set today's date into the DatePicker.
+                    // Calendar class obtains the current date on the device and has fields for
+                    // each of the parts of the date: day, month and year.
+                    c = Calendar.getInstance();
+                    year = c.get(Calendar.YEAR);
+                    month = c.get(Calendar.MONTH);
+                    day = c.get(Calendar.DAY_OF_MONTH);
+                }*/
+
+                return new DatePickerDialog(getActivity(), this, year, month, day);
+            }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
@@ -658,6 +718,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             //String formattedDate = sdf.format(c.getTime());
         }
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                // Do something with the date chosen by the user
+                Calendar c = Calendar.getInstance();
+                c.set(year, month, day);
+                ((AddExpenseActivity)getActivity()).setDataEditText(day+"/"+month+"/"+year);
+                //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                //String formattedDate = sdf.format(c.getTime());
+            }
 
     }
 

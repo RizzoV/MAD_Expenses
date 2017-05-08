@@ -2,6 +2,7 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,10 +17,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -62,8 +64,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
@@ -110,6 +110,7 @@ public class GroupActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     final ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
 
+    ProgressDialog barProgressDialog;
 
     protected static final String TAG = "firebaseAuth";
 
@@ -117,6 +118,7 @@ public class GroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
+
 
         // Get the intent which has started this activity
         Intent intent = getIntent();
@@ -338,6 +340,28 @@ public class GroupActivity extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.notifications_icon);
         MenuItemCompat.setActionView(item, R.layout.notifications_ab_layout);
         RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
+
+        barProgressDialog = new ProgressDialog(GroupActivity.this,R.style.notifications_dialog){
+            @Override
+            protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+                setContentView(R.layout.dialog_notifications);
+                getWindow().setLayout(AppBarLayout.LayoutParams.MATCH_PARENT,
+                        AppBarLayout.LayoutParams.MATCH_PARENT);
+            }
+        };
+
+        barProgressDialog.setCancelable(true);
+
+
+        notifCount.findViewById(R.id.notifications_icon_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("Clicked","click");
+                barProgressDialog.show();
+            }
+        });
+
 
         // Set up a listener which is able to get the number of notifications for the user in this group
         final TextView tv = (TextView) notifCount.findViewById(R.id.counter);
