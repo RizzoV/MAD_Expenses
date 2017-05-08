@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
@@ -239,7 +240,7 @@ public class GroupActivity extends AppCompatActivity {
                         break;
                 }
 
-                startActivityForResult(i,resultCode);
+                startActivityForResult(i, resultCode);
             }
         });
     }
@@ -387,7 +388,7 @@ public class GroupActivity extends AppCompatActivity {
 
             case R.id.personal_profile_icon: {
                 Intent intent = new Intent(GroupActivity.this, MeActivity.class);
-                intent.putExtra("groupId",groupId);
+                intent.putExtra("groupId", groupId);
                 startActivity(intent);
                 return true;
             }
@@ -401,17 +402,22 @@ public class GroupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-            if(requestCode == 666 && resultCode == RESULT_OK){
-                Log.e("ExpenseIDActivity",data.getStringExtra("expenseId").toString());
-                if(groupMembersList.size() >0)
-                    groupMembersList.clear();
+        if (requestCode == 666 && resultCode == RESULT_OK) {
+            Log.e("ExpenseIDActivity", data.getStringExtra("expenseId").toString());
+            if (groupMembersList.size() > 0)
+                groupMembersList.clear();
 
-                //TODO: far avviare tutto in un thread e g
-                getMembers(data.getStringExtra("expenseId").toString(),Float.parseFloat(data.getStringExtra("expenseTotal")),data.getStringExtra("expenseUId"),data.getStringExtra("expenseUserName"));
-            }
+            ArrayList<FirebaseGroupMember> contributors = data.getParcelableArrayListExtra("contributors");
+            ArrayList<FirebaseGroupMember> excluded = data.getParcelableArrayListExtra("excluded");
+
+            //TODO: far avviare tutto in un thread
+            getMembers(data.getStringExtra("expenseId").toString(), Float.parseFloat(data.getStringExtra("expenseTotal")), data.getStringExtra("expenseUId"),
+                    data.getStringExtra("expenseUserName"), contributors, excluded);
+        }
     }
 
-    private void getMembers(final String expenseId, final float expenseTotal, final String expenseUuid, final String expenseUserName){
+    private void getMembers(final String expenseId, final float expenseTotal, final String expenseUuid, final String expenseUserName,
+                            final ArrayList<FirebaseGroupMember> contributors, final ArrayList<FirebaseGroupMember> excluded) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
 
@@ -419,50 +425,77 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Log.e("MembriSnap",dataSnapshot.getValue().toString());
-                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
+                    Log.e("MembriSnap", dataSnapshot.getValue().toString());
+                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
                 }
 
-                setBalance(expenseId, expenseTotal,expenseUuid, expenseUserName);
+                setBalance(expenseId, expenseTotal, expenseUuid, expenseUserName, contributors, excluded);
 
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("GroupActivity", "Unable to read group members");
             }
         });
     }
 
-    private void setBalance(String idExpense, float expenseTotal, String expenseUserUid, String expenseUserName) {
+    private void setBalance(String idExpense, float expenseTotal, String expenseUserUid, String expenseUserName, ArrayList<FirebaseGroupMember> contributors, ArrayList<FirebaseGroupMember> excluded) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        for (int i = 0; i< groupMembersList.size(); i++) {
+    /*
+        for (int i = 0; i < groupMembersList.size(); i++) {
             final FirebaseGroupMember currentMember;
             currentMember = groupMembersList.get(i);
             //Ludo: se sono chi ha sostenuto la spesa
-            if (expenseUserUid.equals(currentMember.getUid()))
-            {
+            if (expenseUserUid.equals(currentMember.getUid())) {
                 //Ludo: devo aggiungere tutti i crediti escludendo me stesso
-                for (int j = 0; j < groupMembersList.size(); j++)
-                {
+                for (int j = 0; j < groupMembersList.size(); j++) {
                     final FirebaseGroupMember temp = groupMembersList.get(j);
-                    if (!temp.getUid().equals(expenseUserUid))
-                    {
+                    if (!temp.getUid().equals(expenseUserUid)) {
                         final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(temp.getUid());
                         myRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", expenseTotal / groupMembersList.size()));
                         myRef.child("nome").setValue(temp.getName());
                     }
                 }
-            }
-
-            else
-            {
+            } else {
                 //Ludo: se invece non sono chi ha sostenuto la spesa ho un debito verso chi l'ha sostenuta
                 final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(expenseUserUid);
                 myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
                 myRef.child("nome").setValue(expenseUserName);
 
             }
+        }
+
+   */
+        for (FirebaseGroupMember groupMember : groupMembersList) {
+            Boolean stop = Boolean.FALSE;
+            for (FirebaseGroupMember excludedMember : excluded) {
+                if (groupMember.getUid().equals(excludedMember.getUid())) {
+                    stop = Boolean.TRUE;
+                    break;
+                }
+            }
+
+            for (FirebaseGroupMember contributor : contributors) {
+                if (groupMember.getUid().equals(contributor.getUid())) {
+                    stop = Boolean.TRUE;
+                    break;
+                }
+            }
+
+            if (stop)
+                continue;
+
+            for (FirebaseGroupMember contributor : contributors) {
+                DatabaseReference debtorRef = database.getReference("utenti").child(groupMember.getUid()).child("bilancio").child(groupId).child(contributor.getUid());
+                debtorRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))));
+                debtorRef.child("nome").setValue(contributor.getName());
+
+                DatabaseReference creditorRef = database.getReference("utenti").child(contributor.getUid()).child("bilancio").child(groupId).child(groupMember.getUid());
+                creditorRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))));
+                creditorRef.child("nome").setValue(groupMember.getName());
+            }
+
         }
     }
 
@@ -549,12 +582,22 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
+            adapter.SetOnItemLongClickListener(new ExpensesRecyclerAdapter.OnItemLongClickListener() {
+                @Override
+                public void onItemLongClick(View view, int position) {
+                    Log.e("DebugExpenseLongClicked", position + "item clicked");
+                    DialogFragment newFragment = new GalleryOrCameraDialog();
+                    newFragment.show(getActivity().getSupportFragmentManager(), "imageDialog");
+                }
+            });
+
+
             LinearLayout meCardViewLayout = (LinearLayout) rootView.findViewById(R.id.credits_cv_ll);
             meCardViewLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), MeActivity.class);
-                    intent.putExtra("groupId",getActivity().getIntent().getStringExtra("groupId"));
+                    intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                     startActivity(intent);
                 }
             });

@@ -44,7 +44,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ImageView expense_img;
     private ListView expense_details_listview;
     private String expenseAuthor;
-
+    private String imgUrl;
+    private String name;
+    private String desc;
+    private String cost;
+    private String authorId;
+    private String groupId;
+    private String expenseId;
+    static final int MODIFY_CODE = 17;
 
 
     @Override
@@ -54,13 +61,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         setTitle("Dettagli Spesa");
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        String name = getIntent().getStringExtra("ExpenseName");
-        String desc = getIntent().getStringExtra("ExpenseDesc");
-        String imgUrl = getIntent().getStringExtra("ExpenseImgUrl");
-        String cost = getIntent().getStringExtra("ExpenseCost");
-        String authorId = getIntent().getStringExtra("ExpenseAuthorId");
-        final String groupId = getIntent().getStringExtra("groupId");
-        final String expenseId = getIntent().getStringExtra("ExpenseId");
+        name = getIntent().getStringExtra("ExpenseName");
+        desc = getIntent().getStringExtra("ExpenseDesc");
+        imgUrl = getIntent().getStringExtra("ExpenseImgUrl");
+        authorId = getIntent().getStringExtra("ExpenseAuthorId");
+        cost = getIntent().getStringExtra("ExpenseCost");
+        groupId = getIntent().getStringExtra("groupId");
+        expenseId = getIntent().getStringExtra("ExpenseId");
 
 
         expense_name = (TextView) findViewById(R.id.expense_name);
@@ -95,17 +102,43 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_details_listview.setAdapter(edAdapter);
 
         final FirebaseDatabase fbDatabase = FirebaseDatabase.getInstance();
-        final DatabaseReference groupMembersDbRef = fbDatabase.getReference("utenti").child(authorId).child("bilancio").child(groupId);
-        groupMembersDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        DatabaseReference expenseContributorsRef = fbDatabase.getReference("gruppi").child(groupId).child("expenses").child(expenseId).child("contributors");
+        expenseContributorsRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if(child.child("riepilogo").child(expenseId).exists()) {
-                        expenseDetailsList.add(new ExpenseDetail(expenseAuthor, child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
-                        edAdapter.setListData(expenseDetailsList);
-                        edAdapter.notifyDataSetChanged();
+            public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
+                final DatabaseReference groupMembersDbRef = fbDatabase.getReference("utenti").child(dataSnapshot.getKey()).child("bilancio").child(groupId);
+                groupMembersDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot2) {
+                        for (DataSnapshot child : dataSnapshot2.getChildren()) {
+                            if(child.child("riepilogo").child(expenseId).exists()) {
+                                expenseDetailsList.add(new ExpenseDetail(dataSnapshot.getValue().toString(), child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
+                                edAdapter.setListData(expenseDetailsList);
+                                edAdapter.notifyDataSetChanged();
+                            }
+                        }
                     }
-                }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("ExpenseDetailsActivity","Unable to read group members");
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
             }
 
@@ -114,6 +147,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     @Override
@@ -156,6 +190,20 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 newFragment.show(getSupportFragmentManager(), "confirmExpenseDeletion");
 
                 return true;
+            }
+            case R.id.modifyExpense: {
+                Log.d("ModifyExpense","starting modify activity");
+
+                Intent changeExpenseIntent = new Intent(this, AddExpenseActivity.class);
+                changeExpenseIntent.putExtra("ExpenseName", name);
+                changeExpenseIntent.putExtra("ExpenseImgUrl", imgUrl);
+                changeExpenseIntent.putExtra("ExpenseDesc", desc);
+                changeExpenseIntent.putExtra("ExpenseCost", cost);
+                changeExpenseIntent.putExtra("ExpenseAuthorId", expenseAuthor);
+                changeExpenseIntent.putExtra("groupId", groupId);
+                changeExpenseIntent.putExtra("ExpenseId", expenseId);
+                changeExpenseIntent.putExtra("ModifyIntent", "1");
+                startActivityForResult(changeExpenseIntent, MODIFY_CODE);
             }
 
             default:

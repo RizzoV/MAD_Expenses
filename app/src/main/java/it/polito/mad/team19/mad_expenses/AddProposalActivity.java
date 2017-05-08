@@ -1,6 +1,5 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -43,7 +42,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 
 /**
  * Created by Valentino on 04/04/2017.
@@ -227,7 +225,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 
     public void addListenerOnImageButton() {
 
-        imageButton = (ImageButton) findViewById(R.id.image);
+        imageButton = (ImageButton) findViewById(R.id.new_expense_image_button);
 
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override

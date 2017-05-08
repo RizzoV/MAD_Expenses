@@ -4,10 +4,19 @@
     tools:context="it.polito.mad.team19.mad_expenses.GroupActivity">
 
     <item
+        android:id="@+id/modifyExpense"
+        android:icon="@drawable/ic_modify_expense"
+        app:showAsAction="ifRoom"
+        android:title="@string/modify_expense"
+        />
+
+    <item
         android:id="@+id/deleteExpense"
         android:icon="@drawable/ic_delete"
-        app:showAsAction="always"
-        android:title="continue"
+        app:showAsAction="ifRoom"
+        android:title="@string/delete_expense"
         />
+
+
 
 </menu>

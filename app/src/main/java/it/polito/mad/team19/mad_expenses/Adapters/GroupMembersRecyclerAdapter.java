@@ -33,7 +33,7 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.contributors_list_row, parent, false);
+        View view = mInflater.inflate(R.layout.group_members_popup_list_row, parent, false);
         MyViewHolder holder = new MyViewHolder(view);
         return holder;
     }

@@ -9,8 +9,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,28 +20,22 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -85,6 +77,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private Uri mCurrentPhotoFirebaseUri;
     StorageReference storageRef;
     StorageReference groupImagesRef;
+    private EditText nameEditText;
+    private EditText descriptionEditText;
+    private EditText costEditText;
     EditText nameEditText;
     EditText descriptionEditText;
     EditText costEditText;
@@ -92,8 +87,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     float expenseTotal;
     String idExpense;
     ProgressDialog barProgressDialog;
-
-
+    private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
+    private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
 
 
     @Override
@@ -131,25 +126,48 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                startActivity(i);
        });*/
 
+        nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
+        descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
+        costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(AddExpenseActivity.this,
                         new String[]{Manifest.permission.READ_CONTACTS},
                         STORAGE_REQUEST);
-
             } else {
-
-
                 // The permission is granted, we can perform the action
-        addListenerOnDoneButton();
-        addListenerOnImageButton();
+                addListenerOnDoneButton();
+                addListenerOnImageButton();
 
-        // only done for the expenses
-        addListenerOnContributorsButton();
-        addListenerOnExcludedButton();
+                // only done for the expenses
+                addListenerOnContributorsButton();
+                addListenerOnExcludedButton();
+                checkCallToModify();
             }
         }
+    }
 
+    //Jured: setta l'activity se vede che è stata chimata per modificare la spesa
+    private void checkCallToModify() {
+        Log.e("DebugModifyExpense", "CallToModifyCheck");
+        if (getIntent().getStringExtra("ModifyIntent") != null) {
+            Log.e("DebugModifyExpense", "CallToModifyDetected");
+            String name = getIntent().getStringExtra("ExpenseName");
+            String desc = getIntent().getStringExtra("ExpenseDesc");
+            String imgUrl = getIntent().getStringExtra("ExpenseImgUrl");
+            String authorId = getIntent().getStringExtra("ExpenseAuthorId");
+            String cost = getIntent().getStringExtra("ExpenseCost");
+            String groupId = getIntent().getStringExtra("groupId");
+            String expenseId = getIntent().getStringExtra("ExpenseId");
+
+            getSupportActionBar().setTitle("Modifica Spesa");
+            //getSupportActionBar().home
+
+            nameEditText.setText(name);
+            descriptionEditText.setText(desc);
+            costEditText.setText(cost);
+        }
     }
 
 
@@ -160,8 +178,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ContributorsPopupActivity.class);
-                i.putExtra("groupId",groupId);
-                startActivity(i);
+                i.putExtra("groupId", groupId);
+                startActivityForResult(i, REQUEST_CONTRIBUTORS);
             }
         });
     }
@@ -173,12 +191,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ExcludedPopupActivity.class);
-                i.putExtra("groupId",groupId);
-                startActivity(i);
+                i.putExtra("groupId", groupId);
+                startActivityForResult(i, REQUEST_EXCLUDED);
             }
         });
     }
-
 
     private void addListenerOnDoneButton() {
 
@@ -190,7 +207,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onClick(View v) {
 
                 //LUDO: progressDialog a tutto schermo con sfondo sfocato
-                barProgressDialog = new ProgressDialog(AddExpenseActivity.this,R.style.full_screen_dialog){
+                barProgressDialog = new ProgressDialog(AddExpenseActivity.this, R.style.full_screen_dialog) {
                     @Override
                     protected void onCreate(Bundle savedInstanceState) {
                         super.onCreate(savedInstanceState);
@@ -205,10 +222,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                 boolean invalidFields = false;
 
-
-                nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
+                //Jured: spostate nella onCreate();
+                /*nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
                 descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
-                costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
+                costEditText = (EditText) findViewById(R.id.new_expense_cost_et);*/
 
                 if (TextUtils.isEmpty(nameEditText.getText().toString())) {
                     nameEditText.setError(getString(R.string.mandatory_field));
@@ -240,11 +257,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         }
                     };
 
-                    expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",","."));
+                    expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
 
-                   uploadInfos();
-                }
-                else {
+                    uploadInfos();
+                } else {
                     // In modo da poter riscrivere qualcosa nel campo
                     barProgressDialog.dismiss();
                 }
@@ -283,13 +299,13 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
                     groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    Log.e("DebugUriRequest", uri.toString());
-                                    newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                                            Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Log.e("DebugUriRequest", uri.toString());
+                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                                    Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
                             // Handle any errors
@@ -299,22 +315,30 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 }
             });
         } else {
-            Log.e("DebugCaricamentoSpesa","NoImage");
+            Log.e("DebugCaricamentoSpesa", "NoImage");
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
+            for(FirebaseGroupMember member : excludedList) {
+                newExpenseRef.child("excluded").child(member.getUid()).setValue(member.getName());
+            }
+            for(FirebaseGroupMember member : contributorsList) {
+                newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());
+            }
         }
 
         barProgressDialog.dismiss();
 
-        getIntent().putExtra("expenseId",idExpense.toString());
-        getIntent().putExtra("expenseTotal",expenseTotal+"");
-        getIntent().putExtra("expenseUId",mAuth.getCurrentUser().getUid().toString());
-        getIntent().putExtra("expenseUserName",mAuth.getCurrentUser().getDisplayName().toString());
-        setResult(RESULT_OK,getIntent());
+        getIntent().putExtra("expenseId", idExpense);
+        getIntent().putExtra("expenseTotal", expenseTotal + "");
+        getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid());
+        getIntent().putExtra("expenseUserName", mAuth.getCurrentUser().getDisplayName());
+        Bundle b = new Bundle();
+        b.putParcelableArrayList("contributors", contributorsList);
+        b.putParcelableArrayList("excluded", excludedList);
+        getIntent().putExtras(b);
+        setResult(RESULT_OK, getIntent());
         finish();
     }
-
-
 
 
     public void addListenerOnImageButton() {
@@ -326,12 +350,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onClick(View view) {
                 DialogFragment newFragment = new GalleryOrCameraDialog();
                 newFragment.show(getSupportFragmentManager(), "imageDialog");
-
             }
-
         });
-
-
     }
 
 
@@ -357,8 +377,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     static final int REQUEST_IMAGE_CAPTURE = 0;
     static final int REQUEST_TAKE_PHOTO = 1;
     static final int REQUEST_GALLERY_IMAGE = 2;
+    static final int REQUEST_CONTRIBUTORS = 3;
+    static final int REQUEST_EXCLUDED = 4;
 
-    //TODO check sul resultCode
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Log.d("DEBUG AGGIUNTA FOTO: ", mCurrentPhotoPath);
@@ -367,8 +388,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         StorageReference storageRef = storage.getReference();
         StorageReference groupImagesRef = storageRef.child("images").child(groupId);
 
-        if(requestCode == REQUEST_TAKE_PHOTO) {
-
+        if (requestCode == REQUEST_TAKE_PHOTO) {
 
             //uploadImageToFirebase(mCurrentPhotoPath);
 
@@ -391,12 +411,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             Log.d("DEBUG APP: ", mCurrentPhotoPath);
         }
 
-        if(requestCode == REQUEST_GALLERY_IMAGE){
-
-                if (data != null) {
-
+        if (requestCode == REQUEST_GALLERY_IMAGE) {
+            if (data != null) {
                 Uri selectedImage = data.getData();
-
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
                 Log.e("DebugGalleryImage:", selectedImage.getPath());
@@ -409,27 +426,28 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
 
-                    Log.e("DebugGalleryImage:2", mCurrentPhotoPath);
+                Log.e("DebugGalleryImage:2", mCurrentPhotoPath);
 
-
-                    setImageView(mCurrentPhotoPath);
-
-
-
+                setImageView(mCurrentPhotoPath);
             }
-                //uploadImageToFirebase(mCurrentPhotoPath);
+        }
 
-            /*
-                File imageToUpload = new File(selectedImagePath);
+        if (requestCode == REQUEST_CONTRIBUTORS) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                contributorsList = extras.getParcelableArrayList("parceledContributors");
+                for (FirebaseGroupMember m : contributorsList)
+                    Log.d("CurrentContributor", m.getName());
+            }
+        }
 
-                Bitmap fileBitmap = BitmapFactory.decodeFile(selectedImagePath);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-                byte[] datas = baos.toByteArray();
-                mImageView.setImageBitmap(fileBitmap);
-                UploadTask uploadTask = groupImagesRef.child(imageToUpload.getName()).putBytes(datas);
-                */
-
+        if (requestCode == REQUEST_EXCLUDED) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                excludedList = extras.getParcelableArrayList("parceledExcluded");
+                for (FirebaseGroupMember m : excludedList)
+                    Log.d("CurrentExcluded", m.getName());
+            }
         }
     }
 
@@ -478,7 +496,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }*/
 
-    private void uploadImageToFirebase(String filePath){
+    private void uploadImageToFirebase(String filePath) {
 
         groupImagesRef = storageRef.child("images").child(groupId);
 
@@ -490,7 +508,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
         byte[] datas = baos.toByteArray();
         mImageView.setImageBitmap(fileBitmap);
-        mCurrentPhotoName= imageToUpload.getName();
+        mCurrentPhotoName = imageToUpload.getName();
         UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -579,7 +597,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     public void onDialogGalleryClick(DialogFragment dialog) {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto , REQUEST_GALLERY_IMAGE);
+        startActivityForResult(pickPhoto, REQUEST_GALLERY_IMAGE);
     }
 
     @Override
@@ -605,7 +623,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                 }
                 return;
-            }
+        }
 
             // other 'case' lines to check for other
             // permissions this app might request
@@ -644,4 +662,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
 
     }
+        // other 'case' lines to check for other
+        // permissions this app might request
+    }
+}
 

@@ -20,8 +20,8 @@
         android:id="@+id/contributors_lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/contributors_list_row"
         android:layout_below="@id/select_contributors_description_tv"
+        tools:listitem="@layout/group_members_popup_list_row"
       />
 
     <android.support.design.widget.FloatingActionButton
