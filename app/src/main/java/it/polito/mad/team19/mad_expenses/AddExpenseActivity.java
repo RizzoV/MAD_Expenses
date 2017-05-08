@@ -77,9 +77,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private Uri mCurrentPhotoFirebaseUri;
     StorageReference storageRef;
     StorageReference groupImagesRef;
-    private EditText nameEditText;
-    private EditText descriptionEditText;
-    private EditText costEditText;
     EditText nameEditText;
     EditText descriptionEditText;
     EditText costEditText;
@@ -664,6 +661,5 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
         // other 'case' lines to check for other
         // permissions this app might request
-    }
-}
+
 
