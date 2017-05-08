@@ -43,6 +43,18 @@ public class ContributorsPopupActivity extends Activity {
         // Prendi la lista dei membri del gruppo
         String groupId = getIntent().getExtras().getString("groupId");
 
+        // Non occupare tutto lo schermo
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+        getWindow().setLayout((int) (width * .95), (int) (height * .9));
+
+        // Check if there already are some selected members
+        if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty()) {
+            selectedMembers = getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList");
+        }
+
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference groupMembersRef = database.getReference("gruppi").child(groupId).child("membri");
 
@@ -54,17 +66,64 @@ public class ContributorsPopupActivity extends Activity {
         final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors);
         contributors_lv.setAdapter(groupMembersAdapter);
 
-                contributors_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        groupMembersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int nMembers = 0;
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                    nMembers++;
+                }
+                if (nMembers == 0)
+                    Log.d("Contributors", "no other members in the group!");
+                else {
+                    groupMembersAdapter.notifyDataSetChanged();
+                }
+
+                // Preselect eventual already selected members
+                for (FirebaseGroupMember fbgm : selectedMembers) {
+                    // Select them in the view
+                    int itemPos = groupMembersAdapter.getPositionFromUid(fbgm.getUid());
+                    if (itemPos != -1) {
+                        CheckBox check = (CheckBox) groupMembersAdapter.getView(itemPos, null, contributors_lv).findViewById(R.id.contributor_checkbox);
+                        check.setChecked(true);
+                        check.invalidate();
+                        Log.e("DEBUG", "Status of check n." + itemPos + ": " + check.isChecked());
+                    } else
+                        Log.e("ContributorsPopup", "Could not find the item corresponding to the UID" + fbgm.getUid() + "in the ListView");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("ContributorsPopup", "Could not read group members");
+            }
+        });
+
+        contributors_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("DebugContributorsCheck", "Selected item no. " + position);
                 CheckBox contributorCheckBox = (CheckBox) view.findViewById(R.id.contributor_checkbox);
+                FirebaseGroupMember selectedMember = (FirebaseGroupMember) parent.getItemAtPosition(position);
+                Log.e("DEBUG", "Now you clicked - Was " + contributorCheckBox.isChecked());
                 if (!contributorCheckBox.isChecked()) {
                     contributorCheckBox.setChecked(true);
-                    selectedMembers.add((FirebaseGroupMember) parent.getItemAtPosition(position));
+                    Boolean found = Boolean.FALSE;
+                    for(FirebaseGroupMember fbgm : selectedMembers) {
+                        if (fbgm.getUid().equals(selectedMember.getUid())) {
+                            found = Boolean.TRUE;
+                            break;
+                        }
+                    }
+                    if(!found)
+                        selectedMembers.add(selectedMember);
                 } else {
                     contributorCheckBox.setChecked(false);
-                    selectedMembers.remove(parent.getItemAtPosition(position));
+                    for(int i = 0; i< selectedMembers.size(); i++) {
+                        if(selectedMembers.get(i).getUid().equals(selectedMember.getUid()))
+                            selectedMembers.remove(i);
+                    }
                 }
                 contributorCheckBox.invalidate();
             }
@@ -82,35 +141,5 @@ public class ContributorsPopupActivity extends Activity {
                 finish();
             }
         });
-
-
-        groupMembersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int nMembers = 0;
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
-                        nMembers++;
-                }
-                if (nMembers == 0)
-                    Log.d("Contributors", "no other members in the group!");
-                else {
-                    groupMembersAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("ContributorsPopup", "Could not read group members");
-            }
-        });
-
-        // Non occupare tutto lo schermo
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int width = dm.widthPixels;
-        int height = dm.heightPixels;
-        getWindow().setLayout((int) (width * .95), (int) (height * .9));
-
     }
 }

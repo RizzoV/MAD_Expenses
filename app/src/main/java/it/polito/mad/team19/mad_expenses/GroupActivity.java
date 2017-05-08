@@ -512,11 +512,11 @@ public class GroupActivity extends AppCompatActivity {
 
             for (FirebaseGroupMember contributor : contributors) {
                 DatabaseReference debtorRef = database.getReference("utenti").child(groupMember.getUid()).child("bilancio").child(groupId).child(contributor.getUid());
-                debtorRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))));
+                debtorRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
                 debtorRef.child("nome").setValue(contributor.getName());
 
                 DatabaseReference creditorRef = database.getReference("utenti").child(contributor.getUid()).child("bilancio").child(groupId).child(groupMember.getUid());
-                creditorRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))));
+                creditorRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
                 creditorRef.child("nome").setValue(groupMember.getName());
             }
 

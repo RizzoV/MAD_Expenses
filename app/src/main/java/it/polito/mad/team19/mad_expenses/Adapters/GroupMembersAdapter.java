@@ -2,6 +2,7 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -42,18 +43,22 @@ public class GroupMembersAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
-    {
-        if (convertView==null)
-        {
-            convertView=context.getLayoutInflater().inflate(R.layout.group_members_popup_list_row,parent,false);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = context.getLayoutInflater().inflate(R.layout.group_members_popup_list_row, parent, false);
         }
-
         TextView username = (TextView) convertView.findViewById(R.id.username_checkedtv);
-
         username.setText(membersList.get(position).getName());
-
-
         return convertView;
+    }
+
+    public int getPositionFromUid(String Uid) {
+        for (int position = 0; position < membersList.size(); position++) {
+            if (membersList.get(position).getUid().equals(Uid)) {
+                Log.d("GroupMembersAdapter", "getPositionFromUid - Returning no." + position);
+                return position;
+            }
+        }
+        return -1;
     }
 }
