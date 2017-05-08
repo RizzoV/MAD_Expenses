@@ -78,7 +78,6 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
         }
 
         //LUDO: aggiunto metodo onItemClickListener
-
         @Override
         public void onClick(View v) {
             if (mItemClickListener != null) {

@@ -2,12 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        NinjaPirateInc {
-            keyAlias 'ninjapirateinc'
-            keyPassword 'M5N4o3p2o1'
-            storeFile file('/home/ikkoyeah/App/ninjapirateinc.jks')
-            storePassword 'M5N4o3p2o1'
-        }
     }
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -18,7 +12,6 @@ android {
         versionCode 9
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.NinjaPirateInc
     }
     buildTypes {
         release {

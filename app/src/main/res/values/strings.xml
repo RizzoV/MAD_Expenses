@@ -28,6 +28,7 @@
     <!-- Strings related to the creation of a new expense -->
     <string name="expense_name">Expense name</string>
     <string name="description">Description</string>
+    <string name="date">Date</string>
     <string name="price">Price</string>
     <string name="create_new_expense">Create a new expense</string>
     <string name="add_expense_image">Add an image to the expense</string>

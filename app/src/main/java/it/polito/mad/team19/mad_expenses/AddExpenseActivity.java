@@ -1,6 +1,8 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,6 +29,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -50,10 +53,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+
+import static it.polito.mad.team19.mad_expenses.R.id.new_expense_data_et;
 
 /**
  * Created by Bolz on 03/04/2017.
@@ -82,6 +88,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     EditText nameEditText;
     EditText descriptionEditText;
     EditText costEditText;
+    EditText dateEditText;
     float expenseTotal;
     String idExpense;
     ProgressDialog barProgressDialog;
@@ -104,6 +111,25 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         mImageView = (ImageView) findViewById(R.id.camera_img);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+
+        dateEditText = (EditText) findViewById(R.id.new_expense_data_et);
+        dateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+
+                if(v.hasFocus()) {
+                    DialogFragment newFragment = new DatePickerFragment();
+                    newFragment.show(getSupportFragmentManager(), "datePicker");
+                }
+            }
+        });
+
+       /*dateEditText.setOnClickListener(new View.OnClickListener(){
+           @Override
+           public void onClick(View view) {
+               Intent i = new Intent(this, DatePickerFragment.class);
+               startActivity(i);
+       });*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -584,5 +610,38 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             // other 'case' lines to check for other
             // permissions this app might request
         }
+
+        // TODO : collegare il fragment all'activity per riportare la data nel campo corretto
+        // Bolz : for the date of the expense
+        public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                // Use the current date as the default date in the picker
+                final Calendar c = Calendar.getInstance();
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH);
+                int day = c.get(Calendar.DAY_OF_MONTH);
+
+                // Create a new instance of DatePickerDialog and return it
+                return new DatePickerDialog(getActivity(), this, year, month, day);
+            }
+
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                // Do something with the date chosen by the user
+                Calendar c = Calendar.getInstance();
+                c.set(year, month, day);
+
+                //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                //String formattedDate = sdf.format(c.getTime());
+            }
+
+        }
+
+        public void showDatePickerDialog(View v) {
+            DialogFragment newFragment = new DatePickerFragment();
+            newFragment.show(getSupportFragmentManager(), "datePicker");
+        }
+
     }
 

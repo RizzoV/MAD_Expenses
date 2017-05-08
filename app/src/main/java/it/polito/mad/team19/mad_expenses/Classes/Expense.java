@@ -41,7 +41,6 @@ public class Expense {
         return imagelink;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }
