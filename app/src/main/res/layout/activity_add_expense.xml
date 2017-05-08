@@ -67,12 +67,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/description"
-                        android:inputType="text"
+                        android:inputType="none"
+                        android:focusable="false"
                         android:maxLines="10"
                         android:paddingLeft="@dimen/activity_horizontal_margin" />
                 </android.support.design.widget.TextInputLayout>
 
-                // Bolz -> for the date of the expense
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -81,8 +81,8 @@
                         android:id="@+id/new_expense_data_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="date"
                         android:hint="@string/date"
-                        android:inputType="text|date"
                         android:maxLines="10"
                         android:paddingLeft="@dimen/activity_horizontal_margin"/>
                         <!--android:onClick="showDatePickerDialog"-->
