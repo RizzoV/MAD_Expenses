@@ -41,4 +41,8 @@ public class Me {
     public void setAmount(Float cost) {
         this.amount = cost;
     }
+
+    public void addPartialAmount(Float amount) {
+        this.amount += amount;
+    }
 }

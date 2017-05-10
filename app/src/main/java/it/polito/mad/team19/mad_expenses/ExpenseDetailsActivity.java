@@ -108,7 +108,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expenseContributorsRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(final DataSnapshot contributor, String s) {
-                Log.e("Contributor key", contributor.getKey());
                 DataSnapshot riepilogo = contributor.child("riepilogo");
                 for (DataSnapshot debtor : riepilogo.getChildren()) {
                     expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), debtor.child("amount").getValue().toString(), null, null));
@@ -118,23 +117,25 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+            public void onChildChanged(DataSnapshot contributor, String s) {
+                // Non gestire questo caso live ma riaggiorna la lista quando viene ricaricata l'activity
+                Log.d("ExpenseDetailsActivity", "Details list child changed");
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                // Non gestire questo caso live ma riaggiorna la lista quando viene ricaricata l'activity
+                Log.d("ExpenseDetailsActivity", "Details list child removed");
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                // Non succede
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("ExpenseDetailsActivity", "Could not retrieve the list of debts");
             }
         });
 

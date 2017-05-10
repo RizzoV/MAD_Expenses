@@ -83,7 +83,7 @@ public class ContributorsPopupActivity extends Activity {
                 }
 
                 contributors_lv.invalidate();
-
+                //TODO: far funzionare sta listview, con le selezioni prese precedentemente
                 // Preselect eventual already selected members
                 for (FirebaseGroupMember fbgm : selectedMembers) {
                     // Select them in the view

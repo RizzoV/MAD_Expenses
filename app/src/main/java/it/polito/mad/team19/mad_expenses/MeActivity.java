@@ -2,6 +2,7 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +38,9 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import it.polito.mad.team19.mad_expenses.Adapters.MeRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
@@ -85,26 +89,17 @@ public class MeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         String uname = mAuth.getCurrentUser().getDisplayName();
-        if(uname == null)
+        if (uname == null)
             uname = "User";
-        else
-        if(uname.trim().isEmpty())
+        else if (uname.trim().isEmpty())
             uname = "User";
 
         me_username_tv.setText(uname);
 
-
-        //mDatabase = FirebaseDatabase.getInstance().getReference();
-
-
-
         getMembers();
-
-
-
     }
 
-    private void getMembers(){
+    private void getMembers() {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
 
@@ -112,12 +107,13 @@ public class MeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Log.e("MembriSnap",dataSnapshot.getValue().toString());
-                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
+                    Log.d("MembriSnap", dataSnapshot.getValue().toString());
+                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
                 }
 
                 getBalance();
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -127,10 +123,7 @@ public class MeActivity extends AppCompatActivity {
 
     private void getBalance() {
 
-
-
-        me = new ArrayList<Me>();
-
+        me = new ArrayList<>();
 
         final String myUid = mAuth.getCurrentUser().getUid();
 
@@ -147,43 +140,63 @@ public class MeActivity extends AppCompatActivity {
         final float[] debito = {0};
         final float[] credito = {0};
 
-        final DatabaseReference myRef = database.getReference("utenti").child(myUid).child("bilancio").child(groupId);
-
-
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference expensesRef = database.getReference("gruppi").child(groupId).child("expenses");
+        expensesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren())
-                {
+            public void onDataChange(DataSnapshot expensesSnapshot) {
+                HashMap<String, Me> balancesMap = new HashMap<>();
+
+                for (DataSnapshot expense : expensesSnapshot.getChildren()) {
                     float currentBalance = 0;
-                    String currentName = child.child("nome").getValue().toString();
-                    Log.e("Child",child.child("nome").getValue().toString());
-                    for(DataSnapshot child2:  child.child("riepilogo").getChildren())
-                    {
-                        Log.e("Expense "+child2.getKey().toString(),child2.getValue().toString());
-                        currentBalance+=Float.parseFloat(child2.getValue().toString());
+                    DataSnapshot meRef = expense.child("contributors").child(myUid);
+                    if (meRef.exists()) {
+                        // Sono un contributor
+                        for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
+                            if (balancesMap.containsKey(expenseBalance.getKey())) {
+                                balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                            } else {
+                                Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
+                                balancesMap.put(expenseBalance.getKey(), newDebtor);
+                            }
+
+                            currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
+                        }
+                    } else {
+                        meRef = expense.child("debtors").child(myUid);
+                        if (meRef.exists()) {
+                            // Sono un debtor
+                            for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
+                                if (balancesMap.containsKey(expenseBalance.getKey())) {
+                                    balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                } else {
+                                    Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
+                                    balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                }
+
+                                currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
+                            }
+                        }
                     }
 
-                    if(currentBalance>0)
-                        credito[0]+=currentBalance;
+                    if (currentBalance > 0)
+                        credito[0] += currentBalance;
                     else
-                        debito[0]+=currentBalance;
-
-                    Me e = new Me(currentName, currentBalance, Currency.getInstance("EUR"));
-                    me.add(e);
-
+                        debito[0] += currentBalance;
                 }
-                adapter.notifyDataSetChanged();
 
+                for (Me otherMember : balancesMap.values())
+                    me.add(otherMember);
+
+                adapter.notifyDataSetChanged();
 
                 //Ludo: grafico a torta
                 PieChart pieChart = (PieChart) findViewById(R.id.chart);
 
                 List<PieEntry> entries = new ArrayList<>();
 
-                if(debito[0]!=0)
+                if (debito[0] != 0)
                     entries.add(new PieEntry(-debito[0], "Debito"));
-                if(credito[0]!=0)
+                if (credito[0] != 0)
                     entries.add(new PieEntry(credito[0], "Credito"));
 
                 Legend legend = pieChart.getLegend();
@@ -191,12 +204,11 @@ public class MeActivity extends AppCompatActivity {
 
                 pieChart.setDescription(null);
 
-                PieDataSet set = new PieDataSet(entries,"Debito/Credito");
+                PieDataSet set = new PieDataSet(entries, "Debito/Credito");
 
-                if(debito[0]!=0 && credito[0]!=0)
-                    set.setColors(new int[] { R.color.redMaterial, R.color.greenMaterial}, getApplicationContext());
-                else
-                {
+                if (debito[0] != 0 && credito[0] != 0)
+                    set.setColors(new int[]{R.color.redMaterial, R.color.greenMaterial}, getApplicationContext());
+                else {
                     if (debito[0] != 0)
                         set.setColors(new int[]{R.color.redMaterial}, getApplicationContext());
                     if (credito[0] != 0)
@@ -209,22 +221,19 @@ public class MeActivity extends AppCompatActivity {
                 pieChart.setData(data);
                 pieChart.invalidate(); // refresh
 
-                if(debito[0]<0)
-                    debito_tv.setText(-debito[0]+" €");
+                if (debito[0] < 0)
+                    debito_tv.setText(-debito[0] + " €");
                 else
-                    debito_tv.setText(debito[0]+" €");
+                    debito_tv.setText(debito[0] + " €");
 
-                credito_tv.setText(credito[0]+" €");
-
+                credito_tv.setText(credito[0] + " €");
 
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("MeActivity", "Counld not retrieve the list of expenses");
             }
-
-
         });
     }
 
@@ -235,12 +244,11 @@ public class MeActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        switch(id)
-        {
+        switch (id) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
-               // finish();
+            // finish();
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -250,7 +258,7 @@ public class MeActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-           finish();
+            finish();
         }
         return super.onKeyDown(keyCode, event);
     }
