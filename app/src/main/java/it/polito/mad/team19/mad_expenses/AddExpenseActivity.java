@@ -121,13 +121,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         storageRef = storage.getReference();
 
 
-       /*dateEditText.setOnClickListener(new View.OnClickListener(){
-           @Override
-           public void onClick(View view) {
-               Intent i = new Intent(this, DatePickerFragment.class);
-               startActivity(i);
-       });*/
-
        dateEditText = (EditText) findViewById(R.id.new_expense_data_et);
         dateEditText.setInputType(InputType.TYPE_NULL);
         dateEditText.setFocusable(false);
@@ -715,6 +708,18 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             oldCost = getIntent().getStringExtra("ExpenseCost");
             oldGroupId = getIntent().getStringExtra("groupId");
             oldExpenseId = getIntent().getStringExtra("ExpenseId");
+
+
+            if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty())
+            {
+                contributorsList = getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList");
+                Log.e("ContributorB",contributorsList.get(0).getUid().toString());
+            }
+
+            if (!getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList").isEmpty())
+            {
+                excludedList = getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("ecludedList");
+            }
 
             getSupportActionBar().setTitle(R.string.modify_expense);
             //getSupportActionBar().home

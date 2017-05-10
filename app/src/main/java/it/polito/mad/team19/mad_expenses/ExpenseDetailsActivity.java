@@ -35,6 +35,7 @@ import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
 public class ExpenseDetailsActivity extends AppCompatActivity {
 
@@ -53,6 +54,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private String groupId;
     private String expenseId;
     static final int MODIFY_CODE = 17;
+    private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
+    private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
 
 
     @Override
@@ -104,34 +107,51 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
         final FirebaseDatabase fbDatabase = FirebaseDatabase.getInstance();
 
-        DatabaseReference expenseContributorsRef = fbDatabase.getReference("gruppi").child(groupId).child("expenses").child(expenseId).child("contributors");
-        expenseContributorsRef.addChildEventListener(new ChildEventListener() {
+        DatabaseReference expenseContributorsRef = fbDatabase.getReference("gruppi").child(groupId).child("expenses").child(expenseId);
+        expenseContributorsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+
             @Override
-            public void onChildAdded(final DataSnapshot contributor, String s) {
-                DataSnapshot riepilogo = contributor.child("riepilogo");
-                for (DataSnapshot debtor : riepilogo.getChildren()) {
-                    expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), debtor.child("amount").getValue().toString(), null, null));
-                    edAdapter.setListData(expenseDetailsList);
-                    edAdapter.notifyDataSetChanged();
+            public void onDataChange(DataSnapshot contributor) {
+                for(DataSnapshot contributors : contributor.child("contributors").getChildren())
+                {
+                    Log.e("Contributor",contributors.toString());
+                    for (DataSnapshot debtor : contributors.child("riepilogo").getChildren())
+                    {
+                        expenseDetailsList.add(new ExpenseDetail(contributors.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), debtor.child("amount").getValue().toString(), null, null));
+                        edAdapter.setListData(expenseDetailsList);
+                        edAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                DataSnapshot ExpenseContributors = contributor.child("contributors");
+
+                //Solo per log
+                if(!ExpenseContributors.hasChildren())
+                    Log.e("ExpenseContributors","No contributors");
+                else
+                {
+                    for(DataSnapshot currentContributor : ExpenseContributors.getChildren())
+                        contributorsList.add(new FirebaseGroupMember(currentContributor.child("nome").getValue().toString(),null,currentContributor.getKey()));
+
+                    Log.e("ExpenseContributors",contributorsList.toString());
+                }
+
+
+                DataSnapshot ExpenseExcluded = contributor.child("excluded");
+
+                //solo per log
+                if(!ExpenseExcluded.hasChildren())
+                    Log.e("ExpenseExcluded","No Excluded");
+                else
+                {
+                    for(DataSnapshot currentExcluded : ExpenseExcluded.getChildren())
+                        excludedList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue().toString(),null,currentExcluded.getKey()));
+
+                    Log.e("ExpenseExcluded",excludedList.toString());
                 }
             }
 
-            @Override
-            public void onChildChanged(DataSnapshot contributor, String s) {
-                // Non gestire questo caso live ma riaggiorna la lista quando viene ricaricata l'activity
-                Log.d("ExpenseDetailsActivity", "Details list child changed");
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                // Non gestire questo caso live ma riaggiorna la lista quando viene ricaricata l'activity
-                Log.d("ExpenseDetailsActivity", "Details list child removed");
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                // Non succede
-            }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -194,7 +214,21 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);
                 changeExpenseIntent.putExtra("ModifyIntent", "1");
-                startActivityForResult(changeExpenseIntent, MODIFY_CODE);
+                if(contributorsList!=null)
+                {
+                    Bundle b = new Bundle();
+                    b.putParcelableArrayList("contributorsList", contributorsList);
+                    changeExpenseIntent.putExtra("contributorsBundle", b);
+                }
+                if(excludedList!=null)
+                {
+                    Bundle e = new Bundle();
+                    e.putParcelableArrayList("excludedList", excludedList);
+                    changeExpenseIntent.putExtra("excludedBundle", e);
+
+                    startActivityForResult(changeExpenseIntent, MODIFY_CODE);
+
+                }
             }
 
             default:
