@@ -89,7 +89,7 @@
     <!-- Group activity -->
     <string name="noproposals">No proposals associated with the group =(</string>
     <string name="noexpenses">No expenses associated with the group =(</string>
-    <string name="progressDialogText">Adding new expense&amp;#8230</string>
+    <string name="progressDialogText">Adding new expense..</string>
     <string name="continue_string">Continue</string>
     <string name="add_person">Add person</string>
     <string name="notifications">Notifications</string>

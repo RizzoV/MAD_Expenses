@@ -148,7 +148,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 else
                 {
                     for(DataSnapshot currentExcluded : ExpenseExcluded.getChildren())
-                        excludedList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue().toString(),null,currentExcluded.getKey()));
+                        excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(),null,currentExcluded.getKey()));
 
                     Log.e("ExpenseExcluded",excludedList.toString());
                 }
