@@ -134,7 +134,7 @@ public class GroupActivity extends AppCompatActivity {
         notificationsListView = (ListView) findViewById(R.id.notification_lv);
 
         // Manage group image
-        if (groupImageUrl != null) {
+        /*if (groupImageUrl != null) {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageReference = storage.getReferenceFromUrl(groupImageUrl);
             final long ONE_MEGABYTE = 1024 * 1024;
@@ -154,7 +154,7 @@ public class GroupActivity extends AppCompatActivity {
             Drawable d = getResources().getDrawable(R.mipmap.ic_group);
             d.setBounds(0, 0, convertDipToPixels(40), convertDipToPixels(40));
             toolbar.setLogo(d);
-        }
+        }*/
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

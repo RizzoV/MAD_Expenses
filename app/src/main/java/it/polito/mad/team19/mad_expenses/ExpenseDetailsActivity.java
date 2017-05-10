@@ -127,7 +127,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 DataSnapshot ExpenseContributors = contributor.child("contributors");
 
                 //Solo per log
-                if(!ExpenseContributors.hasChildren())
+                if(ExpenseContributors.getChildrenCount()==1)
                     Log.e("ExpenseContributors","No contributors");
                 else
                 {
@@ -141,7 +141,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 DataSnapshot ExpenseExcluded = contributor.child("excluded");
 
                 //solo per log
-                if(!ExpenseExcluded.hasChildren())
+                if(ExpenseExcluded.getChildrenCount()==1)
                     Log.e("ExpenseExcluded","No Excluded");
                 else
                 {

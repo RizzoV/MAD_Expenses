@@ -66,7 +66,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         // Turn on caching
         if(myFirebaseDatabase == null) {
             myFirebaseDatabase = FirebaseDatabase.getInstance();
-            myFirebaseDatabase.setPersistenceEnabled(true);
+            //myFirebaseDatabase.setPersistenceEnabled(true);
         }
 
         userLogVerification();

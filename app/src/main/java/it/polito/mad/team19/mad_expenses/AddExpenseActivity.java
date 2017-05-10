@@ -316,7 +316,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         @Override
                         public void onSuccess(Uri uri) {
 
-                            Log.e("DebugIsModifyFlag", oldExpenseVersionId);
+                            //Log.e("DebugIsModifyFlag", oldExpenseVersionId);
                             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                                     Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
 
