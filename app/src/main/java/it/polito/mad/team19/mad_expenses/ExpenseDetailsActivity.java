@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -192,14 +194,42 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        String groupId = getIntent().getStringExtra("groupId");
-        String expenseId = getIntent().getStringExtra("ExpenseId");
+        final String groupId = getIntent().getStringExtra("groupId");
+        final String expenseId = getIntent().getStringExtra("ExpenseId");
 
         switch (id) {
             case R.id.deleteExpense: {
-                //TODO: dialog con istruzioni normali
-                /*DialogFragment newFragment = new ConfirmExpenseDeletionDialogFragment();
-                newFragment.show(getSupportFragmentManager(), "confirmExpenseDeletion");*/
+                //Dialog con istruzioni normali SENZA fragment
+
+                final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                        .setMessage(R.string.confirmExpenseDeletion)
+                        .setPositiveButton(getString(R.string.yes), null)
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .create();
+
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(final DialogInterface dialog) {
+                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                        buttonPositive.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("expenses").child(expenseId).removeValue();
+                                finish();
+                            }
+                        });
+
+                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                        buttonNegative.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.cancel();
+                            }
+                        });
+
+                    }
+                });
+                alertDialog.show();
 
                 return true;
             }
@@ -238,41 +268,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         }
     }
 
-   /* public static class ConfirmExpenseDeletionDialogFragment extends DialogFragment
-    {
-
-        private String groupId;
-        private String expenseId;
-        private Context context;
-
-        public ConfirmExpenseDeletionDialogFragment() {}
-
-        public ConfirmExpenseDeletionDialogFragment(Context context, String groupId, String expenseId) {
-            this.context = context;
-            this.groupId = groupId;
-            this.expenseId = expenseId;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the Builder class for convenient dialog construction
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.confirmExpenseDeletion)
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("expenses").child(expenseId).removeValue();
-                            ((Activity) context).finish();
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // Nothing happens
-                        }
-                    });
-            // Create the AlertDialog object and return it
-            return builder.create();
-        }
-    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
