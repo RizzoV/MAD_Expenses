@@ -43,6 +43,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     private static final int REQUEST_INVITE = 6666;
     private static final int LOGIN_CHECK = 1;
     private static final int REQUEST_GROUP_CREATION = 2;
+    private static FirebaseDatabase myFirebaseDatabase;
     ListView groupListView;
     ArrayList<Group> groups = new ArrayList<>();
     protected FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -63,7 +64,10 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         FirebaseApp.initializeApp(getApplicationContext());
 
         // Turn on caching
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        if(myFirebaseDatabase == null) {
+            myFirebaseDatabase = FirebaseDatabase.getInstance();
+            myFirebaseDatabase.setPersistenceEnabled(true);
+        }
 
         userLogVerification();
 

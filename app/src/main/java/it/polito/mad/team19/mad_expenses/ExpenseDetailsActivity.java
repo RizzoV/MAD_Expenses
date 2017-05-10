@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -106,25 +107,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         DatabaseReference expenseContributorsRef = fbDatabase.getReference("gruppi").child(groupId).child("expenses").child(expenseId).child("contributors");
         expenseContributorsRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
-                final DatabaseReference groupMembersDbRef = fbDatabase.getReference("utenti").child(dataSnapshot.getKey()).child("bilancio").child(groupId);
-                groupMembersDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot2) {
-                        for (DataSnapshot child : dataSnapshot2.getChildren()) {
-                            if (child.child("riepilogo").child(expenseId).exists()) {
-                                expenseDetailsList.add(new ExpenseDetail(dataSnapshot.getValue().toString(), child.child("nome").getValue().toString(), child.child("riepilogo").child(expenseId).getValue().toString(), null, null));
-                                edAdapter.setListData(expenseDetailsList);
-                                edAdapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e("ExpenseDetailsActivity", "Unable to read group members");
-                    }
-                });
+            public void onChildAdded(final DataSnapshot contributor, String s) {
+                Log.e("Contributor key", contributor.getKey());
+                DataSnapshot riepilogo = contributor.child("riepilogo");
+                for (DataSnapshot debtor : riepilogo.getChildren()) {
+                    expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), debtor.child("amount").getValue().toString(), null, null));
+                    edAdapter.setListData(expenseDetailsList);
+                    edAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override

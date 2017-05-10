@@ -195,7 +195,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ContributorsPopupActivity.class);
                 i.putExtra("groupId", groupId);
-                ArrayList<FirebaseGroupMember> initialContributors = new ArrayList<>();
+                ArrayList<FirebaseGroupMember> initialContributors = new ArrayList<>(contributorsList);
                 Bundle b = new Bundle();
                 b.putParcelableArrayList("contributorsList", initialContributors);
                 i.putExtra("contributorsBundle", b);

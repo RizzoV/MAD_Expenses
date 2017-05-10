@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
@@ -32,6 +33,9 @@ public class ContributorsPopupActivity extends Activity {
     private FirebaseAuth mAuth;
     private String uid;
     private ListView contributors_lv;
+
+    final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
+    final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors);
 
     ArrayList<FirebaseGroupMember> selectedMembers = new ArrayList<>();
 
@@ -62,8 +66,6 @@ public class ContributorsPopupActivity extends Activity {
         uid = mAuth.getCurrentUser().getUid();
 
         contributors_lv = (ListView) findViewById(R.id.contributors_lv);
-        final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
-        final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors);
         contributors_lv.setAdapter(groupMembersAdapter);
 
         groupMembersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -80,10 +82,13 @@ public class ContributorsPopupActivity extends Activity {
                     groupMembersAdapter.notifyDataSetChanged();
                 }
 
+                contributors_lv.invalidate();
+
                 // Preselect eventual already selected members
                 for (FirebaseGroupMember fbgm : selectedMembers) {
                     // Select them in the view
                     int itemPos = groupMembersAdapter.getPositionFromUid(fbgm.getUid());
+                    Log.e("Già checkato: ", fbgm.getName() + ", posizione: " + String.valueOf(itemPos));
                     if (itemPos != -1) {
                         CheckBox check = (CheckBox) groupMembersAdapter.getView(itemPos, null, contributors_lv).findViewById(R.id.contributor_checkbox);
                         check.setChecked(true);
@@ -110,18 +115,18 @@ public class ContributorsPopupActivity extends Activity {
                 if (!contributorCheckBox.isChecked()) {
                     contributorCheckBox.setChecked(true);
                     Boolean found = Boolean.FALSE;
-                    for(FirebaseGroupMember fbgm : selectedMembers) {
+                    for (FirebaseGroupMember fbgm : selectedMembers) {
                         if (fbgm.getUid().equals(selectedMember.getUid())) {
                             found = Boolean.TRUE;
                             break;
                         }
                     }
-                    if(!found)
+                    if (!found)
                         selectedMembers.add(selectedMember);
                 } else {
                     contributorCheckBox.setChecked(false);
-                    for(int i = 0; i< selectedMembers.size(); i++) {
-                        if(selectedMembers.get(i).getUid().equals(selectedMember.getUid()))
+                    for (int i = 0; i < selectedMembers.size(); i++) {
+                        if (selectedMembers.get(i).getUid().equals(selectedMember.getUid()))
                             selectedMembers.remove(i);
                     }
                 }
@@ -142,4 +147,5 @@ public class ContributorsPopupActivity extends Activity {
             }
         });
     }
+
 }

@@ -144,6 +144,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/card">
 
+
             <TextView
                 android:id="@+id/debits_and_credits_tv"
                 android:layout_width="match_parent"
@@ -152,15 +153,14 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/debits_and_credits" />
 
+
             <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:id="@+id/fromto_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_below="@+id/debits_and_credits_tv"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+                android:layout_below="@+id/debits_and_credits_tv" />
 
 
         </RelativeLayout>
