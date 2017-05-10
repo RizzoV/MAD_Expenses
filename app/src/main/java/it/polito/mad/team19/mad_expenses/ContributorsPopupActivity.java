@@ -110,11 +110,10 @@ public class ContributorsPopupActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("DebugContributorsCheck", "Selected item no. " + position);
-                CheckBox contributorCheckBox = (CheckBox) view.findViewById(R.id.contributor_checkbox);
                 FirebaseGroupMember selectedMember = (FirebaseGroupMember) parent.getItemAtPosition(position);
-                Log.e("DEBUG", "Now you clicked - Was " + contributorCheckBox.isChecked());
-                if (!contributorCheckBox.isChecked()) {
-                    contributorCheckBox.setChecked(true);
+                if (!selectedMember.isChecked())
+                {
+                    selectedMember.check(true);
                     Boolean found = Boolean.FALSE;
                     for (FirebaseGroupMember fbgm : selectedMembers) {
                         if (fbgm.getUid().equals(selectedMember.getUid())) {
@@ -125,13 +124,14 @@ public class ContributorsPopupActivity extends Activity {
                     if (!found)
                         selectedMembers.add(selectedMember);
                 } else {
-                    contributorCheckBox.setChecked(false);
+                    selectedMember.check(false);
                     for (int i = 0; i < selectedMembers.size(); i++) {
                         if (selectedMembers.get(i).getUid().equals(selectedMember.getUid()))
                             selectedMembers.remove(i);
                     }
                 }
-                contributorCheckBox.invalidate();
+
+                groupMembersAdapter.notifyDataSetChanged();
             }
         });
 

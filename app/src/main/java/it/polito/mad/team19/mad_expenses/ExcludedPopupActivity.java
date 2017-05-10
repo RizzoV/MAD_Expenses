@@ -58,15 +58,15 @@ public class ExcludedPopupActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("DebugContributorsCheck", "Selected item no. " + position);
-                CheckBox contributorCheckBox = (CheckBox) view.findViewById(R.id.contributor_checkbox);
-                if (!contributorCheckBox.isChecked()) {
-                    contributorCheckBox.setChecked(true);
+                FirebaseGroupMember selectedMember = (FirebaseGroupMember) parent.getItemAtPosition(position);
+                if (!selectedMember.isChecked()) {
+                    selectedMember.check(true);
                     selectedMembers.add((FirebaseGroupMember) parent.getItemAtPosition(position));
                 } else {
-                    contributorCheckBox.setChecked(false);
+                    selectedMember.check(false);
                     selectedMembers.remove(parent.getItemAtPosition(position));
                 }
-                contributorCheckBox.invalidate();
+                groupMembersAdapter.notifyDataSetChanged();
             }
         });
 
