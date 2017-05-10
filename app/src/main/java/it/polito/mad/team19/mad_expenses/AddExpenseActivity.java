@@ -205,13 +205,16 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     private void addListenerOnExcludedButton() {
-        Button contributorsButton = (Button) findViewById(R.id.excluded_button);
+        Button excludedButton = (Button) findViewById(R.id.excluded_button);
 
-        contributorsButton.setOnClickListener(new Button.OnClickListener() {
+        excludedButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(AddExpenseActivity.this, ExcludedPopupActivity.class);
                 i.putExtra("groupId", groupId);
+                Bundle b = new Bundle();
+                b.putParcelableArrayList("excludedList", excludedList);
+                i.putExtra("excludedBundle", b);
                 startActivityForResult(i, REQUEST_EXCLUDED);
             }
         });
@@ -747,7 +750,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             if (!getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList").isEmpty())
             {
-                excludedList = getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("ecludedList");
+                excludedList = getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList");
             }
 
             getSupportActionBar().setTitle(R.string.modify_expense);

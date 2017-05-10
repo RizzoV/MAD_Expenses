@@ -43,6 +43,11 @@ public class ExcludedPopupActivity extends Activity {
 
         String groupId = getIntent().getExtras().getString("groupId");
 
+        if (!getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList").isEmpty())
+        {
+            selectedMembers = getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList");
+        }
+
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference groupMembersRef = database.getReference("gruppi").child(groupId).child("membri");
 
@@ -96,6 +101,18 @@ public class ExcludedPopupActivity extends Activity {
                     Log.d("Excluded", "no other members in the group!");
                 else {
                     groupMembersAdapter.notifyDataSetChanged();
+                }
+                for (FirebaseGroupMember fbgm : selectedMembers) {
+                    // Select them in the view
+
+                    int itemPos = groupMembersAdapter.getPositionFromUid(fbgm.getUid());
+
+                    if (itemPos != -1) {
+                        //LUDO: per ceccare
+                        contributors.get(itemPos).check(true);
+                        groupMembersAdapter.notifyDataSetChanged();
+                    } else
+                        Log.e("ContributorsPopup", "Could not find the item corresponding to the UID" + fbgm.getUid() + "in the ListView");
                 }
             }
 
