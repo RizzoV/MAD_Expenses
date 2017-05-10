@@ -160,7 +160,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(AddExpenseActivity.this,
-                        new String[]{Manifest.permission.READ_CONTACTS},
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         STORAGE_REQUEST);
             } else {
                 // The permission is granted, we can perform the action
