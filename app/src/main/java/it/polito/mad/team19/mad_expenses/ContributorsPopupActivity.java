@@ -114,6 +114,7 @@ public class ContributorsPopupActivity extends Activity {
                 if (!selectedMember.isChecked())
                 {
                     selectedMember.check(true);
+                    groupMembersAdapter.notifyDataSetChanged();
                     Boolean found = Boolean.FALSE;
                     for (FirebaseGroupMember fbgm : selectedMembers) {
                         if (fbgm.getUid().equals(selectedMember.getUid())) {
@@ -125,13 +126,13 @@ public class ContributorsPopupActivity extends Activity {
                         selectedMembers.add(selectedMember);
                 } else {
                     selectedMember.check(false);
+                    groupMembersAdapter.notifyDataSetChanged();
                     for (int i = 0; i < selectedMembers.size(); i++) {
                         if (selectedMembers.get(i).getUid().equals(selectedMember.getUid()))
                             selectedMembers.remove(i);
                     }
                 }
 
-                groupMembersAdapter.notifyDataSetChanged();
             }
         });
 
