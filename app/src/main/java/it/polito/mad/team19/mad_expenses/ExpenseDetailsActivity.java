@@ -197,8 +197,9 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.deleteExpense: {
-                DialogFragment newFragment = new ConfirmExpenseDeletionDialogFragment(this, groupId, expenseId);
-                newFragment.show(getSupportFragmentManager(), "confirmExpenseDeletion");
+                //TODO: dialog con istruzioni normali
+                /*DialogFragment newFragment = new ConfirmExpenseDeletionDialogFragment();
+                newFragment.show(getSupportFragmentManager(), "confirmExpenseDeletion");*/
 
                 return true;
             }
@@ -237,11 +238,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public static class ConfirmExpenseDeletionDialogFragment extends DialogFragment {
+   /* public static class ConfirmExpenseDeletionDialogFragment extends DialogFragment
+    {
 
         private String groupId;
         private String expenseId;
         private Context context;
+
+        public ConfirmExpenseDeletionDialogFragment() {}
 
         public ConfirmExpenseDeletionDialogFragment(Context context, String groupId, String expenseId) {
             this.context = context;
@@ -268,7 +272,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             // Create the AlertDialog object and return it
             return builder.create();
         }
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

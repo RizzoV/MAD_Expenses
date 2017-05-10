@@ -32,6 +32,7 @@
     <!-- Strings related to the creation of a new expense -->
     <string name="expense_name">Nome della Spesa</string>
     <string name="description">Descrizione</string>
+    <string name="date">Data</string>
     <string name="price">Prezzo</string>
     <string name="create_new_expense">Crea una nuova spesa</string>
     <string name="add_expense_image">Aggiungi una immagine alla spesa</string>
@@ -89,11 +90,13 @@
     <string name="noexpenses">Non ci sono spese associate al gruppo =(</string>
     <string name="progressDialogText">Aggiungo la nuova spesa&amp;#8230</string>
     <string name="continue_string">Continua</string>
-
+    <string name="add_person">Aggiungi membro</string>
+    <string name="notifications">Notifiche</string>
     <!-- Expense details -->
     <string name="confirmExpenseDeletion">Sei sicuro di voler cancellare la spesa?</string>
     <string name="yes">Sì</string>
     <string name="modify_expense">Modifica spese</string>
     <string name="delete_expense">Cancella spesa</string>
+    <string name="menu_up_as_back">sopra_indietro</string>
 
 </resources>
