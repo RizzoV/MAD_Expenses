@@ -508,13 +508,16 @@ public class GroupActivity extends AppCompatActivity {
             for (FirebaseGroupMember contributor : contributors) {
                 DatabaseReference debtorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
                         .child("debtors").child(groupMember.getUid());
-                debtorRef.child("riepilogo").child(contributor.getUid()).setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
+                debtorRef.child("riepilogo").child(contributor.getUid()).child("amount").setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
                 debtorRef.child("nome").setValue(groupMember.getName());
+                debtorRef.child("riepilogo").child(contributor.getUid()).child("nome").setValue(contributor.getName());
+
 
                 DatabaseReference creditorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
                         .child("contributors").child(contributor.getUid());
-                creditorRef.child("riepilogo").child(groupMember.getUid()).setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
+                creditorRef.child("riepilogo").child(groupMember.getUid()).child("amount").setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
                 creditorRef.child("nome").setValue(contributor.getName());
+                creditorRef.child("riepilogo").child(groupMember.getUid()).child("nome").setValue(groupMember.getName());
             }
 
         }
