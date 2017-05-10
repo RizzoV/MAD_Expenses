@@ -35,7 +35,7 @@
     <string name="date">Data</string>
     <string name="price">Prezzo</string>
     <string name="create_new_expense">Crea una nuova spesa</string>
-    <string name="add_expense_image">Aggiungi una immagine alla spesa</string>
+    <string name="add_expense_image">Aggiungi la prova di acquisto</string>
     <string name="create_expense_button">Crea Spesa</string>
     <string name="select_contributors">Seleziona partecipanti</string>
     <string name="select_exluded">Seleziona Esclusi</string>
@@ -88,7 +88,7 @@
     <!-- Group activity -->
     <string name="noproposals">Non ci sono proposte associate al gruppo =(</string>
     <string name="noexpenses">Non ci sono spese associate al gruppo =(</string>
-    <string name="progressDialogText">Aggiungo la nuova spesa&amp;#8230</string>
+    <string name="progressDialogText">Aggiungo la nuova spesa&amp;</string>
     <string name="continue_string">Continua</string>
     <string name="add_person">Aggiungi membro</string>
     <string name="notifications">Notifiche</string>

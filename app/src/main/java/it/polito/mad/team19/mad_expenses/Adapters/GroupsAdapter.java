@@ -38,6 +38,8 @@ public class GroupsAdapter extends BaseAdapter {
 
     ArrayList<Group> groupList;
     Activity context;
+    ImageView image;
+
 
     public GroupsAdapter(Context context, ArrayList<Group> groupList) {
         this.groupList = groupList;
@@ -71,8 +73,9 @@ public class GroupsAdapter extends BaseAdapter {
         TextView name=(TextView)convertView.findViewById(R.id.group_name_tv);
         TextView balance=(TextView)convertView.findViewById(R.id.balance_tv);
         TextView notifications=(TextView)convertView.findViewById(R.id.notification_cnt_tv);
-        final ImageView image = (ImageView) convertView.findViewById(R.id.group_image);
         ImageView notification_back = (ImageView) convertView.findViewById(R.id.notification_back);
+        image = (ImageView) convertView.findViewById(R.id.group_image);
+
 
 
         Group group=groupList.get(position);
@@ -106,24 +109,39 @@ public class GroupsAdapter extends BaseAdapter {
 
         /* Manage group image */
         //TODO: prendere l'immagine dalla memoria e non direttamente da firebase (LUDO)
-        if(group.getImage() != null) {
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageReference = storage.getReferenceFromUrl(group.getImage());
-            final long ONE_MEGABYTE = 1024 * 1024;
-            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    image.setImageBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)));
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    //TODO: Handle any errors
-                }
-            });
+        if(group.getImage() != null)
+        {
+            Log.e("Nullimage"+group.getName(),"notnull");
+            //Non crasha se non trova l'iimagine del gruppo
+            try
+            {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageReference = storage.getReferenceFromUrl(group.getImage());
+                final long ONE_MEGABYTE = 1024 * 1024;
+                storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        image.setImageBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0,bytes.length)));
+                        //Drawable drawable = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
+                        //getSupportActionBar().setBackgroundDrawable(drawable);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                Log.e("Exception"+group.getName(),e.toString());
+                image.setImageResource(R.mipmap.ic_group);
+            }
         }
-        else {
+        else
+        {
             image.setImageResource(R.mipmap.ic_group);
+            Log.e("Nullimage","null");
         }
 
         return convertView;

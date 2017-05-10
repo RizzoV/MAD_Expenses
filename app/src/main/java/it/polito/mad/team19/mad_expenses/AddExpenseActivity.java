@@ -107,6 +107,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
+        mAuth = FirebaseAuth.getInstance();
+
         isModifyActivity = false;
 
         groupId = getIntent().getStringExtra("groupId");
@@ -181,7 +183,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
 
     private void addListenerOnContributorsButton() {
-        Button contributorsButton = (Button) findViewById(R.id.contributors_button);
+        final Button contributorsButton = (Button) findViewById(R.id.contributors_button);
+
+        contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(),null,mAuth.getCurrentUser().getUid()));
+        Log.e("Cotnributos",contributorsList.get(0).getName().toString());
+
 
         contributorsButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -189,6 +195,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Intent i = new Intent(AddExpenseActivity.this, ContributorsPopupActivity.class);
                 i.putExtra("groupId", groupId);
                 ArrayList<FirebaseGroupMember> initialContributors = new ArrayList<>(contributorsList);
+                //all'inizio chi crea la spesa è un contributor
                 Bundle b = new Bundle();
                 b.putParcelableArrayList("contributorsList", initialContributors);
                 i.putExtra("contributorsBundle", b);
@@ -289,7 +296,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         idExpense = uuid;
         final DatabaseReference newExpenseRef = myRef.child(uuid);
 
-        if (mCurrentPhotoPath != null) {
+        if (mCurrentPhotoPath != null)
+        {
             groupImagesRef = storageRef.child("images").child(groupId);
 
             File imageToUpload = new File(mCurrentPhotoPath);
@@ -320,6 +328,21 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                                     Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
 
+                            for (FirebaseGroupMember member : excludedList) {
+                                newExpenseRef.child("excluded").child(member.getUid()).setValue(member.getName());
+                            }
+                            for (FirebaseGroupMember member : contributorsList) {
+                                newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());
+                            }
+
+                            Log.e("DebugIsModifyFlag", isModifyActivity.toString());
+                            if (isModifyActivity) {
+                                newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
+                            }
+
+                            //TODO: aggiungere quello in fondo
+                            finishTasks();
+
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -330,7 +353,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     });
                 }
             });
-        } else {
+        }
+        else
+        {
             Log.e("DebugCaricamentoSpesa", "NoImage");
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
@@ -345,11 +370,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             if (isModifyActivity) {
                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
             }
-
+            finishTasks();
         }
+    }
 
-        barProgressDialog.dismiss();
-
+    public void finishTasks()
+    {
         getIntent().putExtra("expenseId", idExpense);
         getIntent().putExtra("expenseTotal", expenseTotal + "");
         getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid());
@@ -364,8 +390,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         if (isModifyActivity) {
             moveFirebaseExpenseNode();
         }
-
-        finish();
+        else
+        {
+            barProgressDialog.dismiss();
+            finish();
+        }
     }
 
 
@@ -756,6 +785,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                             oldExpenseRef.removeValue();
                             oldExpenseVersionId = oldExpenseId;
                         }
+                        barProgressDialog.dismiss();
+                        finish();
                     }
 
 

@@ -31,7 +31,7 @@
     <string name="date">Date</string>
     <string name="price">Price</string>
     <string name="create_new_expense">Create a new expense</string>
-    <string name="add_expense_image">Add an image to the expense</string>
+    <string name="add_expense_image">Add a proof of the expense</string>
     <string name="create_expense_button">Create expense</string>
     <string name="select_contributors">Select contributors</string>
     <string name="select_exluded">Select excluded</string>

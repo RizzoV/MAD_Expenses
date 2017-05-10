@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOError;
 import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
@@ -61,23 +62,32 @@ public class GroupInfoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReferenceFromUrl(imageUrl);
 
-        final long ONE_MEGABYTE = 1024 * 1024;
+        //Non crasha se non trova l'iimagine del gruppo
+        try {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageReference = storage.getReferenceFromUrl(imageUrl);
+            final long ONE_MEGABYTE = 1024 * 1024;
             storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
-                //Drawable drawable = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
-                //getSupportActionBar().setBackgroundDrawable(drawable);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
+                    //Drawable drawable = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
+                    //getSupportActionBar().setBackgroundDrawable(drawable);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Log.e("Exception",e.toString());
+        }
+
+
 
         //LUDO: membri
 
