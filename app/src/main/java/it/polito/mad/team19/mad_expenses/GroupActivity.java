@@ -506,13 +506,15 @@ public class GroupActivity extends AppCompatActivity {
                 continue;
 
             for (FirebaseGroupMember contributor : contributors) {
-                DatabaseReference debtorRef = database.getReference("utenti").child(groupMember.getUid()).child("bilancio").child(groupId).child(contributor.getUid());
-                debtorRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
-                debtorRef.child("nome").setValue(contributor.getName());
+                DatabaseReference debtorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
+                        .child("debtors").child(groupMember.getUid());
+                debtorRef.child("riepilogo").child(contributor.getUid()).setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
+                debtorRef.child("nome").setValue(groupMember.getName());
 
-                DatabaseReference creditorRef = database.getReference("utenti").child(contributor.getUid()).child("bilancio").child(groupId).child(groupMember.getUid());
-                creditorRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
-                creditorRef.child("nome").setValue(groupMember.getName());
+                DatabaseReference creditorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
+                        .child("contributors").child(contributor.getUid());
+                creditorRef.child("riepilogo").child(groupMember.getUid()).setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
+                creditorRef.child("nome").setValue(contributor.getName());
             }
 
         }
@@ -780,13 +782,6 @@ public class GroupActivity extends AppCompatActivity {
             mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
             mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
 
-
-        /*    for (int i = 0; i < 16; i++) {
-                Proposal p = new Proposal("Proposal " + i,
-                        "Description of the proposal #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
-                        Integer.valueOf(i * i).floatValue(), null, Currency.getInstance("EUR"));
-                proposals.add(p);
-            }*/
 
             final TextView noproposalstv = (TextView) rootView.findViewById(R.id.noproposals_tv);
 
