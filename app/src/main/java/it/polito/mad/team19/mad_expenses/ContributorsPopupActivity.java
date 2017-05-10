@@ -55,7 +55,8 @@ public class ContributorsPopupActivity extends Activity {
         getWindow().setLayout((int) (width * .95), (int) (height * .9));
 
         // Check if there already are some selected members
-        if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty()) {
+        if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty())
+        {
             selectedMembers = getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList");
         }
 
@@ -87,13 +88,13 @@ public class ContributorsPopupActivity extends Activity {
                 // Preselect eventual already selected members
                 for (FirebaseGroupMember fbgm : selectedMembers) {
                     // Select them in the view
+
                     int itemPos = groupMembersAdapter.getPositionFromUid(fbgm.getUid());
-                    Log.e("Già checkato: ", fbgm.getName() + ", posizione: " + String.valueOf(itemPos));
+
                     if (itemPos != -1) {
-                        CheckBox check = (CheckBox) groupMembersAdapter.getView(itemPos, null, contributors_lv).findViewById(R.id.contributor_checkbox);
-                        check.setChecked(true);
-                        check.invalidate();
-                        Log.e("DEBUG", "Status of check n." + itemPos + ": " + check.isChecked());
+                        //LUDO: per ceccare
+                        contributors.get(itemPos).check(true);
+                        groupMembersAdapter.notifyDataSetChanged();
                     } else
                         Log.e("ContributorsPopup", "Could not find the item corresponding to the UID" + fbgm.getUid() + "in the ListView");
                 }

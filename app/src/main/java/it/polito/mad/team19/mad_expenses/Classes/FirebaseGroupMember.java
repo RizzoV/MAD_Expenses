@@ -15,6 +15,9 @@ public class FirebaseGroupMember implements Parcelable {
     private String name;
     private String imgUrl;
 
+    //LUDO: per ceccare
+    private boolean checked = false;
+
     public FirebaseGroupMember() {}
 
     public FirebaseGroupMember(String name, String imgUrl, String uid)
@@ -38,6 +41,17 @@ public class FirebaseGroupMember implements Parcelable {
         dest.writeString(name);
         dest.writeString(imgUrl);
         dest.writeString(uid);
+    }
+
+    //LUDO: per ceccare
+    public void check(boolean state)
+    {
+        checked = state;
+    }
+
+    public boolean isChecked()
+    {
+        return checked;
     }
 
     public static final Parcelable.Creator<FirebaseGroupMember> CREATOR = new Parcelable.Creator<FirebaseGroupMember>() {
