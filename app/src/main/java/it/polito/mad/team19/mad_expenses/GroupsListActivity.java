@@ -147,14 +147,10 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.INVISIBLE);
                     startActivityForResult(intent, LOGIN_CHECK);
-
-
                 }
-
             }
         };
         mAuth.addAuthStateListener(mAuthStateListener);
-
     }
 
     @Override
@@ -194,11 +190,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             case LOGIN_CHECK:
             {
                 if(resultCode == 0)
-                {
                     finish();
-                }
-                if (resultCode == 1 && firstTimeCheck)
-                {
+                if (resultCode == 1 && firstTimeCheck) {
                     progressBar.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
@@ -207,7 +200,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     checkInvitations();
                     firstTimeCheck = false;
                 }
-
                 break;
             }
             default:
@@ -215,8 +207,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     }
 
     void checkInvitations() {
-
-
         boolean autoLaunchDeepLink = true;
         AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
                 .setResultCallback(

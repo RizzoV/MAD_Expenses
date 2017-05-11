@@ -2,7 +2,9 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -545,6 +547,7 @@ public class GroupActivity extends AppCompatActivity {
         private Float totalAmount;
         private Float debitAmount;
         private Float creditAmount;
+        private Activity mActivity;
 
         private HashMap<String, Me> balancesMap = new HashMap<>();
 
@@ -770,16 +773,23 @@ public class GroupActivity extends AppCompatActivity {
                         noExpenses_tv.setVisibility(View.VISIBLE);
                     }
 
-                    ((GroupActivity) getActivity()).passBalancesArray(balancesMap.values());
+                    ((GroupActivity) mActivity).passBalancesArray(balancesMap.values());
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.e("ExpensesFragment", "Could not retrieve the list o expenses");
+                    Log.e("ExpensesFragment", "Could not retrieve the list of expenses");
                 }
             });
 
             return rootView;
+        }
+
+        @Override
+        public void onAttach(Context context) {
+            super.onAttach(context);
+
+            mActivity = (Activity) context;
         }
     }
 
@@ -906,7 +916,7 @@ public class GroupActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
