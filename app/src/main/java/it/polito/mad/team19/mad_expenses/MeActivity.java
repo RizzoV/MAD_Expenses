@@ -184,9 +184,9 @@ public class MeActivity extends AppCompatActivity {
 
         if (debito < 0)
             debito = -debito;
-        debito_tv.setText(String.format(Locale.getDefault(), "%.2f", debito) + " " + Currency.getInstance(Locale.ITALY));
+        debito_tv.setText(String.format(Locale.getDefault(), "%.2f", debito) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
 
-        credito_tv.setText(String.format(Locale.getDefault(), "%.2f", credito) + " " + Currency.getInstance(Locale.ITALY));
+        credito_tv.setText(String.format(Locale.getDefault(), "%.2f", credito) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
     }
 
 
