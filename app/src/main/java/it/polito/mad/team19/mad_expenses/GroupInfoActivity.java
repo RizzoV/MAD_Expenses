@@ -36,7 +36,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbar;
     private FirebaseAuth mAuth;
-    String uid;
+    private String uid;
+    private Boolean isUsrAdmin;
     RecyclerView members_lv;
 
     @Override
@@ -49,7 +50,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         String imageUrl = getIntent().getStringExtra("groupImage");
         String groupName = getIntent().getStringExtra("groupName");
-        String groupId = getIntent().getStringExtra("groupId");
+        final String groupId = getIntent().getStringExtra("groupId");
 
         //setSupportActionBar(toolbar);
         //getSupportActionBar().setTitle(groupName.toString());
@@ -98,9 +99,29 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
 
         mAuth = FirebaseAuth.getInstance();
+        uid = mAuth.getCurrentUser().getUid();
+
+        //Jured: controllo per sapere se l'utente è admin del gruppo
+        final DatabaseReference isUserAdminRef = database.getReference("gruppi").child(groupId)
+                .child("membri").child(uid).child("tipo");
+        isUserAdminRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("DebugDeleteMember",dataSnapshot.getValue().toString());
+                if(Integer.valueOf(dataSnapshot.getValue().toString()).compareTo(1) == 0) {
+                    isUsrAdmin = true;
+                } else
+                    isUsrAdmin = false;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         members_lv = (RecyclerView) findViewById(R.id.members_lv);
-        final ArrayList<FirebaseGroupMember> contributors = new ArrayList<FirebaseGroupMember>();
+        final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
         final GroupMembersRecyclerAdapter adapter = new GroupMembersRecyclerAdapter(this,contributors);
         members_lv.setAdapter(adapter);
 
@@ -136,16 +157,37 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
             @Override
             public boolean onItemLongClick(View v, int position) {
-                DialogFragment newFragment = new DeleteMemberDialog();
-                newFragment.show(getSupportFragmentManager(), "DeleteDialog");
+                if(isUsrAdmin) {
+                    DialogFragment newFragment = new DeleteMemberDialog();
+                    Bundle selectedUid = new Bundle();
+
+                    selectedUid.putString("selectedUid",contributors.get(position).getUid());
+                    selectedUid.putString("groupId",groupId);
+                    newFragment.setArguments(selectedUid);
+                    newFragment.show(getSupportFragmentManager(), "DeleteDialog");
+                }
                 return false;
             }
         });
 
     }
 
+    // TODO Jured: aggiungere tutti i controlli immaginabili sull'eliminazione di un utente dal gruppo
+    //Se ha ancora debiti attivi non di può togliere
+    //TODO aggiungere la possibilità di eliminarsi dal gruppo con restrizioni in caso di debiti attivi
     @Override
     public void onDialogDeleteMemberClick(DialogFragment dialog) {
-        Log.d("DebugDialogClick","pronto a eliminare membro");
+        Log.d("DebugDialogClick","eliminare membro: " + dialog.getArguments().getString("selectedUid") + "  " + dialog.getArguments().getString("groupId"));
+        String userToDelete = dialog.getArguments().getString("selectedUid");
+        String groupId = dialog.getArguments().getString("groupId");
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userToDeleteRef = database.getReference().child("gruppi").child(groupId)
+                .child("membri").child(userToDelete);
+        userToDeleteRef.removeValue();
+        userToDeleteRef = database.getReference().child("utenti").child(userToDelete)
+                .child("gruppi").child(groupId);
+        userToDeleteRef.removeValue();
+
     }
 }

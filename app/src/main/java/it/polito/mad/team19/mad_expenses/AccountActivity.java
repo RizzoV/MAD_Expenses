@@ -81,7 +81,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
                 if (mAuth.getCurrentUser().getProviders().contains("google.com")) {
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                             new ResultCallback<Status>() {

@@ -171,6 +171,16 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 checkCallToModify();
             }
         }
+        else
+        {
+            addListenerOnDoneButton();
+            addListenerOnImageButton();
+
+            // only done for the expenses
+            addListenerOnContributorsButton();
+            addListenerOnExcludedButton();
+            checkCallToModify();
+        }
     }
 
 
