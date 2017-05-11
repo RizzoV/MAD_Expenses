@@ -117,6 +117,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot contributor) {
                 for(DataSnapshot contributors : contributor.child("contributors").getChildren())
                 {
+
                     Log.d("Contributor",contributors.toString());
                     for (DataSnapshot debtor : contributors.child("riepilogo").getChildren())
                     {
