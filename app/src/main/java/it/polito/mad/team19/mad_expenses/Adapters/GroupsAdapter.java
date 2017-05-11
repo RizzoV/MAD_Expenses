@@ -125,7 +125,7 @@ public class GroupsAdapter extends BaseAdapter {
         //TODO: prendere l'immagine dalla memoria e non direttamente da firebase (LUDO)
         if(group.getImage() != null)
         {
-            Log.e("GroupImageNotNull",group.getName());
+            Log.d("GroupImageNotNull",group.getName());
             //modo più semplice per caricare immagini e renderle tonde
             Glide.with(context).load(group.getImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(viewHolder.image) {
                 @Override
@@ -133,7 +133,7 @@ public class GroupsAdapter extends BaseAdapter {
                     RoundedBitmapDrawable circularBitmapDrawable =
                                 RoundedBitmapDrawableFactory.create(context.getResources(), resource);
 
-                    Log.e("GroupImageNotNull",group.getName());
+                    Log.d("GroupImageNotNull",group.getName());
                     circularBitmapDrawable.setCircular(true);
                     viewHolder.image.setImageDrawable(circularBitmapDrawable);
                 }
@@ -143,7 +143,7 @@ public class GroupsAdapter extends BaseAdapter {
         {
             //se non ho l'immagine Glide non deve più occuparsene
             Glide.clear(viewHolder.image);
-            Log.e("GroupImageNull",group.getName());
+            Log.d("GroupImageNull",group.getName());
             viewHolder.image.setImageResource(R.mipmap.ic_group);
         }
 

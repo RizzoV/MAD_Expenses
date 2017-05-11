@@ -71,9 +71,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 .build();
 
         // Turn on caching
-        if(myFirebaseDatabase == null) {
+        if (myFirebaseDatabase == null) {
             myFirebaseDatabase = FirebaseDatabase.getInstance();
-            //myFirebaseDatabase.setPersistenceEnabled(true);
         }
 
         userLogVerification();
@@ -179,17 +178,16 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_GROUP_CREATION: {
-                if(resultCode == 1)
+                if (resultCode == 1)
                     progressBar.setVisibility(View.VISIBLE);
-                    debug_tv.setVisibility(View.GONE);
-                    debug_ll.setVisibility(View.GONE);
-                    groupListView.setVisibility(View.INVISIBLE);
-                    updateList(uid);
+                debug_tv.setVisibility(View.GONE);
+                debug_ll.setVisibility(View.GONE);
+                groupListView.setVisibility(View.INVISIBLE);
+                updateList(uid);
                 break;
             }
-            case LOGIN_CHECK:
-            {
-                if(resultCode == 0)
+            case LOGIN_CHECK: {
+                if (resultCode == 0)
                     finish();
                 if (resultCode == 1 && firstTimeCheck) {
                     progressBar.setVisibility(View.VISIBLE);
@@ -209,55 +207,44 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     void checkInvitations() {
         boolean autoLaunchDeepLink = true;
         AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
-                .setResultCallback(
-                        new ResultCallback<AppInviteInvitationResult>()
-                        {
-                            @Override
-                            public void onResult(AppInviteInvitationResult result) {
-                                Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
-                                if (result.getStatus().isSuccess())
-                                {
-                                    // Extract information from the intent
-                                    Intent intent = result.getInvitationIntent();
-                                    String deepLink = AppInviteReferral.getDeepLink(intent);
-                                    String invitationId = AppInviteReferral.getInvitationId(intent);
+                .setResultCallback(new ResultCallback<AppInviteInvitationResult>() {
+                    @Override
+                    public void onResult(AppInviteInvitationResult result) {
+                        Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
+                        if (result.getStatus().isSuccess()) {
+                            // Extract information from the intent
+                            Intent intent = result.getInvitationIntent();
+                            String deepLink = AppInviteReferral.getDeepLink(intent);
+                            String invitationId = AppInviteReferral.getInvitationId(intent);
 
+                            Log.d("Invitations", "" + deepLink);
+                            String deepLinkName;
+                            String groupIdName;
+                            String results[] = deepLink.split("/");
+                            deepLinkName = results[0];
 
-                                    Log.e("Invitations", "" + deepLink);
-                                    String deepLinkName;
-                                    String groupIdName;
-
-                                    String results[] = deepLink.split("/");
-
-                                    deepLinkName = results[0];
-
-                                    if (deepLinkName.equals("addPersonToGroup")) {
-                                        groupIdName = results[1];
-                                        Log.e("Invitations", "add person to group with id: " + groupIdName);
-
-                                        addGroupToUser(uid, groupIdName);
-
-                                    }
-
-                                }
-                                else
-                                    updateList(uid);
+                            if (deepLinkName.equals("addPersonToGroup")) {
+                                groupIdName = results[1];
+                                Log.d("Invitations", "add person to group with id: " + groupIdName);
+                                addGroupToUser(uid, groupIdName);
                             }
-                        });
 
+                        } else
+                            updateList(uid);
+                    }
+                });
     }
 
     private void addGroupToUser(final String uid, final String groupIdName) {
 
-        final FirebaseDatabase database2 = FirebaseDatabase.getInstance();
-        DatabaseReference myRef2 = database2.getReference("gruppi").child(groupIdName);
-
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef2 = database.getReference("gruppi").child(groupIdName);
 
         myRef2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.hasChildren()) {
-                    Log.e("Group", snapshot.getValue().toString());
+                    Log.d("Group", snapshot.getValue().toString());
 
                     DatabaseReference addGroupRef;
                     addGroupRef = FirebaseDatabase.getInstance().getReference();
@@ -265,64 +252,49 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uName);
 
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("bilancio").setValue(0);
-                    try
-                    {
+                    try {
                         addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("immagine").setValue(snapshot.child("immagine").getValue().toString());
-                    }catch(NullPointerException e)
-                    {
-                        Log.e("Group","noimage");
+                    } catch (NullPointerException e) {
+                        Log.d("Group", "noimage");
                     }
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("nome").setValue(snapshot.child("nome").getValue().toString());
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("notifiche").setValue(0);
                     updateList(uid);
-
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("GroupListActivity", "Group reading cancelled");
             }
-
-
         });
-
     }
 
-    void updateList(String uid)
-    {
-
+    void updateList(String uid) {
         groups.clear();
         ga.notifyDataSetChanged();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
-
-        Log.e("UpdateList", "messaggio che vuoi");
-
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                Log.e("ListenerForSingle", "messaggio che vuoi");
+                Log.d("ListenerForSingle", "messaggio che vuoi");
 
-                if (snapshot.hasChildren())
-                {
+                if (snapshot.hasChildren()) {
                     progressBar.setVisibility(View.GONE);
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.VISIBLE);
-                    for (DataSnapshot child : snapshot.getChildren())
-                    {
-                        Log.e("Invite",child.toString());
-                        if(child.hasChild("immagine"))
-                            groups.add(new Group(child.child("nome").getValue().toString(),Float.parseFloat("0.0"), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Log.d("Invite", child.toString());
+                        if (child.hasChild("immagine"))
+                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat("0.0"), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
                         else
-                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat("0.0"), Integer.parseInt(child.child("notifiche").getValue().toString()),null, child.getKey()));
+                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat("0.0"), Integer.parseInt(child.child("notifiche").getValue().toString()), null, child.getKey()));
                     }
                     ga.notifyDataSetChanged();
 
-
-                } else
-                    {
+                } else {
                     progressBar.setVisibility(View.GONE);
                     groupListView.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.VISIBLE);
@@ -333,17 +305,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("GroupListActivity", "Unable to read user's groups");
             }
-
-
         });
-
-
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.e("GroupsListActivity", "Error in the connection:\n" + connectionResult.getErrorMessage());
     }
 }

@@ -101,7 +101,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
         edit_email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Email", "edit");
+                Log.d("Email", "edit");
                 showAddContactDialog(getString(R.string.changeemail), email.getText().toString(), 0);
             }
         });
@@ -109,7 +109,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
         edit_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Name", "edit");
+                Log.d("Name", "edit");
                 showAddContactDialog(getString(R.string.changename), displayedName.getText().toString(), 1);
             }
         });
