@@ -192,18 +192,18 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 {
                     finish();
                 }
-                if (firstTimeCheck && resultCode == 1) {
+                if (resultCode == 1) {
                     progressBar.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.INVISIBLE);
                     updateList(uid);
-
-                    checkInvitations();
+                    if(firstTimeCheck)
+                        checkInvitations();
+                    
                     firstTimeCheck = false;
                 }
-                else
-                    updateList(uid);
+
                 break;
             }
             default:
