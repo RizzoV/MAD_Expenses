@@ -13,6 +13,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -38,7 +42,6 @@ public class GroupsAdapter extends BaseAdapter {
 
     ArrayList<Group> groupList;
     Activity context;
-    ImageView image;
 
 
     public GroupsAdapter(Context context, ArrayList<Group> groupList) {
@@ -74,9 +77,7 @@ public class GroupsAdapter extends BaseAdapter {
         TextView balance=(TextView)convertView.findViewById(R.id.balance_tv);
         TextView notifications=(TextView)convertView.findViewById(R.id.notification_cnt_tv);
         ImageView notification_back = (ImageView) convertView.findViewById(R.id.notification_back);
-        image = (ImageView) convertView.findViewById(R.id.group_image);
-
-
+        final ImageView image = (ImageView) convertView.findViewById(R.id.group_image);
 
         Group group=groupList.get(position);
 
@@ -111,37 +112,21 @@ public class GroupsAdapter extends BaseAdapter {
         //TODO: prendere l'immagine dalla memoria e non direttamente da firebase (LUDO)
         if(group.getImage() != null)
         {
-            Log.e("Nullimage"+group.getName(),"notnull");
-            //Non crasha se non trova l'iimagine del gruppo
-            try
-            {
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageReference = storage.getReferenceFromUrl(group.getImage());
-                final long ONE_MEGABYTE = 1024 * 1024;
-                storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        image.setImageBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0,bytes.length)));
-                        //Drawable drawable = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
-                        //getSupportActionBar().setBackgroundDrawable(drawable);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                Log.e("Exception"+group.getName(),e.toString());
-                image.setImageResource(R.mipmap.ic_group);
-            }
+            //modo più semplice per caricare immagini e renderle tonde
+            Glide.with(context).load(group.getImage()).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(image) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+
+                    circularBitmapDrawable.setCircular(true);
+                    image.setImageDrawable(circularBitmapDrawable);
+                }
+            });
         }
         else
         {
             image.setImageResource(R.mipmap.ic_group);
-            Log.e("Nullimage","null");
         }
 
         return convertView;

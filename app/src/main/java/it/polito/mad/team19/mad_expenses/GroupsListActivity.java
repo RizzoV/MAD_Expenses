@@ -55,7 +55,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     TextView debug_tv;
     RelativeLayout debug_ll;
     boolean firstTimeCheck = true;
-
+    GroupsAdapter ga;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +89,21 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
 
         groupListView = (ListView) findViewById(R.id.groups_lv);
+        ga = new GroupsAdapter(GroupsListActivity.this, groups);
+        groupListView.setAdapter(ga);
+
+        groupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
+                intent.putExtra("groupName", ((Group) parent.getItemAtPosition(position)).getName());
+                intent.putExtra("groupId", ((Group) parent.getItemAtPosition(position)).getGroupId());
+                intent.putExtra("groupImage", ((Group) parent.getItemAtPosition(position)).getImage());
+                intent.putExtra("groupMyBalance", ((Group) parent.getItemAtPosition(position)).getBalance().toString());
+                startActivity(intent);
+
+            }
+        });
     }
 
 
@@ -297,6 +312,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
     void updateList(String uid)
     {
+
         mDatabase = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
 
         Log.e("UpdateList", "messaggio che vuoi");
@@ -321,6 +337,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         else
                             groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat(child.child("bilancio").getValue().toString()), Integer.parseInt(child.child("notifiche").getValue().toString()), child.getKey()));
                     }
+                    ga.notifyDataSetChanged();
+
+
                 } else
                     {
                     progressBar.setVisibility(View.GONE);
@@ -339,21 +358,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
         });
 
-        GroupsAdapter ga = new GroupsAdapter(GroupsListActivity.this, groups);
-        groupListView.setAdapter(ga);
 
-        groupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
-                intent.putExtra("groupName", ((Group) parent.getItemAtPosition(position)).getName());
-                intent.putExtra("groupId", ((Group) parent.getItemAtPosition(position)).getGroupId());
-                intent.putExtra("groupImage", ((Group) parent.getItemAtPosition(position)).getImage());
-                intent.putExtra("groupMyBalance", ((Group) parent.getItemAtPosition(position)).getBalance().toString());
-                startActivity(intent);
-
-            }
-        });
     }
 
     @Override

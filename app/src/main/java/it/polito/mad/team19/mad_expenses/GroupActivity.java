@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.widget.DrawerLayout;
@@ -50,6 +52,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -135,46 +139,26 @@ public class GroupActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(groupName);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        getSupportActionBar().setLogo(R.mipmap.ic_group);
+        TextView toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
+        toolbarTitle.setText(groupName);
 
+        final ImageView logo = (ImageView) findViewById(R.id.toolbarLogo);
 
         // Manage group image
-        if (groupImageUrl != null) {
-            try
-            {
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageReference = storage.getReferenceFromUrl(groupImageUrl);
-                final long ONE_MEGABYTE = 1024 * 1024;
-                storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        logo= new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)), convertDipToPixels(40), convertDipToPixels(40), true));
-                        toolbar.setLogo(logo);
 
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                    }
-                });
+            Glide.with(this).load(groupImageUrl).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(logo) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(getResources(), resource);
 
-            }
-            catch (Exception e)
-            {
-                Log.e("Exception",e.toString());
-                Drawable d = getResources().getDrawable(R.mipmap.ic_group);
-                d.setBounds(0, 0, convertDipToPixels(40), convertDipToPixels(40));
-                toolbar.setLogo(R.mipmap.ic_group);
-            }
-        }
-        else {
-            Drawable d = getResources().getDrawable(R.mipmap.ic_group);
-            d.setBounds(0, 0, convertDipToPixels(40), convertDipToPixels(40));
-            toolbar.setLogo(d);
-        }
+                    circularBitmapDrawable.setCircular(true);
+                    logo.setImageDrawable(circularBitmapDrawable);
+                }
+            });
+
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
