@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -51,8 +52,12 @@ public class GroupMembersAdapter extends BaseAdapter {
         TextView username = (TextView) convertView.findViewById(R.id.username_checkedtv);
 
         //LUDO: per ceccare
-        CheckBox cb = (CheckBox) convertView.findViewById(R.id.contributor_checkbox);
-        cb.setChecked(membersList.get(position).isChecked());
+        ImageView cb = (ImageView) convertView.findViewById(R.id.contributor_checkbox);
+
+        if(membersList.get(position).isChecked())
+            cb.setVisibility(View.VISIBLE);
+        else
+            cb.setVisibility(View.INVISIBLE);
 
         username.setText(membersList.get(position).getName());
         return convertView;

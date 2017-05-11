@@ -14,6 +14,7 @@
     <TextView
         android:clickable="true"
         android:id="@+id/counter"
+        android:visibility="invisible"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginLeft="15dp"
@@ -21,7 +22,7 @@
         android:layout_marginTop="5dp"
         android:textAlignment="center"
         android:gravity="center"
-        android:text="5"
+        android:text="0"
         android:textStyle="bold"
         android:textSize="10sp"
         android:background="@drawable/notifications_circle"

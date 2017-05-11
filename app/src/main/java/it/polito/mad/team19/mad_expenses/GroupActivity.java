@@ -80,6 +80,7 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
+import static android.support.v7.app.ActionBar.DISPLAY_USE_LOGO;
 import static java.lang.Thread.sleep;
 
 enum TabsList {
@@ -104,7 +105,8 @@ public class GroupActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
     final ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
-
+    Drawable logo;
+    Toolbar toolbar;
     ProgressDialog barProgressDialog;
 
     protected static final String TAG = "firebaseAuth";
@@ -122,41 +124,58 @@ public class GroupActivity extends AppCompatActivity {
         groupName = intent.getStringExtra("groupName");
         groupId = intent.getStringExtra("groupId");
         groupImageUrl = intent.getStringExtra("groupImage");
-        setTitle(groupName);
 
         // Initially the displayed tab will be the EXPENSES one
         selectedTab = TabsList.EXPENSES;
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         notificationsDrawer = (DrawerLayout) findViewById(R.id.notifications_drawer);
         notificationsListView = (ListView) findViewById(R.id.notification_lv);
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(groupName);
+
+        getSupportActionBar().setLogo(R.mipmap.ic_group);
+
+
         // Manage group image
-        /*if (groupImageUrl != null) {
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageReference = storage.getReferenceFromUrl(groupImageUrl);
-            final long ONE_MEGABYTE = 1024 * 1024;
-            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)), convertDipToPixels(40), convertDipToPixels(40), true));
-                    toolbar.setLogo(d);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    //TODO: Handle any errors
-                }
-            });
-        } else {
+        if (groupImageUrl != null) {
+            try
+            {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageReference = storage.getReferenceFromUrl(groupImageUrl);
+                final long ONE_MEGABYTE = 1024 * 1024;
+                storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        logo= new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)), convertDipToPixels(40), convertDipToPixels(40), true));
+                        toolbar.setLogo(logo);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+            }
+            catch (Exception e)
+            {
+                Log.e("Exception",e.toString());
+                Drawable d = getResources().getDrawable(R.mipmap.ic_group);
+                d.setBounds(0, 0, convertDipToPixels(40), convertDipToPixels(40));
+                toolbar.setLogo(R.mipmap.ic_group);
+            }
+        }
+        else {
             Drawable d = getResources().getDrawable(R.mipmap.ic_group);
             d.setBounds(0, 0, convertDipToPixels(40), convertDipToPixels(40));
             toolbar.setLogo(d);
-        }*/
+        }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,6 +193,10 @@ public class GroupActivity extends AppCompatActivity {
                 Log.e("BolzDebug", "mannaiaBBolz");
             }
         });
+
+
+
+
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
