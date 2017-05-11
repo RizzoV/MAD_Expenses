@@ -206,8 +206,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     groupListView.setVisibility(View.INVISIBLE);
 
                     checkInvitations();
-                    updateList(uid);
-
                     firstTimeCheck = false;
                 }
 
@@ -285,6 +283,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("nome").setValue(snapshot.child("nome").getValue().toString());
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("notifiche").setValue(0);
                     updateList(uid);
+
                 }
             }
 
