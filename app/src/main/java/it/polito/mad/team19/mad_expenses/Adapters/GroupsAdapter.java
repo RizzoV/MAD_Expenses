@@ -13,6 +13,7 @@ import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.ArrayList;
@@ -31,11 +33,21 @@ import it.polito.mad.team19.mad_expenses.R;
  * Created by Jured on 24/03/17.
  */
 
+
+
 public class GroupsAdapter extends BaseAdapter {
 
     ArrayList<Group> groupList;
     Activity context;
 
+
+    static class ImgHolder {
+        TextView name;
+        TextView balance;
+        TextView notifications;
+        ImageView notification_back;
+        ImageView image;
+    }
 
     public GroupsAdapter(Context context, ArrayList<Group> groupList) {
         this.groupList = groupList;
@@ -61,65 +73,78 @@ public class GroupsAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
+
+        final ImgHolder viewHolder;
         if (convertView==null)
         {
             convertView=context.getLayoutInflater().inflate(R.layout.groups_list_row,parent,false);
+            viewHolder = new ImgHolder();
+            viewHolder.name=(TextView)convertView.findViewById(R.id.group_name_tv);
+            viewHolder.balance=(TextView)convertView.findViewById(R.id.balance_tv);
+            viewHolder.notifications=(TextView)convertView.findViewById(R.id.notification_cnt_tv);
+            viewHolder.notification_back = (ImageView) convertView.findViewById(R.id.notification_back);
+            viewHolder.image = (ImageView) convertView.findViewById(R.id.group_image);
+            convertView.setTag(viewHolder);
+        }
+        else{
+            viewHolder = (ImgHolder) convertView.getTag();
         }
 
-        TextView name=(TextView)convertView.findViewById(R.id.group_name_tv);
-        TextView balance=(TextView)convertView.findViewById(R.id.balance_tv);
-        TextView notifications=(TextView)convertView.findViewById(R.id.notification_cnt_tv);
-        ImageView notification_back = (ImageView) convertView.findViewById(R.id.notification_back);
-        final ImageView image = (ImageView) convertView.findViewById(R.id.group_image);
 
-        Group group=groupList.get(position);
+
+        final Group group=groupList.get(position);
 
         /* Manage group name */
-        name.setText(group.getName());
+        viewHolder.name.setText(group.getName());
 
         /* Manage personal balance in group */
         Float balanceAmount = group.getBalance();
         if(balanceAmount>0) {
-            balance.setText("Devi ricevere: " + String.format("%.2f", group.getBalance()));
-            balance.setTextColor(ContextCompat.getColor(context, R.color.textGreen));
+            viewHolder.balance.setText("Devi ricevere: " + String.format("%.2f", group.getBalance()));
+            viewHolder.balance.setTextColor(ContextCompat.getColor(context, R.color.textGreen));
 
         }
         if(balanceAmount<0)
         {
-            balance.setText("Devi dare: " + String.format("%.2f", group.getBalance()));
-            balance.setTextColor(ContextCompat.getColor(context, R.color.redMaterial));
+            viewHolder.balance.setText("Devi dare: " + String.format("%.2f", group.getBalance()));
+            viewHolder.balance.setTextColor(ContextCompat.getColor(context, R.color.redMaterial));
 
         }
         if(balanceAmount==0)
-            balance.setText("Non hai nessun debito/credito");
+            viewHolder.balance.setText("Non hai nessun debito/credito");
 
         /* Manage notifications count */
         if(group.getNotifyCnt()>0)
-            notifications.setText(group.getNotifyCnt().toString());
+            viewHolder.notifications.setText(group.getNotifyCnt().toString());
         else {
-            notifications.setVisibility(View.INVISIBLE);
-            notification_back.setVisibility(View.INVISIBLE);
+            viewHolder.notifications.setVisibility(View.INVISIBLE);
+            viewHolder.notification_back.setVisibility(View.INVISIBLE);
         }
 
         /* Manage group image */
         //TODO: prendere l'immagine dalla memoria e non direttamente da firebase (LUDO)
         if(group.getImage() != null)
         {
+            Log.e("GroupImageNotNull",group.getName());
             //modo più semplice per caricare immagini e renderle tonde
-            Glide.with(context).load(group.getImage()).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(image) {
+            Glide.with(context).load(group.getImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(viewHolder.image) {
                 @Override
                 protected void setResource(Bitmap resource) {
                     RoundedBitmapDrawable circularBitmapDrawable =
                                 RoundedBitmapDrawableFactory.create(context.getResources(), resource);
 
+                    Log.e("GroupImageNotNull",group.getName());
                     circularBitmapDrawable.setCircular(true);
-                    image.setImageDrawable(circularBitmapDrawable);
+                    viewHolder.image.setImageDrawable(circularBitmapDrawable);
                 }
             });
         }
         else
         {
-            image.setImageResource(R.mipmap.ic_group);
+            //se non ho l'immagine Glide non deve più occuparsene
+            Glide.clear(viewHolder.image);
+            Log.e("GroupImageNull",group.getName());
+            viewHolder.image.setImageResource(R.mipmap.ic_group);
         }
 
         return convertView;

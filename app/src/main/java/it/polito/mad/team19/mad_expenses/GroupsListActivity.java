@@ -326,7 +326,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         if(child.hasChild("immagine"))
                             groups.add(new Group(child.child("nome").getValue().toString(),Float.parseFloat("0.0"), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
                         else
-                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat("0.0"), Integer.parseInt(child.child("notifiche").getValue().toString()), child.getKey()));
+                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat("0.0"), Integer.parseInt(child.child("notifiche").getValue().toString()),null, child.getKey()));
                     }
                     ga.notifyDataSetChanged();
 
