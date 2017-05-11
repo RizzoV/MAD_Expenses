@@ -133,8 +133,14 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     }
                 } else {
                     // User is signed out
+                    groups.clear();
+                    ga.notifyDataSetChanged();
                     Log.d(TAG, "onAuthStateChanged:signed_outGroup");
                     Intent intent = new Intent(GroupsListActivity.this, GoogleSignInActivity.class);
+                    progressBar.setVisibility(View.VISIBLE);
+                    debug_tv.setVisibility(View.GONE);
+                    debug_ll.setVisibility(View.GONE);
+                    groupListView.setVisibility(View.INVISIBLE);
                     startActivityForResult(intent, LOGIN_CHECK);
 
 
@@ -180,7 +186,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     updateList(uid);
                 break;
             }
-            case LOGIN_CHECK: {
+            case LOGIN_CHECK:
+            {
                 if(resultCode == 0)
                 {
                     finish();
@@ -195,6 +202,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     checkInvitations();
                     firstTimeCheck = false;
                 }
+                else
+                    updateList(uid);
                 break;
             }
             default:
@@ -313,6 +322,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     void updateList(String uid)
     {
 
+        groups.clear();
+        ga.notifyDataSetChanged();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
 
         Log.e("UpdateList", "messaggio che vuoi");
@@ -329,7 +340,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.VISIBLE);
-                    groups.clear();
                     for (DataSnapshot child : snapshot.getChildren())
                     {
                         if(child.hasChild("immagine"))

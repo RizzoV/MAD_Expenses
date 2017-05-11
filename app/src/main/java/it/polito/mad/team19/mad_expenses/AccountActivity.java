@@ -12,6 +12,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +25,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -121,7 +125,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
 
                     displayedName = (TextView) findViewById(R.id.displayed_name_tv);
                     email = (TextView) findViewById(R.id.email_tv);
-                    ImageView userImg = (ImageView) findViewById(R.id.user_img);
+                    final ImageView userImg = (ImageView) findViewById(R.id.user_img);
 
                     if (user.getDisplayName() != null)
                         displayedName.setText(user.getDisplayName());
@@ -131,16 +135,18 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
 
-                    if (user.getPhotoUrl() != null) {
-                        String photoUrl = user.getPhotoUrl().toString();
-                        try {
-                            InputStream input = new java.net.URL(photoUrl).openStream();
-                            Bitmap bitmap = BitmapFactory.decodeStream(input);
-                            userImg.setImageBitmap(getCircleBitmap(bitmap));
-                        } catch (IOException e) {
-                            e.printStackTrace();
+
+                    Glide.with(getApplicationContext()
+                    ).load(user.getPhotoUrl()).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(userImg) {
+                        @Override
+                        protected void setResource(Bitmap resource) {
+                            RoundedBitmapDrawable circularBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(getResources(), resource);
+
+                            circularBitmapDrawable.setCircular(true);
+                            userImg.setImageDrawable(circularBitmapDrawable);
                         }
-                    }
+                    });
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");

@@ -9,7 +9,7 @@ android {
         applicationId "it.polito.mad.team19.mad_expenses"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 12
+        versionCode 13
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
