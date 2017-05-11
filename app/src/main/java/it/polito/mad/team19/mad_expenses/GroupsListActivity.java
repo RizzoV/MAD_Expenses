@@ -200,7 +200,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     updateList(uid);
                     if(firstTimeCheck)
                         checkInvitations();
-                    
+
                     firstTimeCheck = false;
                 }
 
