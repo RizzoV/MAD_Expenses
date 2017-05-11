@@ -204,8 +204,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 break;
             }
             case GROUP_ACTIVITY:
+                {
+
                 if(resultCode==99)
-                    updateList(uid);
+                {   updateList(uid);
+                }
+                break;
+            }
             default:
         }
     }
