@@ -72,7 +72,7 @@ public class CreateGroupActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        Log.e("User", mAuth.getCurrentUser().getUid());
+        Log.d("User", mAuth.getCurrentUser().getUid());
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
@@ -291,7 +291,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Uri uri) {
 
-                                    Log.e("DebugUriRequest", uri.toString());
+                                    Log.d("DebugUriRequest", uri.toString());
                                     imageLinkGrpRef.setValue(uri.toString());
                                     imageLinkUsrRef.setValue(uri.toString());
                                     setResult(1);

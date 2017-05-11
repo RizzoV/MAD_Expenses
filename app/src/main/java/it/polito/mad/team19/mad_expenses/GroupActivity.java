@@ -175,7 +175,7 @@ public class GroupActivity extends AppCompatActivity {
                 intent.putExtra("groupName", groupName);
                 intent.putExtra("groupId", groupId);
                 startActivityForResult(intent, GROUP_INFO_REQUEST);
-                Log.e("BolzDebug", "mannaiaBBolz");
+                Log.d("BolzDebug", "mannaiaBBolz");
             }
         });
 
@@ -339,7 +339,7 @@ public class GroupActivity extends AppCompatActivity {
         notifCount.findViewById(R.id.notifications_icon_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Clicked", "click");
+                Log.d("Clicked", "click");
                 //barProgressDialog.show();
                 notificationsDrawer.openDrawer(Gravity.RIGHT);
             }
@@ -418,7 +418,7 @@ public class GroupActivity extends AppCompatActivity {
         if (requestCode == REQUEST_NEW_EXPENSE && resultCode == RESULT_OK) {
             // Gestione calcolo debiti e crediti dovuti alla nuova spesa
 
-            Log.e("ExpenseIDActivity", data.getStringExtra("expenseId").toString());
+            Log.d("ExpenseIDActivity", data.getStringExtra("expenseId").toString());
             if (groupMembersList.size() > 0)
                 groupMembersList.clear();
 
@@ -448,7 +448,7 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Log.e("MembriSnap", dataSnapshot.getValue().toString());
+                    Log.d("MembriSnap", dataSnapshot.getValue().toString());
                     groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
                 }
 
@@ -596,7 +596,7 @@ public class GroupActivity extends AppCompatActivity {
                 public void onItemClick(View view, int position) {
                     Expense clicked = expenses.get(position);
                     final Intent intent = new Intent(getActivity(), ExpenseDetailsActivity.class);
-                    Log.e("Expenses", clicked.toString());
+                    Log.d("Expenses", clicked.toString());
                     intent.putExtra("ExpenseName", clicked.getName());
                     intent.putExtra("ExpenseImgUrl", clicked.getImagelink());
                     intent.putExtra("ExpenseDesc", clicked.getDescritpion());

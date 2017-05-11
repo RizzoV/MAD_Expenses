@@ -197,7 +197,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                                         @Override
                                         public void onSuccess(Uri uri) {
 
-                                            Log.e("DebugUriRequest",uri.toString());
+                                            Log.d("DebugUriRequest",uri.toString());
                                             newProposalRef.setValue(new FirebaseExpense(usrId,nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                                                     Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
                                         }
@@ -324,7 +324,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
-                Log.e("DebugGalleryImage:", selectedImage.getPath());
+                Log.d("DebugGalleryImage:", selectedImage.getPath());
 
                 String[] projection = {MediaStore.Images.Media.DATA};
                 @SuppressWarnings("deprecation")
@@ -334,7 +334,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
 
-                Log.e("DebugGalleryImage2:", mCurrentPhotoPath);
+                Log.d("DebugGalleryImage2:", mCurrentPhotoPath);
 
                 setImageView(mCurrentPhotoPath);
 

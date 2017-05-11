@@ -194,7 +194,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         final Button contributorsButton = (Button) findViewById(R.id.contributors_button);
 
         contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(),null,mAuth.getCurrentUser().getUid()));
-        Log.e("Contributors",contributorsList.get(0).getName().toString());
+        Log.d("Contributors",contributorsList.get(0).getName().toString());
 
 
         contributorsButton.setOnClickListener(new Button.OnClickListener() {
@@ -346,7 +346,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                                 newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());
                             }
 
-                            Log.e("DebugIsModifyFlag", isModifyActivity.toString());
+                            Log.d("DebugIsModifyFlag", isModifyActivity.toString());
                             if (isModifyActivity) {
                                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
                             }
@@ -367,7 +367,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
         else
         {
-            Log.e("DebugCaricamentoSpesa", "NoImage");
+            Log.d("DebugCaricamentoSpesa", "NoImage");
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
             for (FirebaseGroupMember member : excludedList) {
@@ -377,7 +377,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());
             }
 
-            Log.e("DebugIsModifyFlag", isModifyActivity.toString());
+            Log.d("DebugIsModifyFlag", isModifyActivity.toString());
             if (isModifyActivity) {
                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
             }
@@ -484,7 +484,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Uri selectedImage = data.getData();
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
-                Log.e("DebugGalleryImage:", selectedImage.getPath());
+                Log.d("DebugGalleryImage:", selectedImage.getPath());
 
                 String[] projection = {MediaStore.Images.Media.DATA};
                 @SuppressWarnings("deprecation")
@@ -494,7 +494,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
 
-                Log.e("DebugGalleryImage:2", mCurrentPhotoPath);
+                Log.d("DebugGalleryImage:2", mCurrentPhotoPath);
 
                 setImageView(mCurrentPhotoPath);
             }
@@ -740,9 +740,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
     //Jured: setta l'activity se vede che è stata chimata per modificare la spesa
     private void checkCallToModify() {
-        Log.e("DebugModifyExpense", "CallToModifyCheck");
+        Log.d("DebugModifyExpense", "CallToModifyCheck");
         if (getIntent().getStringExtra("ModifyIntent") != null) {
-            Log.e("DebugModifyExpense", "CallToModifyDetected");
+            Log.d("DebugModifyExpense", "CallToModifyDetected");
             oldName = getIntent().getStringExtra("ExpenseName");
             oldDesc = getIntent().getStringExtra("ExpenseDesc");
             oldImgUrl = getIntent().getStringExtra("ExpenseImgUrl");
@@ -755,7 +755,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty())
             {
                 contributorsList = getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList");
-                Log.e("ContributorB",contributorsList.get(0).getUid().toString());
+                Log.d("ContributorB",contributorsList.get(0).getUid().toString());
             }
 
             if (!getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList").isEmpty())

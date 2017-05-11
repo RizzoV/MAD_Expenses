@@ -57,7 +57,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         //setSupportActionBar(toolbar);
         //getSupportActionBar().setTitle(groupName.toString());
-        Log.e("DebugGroupInfo",groupName);
+        Log.d("DebugGroupInfo",groupName);
 
 
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.group_info_ctb);
@@ -90,7 +90,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         }
         catch (Exception e)
         {
-            Log.e("Exception",e.toString());
+            Log.e("GroupInfoActivity", "Exception:\n" + e.toString());
         }
 
 
@@ -143,10 +143,10 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 }
 
                 if(nMembers==0)
-                    Log.e("Contributors","no other members in the group!");
+                    Log.d("Contributors","no other members in the group!");
                 else
                 {
-                    Log.e("no",contributors.toString());
+                    Log.d("no",contributors.toString());
                     adapter.notifyDataSetChanged();
                 }
             }
