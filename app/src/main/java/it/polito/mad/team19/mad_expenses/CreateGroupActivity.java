@@ -92,6 +92,9 @@ public class CreateGroupActivity extends AppCompatActivity {
                 addAllListener();
             }
         }
+        else{
+            addAllListener();
+        }
 
 
     }
