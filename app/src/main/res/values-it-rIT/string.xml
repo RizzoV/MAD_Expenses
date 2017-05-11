@@ -7,7 +7,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab_expenses">Spese</string>
     <string name="tab_proposals">Proposte</string>
-    <string name="personal_profile">Profilo personale</string>
+    <string name="personal_balance">Bilancio personale</string>
     <string name="credit">Credito</string>
     <string name="debit">Debito</string>
     <string name="summary">Riepilogo</string>
@@ -50,7 +50,6 @@
 
     <!-- Personal profile -->
     <string name="debits_and_credits">Debiti e crediti</string>
-
     <string name="mandatory_field">Campo Obbligatorio!</string>
     <string name="invalid_cost_field">Campo Invalido!</string>
 

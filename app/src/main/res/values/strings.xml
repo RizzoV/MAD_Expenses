@@ -7,7 +7,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab_expenses">Expenses</string>
     <string name="tab_proposals">Proposals</string>
-    <string name="personal_profile">Personal Profile</string>
+    <string name="personal_balance">Personal balance</string>
     <string name="credit">Credit</string>
     <string name="debit">Debit</string>
     <string name="summary">Summary</string>

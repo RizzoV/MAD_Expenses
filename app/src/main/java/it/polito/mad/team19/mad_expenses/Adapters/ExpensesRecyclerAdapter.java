@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.R;
@@ -87,7 +88,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
 
         public void setData (Expense current, int position) {
             this.name.setText(current.getName());
-            this.amount.setText(current.getCurrency().getSymbol().toString() + " " + String.format("%.2f", current.getCost()));
+            this.amount.setText(current.getCurrency().getSymbol() + " " + String.format(Locale.getDefault(), "%.2f", current.getCost()));
             this.image.setImageResource(R.drawable.expenses_icon);
             this.position = position;
             this.current = current;

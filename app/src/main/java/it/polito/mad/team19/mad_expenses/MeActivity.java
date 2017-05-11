@@ -1,12 +1,9 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,9 +11,6 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -26,21 +20,18 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.MeRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
@@ -49,18 +40,17 @@ import it.polito.mad.team19.mad_expenses.Classes.Me;
 public class MeActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
     private String groupId;
     TextView credito_tv;
     TextView debito_tv;
-    ArrayList<Me> me;
-    ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
+    ArrayList<Me> me = new ArrayList<>();
+    ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_me);
-        getSupportActionBar().setTitle(getResources().getString(R.string.personal_profile));
+        getSupportActionBar().setTitle(getResources().getString(R.string.personal_balance));
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -123,12 +113,6 @@ public class MeActivity extends AppCompatActivity {
 
     private void getBalance() {
 
-        me = new ArrayList<>();
-
-        final String myUid = mAuth.getCurrentUser().getUid();
-
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.fromto_rv);
         final MeRecyclerAdapter adapter = new MeRecyclerAdapter(this, me);
         mRecyclerView.setAdapter(adapter);
@@ -137,105 +121,74 @@ public class MeActivity extends AppCompatActivity {
         mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
 
-        final float[] debito = {0};
-        final float[] credito = {0};
+        float debito = 0;
+        float credito = 0;
 
-        final DatabaseReference expensesRef = database.getReference("gruppi").child(groupId).child("expenses");
-        expensesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot expensesSnapshot) {
-                HashMap<String, Me> balancesMap = new HashMap<>();
+        /* VALE
+         * Prendi le informazioni dal Bundle passato tramite l'intent
+         */
 
-                for (DataSnapshot expense : expensesSnapshot.getChildren()) {
-                    float currentBalance = 0;
-                    DataSnapshot meRef = expense.child("contributors").child(myUid);
-                    if (meRef.exists()) {
-                        // Sono un contributor
-                        for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
-                            if (balancesMap.containsKey(expenseBalance.getKey())) {
-                                balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
-                            } else {
-                                Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
-                                balancesMap.put(expenseBalance.getKey(), newDebtor);
-                            }
+        ArrayList<Me> balancesArray = getIntent().getBundleExtra("balancesBundle").getParcelableArrayList("balancesArray");
+        Log.e("balancesArray output", String.valueOf(balancesArray.size()));
 
-                            currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
-                        }
-                    } else {
-                        meRef = expense.child("debtors").child(myUid);
-                        if (meRef.exists()) {
-                            // Sono un debtor
-                            for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
-                                if (balancesMap.containsKey(expenseBalance.getKey())) {
-                                    balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
-                                } else {
-                                    Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
-                                    balancesMap.put(expenseBalance.getKey(), newDebtor);
-                                }
+        if(balancesArray == null) {
+            Log.e("MeActivity", "balancesArray è NULL");
+            return;
+        }
 
-                                currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
-                            }
-                        }
-                    }
+        for (Me otherMember : balancesArray) {
+            Log.e("balancesArray output", otherMember.getName() + otherMember.getAmount());
+            me.add(otherMember);
+            if (otherMember.getAmount() > 0)
+                credito += otherMember.getAmount();
+            else
+                debito += otherMember.getAmount();
+        }
 
-                    if (currentBalance > 0)
-                        credito[0] += currentBalance;
-                    else
-                        debito[0] += currentBalance;
-                }
+        adapter.notifyDataSetChanged();
 
-                for (Me otherMember : balancesMap.values())
-                    me.add(otherMember);
+        //Ludo: grafico a torta
+        PieChart pieChart = (PieChart) findViewById(R.id.chart);
 
-                adapter.notifyDataSetChanged();
+        List<PieEntry> entries = new ArrayList<>();
 
-                //Ludo: grafico a torta
-                PieChart pieChart = (PieChart) findViewById(R.id.chart);
+        if (debito != 0)
+            entries.add(new PieEntry(-debito, "Debito"));
+        if (credito != 0)
+            entries.add(new PieEntry(credito, "Credito"));
 
-                List<PieEntry> entries = new ArrayList<>();
+        Legend legend = pieChart.getLegend();
+        legend.setEnabled(false);
 
-                if (debito[0] != 0)
-                    entries.add(new PieEntry(-debito[0], "Debito"));
-                if (credito[0] != 0)
-                    entries.add(new PieEntry(credito[0], "Credito"));
+        pieChart.setDescription(null);
 
-                Legend legend = pieChart.getLegend();
-                legend.setEnabled(false);
+        PieDataSet set = new PieDataSet(entries, "Debito/Credito");
 
-                pieChart.setDescription(null);
+        if (debito != 0 && credito != 0)
+            set.setColors(new int[] {
+                            R.color.redMaterial, R.color.textGreen
+            },
+           getApplicationContext());
+        else {
+            if (debito != 0)
+                set.setColors(new int[]{R.color.redMaterial}, getApplicationContext());
+            if (credito != 0)
+                set.setColors(new int[]{R.color.textGreen}, getApplicationContext());
+        }
 
-                PieDataSet set = new PieDataSet(entries, "Debito/Credito");
+        set.setValueTextSize(18);
+        set.setValueTextColor(Color.WHITE);
+        PieData data = new PieData(set);
+        pieChart.setData(data);
+        pieChart.invalidate(); // refresh
 
-                if (debito[0] != 0 && credito[0] != 0)
-                    set.setColors(new int[]{R.color.redMaterial, R.color.greenMaterial}, getApplicationContext());
-                else {
-                    if (debito[0] != 0)
-                        set.setColors(new int[]{R.color.redMaterial}, getApplicationContext());
-                    if (credito[0] != 0)
-                        set.setColors(new int[]{R.color.greenMaterial}, getApplicationContext());
-                }
+        if (debito < 0)
+            debito = -debito;
+        debito_tv.setText(String.format(Locale.getDefault(), "%.2f", debito) + " " + Currency.getInstance(Locale.ITALY));
 
-                set.setValueTextSize(18);
-                set.setValueTextColor(Color.WHITE);
-                PieData data = new PieData(set);
-                pieChart.setData(data);
-                pieChart.invalidate(); // refresh
-
-                if (debito[0] < 0)
-                    debito_tv.setText(-debito[0] + " €");
-                else
-                    debito_tv.setText(debito[0] + " €");
-
-                credito_tv.setText(credito[0] + " €");
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("MeActivity", "Counld not retrieve the list of expenses");
-            }
-        });
+        credito_tv.setText(String.format(Locale.getDefault(), "%.2f", credito) + " " + Currency.getInstance(Locale.ITALY));
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -248,7 +201,6 @@ public class MeActivity extends AppCompatActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
-            // finish();
 
             default:
                 return super.onOptionsItemSelected(item);

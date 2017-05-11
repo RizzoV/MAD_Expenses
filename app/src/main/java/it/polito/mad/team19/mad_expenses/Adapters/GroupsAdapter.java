@@ -3,7 +3,6 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,11 +10,9 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -24,10 +21,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -88,7 +81,7 @@ public class GroupsAdapter extends BaseAdapter {
         Float balanceAmount = group.getBalance();
         if(balanceAmount>0) {
             balance.setText("Devi ricevere: " + String.format("%.2f", group.getBalance()));
-            balance.setTextColor(ContextCompat.getColor(context, R.color.greenMaterial));
+            balance.setTextColor(ContextCompat.getColor(context, R.color.textGreen));
 
         }
         if(balanceAmount<0)
