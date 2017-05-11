@@ -44,6 +44,8 @@ public class DeleteMemberDialog extends DialogFragment {
         String currentUser = getArguments().getString("currentUid");
         String userToDelete = getArguments().getString("selectedUid");
 
+
+        //in array_option verrà impostata la stringa da visualizzare in base alla situazione
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         if (!isLastUser) {
             int array_option;
