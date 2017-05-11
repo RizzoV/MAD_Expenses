@@ -208,9 +208,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.INVISIBLE);
-                    updateList(uid);
 
                     checkInvitations();
+                    updateList(uid);
 
                     firstTimeCheck = false;
                 }
@@ -263,38 +263,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
     private void addGroupToUser(final String uid, final String groupIdName) {
 
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("utenti").child(uid).child("gruppi");
-
-        // fai aggiornare la lista una volta che ha aggiunto il nuovo gruppo
-        myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                updateList(uid);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                updateList(uid);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                updateList(uid);
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                // Cannot happen?
-                Log.d("GroupListActivity", "User groups list - Child moved");
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("GroupListActivity", "Cannot read user's groups list");
-            }
-        });
-
         final FirebaseDatabase database2 = FirebaseDatabase.getInstance();
         DatabaseReference myRef2 = database2.getReference("gruppi").child(groupIdName);
 
@@ -311,9 +279,16 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uName);
 
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("bilancio").setValue(0);
-                    addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("immagine").setValue(snapshot.child("immagine").getValue().toString());
+                    try
+                    {
+                        addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("immagine").setValue(snapshot.child("immagine").getValue().toString());
+                    }catch(NullPointerException e)
+                    {
+                        Log.e("Group","noimage");
+                    }
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("nome").setValue(snapshot.child("nome").getValue().toString());
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("notifiche").setValue(0);
+                    updateList(uid);
                 }
             }
 
@@ -350,6 +325,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     groupListView.setVisibility(View.VISIBLE);
                     for (DataSnapshot child : snapshot.getChildren())
                     {
+                        Log.e("Invite",child.toString());
                         if(child.hasChild("immagine"))
                             groups.add(new Group(child.child("nome").getValue().toString(),Float.parseFloat("0.0"), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
                         else
