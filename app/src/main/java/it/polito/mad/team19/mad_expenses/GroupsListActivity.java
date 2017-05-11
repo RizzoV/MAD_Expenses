@@ -126,26 +126,22 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     Log.d(TAG, "onAuthStateChanged:signed_inGroup:" + user.getUid());
                     uid = user.getUid();
                     uName = user.getDisplayName();
-                    if(uName == null)
+                    if (uName == null)
                         uName = "User";
-                    else
-                        if(uName.trim().isEmpty())
-                            uName = "User";
+                    else if (uName.trim().isEmpty())
+                        uName = "User";
 
-
-                    if (firstTimeCheck)
-                    {
+                    if (firstTimeCheck) {
                         updateList(uid);
                         checkInvitations();
                         firstTimeCheck = false;
                     }
-                } else
-                    {
+                } else {
                     // User is signed out
                     groups.clear();
                     ga.notifyDataSetChanged();
                     Log.d(TAG, "onAuthStateChanged:signed_outGroup");
-                        firstTimeCheck=true;
+                    firstTimeCheck = true;
                     Intent intent = new Intent(GroupsListActivity.this, GoogleSignInActivity.class);
                     progressBar.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.GONE);
