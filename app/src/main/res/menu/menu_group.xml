@@ -15,7 +15,7 @@
         android:id="@+id/personal_profile_icon"
         android:icon="@drawable/ic_person"
         app:showAsAction="ifRoom"
-        android:title="@string/personal_profile"
+        android:title="@string/personal_balance"
         />
     <item
         android:id="@+id/notifications_icon"

@@ -43,17 +43,6 @@ public class FirebaseGroupMember implements Parcelable {
         dest.writeString(uid);
     }
 
-    //LUDO: per ceccare
-    public void check(boolean state)
-    {
-        checked = state;
-    }
-
-    public boolean isChecked()
-    {
-        return checked;
-    }
-
     public static final Parcelable.Creator<FirebaseGroupMember> CREATOR = new Parcelable.Creator<FirebaseGroupMember>() {
         public FirebaseGroupMember createFromParcel(Parcel in) {
             return new FirebaseGroupMember(in.readString(), in.readString(), in.readString());
@@ -65,4 +54,15 @@ public class FirebaseGroupMember implements Parcelable {
             return new FirebaseGroupMember[size];
         }
     };
+
+    //LUDO: per ceccare
+    public void check(boolean state)
+    {
+        checked = state;
+    }
+
+    public boolean isChecked()
+    {
+        return checked;
+    }
 }

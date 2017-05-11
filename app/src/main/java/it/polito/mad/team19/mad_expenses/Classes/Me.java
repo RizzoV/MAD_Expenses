@@ -1,12 +1,15 @@
 package it.polito.mad.team19.mad_expenses.Classes;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Currency;
 
 /**
  * Created by ikkoyeah on 31/03/17.
  */
 
-public class Me {
+public class Me implements Parcelable {
 
     private String name;
     private Float amount;
@@ -45,4 +48,28 @@ public class Me {
     public void addPartialAmount(Float amount) {
         this.amount += amount;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeFloat(amount);
+        dest.writeString(currency.getCurrencyCode());
+    }
+
+    public static final Parcelable.Creator<Me> CREATOR = new Parcelable.Creator<Me>() {
+        public Me createFromParcel(Parcel in) {
+            return new Me(in.readString(), in.readFloat(), Currency.getInstance(in.readString()));
+        }
+
+        @Override
+        public Me[] newArray(int size) {
+            // TODO Auto-generated method stub
+            return new Me[size];
+        }
+    };
 }

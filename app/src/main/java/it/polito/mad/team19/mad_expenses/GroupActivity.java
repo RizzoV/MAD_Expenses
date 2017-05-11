@@ -65,6 +65,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
@@ -74,6 +75,7 @@ import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
+import it.polito.mad.team19.mad_expenses.Classes.Me;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
@@ -140,16 +142,16 @@ public class GroupActivity extends AppCompatActivity {
 
         // Manage group image
 
-            Glide.with(this).load(groupImageUrl).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(logo) {
-                @Override
-                protected void setResource(Bitmap resource) {
-                    RoundedBitmapDrawable circularBitmapDrawable =
-                            RoundedBitmapDrawableFactory.create(getResources(), resource);
+        Glide.with(this).load(groupImageUrl).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(logo) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(getResources(), resource);
 
-                    circularBitmapDrawable.setCircular(true);
-                    logo.setImageDrawable(circularBitmapDrawable);
-                }
-            });
+                circularBitmapDrawable.setCircular(true);
+                logo.setImageDrawable(circularBitmapDrawable);
+            }
+        });
 
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -169,9 +171,6 @@ public class GroupActivity extends AppCompatActivity {
                 Log.e("BolzDebug", "mannaiaBBolz");
             }
         });
-
-
-
 
 
         // Create the adapter that will return a fragment for each of the three
@@ -340,17 +339,17 @@ public class GroupActivity extends AppCompatActivity {
 
         final ArrayList<Notifications> notificationsList = new ArrayList<Notifications>();
         for (int i = 0; i < 5; i++) {
-            notificationsList.add(new Notifications("Bbbbolz ha creato una nuova spesa","18 Apr"));
+            notificationsList.add(new Notifications("Bbbbolz ha creato una nuova spesa", "18 Apr"));
         }
 
-        final NotificationsAdapter adapter =  new NotificationsAdapter(this,notificationsList);
+        final NotificationsAdapter adapter = new NotificationsAdapter(this, notificationsList);
         notificationsListView.setAdapter(adapter);
 
 
         notifCount.findViewById(R.id.notifications_icon_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Clicked","click");
+                Log.e("Clicked", "click");
                 //barProgressDialog.show();
                 notificationsDrawer.openDrawer(Gravity.RIGHT);
             }
@@ -507,14 +506,14 @@ public class GroupActivity extends AppCompatActivity {
             for (FirebaseGroupMember contributor : contributors) {
                 DatabaseReference debtorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
                         .child("debtors").child(groupMember.getUid());
-                debtorRef.child("riepilogo").child(contributor.getUid()).child("amount").setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
+                debtorRef.child("riepilogo").child(contributor.getUid()).child("amount").setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
                 debtorRef.child("nome").setValue(groupMember.getName());
                 debtorRef.child("riepilogo").child(contributor.getUid()).child("nome").setValue(contributor.getName());
 
 
                 DatabaseReference creditorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
                         .child("contributors").child(contributor.getUid());
-                creditorRef.child("riepilogo").child(groupMember.getUid()).child("amount").setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",","."));
+                creditorRef.child("riepilogo").child(groupMember.getUid()).child("amount").setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
                 creditorRef.child("nome").setValue(contributor.getName());
                 creditorRef.child("riepilogo").child(groupMember.getUid()).child("nome").setValue(groupMember.getName());
             }
@@ -541,6 +540,8 @@ public class GroupActivity extends AppCompatActivity {
         private Float totalAmount;
         private Float debitAmount;
         private Float creditAmount;
+
+        private HashMap<String, Me> balancesMap = new HashMap<>();
 
         public ExpensesListFragment() {
             totalAmount = new Float(0);
@@ -571,24 +572,15 @@ public class GroupActivity extends AppCompatActivity {
 
             final ArrayList<Expense> expenses = new ArrayList<>();
 
-            final RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-            final ExpensesRecyclerAdapter adapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
-            mRecyclerView.setAdapter(adapter);
+            final RecyclerView expensesListRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
+            final ExpensesRecyclerAdapter expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+            expensesListRecyclerView.setAdapter(expensesListAdapter);
 
             LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
             mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-            mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+            expensesListRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
 
-            /*
-            for (int i = 0; i < 16; i++) {
-                Expense e = new Expense("Expense " + i, Integer.valueOf(i * i).floatValue(), Currency.getInstance("EUR"),
-                        "Description of the expense #" + i + ". Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis.",
-                        null); // Currency string given by ISO 4217
-                expenses.add(e);
-            }
-           */
-
-            adapter.SetOnItemClickListener(new ExpensesRecyclerAdapter.OnItemClickListener() {
+            expensesListAdapter.SetOnItemClickListener(new ExpensesRecyclerAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
                     Expense clicked = expenses.get(position);
@@ -605,7 +597,7 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
-            adapter.SetOnItemLongClickListener(new ExpensesRecyclerAdapter.OnItemLongClickListener() {
+            expensesListAdapter.SetOnItemLongClickListener(new ExpensesRecyclerAdapter.OnItemLongClickListener() {
                 @Override
                 public void onItemLongClick(View view, int position) {
                     Log.e("DebugExpenseLongClicked", position + "item clicked");
@@ -621,6 +613,11 @@ public class GroupActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), MeActivity.class);
                     intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
+                    Bundle b = new Bundle();
+                    ArrayList<Me> balancesArray = new ArrayList<Me>();
+                    for (Me currentProfile : balancesMap.values())
+                        balancesArray.add(currentProfile);
+                    b.putParcelableArrayList("balancesArray", balancesArray);
                     startActivity(intent);
                 }
             });
@@ -630,7 +627,7 @@ public class GroupActivity extends AppCompatActivity {
             final int[] previous = {0};
             final boolean[] set = {false};
 
-            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            expensesListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     previous[0] += dy;
@@ -668,79 +665,105 @@ public class GroupActivity extends AppCompatActivity {
             });
 
 
-            final TextView noexpensestv = (TextView) rootView.findViewById(R.id.noexpenses_tv);
+            final TextView noExpenses_tv = (TextView) rootView.findViewById(R.id.noexpenses_tv);
+
+            /* VALE
+             * Calcola statistiche su credito, debito e totale
+             * Raccogli anche informazioni su crediti e debiti verso gli altri utenti già che ci sei,
+             * mettendole in balancesMap che sarà poi usata per passare queste informazioni al profilo
+             * personale senza riscaricare tutto
+             */
+
+            final String groupId = getActivity().getIntent().getStringExtra("groupId");
+            final String myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
 
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("gruppi").child(getActivity().getIntent().getStringExtra("groupId")).child("expenses");
-
-
+            DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
             myRef.addValueEventListener(new ValueEventListener() {
-
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     totalAmount = Float.valueOf(0);
                     creditAmount = Float.valueOf(0);
+
+                    TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
+                    TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
+                    TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_total_amount_tv);
+
                     if (dataSnapshot.hasChildren()) {
-                        noexpensestv.setVisibility(View.GONE);
+                        noExpenses_tv.setVisibility(View.GONE);
+
                         //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
                         expenses.clear();
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            FirebaseExpense fe = child.getValue(FirebaseExpense.class);
-                            fe.setKey(child.getKey());
-                            expenses.add(new Expense(fe.getName(), fe.getCost(), Currency.getInstance(Locale.ITALY), fe.getDescription(), fe.getImage(), fe.getAuthor(), child.getKey()));
+
+                        for (DataSnapshot expense : dataSnapshot.getChildren()) {
+                            FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
+                            firebaseExpense.setKey(expense.getKey());
+                            expenses.add(new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey()));
+
                             //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
-                            adapter.notifyDataSetChanged();
+                            expensesListAdapter.notifyDataSetChanged();
 
                             //TODO generalizzare l'utilizzo della valuta
-                            //TODO calcolo dei miei crediti e debiti con intelligenza
-                            totalAmount += Float.valueOf(fe.getCost());
-                            TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_card_tv);
-                            totalTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", totalAmount));
+                            totalAmount += Float.valueOf(firebaseExpense.getCost());
 
-                            TextView creditDebitTextView_amount = (TextView) rootView.findViewById(R.id.expenses_credit_debit_card_tv);
-                            TextView creditDebitTextView_title = (TextView) rootView.findViewById(R.id.expenses_credit_debit_title_tv);
+                            float currentBalance = 0;
 
-                            float myCreditDebitAmount = 0;
+                            DataSnapshot meRef = expense.child("contributors").child(myUid);
+                            if (meRef.exists()) {
+                                // Sono un contributor
+                                for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
+                                    if (balancesMap.containsKey(expenseBalance.getKey())) {
+                                        balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                    } else {
+                                        Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
+                                        balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                    }
 
-                         /*   if(myCreditDebitAmount>0)
-                            {
-                                creditDebitTextView_amount.setTextColor(ContextCompat.getColor(getContext(), R.color.greenMaterial));
-                                creditDebitTextView_title.setText(R.string.credit);
+                                    currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
+                                }
+                            } else {
+                                meRef = expense.child("debtors").child(myUid);
+                                if (meRef.exists()) {
+                                    // Sono un debtor
+                                    for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
+                                        if (balancesMap.containsKey(expenseBalance.getKey())) {
+                                            balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                        } else {
+                                            Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
+                                            balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                        }
+
+                                        currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
+                                    }
+                                }
                             }
+
+                            if (currentBalance > 0)
+                                creditAmount += currentBalance;
                             else
-                            {
-                                creditDebitTextView_amount.setTextColor(ContextCompat.getColor(getContext(), R.color.redMaterial));
-                                creditDebitTextView_title.setText(R.string.debit);
-                            }*/
-
-                            creditDebitTextView_amount.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", myCreditDebitAmount));
-
-                            //debitAmount += Float.valueOf(fe.getCost()); //TO ADD?
-                          /*  TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
-                            debitTextView.setText(Currency.getInstance(Locale.ITALY).getSymbol() + " " + String.format("%.2f", debitAmount));*/
-
-                            pBar.setVisibility(View.GONE);
+                                debitAmount += currentBalance;
                         }
+
+                        creditTextView.setText(String.valueOf(creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                        debitTextView.setText(String.valueOf(-debitAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                        totalTextView.setText(String.valueOf(totalAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+
+                        pBar.setVisibility(View.GONE);
+
                     } else {
                         pBar.setVisibility(View.GONE);
-                        noexpensestv.setVisibility(View.VISIBLE);
+                        noExpenses_tv.setVisibility(View.VISIBLE);
                     }
-
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.e("ExpensesFragment", "Could not retrieve the list o expenses");
                 }
             });
 
             return rootView;
-
-        }
-
-
-        void getDataFromFirebase() {
-
         }
     }
 

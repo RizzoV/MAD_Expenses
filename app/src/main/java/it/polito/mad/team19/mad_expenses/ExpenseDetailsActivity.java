@@ -117,7 +117,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot contributor) {
                 for(DataSnapshot contributors : contributor.child("contributors").getChildren())
                 {
-                    Log.e("Contributor",contributors.toString());
+                    Log.d("Contributor",contributors.toString());
                     for (DataSnapshot debtor : contributors.child("riepilogo").getChildren())
                     {
                         expenseDetailsList.add(new ExpenseDetail(contributors.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), debtor.child("amount").getValue().toString(), null, null));
@@ -130,13 +130,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
                 //Solo per log
                 if(ExpenseContributors.getChildrenCount()==1)
-                    Log.e("ExpenseContributors","No contributors");
+                    Log.d("ExpenseContributors","No contributors");
                 else
                 {
                     for(DataSnapshot currentContributor : ExpenseContributors.getChildren())
                         contributorsList.add(new FirebaseGroupMember(currentContributor.child("nome").getValue().toString(),null,currentContributor.getKey()));
 
-                    Log.e("ExpenseContributors",contributorsList.toString());
+                    Log.d("ExpenseContributors",contributorsList.toString());
                 }
 
 
@@ -144,13 +144,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
                 //solo per log
                 if(ExpenseExcluded.getChildrenCount()==1)
-                    Log.e("ExpenseExcluded","No Excluded");
+                    Log.d("ExpenseExcluded","No Excluded");
                 else
                 {
                     for(DataSnapshot currentExcluded : ExpenseExcluded.getChildren())
                         excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(),null,currentExcluded.getKey()));
 
-                    Log.e("ExpenseExcluded",excludedList.toString());
+                    Log.d("ExpenseExcluded",excludedList.toString());
                 }
             }
 

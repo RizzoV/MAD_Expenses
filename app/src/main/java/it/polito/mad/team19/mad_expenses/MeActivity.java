@@ -1,12 +1,9 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,9 +11,6 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -26,21 +20,17 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import it.polito.mad.team19.mad_expenses.Adapters.MeRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
@@ -60,7 +50,7 @@ public class MeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_me);
-        getSupportActionBar().setTitle(getResources().getString(R.string.personal_profile));
+        getSupportActionBar().setTitle(getResources().getString(R.string.personal_balance));
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -207,12 +197,12 @@ public class MeActivity extends AppCompatActivity {
                 PieDataSet set = new PieDataSet(entries, "Debito/Credito");
 
                 if (debito[0] != 0 && credito[0] != 0)
-                    set.setColors(new int[]{R.color.redMaterial, R.color.greenMaterial}, getApplicationContext());
+                    set.setColors(new int[]{R.color.redMaterial, R.color.textGreen}, getApplicationContext());
                 else {
                     if (debito[0] != 0)
                         set.setColors(new int[]{R.color.redMaterial}, getApplicationContext());
                     if (credito[0] != 0)
-                        set.setColors(new int[]{R.color.greenMaterial}, getApplicationContext());
+                        set.setColors(new int[]{R.color.textGreen}, getApplicationContext());
                 }
 
                 set.setValueTextSize(18);

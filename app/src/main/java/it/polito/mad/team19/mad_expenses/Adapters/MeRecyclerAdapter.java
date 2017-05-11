@@ -2,7 +2,6 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -79,7 +78,7 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
             this.name.setText(current.getName());
             this.amount.setText(String.format("%.2f", current.getAmount())  + " " + current.getCurrency().getSymbol().toString());
             if(current.getAmount()>0)
-                amount.setTextColor(ContextCompat.getColor(context, R.color.greenMaterial));
+                amount.setTextColor(ContextCompat.getColor(context, R.color.textGreen));
             else
                 amount.setTextColor(ContextCompat.getColor(context, R.color.redMaterial));
             if((position%2)==0)

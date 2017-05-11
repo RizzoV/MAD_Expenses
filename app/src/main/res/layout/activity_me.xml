@@ -93,7 +93,7 @@
                                 android:text="-"
                                 android:textAlignment="center"
                                 android:textAllCaps="true"
-                                android:textColor="@color/greenMaterial"
+                                android:textColor="@color/textGreen"
                                 android:textSize="20sp" />
                         </LinearLayout>
 
