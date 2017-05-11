@@ -132,7 +132,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         uName = "User";
 
                     if (firstTimeCheck) {
-                        updateList(uid);
                         checkInvitations();
                         firstTimeCheck = false;
                     }
