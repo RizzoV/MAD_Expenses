@@ -34,6 +34,7 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
 public class GroupInfoActivity extends AppCompatActivity implements DeleteMemberDialog.NoticeDialogListener {
 
+    private static final int GROUP_QUITTED = 99;
     ImageView image;
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbar;
@@ -202,7 +203,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
             database.getReference().child("gruppi").child(groupId)
                     .child("membri").child(nexAdminId).child("tipo").setValue("1");
             //TODO Jured: se esco dal gruppo devo tornare alla groupListActivity
-            finish();
+            Log.d("DebugGroupQuitted","GROUP_QUITTED result set");
+            setResult(GROUP_QUITTED);
+            dialog.getActivity().finish();
             //Intent intent = new Intent(dialog.getActivity(), GroupActivity.class);
             //startActivity(intent);
         }
