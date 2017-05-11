@@ -90,6 +90,9 @@ enum TabsList {
 public class GroupActivity extends AppCompatActivity {
 
     private static final int REQUEST_INVITE = 1;
+    private static final int REQUEST_NEW_EXPENSE = 2;
+    private static final int REQUEST_NEW_PROPOSAL = 3;
+
     private PagerAdapter mSectionsPagerAdapter;
 
     private ViewPager mViewPager;
@@ -220,25 +223,25 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i;
-                int resultCode;
+                int requestCode;
                 switch (selectedTab) {
                     case EXPENSES:
                         i = new Intent(GroupActivity.this, AddExpenseActivity.class);
-                        resultCode = 666;
+                        requestCode = REQUEST_NEW_EXPENSE;
                         i.putExtra("groupId", groupId);
                         break;
                     case PROPOSALS:
                         i = new Intent(GroupActivity.this, AddProposalActivity.class);
-                        resultCode = 6;
+                        requestCode = REQUEST_NEW_PROPOSAL;
                         i.putExtra("groupId", groupId);
                         break;
                     default:
                         i = new Intent(GroupActivity.this, AddExpenseActivity.class);
-                        resultCode = 666;
+                        requestCode = REQUEST_NEW_EXPENSE;
                         break;
                 }
 
-                startActivityForResult(i, resultCode);
+                startActivityForResult(i, requestCode);
             }
         });
     }
@@ -408,7 +411,9 @@ public class GroupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 666 && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_NEW_EXPENSE && resultCode == RESULT_OK) {
+            // Gestione calcolo debiti e crediti dovuti alla nuova spesa
+
             Log.e("ExpenseIDActivity", data.getStringExtra("expenseId").toString());
             if (groupMembersList.size() > 0)
                 groupMembersList.clear();
@@ -712,10 +717,13 @@ public class GroupActivity extends AppCompatActivity {
                                 // Sono un contributor
                                 for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
                                     if (balancesMap.containsKey(expenseBalance.getKey())) {
-                                        balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                        if(expenseBalance.child("amount").exists())
+                                            balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
                                     } else {
-                                        Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
-                                        balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                        if(expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
+                                            Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
+                                            balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                        }
                                     }
                                 }
                             } else {
@@ -724,10 +732,13 @@ public class GroupActivity extends AppCompatActivity {
                                     // Sono un debtor
                                     for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
                                         if (balancesMap.containsKey(expenseBalance.getKey())) {
-                                            balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                            if(expenseBalance.child("amount").exists())
+                                                balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
                                         } else {
-                                            Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
-                                            balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                            if(expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
+                                                Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
+                                                balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                            }
                                         }
                                     }
                                 }

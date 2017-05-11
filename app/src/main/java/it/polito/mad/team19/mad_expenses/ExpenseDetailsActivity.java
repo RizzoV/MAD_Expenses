@@ -263,7 +263,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        
+
         if(alertDialog != null)
             alertDialog.dismiss();
     }
