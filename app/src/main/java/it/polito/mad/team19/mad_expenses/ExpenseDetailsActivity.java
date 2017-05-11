@@ -59,6 +59,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
 
+    private AlertDialog alertDialog = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,7 +184,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             case R.id.deleteExpense: {
                 //Dialog con istruzioni normali SENZA fragment
 
-                final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                alertDialog = new AlertDialog.Builder(this)
                         .setMessage(R.string.confirmExpenseDeletion)
                         .setPositiveButton(getString(R.string.yes), null)
                         .setNegativeButton(getString(R.string.cancel), null)
@@ -256,6 +258,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         if (requestCode == MODIFY_CODE && resultCode == RESULT_OK) {
             finish();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        
+        if(alertDialog != null)
+            alertDialog.dismiss();
     }
 }
 
