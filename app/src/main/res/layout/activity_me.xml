@@ -24,6 +24,7 @@
             android:layout_marginTop="@dimen/smaller_vertical_margin">
 
             <RelativeLayout
+                android:layout_marginTop="@dimen/smaller_vertical_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -36,7 +37,7 @@
 
                     <LinearLayout
                         android:id="@+id/top"
-                        android:layout_width="368dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 

@@ -613,11 +613,19 @@ public class GroupActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), MeActivity.class);
                     intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
+                    /* VALE
+                     * Crea un bundle contenente le informazioni su spese per non doverle riscaricare
+                     * nella activity sui dettagli del gruppo
+                     */
                     Bundle b = new Bundle();
-                    ArrayList<Me> balancesArray = new ArrayList<Me>();
-                    for (Me currentProfile : balancesMap.values())
+                    ArrayList<Me> balancesArray = new ArrayList<>();
+                    for (Me currentProfile : balancesMap.values()) {
                         balancesArray.add(currentProfile);
+                        Log.e("balancesArray input", currentProfile.getName() + currentProfile.getAmount());
+                    }
+
                     b.putParcelableArrayList("balancesArray", balancesArray);
+                    intent.putExtra("balancesBundle", b);
                     startActivity(intent);
                 }
             });
@@ -668,7 +676,7 @@ public class GroupActivity extends AppCompatActivity {
             final TextView noExpenses_tv = (TextView) rootView.findViewById(R.id.noexpenses_tv);
 
             /* VALE
-             * Calcola statistiche su credito, debito e totale
+             * Calcola statistiche su credito, debito e totale.
              * Raccogli anche informazioni su crediti e debiti verso gli altri utenti già che ci sei,
              * mettendole in balancesMap che sarà poi usata per passare queste informazioni al profilo
              * personale senza riscaricare tutto
@@ -677,7 +685,6 @@ public class GroupActivity extends AppCompatActivity {
             final String groupId = getActivity().getIntent().getStringExtra("groupId");
             final String myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
             myRef.addValueEventListener(new ValueEventListener() {
@@ -685,7 +692,9 @@ public class GroupActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     totalAmount = Float.valueOf(0);
                     creditAmount = Float.valueOf(0);
-
+                    debitAmount = Float.valueOf(0);
+                    balancesMap.clear();
+                    
                     TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
                     TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
                     TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_total_amount_tv);
@@ -705,7 +714,7 @@ public class GroupActivity extends AppCompatActivity {
                             expensesListAdapter.notifyDataSetChanged();
 
                             //TODO generalizzare l'utilizzo della valuta
-                            totalAmount += Float.valueOf(firebaseExpense.getCost());
+                            totalAmount += firebaseExpense.getCost();
 
                             float currentBalance = 0;
 
@@ -719,7 +728,6 @@ public class GroupActivity extends AppCompatActivity {
                                         Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
                                         balancesMap.put(expenseBalance.getKey(), newDebtor);
                                     }
-
                                     currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
                                 }
                             } else {
@@ -733,7 +741,6 @@ public class GroupActivity extends AppCompatActivity {
                                             Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
                                             balancesMap.put(expenseBalance.getKey(), newDebtor);
                                         }
-
                                         currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
                                     }
                                 }
@@ -745,9 +752,10 @@ public class GroupActivity extends AppCompatActivity {
                                 debitAmount += currentBalance;
                         }
 
-                        creditTextView.setText(String.valueOf(creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
-                        debitTextView.setText(String.valueOf(-debitAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
-                        totalTextView.setText(String.valueOf(totalAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                        debitAmount = Math.abs(debitAmount);
+                        creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                        debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debitAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                        totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
 
                         pBar.setVisibility(View.GONE);
 

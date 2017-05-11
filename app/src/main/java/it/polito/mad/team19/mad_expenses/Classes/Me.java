@@ -49,6 +49,12 @@ public class Me implements Parcelable {
         this.amount += amount;
     }
 
+    /* VALE
+     * Classe resa parcellable in modo da passare un'array di Me da GroupActivity
+     * all'activity sulle informazioni del gruppo per non riscaricare tutte le informazioni
+     * su spese, debiti, crediti, etc.. da Firebase
+     */
+
     @Override
     public int describeContents() {
         return 0;
