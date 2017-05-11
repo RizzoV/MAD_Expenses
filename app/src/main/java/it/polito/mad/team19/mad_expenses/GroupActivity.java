@@ -351,7 +351,7 @@ public class GroupActivity extends AppCompatActivity {
         ImageView im = (ImageView) notifCount.findViewById(R.id.notifications_icon_action);
         DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child("gruppi").child(groupId).child("notifiche");
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int notificationsCount = dataSnapshot.getValue(Integer.class);
@@ -430,9 +430,12 @@ public class GroupActivity extends AppCompatActivity {
                     data.getStringExtra("expenseUserName"), contributors, excluded);
         }
 
-        if (requestCode == GROUP_INFO_REQUEST) {
-            Log.d("DebugGroupQuitted", "GROUP_QUITTED result detected");
-            finish();
+        if (requestCode == GROUP_INFO_REQUEST && resultCode == 99)
+        {
+                Log.d("DebugGroupQuitted", "GROUP_QUITTED result detected");
+                setResult(99);
+                finish();
+
         }
     }
 

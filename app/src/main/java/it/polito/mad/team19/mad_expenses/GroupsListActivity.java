@@ -43,6 +43,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     private static final int REQUEST_INVITE = 6666;
     private static final int LOGIN_CHECK = 1;
     private static final int REQUEST_GROUP_CREATION = 2;
+    private static final int GROUP_ACTIVITY = 999;
     private static FirebaseDatabase myFirebaseDatabase;
     ListView groupListView;
     ArrayList<Group> groups = new ArrayList<>();
@@ -106,7 +107,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 intent.putExtra("groupId", ((Group) parent.getItemAtPosition(position)).getGroupId());
                 intent.putExtra("groupImage", ((Group) parent.getItemAtPosition(position)).getImage());
                 intent.putExtra("groupMyBalance", ((Group) parent.getItemAtPosition(position)).getBalance().toString());
-                startActivity(intent);
+                startActivityForResult(intent,GROUP_ACTIVITY);
 
             }
         });
@@ -200,6 +201,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 }
                 break;
             }
+            case GROUP_ACTIVITY:
+                if(resultCode==99)
+                    updateList(uid);
             default:
         }
     }
