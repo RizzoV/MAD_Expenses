@@ -220,7 +220,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         boolean autoLaunchDeepLink = true;
         AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
                 .setResultCallback(
-                        new ResultCallback<AppInviteInvitationResult>() {
+                        new ResultCallback<AppInviteInvitationResult>()
+                        {
                             @Override
                             public void onResult(AppInviteInvitationResult result) {
                                 Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
@@ -249,6 +250,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                     }
 
                                 }
+                                else
+                                    updateList(uid);
                             }
                         });
 
