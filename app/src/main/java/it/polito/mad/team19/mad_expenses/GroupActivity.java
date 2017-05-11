@@ -64,6 +64,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
@@ -88,24 +89,24 @@ enum TabsList {
 
 public class GroupActivity extends AppCompatActivity {
 
-    private static final int REQUEST_INVITE = 66;
+    private static final int REQUEST_INVITE = 1;
     private PagerAdapter mSectionsPagerAdapter;
-
 
     private ViewPager mViewPager;
     private DrawerLayout notificationsDrawer;
     private String groupName;
     private String groupId;
     private String groupImageUrl;
-    TabsList selectedTab;
+    private TabsList selectedTab;
     private ListView notificationsListView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
-    final ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
-    Drawable logo;
-    Toolbar toolbar;
-    ProgressDialog barProgressDialog;
+    private final ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<FirebaseGroupMember>();
+    private Drawable logo;
+    private Toolbar toolbar;
+    private ProgressDialog barProgressDialog;
+    private ArrayList<Me> balancesArrayTakenFromFragment = new ArrayList<>();
 
     protected static final String TAG = "firebaseAuth";
 
@@ -113,7 +114,6 @@ public class GroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
-
 
         // Get the intent which has started this activity
         Intent intent = getIntent();
@@ -309,23 +309,6 @@ public class GroupActivity extends AppCompatActivity {
                 });
     }
 
-    /*
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-    */
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -381,7 +364,6 @@ public class GroupActivity extends AppCompatActivity {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -406,6 +388,13 @@ public class GroupActivity extends AppCompatActivity {
             case R.id.personal_profile_icon: {
                 Intent intent = new Intent(GroupActivity.this, MeActivity.class);
                 intent.putExtra("groupId", groupId);
+                /* VALE
+                 * Crea un bundle contenente le informazioni su spese per non doverle riscaricare
+                 * nella activity sui dettagli del gruppo
+                 */
+                Bundle b = new Bundle();
+                b.putParcelableArrayList("balancesArray", balancesArrayTakenFromFragment);
+                intent.putExtra("balancesBundle", b);
                 startActivity(intent);
                 return true;
             }
@@ -530,6 +519,10 @@ public class GroupActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_INVITE);
     }
 
+    public void passBalancesArray(Collection<Me> balancesArray) {
+        for(Me b : balancesArray)
+            balancesArrayTakenFromFragment.add(b);
+    }
 
     public static class ExpensesListFragment extends Fragment {
         /**
@@ -694,7 +687,7 @@ public class GroupActivity extends AppCompatActivity {
                     creditAmount = Float.valueOf(0);
                     debitAmount = Float.valueOf(0);
                     balancesMap.clear();
-                    
+
                     TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
                     TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
                     TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_total_amount_tv);
@@ -763,6 +756,8 @@ public class GroupActivity extends AppCompatActivity {
                         pBar.setVisibility(View.GONE);
                         noExpenses_tv.setVisibility(View.VISIBLE);
                     }
+
+                    ((GroupActivity) getActivity()).passBalancesArray(balancesMap.values());
                 }
 
                 @Override
@@ -935,6 +930,5 @@ public class GroupActivity extends AppCompatActivity {
             return null;
         }
     }
-
 
 }
