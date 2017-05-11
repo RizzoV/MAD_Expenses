@@ -103,6 +103,10 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 
             }
         }
+        else{
+            addListenerOnDoneButton();
+            addListenerOnImageButton();
+        }
     }
 
     private void addListenerOnDoneButton() {
