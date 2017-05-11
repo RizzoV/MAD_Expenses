@@ -15,6 +15,7 @@ public class DeleteMemberDialog extends DialogFragment {
    * Each method passes the DialogFragment in case the host needs to query it. */
     public interface NoticeDialogListener {
         public void onDialogDeleteMemberClick(DialogFragment dialog);
+        public void onDialogLeaveAndDeleteClick(DialogFragment dialog);
     }
 
     // Use this instance of the interface to deliver action events
@@ -38,24 +39,48 @@ public class DeleteMemberDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
+
+        Boolean isLastUser = new Boolean(getArguments().getString("usersLeft").compareTo("1") == 0);
+        String currentUser = getArguments().getString("currentUid");
+        String userToDelete = getArguments().getString("selectedUid");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder
-                //.setTitle(R.string.dialog_camera_or_gallery)
-                .setItems(R.array.member_option_array, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
-                        //
-                        switch (which) {
-                            case 0:
-                                mListener.onDialogDeleteMemberClick(DeleteMemberDialog.this);
-                                break;
+        if (!isLastUser) {
+            int array_option;
+            if (currentUser.compareTo(userToDelete) == 0){
+                array_option = R.array.my_option_array;
+            } else
+                array_option = R.array.member_option_array;
+            builder.setItems(array_option, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // The 'which' argument contains the index position
+                    // of the selected item
+                    //
+                    switch (which) {
+                        case 0:
+                            mListener.onDialogDeleteMemberClick(DeleteMemberDialog.this);
+                            break;
 
-                        }
                     }
-                });
+                }
+            });
+        } else {
+            int array_option = R.array.last_member_option_array;
+            builder.setItems(array_option, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // The 'which' argument contains the index position
+                    // of the selected item
+                    //
+                    switch (which) {
+                        case 0:
+                            mListener.onDialogLeaveAndDeleteClick(DeleteMemberDialog.this);
+                            break;
 
+                    }
+                }
+            });
 
+        }
 
         // Create the AlertDialog object and return it
         return builder.create();

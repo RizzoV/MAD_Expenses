@@ -161,8 +161,12 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                     DialogFragment newFragment = new DeleteMemberDialog();
                     Bundle selectedUid = new Bundle();
 
+                    selectedUid.putString("currentUid",uid);
                     selectedUid.putString("selectedUid",contributors.get(position).getUid());
                     selectedUid.putString("groupId",groupId);
+                    selectedUid.putString("nextAdminId",contributors.get((position + 1)%contributors.size()).getUid());
+                    Log.d("DebugNextAdmin", String.valueOf((position + 1)%contributors.size()));
+                    selectedUid.putString("usersLeft", String.valueOf(contributors.size()));
                     newFragment.setArguments(selectedUid);
                     newFragment.show(getSupportFragmentManager(), "DeleteDialog");
                 }
@@ -180,6 +184,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         Log.d("DebugDialogClick","eliminare membro: " + dialog.getArguments().getString("selectedUid") + "  " + dialog.getArguments().getString("groupId"));
         String userToDelete = dialog.getArguments().getString("selectedUid");
         String groupId = dialog.getArguments().getString("groupId");
+        String nexAdminId = dialog.getArguments().getString("nextAdminId");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference userToDeleteRef = database.getReference().child("gruppi").child(groupId)
@@ -189,5 +194,22 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 .child("gruppi").child(groupId);
         userToDeleteRef.removeValue();
 
+        if(userToDelete.compareTo(uid.toString())==0) {
+            database.getReference().child("gruppi").child(groupId)
+                    .child("membri").child(nexAdminId).child("tipo").setValue("1");
+        }
+
+    }
+
+    @Override
+    public void onDialogLeaveAndDeleteClick(DialogFragment dialog) {
+        onDialogDeleteMemberClick(dialog);
+
+        Log.d("DebugDeleteMember", "onDialogLeaveAndDeleteClick");
+        String groupId = dialog.getArguments().getString("groupId");
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference groupToDeleteRef = database.getReference().child("gruppi").child(groupId);
+        groupToDeleteRef.removeValue();
     }
 }

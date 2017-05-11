@@ -9,4 +9,10 @@
     <string-array name="member_option_array">
         <item>Delete member</item>
     </string-array>
+    <string-array name="last_member_option_array">
+        <item>Leave and delete the group</item>
+    </string-array>
+    <string-array name="my_option_array">
+        <item>Leave the group</item>
+    </string-array>
 </resources>

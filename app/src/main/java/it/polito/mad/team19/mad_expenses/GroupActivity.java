@@ -598,9 +598,7 @@ public class GroupActivity extends AppCompatActivity {
             expensesListAdapter.SetOnItemLongClickListener(new ExpensesRecyclerAdapter.OnItemLongClickListener() {
                 @Override
                 public void onItemLongClick(View view, int position) {
-                    Log.e("DebugExpenseLongClicked", position + "item clicked");
-                    DialogFragment newFragment = new GalleryOrCameraDialog();
-                    newFragment.show(getActivity().getSupportFragmentManager(), "imageDialog");
+                    //aggiungere eventuale dialog per opzioni sulle spese
                 }
             });
 
