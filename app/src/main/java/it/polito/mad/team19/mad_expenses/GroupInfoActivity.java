@@ -3,12 +3,14 @@ package it.polito.mad.team19.mad_expenses;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
-public class GroupInfoActivity extends AppCompatActivity {
+public class GroupInfoActivity extends AppCompatActivity implements DeleteMemberDialog.NoticeDialogListener {
 
     ImageView image;
     Toolbar toolbar;
@@ -130,6 +132,20 @@ public class GroupInfoActivity extends AppCompatActivity {
             }
         });
 
+        adapter.SetOnItemLongClickListener(new GroupMembersRecyclerAdapter.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(View v, int position) {
+                DialogFragment newFragment = new DeleteMemberDialog();
+                newFragment.show(getSupportFragmentManager(), "DeleteDialog");
+                return false;
+            }
+        });
+
     }
 
+    @Override
+    public void onDialogDeleteMemberClick(DialogFragment dialog) {
+        Log.d("DebugDialogClick","pronto a eliminare membro");
+    }
 }

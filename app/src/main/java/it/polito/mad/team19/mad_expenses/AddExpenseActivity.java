@@ -55,8 +55,6 @@ import java.util.Date;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
-import static it.polito.mad.team19.mad_expenses.R.id.new_expense_data_et;
-
 /**
  * Created by Bolz on 03/04/2017.
  */
@@ -621,6 +619,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         return image;
     }
 
+
+
+    //Jured: gestione opzioni dialog
+    @Override
+    public void onDialogCameraClick(DialogFragment dialog) {
+        dispatchTakePictureIntent();
+    }
+
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -644,12 +650,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             }
         }
 
-
-    }
-
-    @Override
-    public void onDialogCameraClick(DialogFragment dialog) {
-        dispatchTakePictureIntent();
 
     }
 

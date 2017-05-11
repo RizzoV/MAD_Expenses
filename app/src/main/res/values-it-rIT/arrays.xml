@@ -4,4 +4,9 @@
         <item>Galleria</item>
         <item>Fotocamera</item>
     </string-array>
+
+    //Stringhe dialog per opzioni su membro gruppo
+    <string-array name="member_option_array">
+        <item>Elimina membro</item>
+    </string-array>
 </resources>

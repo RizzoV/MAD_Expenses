@@ -62,6 +62,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     private ImageButton imageButton;
     private static int RESULT_LOAD_IMAGE = 1;
 
+    //TODO chiedere i permessi per lo storage
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
