@@ -92,6 +92,8 @@ public class GroupActivity extends AppCompatActivity {
     private static final int REQUEST_INVITE = 1;
     private static final int REQUEST_NEW_EXPENSE = 2;
     private static final int REQUEST_NEW_PROPOSAL = 3;
+    private static final int GROUP_INFO_REQUEST = 4;
+    private static final int GROUP_QUITTED = 99;
 
     private PagerAdapter mSectionsPagerAdapter;
 
@@ -170,7 +172,7 @@ public class GroupActivity extends AppCompatActivity {
                 intent.putExtra("groupImage", groupImageUrl);
                 intent.putExtra("groupName", groupName);
                 intent.putExtra("groupId", groupId);
-                startActivity(intent);
+                startActivityForResult(intent, GROUP_INFO_REQUEST);
                 Log.e("BolzDebug", "mannaiaBBolz");
             }
         });
@@ -424,6 +426,11 @@ public class GroupActivity extends AppCompatActivity {
             //TODO: far avviare tutto in un thread
             getMembers(data.getStringExtra("expenseId").toString(), Float.parseFloat(data.getStringExtra("expenseTotal")), data.getStringExtra("expenseUId"),
                     data.getStringExtra("expenseUserName"), contributors, excluded);
+        }
+
+        if (requestCode == GROUP_INFO_REQUEST) {
+            Log.d("DebugGroupQuitted", "GROUP_QUITTED result detected");
+            finish();
         }
     }
 

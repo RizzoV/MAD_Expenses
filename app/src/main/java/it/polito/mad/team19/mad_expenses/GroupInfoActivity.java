@@ -1,5 +1,7 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -32,6 +34,7 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
 public class GroupInfoActivity extends AppCompatActivity implements DeleteMemberDialog.NoticeDialogListener {
 
+    private static final int GROUP_QUITTED = 99;
     ImageView image;
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbar;
@@ -186,6 +189,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         String groupId = dialog.getArguments().getString("groupId");
         String nexAdminId = dialog.getArguments().getString("nextAdminId");
 
+        //rimuovo i due riferimenti tra gruppo e membro
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference userToDeleteRef = database.getReference().child("gruppi").child(groupId)
                 .child("membri").child(userToDelete);
@@ -194,20 +198,30 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 .child("gruppi").child(groupId);
         userToDeleteRef.removeValue();
 
+        //se mi autoelimino aggiorno l'admin
         if(userToDelete.compareTo(uid.toString())==0) {
             database.getReference().child("gruppi").child(groupId)
                     .child("membri").child(nexAdminId).child("tipo").setValue("1");
+            //TODO Jured: se esco dal gruppo devo tornare alla groupListActivity
+            Log.d("DebugGroupQuitted","GROUP_QUITTED result set");
+            setResult(GROUP_QUITTED);
+            dialog.getActivity().finish();
+            //Intent intent = new Intent(dialog.getActivity(), GroupActivity.class);
+            //startActivity(intent);
         }
 
     }
 
     @Override
     public void onDialogLeaveAndDeleteClick(DialogFragment dialog) {
+
+        //chiamo il metodo per eliminare l'ultimo membro (che sarò io)
         onDialogDeleteMemberClick(dialog);
 
         Log.d("DebugDeleteMember", "onDialogLeaveAndDeleteClick");
         String groupId = dialog.getArguments().getString("groupId");
 
+        //elimino il gruppo
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference groupToDeleteRef = database.getReference().child("gruppi").child(groupId);
         groupToDeleteRef.removeValue();
