@@ -129,7 +129,6 @@ public class MeActivity extends AppCompatActivity {
          */
 
         ArrayList<Me> balancesArray = getIntent().getBundleExtra("balancesBundle").getParcelableArrayList("balancesArray");
-        Log.e("balancesArray output", String.valueOf(balancesArray.size()));
 
         if(balancesArray == null) {
             Log.e("MeActivity", "balancesArray è NULL");
@@ -137,7 +136,6 @@ public class MeActivity extends AppCompatActivity {
         }
 
         for (Me otherMember : balancesArray) {
-            Log.e("balancesArray output", otherMember.getName() + otherMember.getAmount());
             me.add(otherMember);
             if (otherMember.getAmount() > 0)
                 credito += otherMember.getAmount();

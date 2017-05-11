@@ -612,10 +612,8 @@ public class GroupActivity extends AppCompatActivity {
                      */
                     Bundle b = new Bundle();
                     ArrayList<Me> balancesArray = new ArrayList<>();
-                    for (Me currentProfile : balancesMap.values()) {
+                    for (Me currentProfile : balancesMap.values())
                         balancesArray.add(currentProfile);
-                        Log.e("balancesArray input", currentProfile.getName() + currentProfile.getAmount());
-                    }
 
                     b.putParcelableArrayList("balancesArray", balancesArray);
                     intent.putExtra("balancesBundle", b);
@@ -709,8 +707,6 @@ public class GroupActivity extends AppCompatActivity {
                             //TODO generalizzare l'utilizzo della valuta
                             totalAmount += firebaseExpense.getCost();
 
-                            float currentBalance = 0;
-
                             DataSnapshot meRef = expense.child("contributors").child(myUid);
                             if (meRef.exists()) {
                                 // Sono un contributor
@@ -721,7 +717,6 @@ public class GroupActivity extends AppCompatActivity {
                                         Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
                                         balancesMap.put(expenseBalance.getKey(), newDebtor);
                                     }
-                                    currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
                                 }
                             } else {
                                 meRef = expense.child("debtors").child(myUid);
@@ -734,15 +729,17 @@ public class GroupActivity extends AppCompatActivity {
                                             Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
                                             balancesMap.put(expenseBalance.getKey(), newDebtor);
                                         }
-                                        currentBalance += Float.parseFloat(expenseBalance.child("amount").getValue().toString());
                                     }
                                 }
                             }
+                        }
 
-                            if (currentBalance > 0)
-                                creditAmount += currentBalance;
+                        for(Me me : balancesMap.values()) {
+                            float currentAmount = me.getAmount();
+                            if(currentAmount > 0)
+                                creditAmount += currentAmount;
                             else
-                                debitAmount += currentBalance;
+                                debitAmount += currentAmount;
                         }
 
                         debitAmount = Math.abs(debitAmount);
