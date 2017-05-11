@@ -124,35 +124,15 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                         edAdapter.setListData(expenseDetailsList);
                         edAdapter.notifyDataSetChanged();
                     }
-                }
 
-                DataSnapshot ExpenseContributors = contributor.child("contributors");
-
-                //Solo per log
-                if(ExpenseContributors.getChildrenCount()==1)
-                    Log.e("ExpenseContributors","No contributors");
-                else
-                {
-                    for(DataSnapshot currentContributor : ExpenseContributors.getChildren())
-                        contributorsList.add(new FirebaseGroupMember(currentContributor.child("nome").getValue().toString(),null,currentContributor.getKey()));
-
-                    Log.e("ExpenseContributors",contributorsList.toString());
+                    contributorsList.add(new FirebaseGroupMember(contributors.getValue().toString(),null,contributors.getKey()));
                 }
 
 
-                DataSnapshot ExpenseExcluded = contributor.child("excluded");
-
-                //solo per log
-                if(ExpenseExcluded.getChildrenCount()==1)
-                    Log.e("ExpenseExcluded","No Excluded");
-                else
-                {
-                    for(DataSnapshot currentExcluded : ExpenseExcluded.getChildren())
+                    for(DataSnapshot currentExcluded : contributor.child("excluded").getChildren())
                         excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(),null,currentExcluded.getKey()));
+             }
 
-                    Log.e("ExpenseExcluded",excludedList.toString());
-                }
-            }
 
 
             @Override

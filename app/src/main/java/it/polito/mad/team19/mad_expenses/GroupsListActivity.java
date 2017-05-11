@@ -55,6 +55,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     TextView debug_tv;
     RelativeLayout debug_ll;
     boolean firstTimeCheck = true;
+    boolean disconnectCheck = false;
+    GoogleApiClient mGoogleApiClient;
     GroupsAdapter ga;
 
     @Override
@@ -62,6 +64,11 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         super.onCreate(savedInstanceState);
 
         FirebaseApp.initializeApp(getApplicationContext());
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(AppInvite.API)
+                .enableAutoManage(this, this)
+                .build();
 
         // Turn on caching
         if(myFirebaseDatabase == null) {
@@ -126,16 +133,19 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                             uName = "User";
 
 
-                    if (firstTimeCheck) {
+                    if (firstTimeCheck)
+                    {
                         updateList(uid);
                         checkInvitations();
                         firstTimeCheck = false;
                     }
-                } else {
+                } else
+                    {
                     // User is signed out
                     groups.clear();
                     ga.notifyDataSetChanged();
                     Log.d(TAG, "onAuthStateChanged:signed_outGroup");
+                        firstTimeCheck=true;
                     Intent intent = new Intent(GroupsListActivity.this, GoogleSignInActivity.class);
                     progressBar.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.GONE);
@@ -192,14 +202,15 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 {
                     finish();
                 }
-                if (resultCode == 1) {
+                if (resultCode == 1 && firstTimeCheck)
+                {
                     progressBar.setVisibility(View.VISIBLE);
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.INVISIBLE);
                     updateList(uid);
-                    if(firstTimeCheck)
-                        checkInvitations();
+
+                    checkInvitations();
 
                     firstTimeCheck = false;
                 }
@@ -211,10 +222,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     }
 
     void checkInvitations() {
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(AppInvite.API)
-                .enableAutoManage(this, this)
-                .build();
+
 
         boolean autoLaunchDeepLink = true;
         AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
@@ -223,7 +231,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                             @Override
                             public void onResult(AppInviteInvitationResult result) {
                                 Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
-                                if (result.getStatus().isSuccess()) {
+                                if (result.getStatus().isSuccess())
+                                {
                                     // Extract information from the intent
                                     Intent intent = result.getInvitationIntent();
                                     String deepLink = AppInviteReferral.getDeepLink(intent);
@@ -249,7 +258,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                 }
                             }
                         });
-
 
     }
 
