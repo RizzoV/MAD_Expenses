@@ -310,9 +310,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         if (mCurrentPhotoPath != null)
         {
             groupImagesRef = storageRef.child("images").child(groupId);
-
             File imageToUpload = new File(mCurrentPhotoPath);
-
             Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);

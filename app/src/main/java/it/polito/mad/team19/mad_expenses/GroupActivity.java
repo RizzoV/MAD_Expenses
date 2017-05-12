@@ -697,10 +697,11 @@ public class GroupActivity extends AppCompatActivity {
             myRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    totalAmount = Float.valueOf(0);
-                    creditAmount = Float.valueOf(0);
-                    debitAmount = Float.valueOf(0);
+                    totalAmount = (float) 0;
+                    creditAmount = (float) 0;
+                    debitAmount = (float) 0;
                     balancesMap.clear();
+                    expenses.clear();
 
                     TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
                     TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
@@ -708,9 +709,6 @@ public class GroupActivity extends AppCompatActivity {
 
                     if (dataSnapshot.hasChildren()) {
                         noExpenses_tv.setVisibility(View.GONE);
-
-                        //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
-                        expenses.clear();
 
                         for (DataSnapshot expense : dataSnapshot.getChildren()) {
                             FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
