@@ -105,4 +105,6 @@
     <string name="confirmLeaveGroup">Are you sure you want to leave the group?</string>
     <string name="no">No</string>
 
+    <!-- Chat -->
+    <string name="typeMessage">Type message</string>
 </resources>

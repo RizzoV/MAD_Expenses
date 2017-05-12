@@ -102,4 +102,7 @@
     <string name="confirmLeaveGroup">Sicuro di voler lasciare il gruppo?</string>
     <string name="no">No</string>
 
+    <string name="typeMessage">Scrivi messaggio</string>
+
+
 </resources>
