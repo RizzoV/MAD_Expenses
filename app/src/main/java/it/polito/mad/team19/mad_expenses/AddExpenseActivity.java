@@ -111,24 +111,21 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         groupId = getIntent().getStringExtra("groupId");
         usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //usrId = getIntent().getStringExtra("usrId");
 
         setTitle(R.string.create_new_expense);
 
-        //imageButton = (ImageButton) findViewById(R.id.image);
         mImageView = (ImageView) findViewById(R.id.camera_img);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
 
-       dateEditText = (EditText) findViewById(R.id.new_expense_data_et);
+        dateEditText = (EditText) findViewById(R.id.new_expense_data_et);
         dateEditText.setInputType(InputType.TYPE_NULL);
         dateEditText.setFocusable(false);
 
         dateEditText.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-
                 String date[] = dateEditText.getText().toString().split("/");
                 Bundle argsbundle = new Bundle();
 
@@ -183,6 +180,58 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }
 
+    //Jured: aggiunto codice che scatta una foto, la salva su file e poi la carica
+    //su firebase in modo totalmente ignorante, sempre alla stessa locazione e per ora senza compressione;
+
+    static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_GALLERY_IMAGE = 2;
+    static final int REQUEST_CONTRIBUTORS = 3;
+    static final int REQUEST_EXCLUDED = 4;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        StorageReference storageRef = storage.getReference();
+        StorageReference groupImagesRef = storageRef.child("images").child(groupId);
+
+        if (requestCode == REQUEST_TAKE_PHOTO)
+            Log.d("DEBUG APP: ", mCurrentPhotoPath);
+
+
+        if (requestCode == REQUEST_GALLERY_IMAGE) {
+            if (data != null) {
+                Uri selectedImage = data.getData();
+                Log.d("DebugGalleryImage:", selectedImage.getPath());
+                String[] projection = {MediaStore.Images.Media.DATA};
+                @SuppressWarnings("deprecation")
+                Cursor cursor = managedQuery(selectedImage, projection, null, null, null);
+                int column_index = cursor
+                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                mCurrentPhotoPath = cursor.getString(column_index);
+                Log.d("DebugGalleryImage:2", mCurrentPhotoPath);
+                setImageView(mCurrentPhotoPath);
+            }
+        }
+
+        if (requestCode == REQUEST_CONTRIBUTORS) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                contributorsList = extras.getParcelableArrayList("parceledContributors");
+                for (FirebaseGroupMember m : contributorsList)
+                    Log.d("CurrentContributor", m.getName());
+            }
+        }
+
+        if (requestCode == REQUEST_EXCLUDED) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                excludedList = extras.getParcelableArrayList("parceledExcluded");
+                for (FirebaseGroupMember m : excludedList)
+                    Log.d("CurrentExcluded", m.getName());
+            }
+        }
+    }
 
     public void setDataEditText(String date)
     {
@@ -311,9 +360,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         {
             groupImagesRef = storageRef.child("images").child(groupId);
             File imageToUpload = new File(mCurrentPhotoPath);
-            Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+            Bitmap fileBitmap = ShrinkBitmap(mCurrentPhotoPath, 1000, 1000);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
+            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 85, baos);
             byte[] datas = baos.toByteArray();
             mImageView.setImageBitmap(fileBitmap);
             mCurrentPhotoName = imageToUpload.getName();
@@ -406,7 +455,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }
 
-
     public void addListenerOnImageButton() {
 
         imageButton = (ImageButton) findViewById(R.id.image);
@@ -419,7 +467,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             }
         });
     }
-
 
     @Override
     protected void onStart() {
@@ -435,177 +482,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }
 
-
-    //Jured: aggiunto codice che scatta una foto, la salva su file e poi la carica
-    //su firebase in modo totalmente ignorante, sempre alla stessa locazione e per ora senza compressione;
-
-    static final int REQUEST_TAKE_PHOTO = 1;
-    static final int REQUEST_GALLERY_IMAGE = 2;
-    static final int REQUEST_CONTRIBUTORS = 3;
-    static final int REQUEST_EXCLUDED = 4;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Log.d("DEBUG AGGIUNTA FOTO: ", mCurrentPhotoPath);
-
-        // FIREBASE STORE
-        StorageReference storageRef = storage.getReference();
-        StorageReference groupImagesRef = storageRef.child("images").child(groupId);
-
-        if (requestCode == REQUEST_TAKE_PHOTO) {
-
-            //uploadImageToFirebase(mCurrentPhotoPath);
-
-            /*
-            File imageToUpload = new File(mCurrentPhotoPath);
-            Uri file = Uri.fromFile(imageToUpload);
-
-
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-            byte[] datas = baos.toByteArray();
-            mImageView.setImageBitmap(fileBitmap);
-            UploadTask uploadTask = groupImagesRef.child(imageToUpload.getName()).putBytes(datas);
-            */
-
-            //UploadTask uploadTask = groupImagesRef.child(imageToUpload.getName()).putFile(file);
-
-            Log.d("DEBUG APP: ", mCurrentPhotoPath);
-        }
-
-        if (requestCode == REQUEST_GALLERY_IMAGE) {
-            if (data != null) {
-                Uri selectedImage = data.getData();
-                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-
-                Log.d("DebugGalleryImage:", selectedImage.getPath());
-
-                String[] projection = {MediaStore.Images.Media.DATA};
-                @SuppressWarnings("deprecation")
-                Cursor cursor = managedQuery(selectedImage, projection, null, null, null);
-                int column_index = cursor
-                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                cursor.moveToFirst();
-                mCurrentPhotoPath = cursor.getString(column_index);
-
-                Log.d("DebugGalleryImage:2", mCurrentPhotoPath);
-
-                setImageView(mCurrentPhotoPath);
-            }
-        }
-
-        if (requestCode == REQUEST_CONTRIBUTORS) {
-            if (resultCode == RESULT_OK) {
-                Bundle extras = data.getExtras();
-                contributorsList = extras.getParcelableArrayList("parceledContributors");
-                for (FirebaseGroupMember m : contributorsList)
-                    Log.d("CurrentContributor", m.getName());
-            }
-        }
-
-        if (requestCode == REQUEST_EXCLUDED) {
-            if (resultCode == RESULT_OK) {
-                Bundle extras = data.getExtras();
-                excludedList = extras.getParcelableArrayList("parceledExcluded");
-                for (FirebaseGroupMember m : excludedList)
-                    Log.d("CurrentExcluded", m.getName());
-            }
-        }
-    }
-
     private void setImageView(String mCurrentPhotoPath) {
-
-        Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+        Bitmap fileBitmap = ShrinkBitmap(mCurrentPhotoPath, 800, 800);
         mImageView.setImageBitmap(fileBitmap);
-    }
-        /*if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
-
-            StorageReference storageRef = storage.getReference();
-
-            // Create a child reference
-            // imagesRef now points to "images"
-            StorageReference imagesRef = storageRef.child("images");
-
-            // Child references can also take paths
-            // spaceRef now points to "images/space.jpg
-            // imagesRef still points to "images"
-            StorageReference schcuntrinRef = storageRef.child("images/primoschcuntrin.jpg");
-
-            // Get the data from an ImageView as bytes
-            mImageView.setDrawingCacheEnabled(true);
-            mImageView.buildDrawingCache();
-            Bitmap bitmap = mImageView.getDrawingCache();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] datas = baos.toByteArray();
-
-            UploadTask uploadTask = schcuntrinRef.putBytes(datas);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                    //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                }
-            });
-        }
-    }*/
-
-    private void uploadImageToFirebase(String filePath) {
-
-        groupImagesRef = storageRef.child("images").child(groupId);
-
-        File imageToUpload = new File(filePath);
-
-        //TODO chiedere i permessi di accesso alla memoria (Marshmallow+)
-        Bitmap fileBitmap = BitmapFactory.decodeFile(filePath);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-        byte[] datas = baos.toByteArray();
-        mImageView.setImageBitmap(fileBitmap);
-        mCurrentPhotoName = imageToUpload.getName();
-        UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                /*mCurrentPhotoFirebaseUri = groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().getResult();
-                Log.e("DebugUriRequest",mCurrentPhotoFirebaseUri.toString());
-
-                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                // TODO: handle uri
-                                Log.e("DebugUriRequest",uri.toString());
-                                mCurrentPhotoFirebaseUri = uri;
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                        mCurrentPhotoFirebaseUri = Uri.EMPTY;
-                    }
-                });
-                */
-            }
-        });
-
     }
 
 
@@ -636,7 +515,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        File photoFile = null;
+        File photoFile;
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             photoFile = null;
@@ -837,6 +716,30 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             // if you are re-using the parent Activity you may not need to set any extras
             //i.putExtra("someExtra", "whateverYouNeed");
         return i;
+    }
+
+    Bitmap ShrinkBitmap(String file, int width, int height){
+
+        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+        bmpFactoryOptions.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+
+        int heightRatio = (int)Math.ceil(bmpFactoryOptions.outHeight/(float)height);
+        int widthRatio = (int)Math.ceil(bmpFactoryOptions.outWidth/(float)width);
+
+        if (heightRatio > 1 || widthRatio > 1)
+        {
+            if (heightRatio > widthRatio)
+            {
+                bmpFactoryOptions.inSampleSize = heightRatio;
+            } else {
+                bmpFactoryOptions.inSampleSize = widthRatio;
+            }
+        }
+
+        bmpFactoryOptions.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+        return bitmap;
     }
 
 }
