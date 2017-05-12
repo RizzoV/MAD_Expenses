@@ -1,11 +1,17 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.content.DialogInterface;
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -13,14 +19,25 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +48,10 @@ import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+
+import static android.R.attr.data;
+import static android.R.attr.type;
+import static it.polito.mad.team19.mad_expenses.R.string.email;
 
 public class GroupInfoActivity extends AppCompatActivity implements DeleteMemberDialog.NoticeDialogListener {
 
@@ -64,6 +85,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.group_info_ctb);
         collapsingToolbar.setTitle(groupName);
+        collapsingToolbar.setTitle(groupName.toString());
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -81,6 +104,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         catch (Exception e) {
             Log.e("GroupInfoActivity", "Exception:\n" + e.toString());
         }
+
+
+
 
         //LUDO: membri
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -193,6 +219,93 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_modify_group_name, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        final String groupId = getIntent().getStringExtra("groupId");
+        String old_string = collapsingToolbar.getTitle().toString();
+        switch (id) {
+            case R.id.modify_group_name: {
+                LayoutInflater inflater = getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.dialogboxlayout_editaccount, null);
+                final EditText new_string;
+
+                new_string = (EditText) dialogView.findViewById(R.id.new_string);
+
+                new_string.setText(old_string);
+
+                final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                        .setView(dialogView)
+                        .setTitle(R.string.modify_group_name)
+                        .setPositiveButton(getString(R.string.edit), null)
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .create();
+
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(final DialogInterface dialog) {
+                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                        buttonPositive.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (new_string.getText().toString().trim().isEmpty()) {
+                                    new_string.setError(getString(R.string.mandatory_field));
+                                } else {
+                                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    DatabaseReference groupNameRef = database.getReference()
+                                            .child("gruppi").child(groupId).child("nome");
+                                    groupNameRef.setValue(new_string.getText().toString());
+                                    dialog.dismiss();
+
+                                    //TODO: cambiare il nome in tutti gli utenti
+                                    DatabaseReference userGroupNameRef = database.getReference().child("gruppi").child(groupId)
+                                            .child("membri");
+                                    userGroupNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                                database.getReference()
+                                                        .child("utenti").child(data.getKey()).child("gruppi").child(groupId).child("nome");
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                        buttonNegative.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.cancel();
+                            }
+                        });
+
+                    }
+                });
+                alertDialog.show();
+            }
+
+            default:
+                Log.e("ExpenseDetailsActivity", "Not finding a corresponding case to the menu item selected (" + id + ")");
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private String getNextAdmin(String myUid,ArrayList<FirebaseGroupMember> contributors)

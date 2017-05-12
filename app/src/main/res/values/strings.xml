@@ -101,6 +101,7 @@
     <string name="modify_expense">Modify expense</string>
     <string name="delete_expense">Delete expense</string>
     <string name="menu_up_as_back">up_as_back</string>
+    <string name="modify_group_name">Modify group name</string>
 
 
     <!-- Group details -->
