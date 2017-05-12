@@ -2,11 +2,13 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +18,7 @@ import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.R;
+import it.polito.mad.team19.mad_expenses.TopicActivity;
 
 /**
  * Created by Jured on 31/03/17.
@@ -73,6 +76,16 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             name = (TextView) itemView.findViewById(R.id.expense_name_tv);
             amount = (TextView) itemView.findViewById(R.id.expense_cost_amount_tv);
             description = (TextView) itemView.findViewById(R.id.expense_description_tv);
+            Button topic_btn = (Button) itemView.findViewById(R.id.topic_button);
+
+            topic_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(context, TopicActivity.class);
+                    context.startActivity(i);
+                }
+            });
+
             //LUDO: aggiunto metodo onItemClickListener
             this.itemView = itemView;
             itemView.setOnClickListener(this);

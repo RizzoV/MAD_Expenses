@@ -98,4 +98,7 @@
     <string name="delete_expense">Cancella spesa</string>
     <string name="menu_up_as_back">sopra_indietro</string>
 
+    <string name="typeMessage">Scrivi messaggio</string>
+
+
 </resources>
