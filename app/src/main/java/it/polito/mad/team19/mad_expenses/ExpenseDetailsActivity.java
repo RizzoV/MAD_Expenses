@@ -16,8 +16,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,6 +39,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
+import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 
@@ -46,7 +50,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private TextView expense_cost;
     private TextView expense_author;
     private ImageView expense_img;
-    private ListView expense_details_listview;
+    private LinearLayout expense_details_listview;
     private String expenseAuthor;
     private String imgUrl;
     private String name;
@@ -77,13 +81,12 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         groupId = getIntent().getStringExtra("groupId");
         expenseId = getIntent().getStringExtra("ExpenseId");
 
-
         expense_name = (TextView) findViewById(R.id.expense_name);
         expense_desc = (TextView) findViewById(R.id.expense_description);
         expense_cost = (TextView) findViewById(R.id.expense_cost);
         expense_img = (ImageView) findViewById(R.id.expense_photo);
         expense_author = (TextView) findViewById(R.id.expense_author_value);
-        expense_details_listview = (ListView) findViewById(R.id.debtors_and_debts_listview);
+        expense_details_listview = (LinearLayout) findViewById(R.id.debtors_and_debts_listview);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
@@ -107,36 +110,28 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
         final ArrayList<ExpenseDetail> expenseDetailsList = new ArrayList<>();
         final ExpenseDetailsAdapter edAdapter = new ExpenseDetailsAdapter(this, expenseDetailsList);
-        expense_details_listview.setAdapter(edAdapter);
 
         final FirebaseDatabase fbDatabase = FirebaseDatabase.getInstance();
 
         DatabaseReference expenseContributorsRef = fbDatabase.getReference("gruppi").child(groupId).child("expenses").child(expenseId);
         expenseContributorsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-
-
             @Override
             public void onDataChange(DataSnapshot contributor) {
-                for(DataSnapshot contributors : contributor.child("contributors").getChildren())
-                {
-
-                    Log.d("Contributor",contributors.toString());
-                    for (DataSnapshot debtor : contributors.child("riepilogo").getChildren())
-                    {
+                for (DataSnapshot contributors : contributor.child("contributors").getChildren()) {
+                    Log.d("Contributor", contributors.toString());
+                    for (DataSnapshot debtor : contributors.child("riepilogo").getChildren()) {
                         expenseDetailsList.add(new ExpenseDetail(contributors.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), debtor.child("amount").getValue().toString(), null, null));
                         edAdapter.setListData(expenseDetailsList);
                         edAdapter.notifyDataSetChanged();
                     }
-
-                    contributorsList.add(new FirebaseGroupMember(contributors.getValue().toString(),null,contributors.getKey()));
+                    contributorsList.add(new FirebaseGroupMember(contributors.getValue().toString(), null, contributors.getKey()));
                 }
+                for (DataSnapshot currentExcluded : contributor.child("excluded").getChildren())
+                    excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(), null, currentExcluded.getKey()));
 
-
-                    for(DataSnapshot currentExcluded : contributor.child("excluded").getChildren())
-                        excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(),null,currentExcluded.getKey()));
-             }
-
-
+                for (int i = 0; i < edAdapter.getCount(); i++)
+                    expense_details_listview.addView(edAdapter.getView(i, null, expense_details_listview));
+            }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -228,14 +223,12 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);
                 changeExpenseIntent.putExtra("ModifyIntent", "1");
-                if(contributorsList!=null)
-                {
+                if (contributorsList != null) {
                     Bundle b = new Bundle();
                     b.putParcelableArrayList("contributorsList", contributorsList);
                     changeExpenseIntent.putExtra("contributorsBundle", b);
                 }
-                if(excludedList!=null)
-                {
+                if (excludedList != null) {
                     Bundle e = new Bundle();
                     e.putParcelableArrayList("excludedList", excludedList);
                     changeExpenseIntent.putExtra("excludedBundle", e);
@@ -251,7 +244,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -264,141 +256,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if(alertDialog != null)
+        if (alertDialog != null)
             alertDialog.dismiss();
     }
+
 }
-
-
-
-
-
-        /*TODO: temporaneamente disattivato perchè faceva crashare
-        //Jured: gestito il caso in cui arrivi un link che indica l'assenza di immagine
-        if (imgUrl == null) {
-            expense_img.setImageResource(R.drawable.circle);
-        } else {
-            Log.e("DebugExpenseDetails", imgUrl);
-
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageReference = storage.getReferenceFromUrl(imgUrl);
-
-            final long ONE_MEGABYTE = 1024 * 1024;
-            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    expense_img.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
-        }*/
-
-
-        /*
-         * Manage expense balance (debts and intersections)
-         */
-
-
-
-/*        // Get group members
-        final ArrayList<ExpenseDetail> expenseDetailsList = new ArrayList<>();
-        final ExpenseDetailsAdapter edAdapter = new ExpenseDetailsAdapter(this, expenseDetailsList);
-        expense_details_listview.setAdapter(edAdapter);
-
-        final FirebaseDatabase fbDatabase = FirebaseDatabase.getInstance();
-        final DatabaseReference groupMembersDbRef = fbDatabase.getReference("gruppi").child(groupId).child("membri").getRef();
-        groupMembersDbRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            // For each group member
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                // Get his username
-                final String userName = dataSnapshot.child("nome").getValue().toString();
-                Log.e("utente in analisi", dataSnapshot.getKey());
-                // And set up a listener on his balance for this expense
-                DatabaseReference childBalanceDbRef = FirebaseDatabase.getInstance().getReference("utenti").child(dataSnapshot.getKey()).child("bilancio").child(groupId).getRef();
-                childBalanceDbRef.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        if (dataSnapshot.child("riepilogo").child(expenseId).exists()) {
-
-                            // Then the currently analyzed user has an intersection on this expense with another user, now we should check if it is a credit or a debt
-                            // We only process the case in which it is a debt, credits would be redundant
-                            final float amount = Float.parseFloat(dataSnapshot.child("riepilogo").child(expenseId).getValue().toString());
-                            if (amount < 0) {
-                                Log.e("Test", String.valueOf(amount));
-                                // Retrieve the creditor's name
-                                DatabaseReference creditorNameReference = groupMembersDbRef.child(dataSnapshot.getKey()).child("nome").getRef();
-                                creditorNameReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        Log.e("Test", dataSnapshot.getValue().toString());
-                                        // Add the debt to the expenseDetailsList
-                                        expenseDetailsList.add(new ExpenseDetail(dataSnapshot.getValue().toString(), userName, String.valueOf(amount*(-1)), null, null));
-                                        edAdapter.setListData(expenseDetailsList);
-                                        edAdapter.notifyDataSetChanged();
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        Log.e("ExpenseDetailsActivity", "failed to grab creditor name");
-                                    }
-                                });
-
-
-                            }
-                        }
-
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                //TODO: non può succedere?
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    //TODO: rimuovi
-                }
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                // Do nothing
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("ExpenseDetailsActivity", "Group members read failed");
-            }
-        });*/
-
-
-
-

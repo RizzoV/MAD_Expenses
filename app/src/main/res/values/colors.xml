@@ -8,6 +8,7 @@
     <color name="icons">#FFFFFF</color>
     <color name="lightPrimary">#B2DFDB</color>
     <color name="dividers">#cfcfcf</color>
+    <color name="activitiesBackgroundColor">#eeeeee</color>
 
     <color name="redMaterial">#dd2c00</color>
     <color name="textGreen">#009688</color>
