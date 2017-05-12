@@ -67,6 +67,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     ArrayList<FirebaseGroupMember> contributors;
 
     AlertDialog alertDialog = null;
+    CardView leaveGroup_cw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +76,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         image = (ImageView) findViewById(R.id.group_info_toolbar_image_iv);
         toolbar = (Toolbar) findViewById(R.id.group_info_tb);
-        CardView leaveGroup_cw = (CardView) findViewById(R.id.leaveGroup);
+        leaveGroup_cw = (CardView) findViewById(R.id.leaveGroup);
 
         String imageUrl = getIntent().getStringExtra("groupImage");
         String groupName = getIntent().getStringExtra("groupName");
@@ -114,39 +115,6 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         mAuth = FirebaseAuth.getInstance();
         uid = mAuth.getCurrentUser().getUid();
-
-        leaveGroup_cw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog = new AlertDialog.Builder(GroupInfoActivity.this)
-                        .setMessage(R.string.confirmLeaveGroup)
-                        .setPositiveButton(getString(R.string.yes), null)
-                        .setNegativeButton(getString(R.string.no), null)
-                        .create();
-
-                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(final DialogInterface dialog) {
-                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
-                        buttonPositive.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                leaveGroup(uid,groupId,getNextAdmin(uid,contributors));
-                            }
-                        });
-
-                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
-                        buttonNegative.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dialog.cancel();
-                            }
-                        });
-                    }
-                });
-                alertDialog.show();
-            }
-        });
 
         //Jured: controllo per sapere se l'utente è admin del gruppo
         final DatabaseReference isUserAdminRef = database.getReference("gruppi").child(groupId).child("membri").child(uid).child("tipo");
@@ -192,6 +160,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                     Log.d("no",contributors.toString());
                     adapter.notifyDataSetChanged();
                 }
+
+                setListenerLeaveGroup(groupId);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -308,6 +278,44 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 Log.e("ExpenseDetailsActivity", "Not finding a corresponding case to the menu item selected (" + id + ")");
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void setListenerLeaveGroup(final String groupId)
+    {
+        leaveGroup_cw.setVisibility(View.VISIBLE);
+
+        leaveGroup_cw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog = new AlertDialog.Builder(GroupInfoActivity.this)
+                        .setMessage(R.string.confirmLeaveGroup)
+                        .setPositiveButton(getString(R.string.yes), null)
+                        .setNegativeButton(getString(R.string.no), null)
+                        .create();
+
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(final DialogInterface dialog) {
+                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                        buttonPositive.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                leaveGroup(uid,groupId,getNextAdmin(uid,contributors));
+                            }
+                        });
+
+                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                        buttonNegative.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.cancel();
+                            }
+                        });
+                    }
+                });
+                alertDialog.show();
+            }
+        });
     }
 
     private String getNextAdmin(String myUid,ArrayList<FirebaseGroupMember> contributors)
