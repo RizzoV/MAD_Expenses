@@ -135,7 +135,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 if(date.length==3)
                 {
                     argsbundle.putInt("year",Integer.valueOf(date[2]));
-                    argsbundle.putInt("month",Integer.valueOf(date[1]));
+                    argsbundle.putInt("month",Integer.valueOf(date[1])-1);
                     argsbundle.putInt("day",Integer.valueOf(date[0]));
                 }
                 else{
@@ -728,6 +728,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             // Do something with the date chosen by the user
             Calendar c = Calendar.getInstance();
             c.set(year, month, day);
+            month=month+1;
             ((AddExpenseActivity) getActivity()).setDataEditText(day + "/" + month + "/" + year);
             //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             //String formattedDate = sdf.format(c.getTime());
