@@ -430,6 +430,7 @@ public class GroupActivity extends AppCompatActivity {
                 if (data.hasExtra("newGroupName")) {
                     TextView toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
                     toolbarTitle.setText(data.getExtras().getString("newGroupName"));
+                    groupName = data.getExtras().getString("newGroupName");
                 }
             }
             if (resultCode == 99) {
