@@ -718,11 +718,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         return i;
     }
 
-    Bitmap ShrinkBitmap(String file, int width, int height){
+    private Bitmap ShrinkBitmap(String file, int width, int height){
 
         BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
         bmpFactoryOptions.inJustDecodeBounds = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+        Bitmap bitmap;
+        BitmapFactory.decodeFile(file, bmpFactoryOptions); // Vale: No need to store the bitmap in the dedicated variable, I'm just loading its infos
 
         int heightRatio = (int)Math.ceil(bmpFactoryOptions.outHeight/(float)height);
         int widthRatio = (int)Math.ceil(bmpFactoryOptions.outWidth/(float)width);
@@ -730,11 +731,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         if (heightRatio > 1 || widthRatio > 1)
         {
             if (heightRatio > widthRatio)
-            {
                 bmpFactoryOptions.inSampleSize = heightRatio;
-            } else {
+             else
                 bmpFactoryOptions.inSampleSize = widthRatio;
-            }
         }
 
         bmpFactoryOptions.inJustDecodeBounds = false;

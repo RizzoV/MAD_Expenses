@@ -8,7 +8,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,7 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;

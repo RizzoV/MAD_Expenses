@@ -1,6 +1,5 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,12 +10,12 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -38,8 +37,6 @@ import com.soundcloud.android.crop.Crop;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 
 
 public class CreateGroupActivity extends AppCompatActivity {
