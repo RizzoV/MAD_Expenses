@@ -222,6 +222,11 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
             if(nexAdminId!=null)
             database.getReference().child("gruppi").child(groupId)
                     .child("membri").child(nexAdminId).child("tipo").setValue("1");
+            else
+            {
+                DatabaseReference groupToDeleteRef = database.getReference().child("gruppi").child(groupId);
+                groupToDeleteRef.removeValue();
+            }
             //TODO Jured: se esco dal gruppo devo tornare alla groupListActivity
             Log.d("DebugGroupQuitted","GROUP_QUITTED result set");
             setResult(GROUP_QUITTED);

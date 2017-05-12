@@ -127,7 +127,7 @@ public class GroupsAdapter extends BaseAdapter {
         {
             Log.d("GroupImageNotNull",group.getName());
             //modo più semplice per caricare immagini e renderle tonde
-            Glide.with(context).load(group.getImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(viewHolder.image) {
+            Glide.with(context).load(group.getImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_group).centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(viewHolder.image) {
                 @Override
                 protected void setResource(Bitmap resource) {
                     RoundedBitmapDrawable circularBitmapDrawable =

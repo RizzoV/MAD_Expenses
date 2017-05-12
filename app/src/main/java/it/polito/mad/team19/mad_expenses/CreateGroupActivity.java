@@ -266,7 +266,8 @@ public class CreateGroupActivity extends AppCompatActivity {
         final DatabaseReference imageLinkUsrRef = mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("immagine");
         final StorageReference groupImagesRef;
         groupImagesRef = storageRef.child("images").child(groupid);
-        if (mCurrentPhotoPath != null) {
+        if (mCurrentPhotoPath != null)
+        {
             File imageToUpload = new File(mCurrentPhotoPath);
             Bitmap fileBitmap = currentGroupBitmap;
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -309,8 +310,10 @@ public class CreateGroupActivity extends AppCompatActivity {
                 }
             });
         }
-        setResult(1);
-        finish();
+        else {
+            setResult(1);
+            finish();
+        }
     }
 
     @Override
