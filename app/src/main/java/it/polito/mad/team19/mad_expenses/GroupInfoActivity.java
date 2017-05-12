@@ -8,6 +8,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -43,6 +44,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     private Boolean isUsrAdmin;
     RecyclerView members_lv;
 
+    ArrayList<FirebaseGroupMember> contributors;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         image = (ImageView) findViewById(R.id.group_info_toolbar_image_iv);
         toolbar = (Toolbar) findViewById(R.id.group_info_tb);
+        CardView leaveGroup_cw = (CardView) findViewById(R.id.leaveGroup);
 
         String imageUrl = getIntent().getStringExtra("groupImage");
         String groupName = getIntent().getStringExtra("groupName");
@@ -66,7 +70,6 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
 
 
         //Non crasha se non trova l'iimagine del gruppo
@@ -104,6 +107,16 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         mAuth = FirebaseAuth.getInstance();
         uid = mAuth.getCurrentUser().getUid();
 
+
+        leaveGroup_cw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                leaveGroup(uid,groupId,getNextAdmin(uid,contributors));
+            }
+        });
+
+
         //Jured: controllo per sapere se l'utente è admin del gruppo
         final DatabaseReference isUserAdminRef = database.getReference("gruppi").child(groupId)
                 .child("membri").child(uid).child("tipo");
@@ -124,7 +137,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         });
 
         members_lv = (RecyclerView) findViewById(R.id.members_lv);
-        final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
+        contributors = new ArrayList<>();
         final GroupMembersRecyclerAdapter adapter = new GroupMembersRecyclerAdapter(this,contributors);
         members_lv.setAdapter(adapter);
 
@@ -167,8 +180,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                     selectedUid.putString("currentUid",uid);
                     selectedUid.putString("selectedUid",contributors.get(position).getUid());
                     selectedUid.putString("groupId",groupId);
-                    selectedUid.putString("nextAdminId",contributors.get((position + 1)%contributors.size()).getUid());
-                    Log.d("DebugNextAdmin", String.valueOf((position + 1)%contributors.size()));
+                    selectedUid.putString("nextAdminId",getNextAdmin(uid,contributors));
                     selectedUid.putString("usersLeft", String.valueOf(contributors.size()));
                     newFragment.setArguments(selectedUid);
                     newFragment.show(getSupportFragmentManager(), "DeleteDialog");
@@ -177,6 +189,49 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
             }
         });
 
+    }
+
+    private String getNextAdmin(String myUid,ArrayList<FirebaseGroupMember> contributors)
+    {
+        boolean found = false;
+        int index = 0;
+
+        for(int i=0; i<contributors.size() && !found;i++)
+        {
+            if(!contributors.get(i).getUid().equals(myUid)) {
+                found = true;
+                index = i;
+            }
+        }
+
+        if(found)
+            return contributors.get(index).getUid();
+        else
+            return null;
+    }
+
+    private void leaveGroup(String userToDelete,String groupId, String nexAdminId)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userToDeleteRef = database.getReference().child("gruppi").child(groupId)
+                .child("membri").child(userToDelete);
+        userToDeleteRef.removeValue();
+        userToDeleteRef = database.getReference().child("utenti").child(userToDelete)
+                .child("gruppi").child(groupId);
+        userToDeleteRef.removeValue();
+
+        //se mi autoelimino aggiorno l'admin
+        if(userToDelete.compareTo(uid.toString())==0) {
+            if(nexAdminId!=null)
+            database.getReference().child("gruppi").child(groupId)
+                    .child("membri").child(nexAdminId).child("tipo").setValue("1");
+            //TODO Jured: se esco dal gruppo devo tornare alla groupListActivity
+            Log.d("DebugGroupQuitted","GROUP_QUITTED result set");
+            setResult(GROUP_QUITTED);
+            finish();
+            //Intent intent = new Intent(dialog.getActivity(), GroupActivity.class);
+            //startActivity(intent);
+        }
     }
 
     // TODO Jured: aggiungere tutti i controlli immaginabili sull'eliminazione di un utente dal gruppo
@@ -200,8 +255,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         //se mi autoelimino aggiorno l'admin
         if(userToDelete.compareTo(uid.toString())==0) {
-            database.getReference().child("gruppi").child(groupId)
-                    .child("membri").child(nexAdminId).child("tipo").setValue("1");
+            if(nexAdminId!=null)
+                database.getReference().child("gruppi").child(groupId)
+                        .child("membri").child(nexAdminId).child("tipo").setValue("1");
             //TODO Jured: se esco dal gruppo devo tornare alla groupListActivity
             Log.d("DebugGroupQuitted","GROUP_QUITTED result set");
             setResult(GROUP_QUITTED);
