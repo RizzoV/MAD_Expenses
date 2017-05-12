@@ -1,6 +1,7 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +25,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -59,7 +62,9 @@ public class CreateGroupActivity extends AppCompatActivity {
     private ImageButton imageButton;
     private static int RESULT_LOAD_IMAGE = 1;
 
-    //TODO chiedere i permessi per lo storage
+    ProgressDialog barProgressDialog;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +141,24 @@ public class CreateGroupActivity extends AppCompatActivity {
                     else if (uname.trim().isEmpty())
                         uname = "User";
 
+                    //LUDO: progressDialog a tutto schermo con sfondo sfocato
+                    barProgressDialog = new ProgressDialog(CreateGroupActivity.this, R.style.full_screen_dialog) {
+                        @Override
+                        protected void onCreate(Bundle savedInstanceState) {
+                            super.onCreate(savedInstanceState);
+                            setContentView(R.layout.progress_dialog_layout);
+                            getWindow().setLayout(AppBarLayout.LayoutParams.MATCH_PARENT,
+                                    AppBarLayout.LayoutParams.MATCH_PARENT);
+                            TextView message = (TextView)barProgressDialog.findViewById(R.id.tv_progressmsg);
+                            message.setText(getString(R.string.progressDialogTextAddGroup));
+                        }
+                    };
+
+                    barProgressDialog.setCancelable(false);
+                    barProgressDialog.show();
+
                     addGroupToFirebase(uid, uname, group_name.getText().toString(), "path/immmagine.png", type);
+
                 }
 
 
@@ -293,6 +315,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                                     imageLinkGrpRef.setValue(uri.toString());
                                     imageLinkUsrRef.setValue(uri.toString());
                                     setResult(1);
+                                    barProgressDialog.dismiss();
                                     finish();
 
                                 }
@@ -309,6 +332,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         }
         else {
             setResult(1);
+            barProgressDialog.dismiss();
             finish();
         }
     }

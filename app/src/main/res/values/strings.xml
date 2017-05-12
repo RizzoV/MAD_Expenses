@@ -90,6 +90,7 @@
     <string name="noproposals">No proposals associated with the group :(</string>
     <string name="noexpenses">No expenses associated with the group :(</string>
     <string name="progressDialogText">Adding new expense..</string>
+    <string name="progressDialogTextAddGroup">Adding new group..</string>
     <string name="continue_string">Continue</string>
     <string name="add_person">Add person</string>
     <string name="notifications">Notifications</string>
@@ -100,6 +101,7 @@
     <string name="modify_expense">Modify expense</string>
     <string name="delete_expense">Delete expense</string>
     <string name="menu_up_as_back">up_as_back</string>
+
 
     <!-- Group details -->
     <string name="confirmLeaveGroup">Are you sure you want to leave the group?</string>

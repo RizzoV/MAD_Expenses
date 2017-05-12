@@ -87,6 +87,7 @@
     <string name="noproposals">Non ci sono proposte associate al gruppo :(</string>
     <string name="noexpenses">Non ci sono spese associate al gruppo :(</string>
     <string name="progressDialogText">Aggiungo la nuova spesa..</string>
+    <string name="progressDialogTextAddGroup">Aggiungo il gruppo..</string>
     <string name="continue_string">Continua</string>
     <string name="add_person">Aggiungi membro</string>
     <string name="notifications">Notifiche</string>
