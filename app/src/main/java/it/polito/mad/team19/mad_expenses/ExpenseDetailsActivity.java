@@ -2,7 +2,11 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,6 +19,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,6 +56,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
     private ImageButton setPhotoButton;
+    private TextView setPhotoTextView;
 
     private AlertDialog alertDialog = null;
 
@@ -73,7 +81,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_img = (ImageView) findViewById(R.id.expense_photo);
         expense_author = (TextView) findViewById(R.id.expense_author_value);
         expense_details_listview = (LinearLayout) findViewById(R.id.debtors_and_debts_listview);
-        setPhotoButton = (ImageButton) findViewById((R.id.add_image_btn));
+        setPhotoButton = (ImageButton) findViewById(R.id.add_image_btn);
+        setPhotoTextView = (TextView) findViewById(R.id.add_expense_photo_tv);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
@@ -81,7 +90,9 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
         expense_author.setText("loading...");
 
-        DatabaseReference dbAuthorNameRef = FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
+        FirebaseDatabase firebase = FirebaseDatabase.getInstance();
+
+        DatabaseReference dbAuthorNameRef = firebase.getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
         dbAuthorNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -98,10 +109,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         final ArrayList<ExpenseDetail> expenseDetailsList = new ArrayList<>();
         final ExpenseDetailsAdapter edAdapter = new ExpenseDetailsAdapter(this, expenseDetailsList);
 
-        final FirebaseDatabase fbDatabase = FirebaseDatabase.getInstance();
-
-        DatabaseReference expenseContributorsRef = fbDatabase.getReference("gruppi").child(groupId).child("expenses").child(expenseId);
-        expenseContributorsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference expenseRef = firebase.getReference("gruppi").child(groupId).child("expenses").child(expenseId);
+        expenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot contributor) {
                 for (DataSnapshot contributors : contributor.child("contributors").getChildren()) {
@@ -126,13 +135,19 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             }
         });
 
-        setPhotoButton.setOnClickListener(new View.OnClickListener() {
+        DatabaseReference expenseImageRef = expenseRef.child("image");
+        expenseImageRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                Intent i = new Intent(ExpenseDetailsActivity.this, GalleryOrCameraDialog.class);
-                startActivity(i);
-                startActivity(i);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String imgUrl = dataSnapshot.getValue(String.class);
+                if (imgUrl != null)
+                    Log.d("ExpenseDetailsActivity", "Debug image url:" + imgUrl);
+                showExpenseImage(imgUrl);
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("ExpenseDetailActivity", "Could not retrieve the expense's image");
             }
         });
     }
@@ -251,9 +266,25 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         if (alertDialog != null)
             alertDialog.dismiss();
     }
 
+    private void showExpenseImage(String imageUrl) {
+        try {
+            Glide.with(this).load(imageUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(new BitmapImageViewTarget(expense_img) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    expense_img.setImageDrawable(circularBitmapDrawable);
+
+                    setPhotoTextView.setVisibility(View.GONE);
+                }
+
+            });
+        } catch (Exception e) {
+            Log.e("ExpenseDetailsActivity", "Exception:\n" + e.toString());
+        }
+    }
 }

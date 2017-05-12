@@ -69,7 +69,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        //Non crasha se non trova l'iimagine del gruppo
+        //Non crasha se non trova l'immagine del gruppo
         try {
             Glide.with(this).load(imageUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(new BitmapImageViewTarget(image) {
                 @Override
