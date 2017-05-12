@@ -439,8 +439,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     //Jured: aggiunto codice che scatta una foto, la salva su file e poi la carica
     //su firebase in modo totalmente ignorante, sempre alla stessa locazione e per ora senza compressione;
 
-
-    static final int REQUEST_IMAGE_CAPTURE = 0;
     static final int REQUEST_TAKE_PHOTO = 1;
     static final int REQUEST_GALLERY_IMAGE = 2;
     static final int REQUEST_CONTRIBUTORS = 3;
@@ -450,7 +448,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Log.d("DEBUG AGGIUNTA FOTO: ", mCurrentPhotoPath);
 
-        /////FIREBASE STORE
+        // FIREBASE STORE
         StorageReference storageRef = storage.getReference();
         StorageReference groupImagesRef = storageRef.child("images").child(groupId);
 
@@ -669,8 +667,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case STORAGE_REQUEST:
                 // If request is cancelled, the result arrays are empty.
@@ -688,9 +685,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     ActivityCompat.requestPermissions(AddExpenseActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             STORAGE_REQUEST);
-
                 }
-                return;
         }
 
         // other 'case' lines to check for other
@@ -733,7 +728,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             //String formattedDate = sdf.format(c.getTime());
         }
-
     }
 
 
@@ -807,7 +801,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("AddExpenseActivity", "Could not retrieve the expense from Firebase");
             }
 
 

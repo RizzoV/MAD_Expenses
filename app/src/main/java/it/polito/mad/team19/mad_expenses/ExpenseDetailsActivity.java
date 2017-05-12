@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -62,9 +63,9 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     static final int MODIFY_CODE = 17;
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
+    private ImageButton setPhotoButton;
 
     private AlertDialog alertDialog = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,13 +88,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_img = (ImageView) findViewById(R.id.expense_photo);
         expense_author = (TextView) findViewById(R.id.expense_author_value);
         expense_details_listview = (LinearLayout) findViewById(R.id.debtors_and_debts_listview);
+        setPhotoButton = (ImageButton) findViewById((R.id.add_image_btn));
 
         expense_name.setText(name);
         expense_desc.setText(desc);
         expense_cost.setText(cost);
         expense_author.setText("loading...");
 
-        // TODO: monitorare tutti i contribuenti iniziali e non solo l'autore della spesa
         DatabaseReference dbAuthorNameRef = FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
         dbAuthorNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -139,6 +140,15 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             }
         });
 
+        setPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ExpenseDetailsActivity.this, GalleryOrCameraDialog.class);
+                startActivity(i);
+                startActivity(i);
+
+            }
+        });
     }
 
     @Override

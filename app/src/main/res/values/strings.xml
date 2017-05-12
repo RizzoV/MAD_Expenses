@@ -100,4 +100,9 @@
     <string name="modify_expense">Modify expense</string>
     <string name="delete_expense">Delete expense</string>
     <string name="menu_up_as_back">up_as_back</string>
+
+    <!-- Group details -->
+    <string name="confirmLeaveGroup">Are you sure you want to leave the group?</string>
+    <string name="no">No</string>
+
 </resources>

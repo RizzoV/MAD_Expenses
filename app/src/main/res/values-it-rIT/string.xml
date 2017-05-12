@@ -83,7 +83,6 @@
     <string name="dialog_camera_or_gallery">Seleziona l\'immagine</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-
     <!-- Group activity -->
     <string name="noproposals">Non ci sono proposte associate al gruppo :(</string>
     <string name="noexpenses">Non ci sono spese associate al gruppo :(</string>
@@ -91,11 +90,16 @@
     <string name="continue_string">Continua</string>
     <string name="add_person">Aggiungi membro</string>
     <string name="notifications">Notifiche</string>
+
     <!-- Expense details -->
     <string name="confirmExpenseDeletion">Sei sicuro di voler cancellare la spesa?</string>
     <string name="yes">Sì</string>
     <string name="modify_expense">Modifica spese</string>
     <string name="delete_expense">Cancella spesa</string>
     <string name="menu_up_as_back">sopra_indietro</string>
+
+    <!-- Group details -->
+    <string name="confirmLeaveGroup">Sicuro di voler lasciare il gruppo?</string>
+    <string name="no">No</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -18,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -53,6 +56,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
     ArrayList<FirebaseGroupMember> contributors;
 
+    AlertDialog alertDialog = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,18 +71,14 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         String groupName = getIntent().getStringExtra("groupName");
         final String groupId = getIntent().getStringExtra("groupId");
 
-        //setSupportActionBar(toolbar);
-        //getSupportActionBar().setTitle(groupName.toString());
-        Log.d("DebugGroupInfo",groupName);
-
+       Log.d("DebugGroupInfo",groupName);
 
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.group_info_ctb);
-        collapsingToolbar.setTitle(groupName.toString());
+        collapsingToolbar.setTitle(groupName);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
 
         //Non crasha se non trova l'iimagine del gruppo
         try {
@@ -88,35 +89,54 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 }
             });
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             Log.e("GroupInfoActivity", "Exception:\n" + e.toString());
         }
 
-
-
         //LUDO: membri
-
-
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
 
         mAuth = FirebaseAuth.getInstance();
         uid = mAuth.getCurrentUser().getUid();
 
-
         leaveGroup_cw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                alertDialog = new AlertDialog.Builder(GroupInfoActivity.this)
+                        .setMessage(R.string.confirmLeaveGroup)
+                        .setPositiveButton(getString(R.string.yes), null)
+                        .setNegativeButton(getString(R.string.no), null)
+                        .create();
 
-                leaveGroup(uid,groupId,getNextAdmin(uid,contributors));
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(final DialogInterface dialog) {
+                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                        buttonPositive.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                leaveGroup(uid,groupId,getNextAdmin(uid,contributors));
+
+                            }
+                        });
+
+                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                        buttonNegative.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.cancel();
+                            }
+                        });
+
+                    }
+                });
+                alertDialog.show();
             }
         });
 
-
         //Jured: controllo per sapere se l'utente è admin del gruppo
-        final DatabaseReference isUserAdminRef = database.getReference("gruppi").child(groupId)
-                .child("membri").child(uid).child("tipo");
+        final DatabaseReference isUserAdminRef = database.getReference("gruppi").child(groupId).child("membri").child(uid).child("tipo");
         isUserAdminRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -129,7 +149,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("GroupInfoActivity", "Could not retrieve the user type");
             }
         });
 

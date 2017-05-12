@@ -4,9 +4,10 @@
     android:id="@+id/expense_cv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    app:cardElevation="4dp"
     android:layout_marginStart="@dimen/smaller_horizontal_margin"
     android:layout_marginEnd="@dimen/smaller_horizontal_margin"
-    android:layout_marginTop="@dimen/smaller_vertical_margin"
+    android:layout_marginBottom="@dimen/smaller_vertical_margin"
     >
 
     <LinearLayout
