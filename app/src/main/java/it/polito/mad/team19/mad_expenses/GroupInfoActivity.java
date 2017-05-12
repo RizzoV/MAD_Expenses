@@ -2,10 +2,14 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -16,6 +20,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,20 +81,10 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         //Non crasha se non trova l'iimagine del gruppo
         try {
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageReference = storage.getReferenceFromUrl(imageUrl);
-            final long ONE_MEGABYTE = 1024 * 1024;
-            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            Glide.with(this).load(imageUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(new BitmapImageViewTarget(image) {
                 @Override
-                public void onSuccess(byte[] bytes) {
-                    image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
-                    //Drawable drawable = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0,bytes.length));
-                    //getSupportActionBar().setBackgroundDrawable(drawable);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
+                protected void setResource(Bitmap resource) {
+                    image.setImageDrawable(new BitmapDrawable(getResources(), resource));
                 }
             });
         }
