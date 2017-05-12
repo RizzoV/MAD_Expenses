@@ -595,7 +595,7 @@ public class GroupActivity extends AppCompatActivity {
                     intent.putExtra("ExpenseName", clicked.getName());
                     intent.putExtra("ExpenseImgUrl", clicked.getImagelink());
                     intent.putExtra("ExpenseDesc", clicked.getDescritpion());
-                    intent.putExtra("ExpenseCost", clicked.getCost().toString());
+                    intent.putExtra("ExpenseCost", String.format(Locale.getDefault(), "%.2f", clicked.getCost()));
                     intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
                     intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                     intent.putExtra("ExpenseId", clicked.getFirebaseId());

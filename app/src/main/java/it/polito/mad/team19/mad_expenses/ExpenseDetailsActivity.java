@@ -3,7 +3,6 @@ package it.polito.mad.team19.mad_expenses;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -31,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
@@ -55,8 +55,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     static final int MODIFY_CODE = 17;
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
-    private ImageButton setPhotoButton;
-    private TextView setPhotoTextView;
+    private ImageButton set_photo_button;
+    private TextView set_photo_text_view;
 
     private AlertDialog alertDialog = null;
 
@@ -81,8 +81,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_img = (ImageView) findViewById(R.id.expense_photo);
         expense_author = (TextView) findViewById(R.id.expense_author_value);
         expense_details_listview = (LinearLayout) findViewById(R.id.debtors_and_debts_listview);
-        setPhotoButton = (ImageButton) findViewById(R.id.add_image_btn);
-        setPhotoTextView = (TextView) findViewById(R.id.add_expense_photo_tv);
+        set_photo_button = (ImageButton) findViewById(R.id.add_image_btn);
+        set_photo_text_view = (TextView) findViewById(R.id.add_expense_photo_tv);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
@@ -116,7 +116,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 for (DataSnapshot contributors : contributor.child("contributors").getChildren()) {
                     Log.d("Contributor", contributors.toString());
                     for (DataSnapshot debtor : contributors.child("riepilogo").getChildren()) {
-                        expenseDetailsList.add(new ExpenseDetail(contributors.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), debtor.child("amount").getValue().toString(), null, null));
+                        expenseDetailsList.add(new ExpenseDetail(contributors.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), null, null));
                         edAdapter.setListData(expenseDetailsList);
                         edAdapter.notifyDataSetChanged();
                     }
@@ -272,16 +272,15 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
     private void showExpenseImage(String imageUrl) {
         try {
-            Glide.with(this).load(imageUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(new BitmapImageViewTarget(expense_img) {
+            Glide.with(this).load(imageUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.circle).into(new BitmapImageViewTarget(expense_img) {
                 @Override
                 protected void setResource(Bitmap resource) {
                     RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
                     circularBitmapDrawable.setCircular(true);
                     expense_img.setImageDrawable(circularBitmapDrawable);
 
-                    setPhotoTextView.setVisibility(View.GONE);
+                    set_photo_text_view.setVisibility(View.GONE);
                 }
-
             });
         } catch (Exception e) {
             Log.e("ExpenseDetailsActivity", "Exception:\n" + e.toString());
