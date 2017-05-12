@@ -8,6 +8,7 @@
     android:paddingTop="@dimen/smaller_vertical_margin"
     android:clipChildren="true"
     android:fillViewport="true"
+    android:background="@color/activitiesBackgroundColor"
     tools:context="it.polito.mad.team19.mad_expenses.ExpenseDetailsActivity">
 
     <LinearLayout
@@ -170,7 +171,8 @@
                     android:textSize="@dimen/titles_size" />
 
 
-                <ListView
+                <LinearLayout
+                    android:orientation="vertical"
                     android:id="@+id/debtors_and_debts_listview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>

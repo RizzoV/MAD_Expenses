@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eeeeee"
+    android:background="@color/activitiesBackgroundColor"
     android:orientation="vertical"
     tools:context="it.polito.mad.team19.mad_expenses.AccountActivity">
 
