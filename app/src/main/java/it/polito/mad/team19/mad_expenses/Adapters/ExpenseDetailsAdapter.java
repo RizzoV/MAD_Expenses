@@ -12,6 +12,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -24,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Currency;
 
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.R;
@@ -77,7 +79,7 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
         creditorName.setText(ed.getCreditor());
         debtorName.setText(ed.getDebtor());
-        amount.setText(ed.getAmount());
+        amount.setText(ed.getAmount() + " " + Currency.getInstance("EUR").getSymbol());
 
 
         // Manage creditor icon
@@ -93,7 +95,7 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    //TODO: Handle any errors
+                    Log.e("ExpenseDetailsAdapter", "Error in the getBytes() function");
                 }
             });
         } else {

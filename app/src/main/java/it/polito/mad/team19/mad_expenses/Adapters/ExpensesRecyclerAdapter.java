@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 
@@ -101,7 +102,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
 
         public void setData (Expense current, int position) {
             this.name.setText(current.getName());
-            this.amount.setText(current.getCurrency().getSymbol() + " " + String.format(Locale.getDefault(), "%.2f", current.getCost()));
+            this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost()) + " " + Currency.getInstance("EUR").getSymbol());
             this.image.setImageResource(R.drawable.expenses_icon);
             this.position = position;
             this.current = current;

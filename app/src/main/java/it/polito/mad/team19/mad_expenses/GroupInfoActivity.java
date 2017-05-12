@@ -117,7 +117,6 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                             @Override
                             public void onClick(View view) {
                                 leaveGroup(uid,groupId,getNextAdmin(uid,contributors));
-
                             }
                         });
 
@@ -128,7 +127,6 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                                 dialog.cancel();
                             }
                         });
-
                     }
                 });
                 alertDialog.show();

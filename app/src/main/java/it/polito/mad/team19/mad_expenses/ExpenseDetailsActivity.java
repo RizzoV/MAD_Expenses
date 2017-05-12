@@ -38,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Currency;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
@@ -92,7 +93,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
         expense_name.setText(name);
         expense_desc.setText(desc);
-        expense_cost.setText(cost);
+        //TODO: gestire currency diverse dall'Euro
+        expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
         expense_author.setText("loading...");
 
         DatabaseReference dbAuthorNameRef = FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
