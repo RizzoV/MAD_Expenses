@@ -112,6 +112,11 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //updateList(uid);
+    }
 
     private void userLogVerification() {
         mAuth = FirebaseAuth.getInstance();
@@ -202,9 +207,10 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             }
             case GROUP_ACTIVITY:
                 {
-
-                if(resultCode==99)
-                {   updateList(uid);
+                    //TODO Jured: controllare se update list va bene qui
+                    updateList(uid);
+                if(resultCode==99) {
+                    //updateList(uid);
                 }
                 break;
             }

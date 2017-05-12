@@ -255,6 +255,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                                         }
                                     });
                                     collapsingToolbar.setTitle(new_string.getText().toString());
+                                    Intent intent = new Intent();
+                                    intent.putExtra("newGroupName",new_string.getText().toString());
+                                    setResult(RESULT_OK,intent);
                                     dialog.dismiss();
 
                                 }
