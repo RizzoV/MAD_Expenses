@@ -280,6 +280,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         }
     }
 
+
     private void setListenerLeaveGroup(final String groupId)
     {
         leaveGroup_cw.setVisibility(View.VISIBLE);
