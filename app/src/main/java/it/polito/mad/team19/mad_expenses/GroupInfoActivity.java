@@ -234,7 +234,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         final String groupId = getIntent().getStringExtra("groupId");
-        String old_string = collapsingToolbar.getTitle().toString();
+        final String old_string = collapsingToolbar.getTitle().toString();
         switch (id) {
             case R.id.modify_group_name: {
                 LayoutInflater inflater = getLayoutInflater();
@@ -266,7 +266,6 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                                     DatabaseReference groupNameRef = database.getReference()
                                             .child("gruppi").child(groupId).child("nome");
                                     groupNameRef.setValue(new_string.getText().toString());
-                                    dialog.dismiss();
 
                                     //TODO: cambiare il nome in tutti gli utenti
                                     DatabaseReference userGroupNameRef = database.getReference().child("gruppi").child(groupId)
@@ -275,8 +274,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                                database.getReference()
-                                                        .child("utenti").child(data.getKey()).child("gruppi").child(groupId).child("nome");
+                                                database.getReference().child("utenti").child(data.getKey()).child("gruppi")
+                                                        .child(groupId).child("nome").setValue(new_string.getText().toString());
                                             }
                                         }
 
@@ -285,6 +284,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
                                         }
                                     });
+                                    collapsingToolbar.setTitle(new_string.getText().toString());
+                                    dialog.dismiss();
+
                                 }
                             }
                         });

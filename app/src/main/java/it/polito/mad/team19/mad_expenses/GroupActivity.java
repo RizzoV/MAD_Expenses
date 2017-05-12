@@ -425,13 +425,15 @@ public class GroupActivity extends AppCompatActivity {
                     data.getStringExtra("expenseUserName"), contributors, excluded);
         }
 
-        if (requestCode == GROUP_INFO_REQUEST && resultCode == 99)
-        {
+        if (requestCode == GROUP_INFO_REQUEST ) {
+            if (resultCode == 99) {
                 Log.d("DebugGroupQuitted", "GROUP_QUITTED result detected");
                 setResult(99);
                 finish();
+            }
 
         }
+
     }
 
     private void getMembers(final String expenseId, final float expenseTotal, final String expenseUuid, final String expenseUserName,
