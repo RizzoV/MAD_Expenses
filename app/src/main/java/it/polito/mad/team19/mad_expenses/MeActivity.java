@@ -1,6 +1,8 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +36,7 @@ import java.util.Locale;
 import it.polito.mad.team19.mad_expenses.Adapters.MeRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 public class MeActivity extends AppCompatActivity {
 
@@ -44,6 +47,9 @@ public class MeActivity extends AppCompatActivity {
     ArrayList<Me> me = new ArrayList<>();
     ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<>();
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +57,13 @@ public class MeActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getResources().getString(R.string.personal_balance));
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(false);
+        registerReceiver(netChange, filter);
 
         groupId = getIntent().getStringExtra("groupId");
 
@@ -209,5 +222,29 @@ public class MeActivity extends AppCompatActivity {
             finish();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if (netChange == null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setViewForSnackbar(findViewById(android.R.id.content));
+            netChange.setDialogShowTrue(false);
+            registerReceiver(netChange, filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (netChange != null) {
+            netChange.closeSnack();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver", "unregister on pause");
+        }
+
     }
 }

@@ -5,10 +5,12 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,6 +56,7 @@ import java.util.Date;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 /**
  * Created by Bolz on 03/04/2017.
@@ -89,6 +92,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
+
+
     //Jured: modifyActivity variables
     private Boolean isModifyActivity;
     String oldName;
@@ -104,6 +111,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
+
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(false);
+        registerReceiver(netChange, filter);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -123,19 +138,17 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         dateEditText.setInputType(InputType.TYPE_NULL);
         dateEditText.setFocusable(false);
 
-        dateEditText.setOnClickListener(new View.OnClickListener(){
+        dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String date[] = dateEditText.getText().toString().split("/");
                 Bundle argsbundle = new Bundle();
 
-                if(date.length==3)
-                {
-                    argsbundle.putInt("year",Integer.valueOf(date[2]));
-                    argsbundle.putInt("month",Integer.valueOf(date[1])-1);
-                    argsbundle.putInt("day",Integer.valueOf(date[0]));
-                }
-                else{
+                if (date.length == 3) {
+                    argsbundle.putInt("year", Integer.valueOf(date[2]));
+                    argsbundle.putInt("month", Integer.valueOf(date[1]) - 1);
+                    argsbundle.putInt("day", Integer.valueOf(date[0]));
+                } else {
                     Calendar c = Calendar.getInstance();
                     argsbundle.putInt("year", c.get(Calendar.YEAR));
                     argsbundle.putInt("month", c.get(Calendar.MONTH));
@@ -167,9 +180,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 addListenerOnExcludedButton();
                 checkCallToModify();
             }
-        }
-        else
-        {
+        } else {
             addListenerOnDoneButton();
             addListenerOnImageButton();
 
@@ -233,8 +244,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }
 
-    public void setDataEditText(String date)
-    {
+    public void setDataEditText(String date) {
         dateEditText.setText(date);
     }
 
@@ -242,8 +252,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private void addListenerOnContributorsButton() {
         final Button contributorsButton = (Button) findViewById(R.id.contributors_button);
 
-        contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(),null,mAuth.getCurrentUser().getUid()));
-        Log.d("Contributors",contributorsList.get(0).getName().toString());
+        contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid()));
+        Log.d("Contributors", contributorsList.get(0).getName().toString());
 
 
         contributorsButton.setOnClickListener(new Button.OnClickListener() {
@@ -356,8 +366,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         idExpense = uuid;
         final DatabaseReference newExpenseRef = myRef.child(uuid);
 
-        if (mCurrentPhotoPath != null)
-        {
+        if (mCurrentPhotoPath != null) {
             groupImagesRef = storageRef.child("images").child(groupId);
             File imageToUpload = new File(mCurrentPhotoPath);
             Bitmap fileBitmap = ShrinkBitmap(mCurrentPhotoPath, 1000, 1000);
@@ -411,9 +420,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     });
                 }
             });
-        }
-        else
-        {
+        } else {
             Log.d("DebugCaricamentoSpesa", "NoImage");
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
@@ -432,8 +439,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }
 
-    public void finishTasks()
-    {
+    public void finishTasks() {
         getIntent().putExtra("expenseId", idExpense);
         getIntent().putExtra("expenseTotal", expenseTotal + "");
         getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid());
@@ -447,9 +453,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         //Jured: gestione della modifica
         if (isModifyActivity) {
             moveFirebaseExpenseNode();
-        }
-        else
-        {
+        } else {
             barProgressDialog.dismiss();
             finish();
         }
@@ -503,7 +507,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
-
 
 
     //Jured: gestione opzioni dialog
@@ -570,6 +573,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         // other 'case' lines to check for other
         // permissions this app might request
     }
+
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
         Calendar c;
@@ -602,7 +606,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             // Do something with the date chosen by the user
             Calendar c = Calendar.getInstance();
             c.set(year, month, day);
-            month=month+1;
+            month = month + 1;
             ((AddExpenseActivity) getActivity()).setDataEditText(day + "/" + month + "/" + year);
             //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             //String formattedDate = sdf.format(c.getTime());
@@ -624,14 +628,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             oldExpenseId = getIntent().getStringExtra("ExpenseId");
 
 
-            if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty())
-            {
+            if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty()) {
                 contributorsList = getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList");
-                Log.d("ContributorB",contributorsList.get(0).getUid().toString());
+                Log.d("ContributorB", contributorsList.get(0).getUid().toString());
             }
 
-            if (!getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList").isEmpty())
-            {
+            if (!getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList").isEmpty()) {
                 excludedList = getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList");
             }
 
@@ -691,16 +693,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     public Intent getSupportParentActivityIntent() {
         if (getIntent().getStringExtra("ModifyIntent") != null) {
             return getParentActivityIntentImpl();
-        }
-        else return super.getSupportParentActivityIntent();
+        } else return super.getSupportParentActivityIntent();
     }
 
     @Override
     public Intent getParentActivityIntent() {
         if (getIntent().getStringExtra("ModifyIntent") != null) {
             return getParentActivityIntentImpl();
-        }
-        else return super.getParentActivityIntent();
+        } else return super.getParentActivityIntent();
     }
 
     private Intent getParentActivityIntentImpl() {
@@ -708,31 +708,30 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         // Here you need to do some logic to determine from which Activity you came.
         // example: you could pass a variable through your Intent extras and check that.
-            i = new Intent(this, ExpenseDetailsActivity.class);
-            // set any flags or extras that you need.
-            // If you are reusing the previous Activity (i.e. bringing it to the top
-            // without re-creating a new instance) set these flags:
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            // if you are re-using the parent Activity you may not need to set any extras
-            //i.putExtra("someExtra", "whateverYouNeed");
+        i = new Intent(this, ExpenseDetailsActivity.class);
+        // set any flags or extras that you need.
+        // If you are reusing the previous Activity (i.e. bringing it to the top
+        // without re-creating a new instance) set these flags:
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        // if you are re-using the parent Activity you may not need to set any extras
+        //i.putExtra("someExtra", "whateverYouNeed");
         return i;
     }
 
-    private Bitmap ShrinkBitmap(String file, int width, int height){
+    private Bitmap ShrinkBitmap(String file, int width, int height) {
 
         BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
         bmpFactoryOptions.inJustDecodeBounds = true;
         Bitmap bitmap;
         BitmapFactory.decodeFile(file, bmpFactoryOptions); // Vale: No need to store the bitmap in the dedicated variable, I'm just loading its infos
 
-        int heightRatio = (int)Math.ceil(bmpFactoryOptions.outHeight/(float)height);
-        int widthRatio = (int)Math.ceil(bmpFactoryOptions.outWidth/(float)width);
+        int heightRatio = (int) Math.ceil(bmpFactoryOptions.outHeight / (float) height);
+        int widthRatio = (int) Math.ceil(bmpFactoryOptions.outWidth / (float) width);
 
-        if (heightRatio > 1 || widthRatio > 1)
-        {
+        if (heightRatio > 1 || widthRatio > 1) {
             if (heightRatio > widthRatio)
                 bmpFactoryOptions.inSampleSize = heightRatio;
-             else
+            else
                 bmpFactoryOptions.inSampleSize = widthRatio;
         }
 
@@ -741,6 +740,32 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         return bitmap;
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (netChange == null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setViewForSnackbar(findViewById(android.R.id.content));
+            netChange.setDialogShowTrue(false);
+            registerReceiver(netChange, filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (netChange != null) {
+            netChange.closeSnack();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver", "unregister on pause");
+        }
+
+
+    }
 }
 // other 'case' lines to check for other
 // permissions this app might request

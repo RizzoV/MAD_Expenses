@@ -4,8 +4,10 @@ import android.content.DialogInterface;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 import static android.R.attr.data;
 import static android.R.attr.type;
@@ -69,10 +72,21 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     AlertDialog alertDialog = null;
     CardView leaveGroup_cw;
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_info);
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(false);
+        registerReceiver(netChange, filter);
 
         image = (ImageView) findViewById(R.id.group_info_toolbar_image_iv);
         toolbar = (Toolbar) findViewById(R.id.group_info_tb);
@@ -417,5 +431,29 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference groupToDeleteRef = database.getReference().child("gruppi").child(groupId);
         groupToDeleteRef.removeValue();
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if (netChange == null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setViewForSnackbar(findViewById(android.R.id.content));
+            netChange.setDialogShowTrue(false);
+            registerReceiver(netChange, filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (netChange != null) {
+            netChange.closeSnack();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver", "unregister on pause");
+        }
+
     }
 }

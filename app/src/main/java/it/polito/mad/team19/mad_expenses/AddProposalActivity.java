@@ -2,10 +2,12 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,6 +44,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 /**
  * Created by Valentino on 04/04/2017.
@@ -69,12 +72,22 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
     EditText descriptionEditText;
     EditText costEditText;
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
+
     static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_proposal);
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(false);
+        registerReceiver(netChange, filter);
 
         mImageView = (ImageView) findViewById(R.id.camera_img);
 
@@ -528,6 +541,32 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 
         // other 'case' lines to check for other
         // permissions this app might request
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (netChange == null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setViewForSnackbar(findViewById(android.R.id.content));
+            netChange.setDialogShowTrue(false);
+            registerReceiver(netChange, filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (netChange != null) {
+            netChange.closeSnack();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver", "unregister on pause");
+        }
+
+
     }
 
 }

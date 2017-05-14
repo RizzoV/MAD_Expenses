@@ -3,12 +3,14 @@ package it.polito.mad.team19.mad_expenses;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,6 +43,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+
 
 public class CreateGroupActivity extends AppCompatActivity {
 
@@ -64,6 +68,9 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     ProgressDialog barProgressDialog;
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
+
 
 
     @Override
@@ -71,6 +78,13 @@ public class CreateGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
         getSupportActionBar().setTitle("Crea un nuovo gruppo");
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(false);
+        registerReceiver(netChange, filter);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -359,6 +373,31 @@ public class CreateGroupActivity extends AppCompatActivity {
 
         // other 'case' lines to check for other
         // permissions this app might request
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (netChange == null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setViewForSnackbar(findViewById(android.R.id.content));
+            netChange.setDialogShowTrue(false);
+            registerReceiver(netChange, filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (netChange != null) {
+            netChange.closeSnack();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver", "unregister on pause");
+        }
+
     }
 }
 

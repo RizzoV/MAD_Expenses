@@ -2,6 +2,8 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.DisplayMetrics;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 public class ExcludedPopupActivity extends Activity {
 
@@ -31,11 +34,21 @@ public class ExcludedPopupActivity extends Activity {
 
     ArrayList<FirebaseGroupMember> selectedMembers = new ArrayList<>();
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_contributors_popup);
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(false);
+        registerReceiver(netChange, filter);
 
         TextView title = (TextView) findViewById(R.id.select_contributors_description_tv);
         title.setText(R.string.select_excluded_description);
@@ -127,6 +140,30 @@ public class ExcludedPopupActivity extends Activity {
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         getWindow().setLayout((int) (width * .95), (int) (height * .9));
+
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if (netChange == null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setViewForSnackbar(findViewById(android.R.id.content));
+            netChange.setDialogShowTrue(false);
+            registerReceiver(netChange, filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (netChange != null) {
+            netChange.closeSnack();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver", "unregister on pause");
+        }
 
     }
 }

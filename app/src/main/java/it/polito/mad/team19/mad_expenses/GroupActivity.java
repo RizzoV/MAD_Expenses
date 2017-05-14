@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -76,6 +78,7 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 
@@ -110,12 +113,22 @@ public class GroupActivity extends AppCompatActivity {
     private ProgressDialog barProgressDialog;
     private ArrayList<Me> balancesArrayTakenFromFragment = new ArrayList<>();
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
+
     protected static final String TAG = "firebaseAuth";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(false);
+        registerReceiver(netChange, filter);
 
         // Get the intent which has started this activity
         Intent intent = getIntent();
@@ -249,28 +262,6 @@ public class GroupActivity extends AppCompatActivity {
         return (int) (dips * getApplicationContext().getResources().getDisplayMetrics().density + 0.5f);
     }
 
-    private Bitmap getCircleBitmap(Bitmap bitmap) {
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(output);
-
-        final int color = Color.RED;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawOval(rectF, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        bitmap.recycle();
-
-        return output;
-    }
 
     private void firebaseAuth() {
 
@@ -469,31 +460,7 @@ public class GroupActivity extends AppCompatActivity {
 
     private void setBalance(String idExpense, float expenseTotal, String expenseUserUid, String expenseUserName, ArrayList<FirebaseGroupMember> contributors, ArrayList<FirebaseGroupMember> excluded) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    /*
-        for (int i = 0; i < groupMembersList.size(); i++) {
-            final FirebaseGroupMember currentMember;
-            currentMember = groupMembersList.get(i);
-            //Ludo: se sono chi ha sostenuto la spesa
-            if (expenseUserUid.equals(currentMember.getUid())) {
-                //Ludo: devo aggiungere tutti i crediti escludendo me stesso
-                for (int j = 0; j < groupMembersList.size(); j++) {
-                    final FirebaseGroupMember temp = groupMembersList.get(j);
-                    if (!temp.getUid().equals(expenseUserUid)) {
-                        final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(temp.getUid());
-                        myRef.child("riepilogo").child(idExpense).setValue(String.format("%.2f", expenseTotal / groupMembersList.size()));
-                        myRef.child("nome").setValue(temp.getName());
-                    }
-                }
-            } else {
-                //Ludo: se invece non sono chi ha sostenuto la spesa ho un debito verso chi l'ha sostenuta
-                final DatabaseReference myRef = database.getReference("utenti").child(currentMember.getUid()).child("bilancio").child(groupId).child(expenseUserUid);
-                myRef.child("riepilogo").child(idExpense).setValue(expenseTotal / groupMembersList.size());
-                myRef.child("nome").setValue(expenseUserName);
 
-            }
-        }
-
-   */
         for (FirebaseGroupMember groupMember : groupMembersList) {
             Boolean stop = Boolean.FALSE;
             for (FirebaseGroupMember excludedMember : excluded) {
@@ -529,6 +496,30 @@ public class GroupActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if (netChange == null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setViewForSnackbar(findViewById(android.R.id.content));
+            netChange.setDialogShowTrue(false);
+            registerReceiver(netChange, filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (netChange != null) {
+            netChange.closeSnack();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver", "unregister on pause");
+        }
+
     }
 
     private void onInviteClicked() {

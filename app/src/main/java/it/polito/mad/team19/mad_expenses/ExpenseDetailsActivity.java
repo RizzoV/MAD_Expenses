@@ -2,7 +2,9 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -35,6 +37,7 @@ import java.util.Locale;
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 public class ExpenseDetailsActivity extends AppCompatActivity {
 
@@ -60,12 +63,24 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
     private AlertDialog alertDialog = null;
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expense_details);
         setTitle("Dettagli Spesa");
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(false);
+        registerReceiver(netChange, filter);
+
+
 
         name = getIntent().getStringExtra("ExpenseName");
         desc = getIntent().getStringExtra("ExpenseDesc");
@@ -263,12 +278,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (alertDialog != null)
-            alertDialog.dismiss();
-    }
 
     private void showExpenseImage(String imageUrl) {
         try {
@@ -285,5 +294,32 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("ExpenseDetailsActivity", "Exception:\n" + e.toString());
         }
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if (netChange == null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setViewForSnackbar(findViewById(android.R.id.content));
+            netChange.setDialogShowTrue(false);
+            registerReceiver(netChange, filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (alertDialog != null)
+            alertDialog.dismiss();
+
+        if (netChange != null) {
+            netChange.closeSnack();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver", "unregister on pause");
+        }
+
     }
 }
