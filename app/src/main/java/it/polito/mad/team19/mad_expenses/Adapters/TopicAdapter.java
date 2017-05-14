@@ -66,6 +66,7 @@ public class TopicAdapter extends BaseAdapter {
         }
         else
         {
+            name.setVisibility(View.VISIBLE);
             name.setText(msgList.get(position).getName());
             container.setBackground(context.getResources().getDrawable(R.drawable.chat_back));
         }

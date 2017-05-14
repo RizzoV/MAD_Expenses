@@ -21,7 +21,7 @@ public class TopicActivity extends AppCompatActivity {
         msg_lv = (ListView) findViewById(R.id.messagesContainer);
         ArrayList<Topic> msgList = new ArrayList<Topic>();
 
-        for(int i=0;i<10;i++)
+        for(int i=0;i<20;i++)
         {
             if(i%2==0)
                 msgList.add(new Topic("Bbbolz","Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",true));
