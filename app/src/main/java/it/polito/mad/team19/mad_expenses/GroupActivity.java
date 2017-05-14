@@ -762,6 +762,7 @@ public class GroupActivity extends AppCompatActivity {
                         debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debitAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
                         totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
 
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").setValue(creditAmount-debitAmount);
                         pBar.setVisibility(View.GONE);
 
                     } else {

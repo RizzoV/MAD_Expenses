@@ -106,7 +106,7 @@ public class GroupsAdapter extends BaseAdapter {
         }
         if(balanceAmount<0)
         {
-            viewHolder.balance.setText("Devi dare: " + String.format("%.2f", group.getBalance()));
+            viewHolder.balance.setText("Devi dare: " + String.format("%.2f", -group.getBalance()));
             viewHolder.balance.setTextColor(ContextCompat.getColor(context, R.color.redMaterial));
 
         }
