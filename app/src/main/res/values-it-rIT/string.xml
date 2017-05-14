@@ -66,6 +66,12 @@
     <string name="sign_in">Accedi</string>
     <string name="sign_up">Registrati</string>
 
+    <!-- Dialog connection -->
+    <string name="noConnectionDesc">La tua connessione non è attiva, entra nelle impostazioni ed attiva una connessione dati o WiFi.</string>
+    <string name="openSettings">Connettiti</string>
+    <string name="noConnectionSnack">Modalita non in linea</string>
+
+
     <!-- Personal Profile -->
     <string name="account">Profilo Personale</string>
     <string name="sign_out">Disconnettiti</string>

@@ -1,6 +1,8 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +32,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseSignUpActivity;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 public class GoogleSignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -44,11 +47,20 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     Button signIn;
     boolean empty = false;
 
+    NetworkChangeReceiver netChange;
+    IntentFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in);
+
+        filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        netChange = new NetworkChangeReceiver();
+        //netChange.setViewForSnackbar(findViewById(android.R.id.content));
+        netChange.setDialogShowTrue(true);
+        registerReceiver(netChange,filter);
 
         email = (EditText) findViewById(R.id.login_fire_email_et);
         pswd = (EditText) findViewById(R.id.login_fire_pswd_et);
@@ -130,6 +142,32 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //updateList(uid);
+        if(netChange==null) {
+            netChange = new NetworkChangeReceiver();
+            netChange.setDialogShowTrue(true);
+            registerReceiver(netChange,filter);
+            Log.e("Receiver", "register on resum");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //updateList(uid);
+
+        if(netChange!=null) {
+            netChange.closeDialog();
+            unregisterReceiver(netChange);
+            netChange = null;
+            Log.e("Receiver","unregister on pause");
+        }
+
     }
 
     private void signIn() {
