@@ -3,10 +3,12 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 import it.polito.mad.team19.mad_expenses.R;
+import it.polito.mad.team19.mad_expenses.TopicActivity;
 
 /**
  * Created by Jured on 31/03/17.
@@ -56,6 +59,7 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
         TextView name;
         TextView description;
         TextView amount;
+        Button proposal_topic;
         int position;
         Proposal current;
 
@@ -65,6 +69,18 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
             name = (TextView) itemView.findViewById(R.id.proposal_name_tv);
             amount = (TextView) itemView.findViewById(R.id.proposal_cost_amount_tv);
             description = (TextView) itemView.findViewById(R.id.proposal_description_tv);
+            proposal_topic = (Button) itemView.findViewById(R.id.proposal_topic_button);
+
+            proposal_topic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(context, TopicActivity.class);
+                    i.putExtra("topicType","proposals");
+                    i.putExtra("topicId","xxxxxxxx");
+                    i.putExtra("topicName",current.getName());
+                    context.startActivity(i);
+                }
+            });
         }
 
         public void setData (Proposal current, int position) {
@@ -74,7 +90,6 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
             this.description.setText(current.getDescription());
             this.image.setImageResource(R.drawable.circle);
             this.position = position;
-
 
 
         }

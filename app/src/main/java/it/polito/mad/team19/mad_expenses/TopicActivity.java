@@ -19,6 +19,9 @@ public class TopicActivity extends AppCompatActivity {
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
+    String topicType;
+    String tid;
+    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,16 @@ public class TopicActivity extends AppCompatActivity {
         netChange.setViewForSnackbar(findViewById(android.R.id.content));
         netChange.setDialogShowTrue(false);
         registerReceiver(netChange, filter);
+
+        topicType = getIntent().getStringExtra("topicType");
+        tid = getIntent().getStringExtra("topicId");
+        name = getIntent().getStringExtra("topicName");
+
+
+        Log.d("Topic","type: "+topicType);
+        Log.d("Topic","id: "+tid);
+
+        getSupportActionBar().setTitle("Discussione - " +name);
 
         msg_lv = (ListView) findViewById(R.id.messagesContainer);
         ArrayList<Topic> msgList = new ArrayList<Topic>();

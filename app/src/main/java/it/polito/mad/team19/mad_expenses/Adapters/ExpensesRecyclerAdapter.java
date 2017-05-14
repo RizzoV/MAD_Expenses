@@ -82,6 +82,9 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(context, TopicActivity.class);
+                    i.putExtra("topicType","proposals");
+                    i.putExtra("topicId","xxxxxxxx");
+                    i.putExtra("topicName",current.getName());
                     context.startActivity(i);
                 }
             });
