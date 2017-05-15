@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -217,6 +218,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
                                     }
                                 });
+                                // Apertura automatica della tastiera
+                                alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                                 alertDialog.show();
                             }
                         });
