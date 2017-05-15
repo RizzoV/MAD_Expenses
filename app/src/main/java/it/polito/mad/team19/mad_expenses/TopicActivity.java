@@ -1,5 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -83,5 +84,34 @@ public class TopicActivity extends AppCompatActivity {
             Log.e("Receiver", "unregister on pause");
         }
 
+    }
+
+    @Override
+    public Intent getSupportParentActivityIntent() {
+        if (getIntent().getStringExtra("ProposalInfoIntent") != null) {
+            return getParentActivityIntentImpl();
+        } else return super.getSupportParentActivityIntent();
+    }
+
+    @Override
+    public Intent getParentActivityIntent() {
+        if (getIntent().getStringExtra("ProposalInfoIntent") != null) {
+            return getParentActivityIntentImpl();
+        } else return super.getParentActivityIntent();
+    }
+
+    private Intent getParentActivityIntentImpl() {
+        Intent i = null;
+
+        // Here you need to do some logic to determine from which Activity you came.
+        // example: you could pass a variable through your Intent extras and check that.
+        i = new Intent(this, ProposalDetailsActivity.class);
+        // set any flags or extras that you need.
+        // If you are reusing the previous Activity (i.e. bringing it to the top
+        // without re-creating a new instance) set these flags:
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        // if you are re-using the parent Activity you may not need to set any extras
+        //i.putExtra("someExtra", "whateverYouNeed");
+        return i;
     }
 }

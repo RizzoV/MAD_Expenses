@@ -830,6 +830,23 @@ public class GroupActivity extends AppCompatActivity {
             mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
             mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
 
+            adapter.SetOnItemClickListener(new ExpensesRecyclerAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Proposal clicked = proposals.get(position);
+                    final Intent intent = new Intent(getActivity(), ProposalDetailsActivity.class);
+                    Log.d("Expenses", clicked.toString());
+                    intent.putExtra("ProposalName", clicked.getName());
+                    //intent.putExtra("ProposalImgUrl", clicked.getImage());
+                    intent.putExtra("ProposalDesc", clicked.getDescription());
+                    intent.putExtra("ProposalCost", String.format(Locale.getDefault(), "%.2f", clicked.getExtimatedCost()));
+                    //intent.putExtra("ProposalAuthorId", clicked.getAuthor());
+                    intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
+                    //intent.putExtra("ProposalId", clicked.getFirebaseId());
+                    startActivity(intent);
+                }
+            });
+
 
             final TextView noproposalstv = (TextView) rootView.findViewById(R.id.noproposals_tv);
 

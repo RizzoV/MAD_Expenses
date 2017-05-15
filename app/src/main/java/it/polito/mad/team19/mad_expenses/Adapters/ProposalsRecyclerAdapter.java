@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 import it.polito.mad.team19.mad_expenses.R;
@@ -27,6 +28,10 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
     ArrayList<Proposal> proposals;
     Activity context;
     private LayoutInflater mInflater;
+
+    //LUDO: aggiunto metodo onItemClickListener
+    private ExpensesRecyclerAdapter.OnItemClickListener mItemClickListener;
+    private ExpensesRecyclerAdapter.OnItemLongClickListener mItemLongClickListener;
 
     public ProposalsRecyclerAdapter(Context context, ArrayList<Proposal> proposals) {
         this.proposals = proposals;
@@ -53,7 +58,7 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
         return proposals.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView image;
         TextView name;
@@ -62,6 +67,9 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
         Button proposal_topic;
         int position;
         Proposal current;
+        View itemView;
+
+
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -81,6 +89,17 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
                     context.startActivity(i);
                 }
             });
+
+            this.itemView = itemView;
+            itemView.setOnClickListener(this);
+        }
+
+        //LUDO: aggiunto metodo onItemClickListener
+        @Override
+        public void onClick(View v) {
+            if (mItemClickListener != null) {
+                mItemClickListener.onItemClick(v, position);
+            }
         }
 
         public void setData (Proposal current, int position) {
@@ -88,10 +107,42 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
             this.name.setText(current.getName());
             this.amount.setText(current.getCurrency().getSymbol().toString() + " " + String.format("%.2f", current.getExtimatedCost()));
             this.description.setText(current.getDescription());
-            this.image.setImageResource(R.drawable.circle);
+            this.image.setImageResource(R.mipmap.ic_proposals);
             this.position = position;
 
 
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view , int position);
+    }
+
+    public interface  OnItemLongClickListener {
+        void onItemLongClick(View view , int position);
+    }
+
+    //Jured: onItemLongClickListener
+    public void SetOnItemClickListener(final ExpensesRecyclerAdapter.OnItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
+    }
+
+    public void SetOnItemLongClickListener (final ExpensesRecyclerAdapter.OnItemLongClickListener mItemLongClickListener){
+        this.mItemLongClickListener = mItemLongClickListener;
+    }
+
+    @Override
+    public void onBindViewHolder(ProposalsRecyclerAdapter.MyViewHolder holder, final int position, List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+
+        holder.itemView.setLongClickable(true);
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mItemLongClickListener.onItemLongClick(v, position);
+                return false;
+            }
+        });
     }
 }
