@@ -375,7 +375,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         if (mCurrentPhotoPath != null) {
             groupImagesRef = storageRef.child("images").child(groupId);
             File imageToUpload = new File(mCurrentPhotoPath);
-            Bitmap fileBitmap = ShrinkBitmap(mCurrentPhotoPath, 1000, 1000);
+            Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             fileBitmap.compress(Bitmap.CompressFormat.JPEG, 85, baos);
             byte[] datas = baos.toByteArray();
@@ -493,7 +493,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     private void setImageView(String mCurrentPhotoPath) {
-        Bitmap fileBitmap = ShrinkBitmap(mCurrentPhotoPath, 800, 800);
+        Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
         mImageView.setImageBitmap(fileBitmap);
     }
 
@@ -737,7 +737,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         return i;
     }
 
-    private Bitmap ShrinkBitmap(String file, int width, int height) {
+    private Bitmap shrinkBitmap(String file, int width, int height) {
 
         BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
         bmpFactoryOptions.inJustDecodeBounds = true;
