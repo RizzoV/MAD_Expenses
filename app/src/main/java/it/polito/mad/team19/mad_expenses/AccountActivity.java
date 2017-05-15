@@ -3,13 +3,6 @@ package it.polito.mad.team19.mad_expenses;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -170,7 +163,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
 
     public void showAddContactDialog(String title, String old_string, final int type) {
         LayoutInflater inflater = getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialogboxlayout_editaccount, null);
+        final View dialogView = inflater.inflate(R.layout.dialogboxlayout_edit_account, null);
         final EditText new_string;
 
         new_string = (EditText) dialogView.findViewById(R.id.new_string);

@@ -6,33 +6,46 @@ package it.polito.mad.team19.mad_expenses.Classes;
 
 public class ExpenseDetail {
 
-    private String creditor;
-    private String debtor;
+    private String creditorName;
+    private String debtorName;
+    private String creditorId;
+    private String debtorId;
     private String amount;
     private String creditorImage;
     private String debtorImage;
 
-    public ExpenseDetail(String creditor, String debtor, String amount, String creditorImage, String debtorImage) {
-        this.creditor = creditor;
-        this.debtor = debtor;
+    public ExpenseDetail(String creditor, String debtor, String creditorId, String debtorId, String amount, String creditorImage, String debtorImage) {
+        this.creditorName = creditor;
+        this.debtorName = debtor;
         this.amount = amount;
         this.creditorImage = creditorImage;
         this.debtorImage = debtorImage;
+        this.debtorId = debtorId;
+        this.creditorId = creditorId;
     }
+
+    public String getCreditorId() {
+        return creditorId;
+    }
+
+    public String getDebtorId() {
+        return debtorId;
+    }
+
     public String getCreditor() {
-        return creditor;
+        return creditorName;
     }
 
     public void setCreditor(String creditor) {
-        this.creditor = creditor;
+        this.creditorName = creditor;
     }
 
     public String getDebtor() {
-        return debtor;
+        return debtorName;
     }
 
     public void setDebtor(String debitor) {
-        this.debtor = debitor;
+        this.debtorName = debitor;
     }
 
     public String getAmount() {

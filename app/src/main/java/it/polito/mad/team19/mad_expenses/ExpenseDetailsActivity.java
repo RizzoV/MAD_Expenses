@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -60,6 +61,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
     private ImageButton set_photo_button;
     private TextView set_photo_text_view;
+    //static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
 
     private AlertDialog alertDialog = null;
 
@@ -79,8 +81,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         netChange.setViewForSnackbar(findViewById(android.R.id.content));
         netChange.setDialogShowTrue(false);
         registerReceiver(netChange, filter);
-
-
 
         name = getIntent().getStringExtra("ExpenseName");
         desc = getIntent().getStringExtra("ExpenseDesc");
@@ -105,7 +105,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
         expense_author.setText("loading...");
 
-        FirebaseDatabase firebase = FirebaseDatabase.getInstance();
+        final FirebaseDatabase firebase = FirebaseDatabase.getInstance();
 
         DatabaseReference dbAuthorNameRef = firebase.getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
         dbAuthorNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -127,33 +127,102 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         DatabaseReference expenseRef = firebase.getReference("gruppi").child(groupId).child("expenses").child(expenseId);
         expenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot contributor) {
-                for (DataSnapshot contributors : contributor.child("contributors").getChildren()) {
-                    Log.d("Contributor", contributors.toString());
+            public void onDataChange(DataSnapshot expense) {
+                for (DataSnapshot contributor : expense.child("contributors").getChildren()) {
+                    Log.d("Contributor", contributor.toString());
+
                     String contributor_img = null;
+                    if(contributor.child("immagine").exists())
+                        contributor_img = contributor.child("immagine").getValue().toString();
 
-                    if(contributors.child("immagine").exists())
-                        contributor_img = contributors.child("immagine").getValue().toString();
-
-                    for (DataSnapshot debtor : contributors.child("riepilogo").getChildren()) {
+                    for (DataSnapshot debtor : contributor.child("riepilogo").getChildren()) {
 
                         String debtor_img = null;
-
                         if(debtor.child("immagine").exists())
                             debtor_img = debtor.child("immagine").getValue().toString();
 
-                        expenseDetailsList.add(new ExpenseDetail(contributors.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img));
+                        expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img));
                         edAdapter.setListData(expenseDetailsList);
                         edAdapter.notifyDataSetChanged();
                     }
-                    contributorsList.add(new FirebaseGroupMember(contributors.getValue().toString(), contributor_img, contributors.getKey()));
+                    contributorsList.add(new FirebaseGroupMember(contributor.getValue().toString(), null, contributor.getKey()));
                 }
-                for (DataSnapshot currentExcluded : contributor.child("excluded").getChildren()) {
+                for (DataSnapshot currentExcluded : expense.child("excluded").getChildren())
                     excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(), null, currentExcluded.getKey()));
-                }
 
-                for (int i = 0; i < edAdapter.getCount(); i++)
-                    expense_details_listview.addView(edAdapter.getView(i, null, expense_details_listview));
+
+                Log.e("expenseDetailsList", "dimensione finale" + expenseDetailsList.size());
+
+                // Vale: dialog per la modifica dell'importo dovuto
+                for (int i = 0; i < edAdapter.getCount(); i++) {
+                    final View itemView = edAdapter.getView(i, null, expense_details_listview);
+                    final String expenseContributorId = ((ExpenseDetail) edAdapter.getItem(i)).getCreditorId();
+                    final String expenseDebtorId = ((ExpenseDetail) edAdapter.getItem(i)).getDebtorId();
+                    final String expenseDebtCurrentAmount = ((ExpenseDetail) edAdapter.getItem(i)).getAmount();
+                    if(expenseContributorId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                    {
+                        itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                View dialogView = getLayoutInflater().inflate(R.layout.dialogboxlayout_edit_debit, null);
+                                final EditText debtEditText = (EditText) dialogView.findViewById(R.id.debt_edit_text);
+                                debtEditText.setText(expenseDebtCurrentAmount);
+
+                                AlertDialog alertDialog = new AlertDialog.Builder(ExpenseDetailsActivity.this)
+                                        .setView(dialogView)
+                                        .setTitle(R.string.modify_debt_value)
+                                        .setPositiveButton(getString(R.string.edit), null)
+                                        .setNegativeButton(getString(R.string.cancel), null)
+                                        .create();
+
+                                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                                    @Override
+                                    public void onShow(final DialogInterface dialog) {
+                                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                                        buttonPositive.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                if (debtEditText.getText().toString().trim().isEmpty()) {
+                                                    debtEditText.setError(getString(R.string.mandatory_field));
+                                                }
+                                                else if (!debtEditText.getText().toString().trim().matches(AddExpenseActivity.COST_REGEX)) {
+                                                    debtEditText.setError(getString(R.string.invalid_cost_field));
+                                                } else {
+                                                    DatabaseReference debtAmountRef = firebase.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).
+                                                            child("debtors").child(expenseDebtorId).child("riepilogo").child(expenseContributorId).child("amount");
+                                                    DatabaseReference creditAmountRef = firebase.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).
+                                                            child("contributors").child(expenseContributorId).child("riepilogo").child(expenseDebtorId).child("amount");
+
+                                                    String chosenAmount = debtEditText.getText().toString().trim().replace(",", ".");
+
+                                                    debtAmountRef.setValue("-" + chosenAmount);
+                                                    creditAmountRef.setValue(chosenAmount);
+
+                                                    ((TextView) itemView.findViewById(R.id.debt_amount)).setText(
+                                                            String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+
+                                                    dialog.dismiss();
+
+                                                }
+                                            }
+                                        });
+
+                                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                                        buttonNegative.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                dialog.cancel();
+                                            }
+                                        });
+
+                                    }
+                                });
+                                alertDialog.show();
+                            }
+                        });
+                    }
+                    expense_details_listview.addView(itemView);
+                }
             }
 
             @Override

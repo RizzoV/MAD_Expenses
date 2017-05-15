@@ -49,8 +49,8 @@
 
                         <ImageView
                             android:id="@+id/expense_photo"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
                             android:layout_marginEnd="@dimen/smaller_horizontal_margin"
                             android:layout_marginStart="@dimen/smaller_horizontal_margin"
                             android:layout_marginTop="10dp"

@@ -107,7 +107,7 @@
     <string name="delete_expense">Delete expense</string>
     <string name="menu_up_as_back">up_as_back</string>
     <string name="modify_group_name">Modify group name</string>
-
+    <string name="modify_debt_value">Modify debt value</string>
 
     <!-- Group details -->
     <string name="confirmLeaveGroup">Are you sure you want to leave the group?</string>

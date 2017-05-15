@@ -243,14 +243,10 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         final String groupId = getIntent().getStringExtra("groupId");
         final String old_string = collapsingToolbar.getTitle().toString();
 
-
         switch (id) {
             case R.id.modify_group_details: {
-
                 DialogFragment newFragment = new ModifyGroupNameOrImageDialog();
                 newFragment.show(getSupportFragmentManager(), "modifyGroupDialog");
-
-
             }
 
             default:
@@ -427,7 +423,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         final String old_string = collapsingToolbar.getTitle().toString();
 
         LayoutInflater inflater = getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialogboxlayout_editaccount, null);
+        final View dialogView = inflater.inflate(R.layout.dialogboxlayout_edit_account, null);
 
         final EditText new_string;
 

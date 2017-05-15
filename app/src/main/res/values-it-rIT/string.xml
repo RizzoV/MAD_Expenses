@@ -104,6 +104,7 @@
     <string name="modify_expense">Modifica spese</string>
     <string name="delete_expense">Cancella spesa</string>
     <string name="menu_up_as_back">sopra_indietro</string>
+    <string name="modify_debt_value">Modifica il valore del debito</string>
 
     <!-- Group details -->
     <string name="confirmLeaveGroup">Sicuro di voler lasciare il gruppo?</string>
