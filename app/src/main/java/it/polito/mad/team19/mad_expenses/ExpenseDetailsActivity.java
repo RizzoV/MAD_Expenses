@@ -130,15 +130,27 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot contributor) {
                 for (DataSnapshot contributors : contributor.child("contributors").getChildren()) {
                     Log.d("Contributor", contributors.toString());
+                    String contributor_img = null;
+
+                    if(contributors.child("immagine").exists())
+                        contributor_img = contributors.child("immagine").getValue().toString();
+
                     for (DataSnapshot debtor : contributors.child("riepilogo").getChildren()) {
-                        expenseDetailsList.add(new ExpenseDetail(contributors.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), null, null));
+
+                        String debtor_img = null;
+
+                        if(debtor.child("immagine").exists())
+                            debtor_img = debtor.child("immagine").getValue().toString();
+
+                        expenseDetailsList.add(new ExpenseDetail(contributors.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img));
                         edAdapter.setListData(expenseDetailsList);
                         edAdapter.notifyDataSetChanged();
                     }
-                    contributorsList.add(new FirebaseGroupMember(contributors.getValue().toString(), null, contributors.getKey()));
+                    contributorsList.add(new FirebaseGroupMember(contributors.getValue().toString(), contributor_img, contributors.getKey()));
                 }
-                for (DataSnapshot currentExcluded : contributor.child("excluded").getChildren())
+                for (DataSnapshot currentExcluded : contributor.child("excluded").getChildren()) {
                     excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(), null, currentExcluded.getKey()));
+                }
 
                 for (int i = 0; i < edAdapter.getCount(); i++)
                     expense_details_listview.addView(edAdapter.getView(i, null, expense_details_listview));

@@ -86,8 +86,14 @@ public class ContributorsPopupActivity extends Activity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int nMembers = 0;
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                for (DataSnapshot child : dataSnapshot.getChildren())
+                {
+                    String img = null;
+
+                    if(child.child("immagine").exists())
+                        img = child.child("immagine").getValue().toString();
+
+                    contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), img, child.getKey()));
                     nMembers++;
                 }
                 if (nMembers == 0)

@@ -25,7 +25,7 @@
                 android:layout_height="50dp"
                 android:layout_margin="10dp"
                 android:layout_gravity="center"
-                android:src="@drawable/circle"
+                android:src="@mipmap/ic_user_noimg"
                 />
 
         </RelativeLayout>

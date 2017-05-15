@@ -12,6 +12,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -38,6 +43,11 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
     private ArrayList<ExpenseDetail> detailsList = new ArrayList<>();
     private Activity context;
+
+    static class ImgHolder {
+        ImageView debtor_img;
+        ImageView creditor_img;
+    }
 
     public ExpenseDetailsAdapter(Context context, ArrayList<ExpenseDetail> detailsList) {
         this.detailsList = detailsList;
@@ -65,15 +75,25 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        final ImgHolder viewHolder;
+
+
         if (convertView == null) {
             convertView = context.getLayoutInflater().inflate(R.layout.expense_details_list_row, parent, false);
+            viewHolder = new ImgHolder();
+            viewHolder.creditor_img=(ImageView)convertView.findViewById(R.id.creditor_icon);
+            viewHolder.debtor_img=(ImageView)convertView.findViewById(R.id.debtor_icon);
+            convertView.setTag(viewHolder);
         }
+        else
+            viewHolder = (ImgHolder) convertView.getTag();
+
 
         TextView creditorName = (TextView) convertView.findViewById(R.id.creditor_name);
         TextView debtorName = (TextView) convertView.findViewById(R.id.debtor_name);
         TextView amount = (TextView) convertView.findViewById(R.id.debt_amount);
-        final ImageView creditorImage = (ImageView) convertView.findViewById(R.id.creditor_icon);
-        final ImageView debtorImage = (ImageView) convertView.findViewById(R.id.debtor_icon);
+
 
         ExpenseDetail ed = detailsList.get(position);
 
@@ -84,67 +104,37 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
         // Manage creditor icon
         if (ed.getCreditorImage() != null) {
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageReference = storage.getReferenceFromUrl(ed.getCreditorImage());
-            final long ONE_MEGABYTE = 1024 * 1024;
-            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            Glide.with(context).load(ed.getCreditorImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.creditor_img) {
                 @Override
-                public void onSuccess(byte[] bytes) {
-                    creditorImage.setImageBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)));
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Log.e("ExpenseDetailsAdapter", "Error in the getBytes() function");
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    viewHolder.creditor_img.setImageDrawable(circularBitmapDrawable);
                 }
             });
         } else {
-            creditorImage.setImageResource(R.drawable.man1);
+            Glide.clear(viewHolder.creditor_img);
+            viewHolder.creditor_img.setImageResource(R.mipmap.ic_user_noimg);
         }
 
         // Manage debtor icon
         if (ed.getDebtorImage() != null) {
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageReference = storage.getReferenceFromUrl(ed.getDebtorImage());
-            final long ONE_MEGABYTE = 1024 * 1024;
-            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            Glide.with(context).load(ed.getDebtorImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.debtor_img) {
                 @Override
-                public void onSuccess(byte[] bytes) {
-                    debtorImage.setImageBitmap(getCircleBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)));
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    //TODO: Handle any errors
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    viewHolder.debtor_img.setImageDrawable(circularBitmapDrawable);
                 }
             });
         } else {
-            debtorImage.setImageResource(R.drawable.man1);
+            Glide.clear(viewHolder.debtor_img);
+            viewHolder.debtor_img.setImageResource(R.mipmap.ic_user_noimg);
         }
 
         return convertView;
     }
 
-    private Bitmap getCircleBitmap(Bitmap bitmap) {
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(output);
-
-        final int color = Color.RED;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawOval(rectF, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        bitmap.recycle();
-
-        return output;
-    }
 }
