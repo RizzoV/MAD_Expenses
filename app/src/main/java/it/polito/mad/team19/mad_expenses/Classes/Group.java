@@ -73,4 +73,8 @@ public class Group
     {
         this.notifyCnt = notifyCnt;
     }
+
+    public void setThumbPath(String thumbPath) {
+        this.thumbPath = thumbPath;
+    }
 }

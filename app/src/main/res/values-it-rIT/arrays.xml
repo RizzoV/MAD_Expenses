@@ -15,4 +15,8 @@
     <string-array name="my_option_array">
         <item>Lascia il gruppo</item>
     </string-array>
+    <string-array name="name_or_image_array">
+        <item>Modifica nome del gruppo</item>
+        <item>Modifica immagine del gruppo</item>
+    </string-array>
 </resources>

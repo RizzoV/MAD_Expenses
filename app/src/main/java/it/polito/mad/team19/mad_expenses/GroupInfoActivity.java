@@ -1,19 +1,21 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.content.DialogInterface;
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -26,45 +28,61 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.Dialogs.DeleteMemberDialog;
+import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
+import it.polito.mad.team19.mad_expenses.Dialogs.ModifyGroupNameOrImageDialog;
 
-import static android.R.attr.data;
-import static android.R.attr.type;
-import static it.polito.mad.team19.mad_expenses.R.string.email;
-
-public class GroupInfoActivity extends AppCompatActivity implements DeleteMemberDialog.NoticeDialogListener {
+public class GroupInfoActivity extends AppCompatActivity implements DeleteMemberDialog.NoticeDialogListener,
+        ModifyGroupNameOrImageDialog.NoticeDialogListener, GalleryOrCameraDialog.NoticeDialogListener {
 
     private static final int GROUP_QUITTED = 99;
+    private static final int REQUEST_GALLERY_IMAGE = 23;
+    private static final int REQUEST_TAKE_PHOTO = 17;
+
+
     ImageView image;
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbar;
     private FirebaseAuth mAuth;
     private String uid;
     private Boolean isUsrAdmin;
+
+    private String groupId;
+
+    private String mCurrentPhotoPath = null;
+    private String mCurrentPhotoName;
+    private Uri mCurrentPhotoFirebaseUri;
+
+
     RecyclerView members_lv;
 
     ArrayList<FirebaseGroupMember> contributors;
@@ -94,7 +112,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         String imageUrl = getIntent().getStringExtra("groupImage");
         String groupName = getIntent().getStringExtra("groupName");
-        final String groupId = getIntent().getStringExtra("groupId");
+        groupId = getIntent().getStringExtra("groupId");
 
        Log.d("DebugGroupInfo",groupName);
 
@@ -224,76 +242,15 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         int id = item.getItemId();
         final String groupId = getIntent().getStringExtra("groupId");
         final String old_string = collapsingToolbar.getTitle().toString();
+
+
         switch (id) {
-            case R.id.modify_group_name: {
-                LayoutInflater inflater = getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.dialogboxlayout_editaccount, null);
-                final EditText new_string;
+            case R.id.modify_group_details: {
 
-                new_string = (EditText) dialogView.findViewById(R.id.new_string);
+                DialogFragment newFragment = new ModifyGroupNameOrImageDialog();
+                newFragment.show(getSupportFragmentManager(), "modifyGroupDialog");
 
-                new_string.setText(old_string);
 
-                final AlertDialog alertDialog = new AlertDialog.Builder(this)
-                        .setView(dialogView)
-                        .setTitle(R.string.modify_group_name)
-                        .setPositiveButton(getString(R.string.edit), null)
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .create();
-
-                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(final DialogInterface dialog) {
-                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
-                        buttonPositive.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (new_string.getText().toString().trim().isEmpty()) {
-                                    new_string.setError(getString(R.string.mandatory_field));
-                                } else {
-                                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference groupNameRef = database.getReference()
-                                            .child("gruppi").child(groupId).child("nome");
-                                    groupNameRef.setValue(new_string.getText().toString());
-
-                                    //TODO: cambiare il nome in tutti gli utenti
-                                    DatabaseReference userGroupNameRef = database.getReference().child("gruppi").child(groupId)
-                                            .child("membri");
-                                    userGroupNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                                database.getReference().child("utenti").child(data.getKey()).child("gruppi")
-                                                        .child(groupId).child("nome").setValue(new_string.getText().toString());
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                    collapsingToolbar.setTitle(new_string.getText().toString());
-                                    Intent intent = new Intent();
-                                    intent.putExtra("newGroupName",new_string.getText().toString());
-                                    setResult(RESULT_OK,intent);
-                                    dialog.dismiss();
-
-                                }
-                            }
-                        });
-
-                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
-                        buttonNegative.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dialog.cancel();
-                            }
-                        });
-
-                    }
-                });
-                alertDialog.show();
             }
 
             default:
@@ -301,6 +258,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
 
     private void setListenerLeaveGroup(final String groupId)
@@ -460,5 +418,258 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
             Log.e("Receiver", "unregister on pause");
         }
 
+    }
+
+    @Override
+    public void onModifyNameClick(DialogFragment dialog) {
+
+        final String groupId = getIntent().getStringExtra("groupId");
+        final String old_string = collapsingToolbar.getTitle().toString();
+
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialogboxlayout_editaccount, null);
+
+        final EditText new_string;
+
+        new_string = (EditText) dialogView.findViewById(R.id.new_string);
+
+        new_string.setText(old_string);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setTitle(R.string.modify_group_name)
+                .setPositiveButton(getString(R.string.edit), null)
+                .setNegativeButton(getString(R.string.cancel), null)
+                .create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                buttonPositive.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (new_string.getText().toString().trim().isEmpty()) {
+                            new_string.setError(getString(R.string.mandatory_field));
+                        } else {
+                            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference groupNameRef = database.getReference()
+                                    .child("gruppi").child(groupId).child("nome");
+                            groupNameRef.setValue(new_string.getText().toString());
+
+                            //TODO: cambiare il nome in tutti gli utenti
+                            DatabaseReference userGroupNameRef = database.getReference().child("gruppi").child(groupId)
+                                    .child("membri");
+                            userGroupNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                        database.getReference().child("utenti").child(data.getKey()).child("gruppi")
+                                                .child(groupId).child("nome").setValue(new_string.getText().toString());
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                            collapsingToolbar.setTitle(new_string.getText().toString());
+                            Intent intent = new Intent();
+                            intent.putExtra("newGroupName",new_string.getText().toString());
+                            setResult(RESULT_OK,intent);
+                            dialog.dismiss();
+
+                        }
+                    }
+                });
+
+                Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                buttonNegative.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.cancel();
+                    }
+                });
+
+            }
+        });
+        alertDialog.show();
+
+    }
+
+    @Override
+    public void onModifyImageClick(DialogFragment dialog) {
+        DialogFragment newFragment = new GalleryOrCameraDialog();
+        newFragment.show(getSupportFragmentManager(), "imageDialog");
+    }
+
+    @Override
+    public void onDialogCameraClick(DialogFragment dialog) {
+        dispatchTakePictureIntent();
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        File photoFile;
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "it.polito.mad.team19.mad_expenses.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+
+
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    @Override
+    public void onDialogGalleryClick(DialogFragment dialog) {
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto, REQUEST_GALLERY_IMAGE);
+    }
+
+    private void uploadInfos() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("immagine");
+        String uuid = myRef.push().getKey();
+        String idExpense = uuid;
+        final DatabaseReference newExpenseRef = myRef.child(uuid);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        final StorageReference storageRef = storage.getReference();
+        final StorageReference groupImagesRef;
+
+        if (mCurrentPhotoPath != null) {
+            groupImagesRef = storageRef.child("images").child(groupId);
+            File imageToUpload = new File(mCurrentPhotoPath);
+            Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 85, baos);
+            byte[] datas = baos.toByteArray();
+            mCurrentPhotoName = imageToUpload.getName();
+            UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
+            // Register observers to listen for when the download is done or if it fails
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
+                    Log.d("DebugCaricamentoImg", "caricamento immagine" + groupId +storageRef.getPath());
+                    groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            myRef.setValue(uri.toString());
+                            final String imageUriTemp = new String(uri.toString());
+                            DatabaseReference memberRef = FirebaseDatabase.getInstance().getReference()
+                                    .child("gruppi").child(groupId).child("membri");
+                            memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                        FirebaseDatabase.getInstance().getReference()
+                                                .child("utenti").child(data.getKey()).child("gruppi").child(groupId)
+                                                .child("immagine").setValue(imageUriTemp.toString());
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                            mCurrentPhotoFirebaseUri = Uri.EMPTY;
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    private Bitmap shrinkBitmap(String file, int width, int height) {
+
+        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+        bmpFactoryOptions.inJustDecodeBounds = true;
+        Bitmap bitmap;
+        BitmapFactory.decodeFile(file, bmpFactoryOptions); // Vale: No need to store the bitmap in the dedicated variable, I'm just loading its infos
+
+        int heightRatio = (int) Math.ceil(bmpFactoryOptions.outHeight / (float) height);
+        int widthRatio = (int) Math.ceil(bmpFactoryOptions.outWidth / (float) width);
+
+        if (heightRatio > 1 || widthRatio > 1) {
+            if (heightRatio > widthRatio)
+                bmpFactoryOptions.inSampleSize = heightRatio;
+            else
+                bmpFactoryOptions.inSampleSize = widthRatio;
+        }
+
+        bmpFactoryOptions.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+        return bitmap;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_GALLERY_IMAGE && resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri selectedImage = data.getData();
+                Log.d("DebugGalleryImage:", selectedImage.getPath());
+                String[] projection = {MediaStore.Images.Media.DATA};
+                @SuppressWarnings("deprecation")
+                Cursor cursor = managedQuery(selectedImage, projection, null, null, null);
+                int column_index = cursor
+                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                mCurrentPhotoPath = cursor.getString(column_index);
+                Log.d("DebugGalleryImage:2", mCurrentPhotoPath);
+                //setImageView(mCurrentPhotoPath);
+                uploadInfos();
+            }
+        }
+
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK)
+            uploadInfos();
     }
 }

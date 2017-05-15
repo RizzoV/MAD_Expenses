@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/smaller_vertical_margin"
-                android:layout_weight="0.3"
+                android:layout_weight="0.5"
                 android:ellipsize="end"
                 android:gravity="bottom"
                 android:maxEms="1"

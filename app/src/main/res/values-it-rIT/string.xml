@@ -86,7 +86,7 @@
     <string name="invitation_message">Unisciti al gruppo di Mad Expenses ed inizia a condividere le spese!</string>
     <string name="invitation_deep_link">addPersonToGroup</string>
     <string name="invitation_cta">Unisciti al gruppo!</string>
-    <string name="dialog_camera_or_gallery">Seleziona l\'immagine</string>
+    <string name="dialog_camera_or_gallery">Seleziona immagine da</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Group activity -->

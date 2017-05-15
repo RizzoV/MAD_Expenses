@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
@@ -172,10 +173,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                     barProgressDialog.show();
 
                     addGroupToFirebase(uid, uname, group_name.getText().toString(), "path/immmagine.png", type);
-
                 }
-
-
             }
         });
 
@@ -304,9 +302,9 @@ public class CreateGroupActivity extends AppCompatActivity {
         if (mCurrentPhotoPath != null)
         {
             File imageToUpload = new File(mCurrentPhotoPath);
-            Bitmap fileBitmap = currentGroupBitmap;
+            Bitmap fileBitmap = resizeBitmap(currentGroupBitmap, 1000, 1000);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
+            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 85, baos);
             byte[] datas = baos.toByteArray();
             final String mCurrentPhotoName = imageToUpload.getName();
             UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
@@ -314,7 +312,7 @@ public class CreateGroupActivity extends AppCompatActivity {
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
+                    Log.e("CreateGroupActivity", "Unable to perform the upload");
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -322,11 +320,9 @@ public class CreateGroupActivity extends AppCompatActivity {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
                     groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
-
                             .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-
                                     Log.d("DebugUriRequest", uri.toString());
                                     imageLinkGrpRef.setValue(uri.toString());
                                     imageLinkUsrRef.setValue(uri.toString());
@@ -354,8 +350,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case STORAGE_REQUEST:
                 // If request is cancelled, the result arrays are empty.
@@ -401,6 +396,24 @@ public class CreateGroupActivity extends AppCompatActivity {
         }
 
     }
+
+    private Bitmap resizeBitmap(Bitmap bm, int newWidth, int maxHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) maxHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+    }
+
+
 }
 
 
