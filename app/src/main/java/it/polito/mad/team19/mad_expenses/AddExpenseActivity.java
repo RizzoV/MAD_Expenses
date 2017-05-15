@@ -48,8 +48,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -112,6 +114,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     String oldGroupId;
     String oldExpenseId;
     String oldExpenseVersionId;
+
+    CircularFillableLoaders imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -314,6 +318,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         setContentView(R.layout.progress_dialog_layout);
                         getWindow().setLayout(AppBarLayout.LayoutParams.MATCH_PARENT,
                                 AppBarLayout.LayoutParams.MATCH_PARENT);
+                       imageLoader = (CircularFillableLoaders) barProgressDialog.findViewById(R.id.circularFillableLoaders);
                     }
                 };
 
@@ -378,7 +383,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         if (mCurrentPhotoPath != null) {
             groupImagesRef = storageRef.child("images").child(groupId);
-            File imageToUpload = new File(mCurrentPhotoPath);
+            final File imageToUpload = new File(mCurrentPhotoPath);
             Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             fileBitmap.compress(Bitmap.CompressFormat.JPEG, 85, baos);
@@ -387,6 +392,18 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             mCurrentPhotoName = imageToUpload.getName();
             UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
             // Register observers to listen for when the download is done or if it fails
+
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (90.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    //System.out.println("Upload is " + progress + "% done");
+                    int currentprogress = (int) progress;
+
+                    imageLoader.setProgress(currentprogress);
+                }
+            });
+
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {

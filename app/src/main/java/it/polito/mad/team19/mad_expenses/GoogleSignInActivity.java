@@ -72,6 +72,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                 .requestEmail()
                 .build();
 
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
         mAuth = FirebaseAuth.getInstance();
