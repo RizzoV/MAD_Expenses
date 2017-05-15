@@ -2,12 +2,20 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.ArrayList;
 
@@ -67,11 +75,13 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
         TextView name;
         int position;
         FirebaseGroupMember current;
+        ImageView thumb;
 
 
         public MyViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.username_checkedtv);
+            thumb = (ImageView) itemView.findViewById(R.id.user_img_contacts_list);
             //LUDO: aggiunto metodo onItemClickListener
             itemView.setOnClickListener(this);
         }
@@ -99,6 +109,27 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
             this.name.setText(current.getName());
             this.current = current;
             this.position = position;
+            if(current.getImgUrl() != null)
+            {
+                //modo più semplice per caricare immagini e renderle tonde
+                Glide.with(context).load(current.getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(thumb) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+
+                        circularBitmapDrawable.setCircular(true);
+                        thumb.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
+            }
+            else
+            {
+                //se non ho l'immagine Glide non deve più occuparsene
+                Glide.clear(thumb);
+                thumb.setImageResource(R.mipmap.ic_user_noimg);
+            }
+
         }
 
 

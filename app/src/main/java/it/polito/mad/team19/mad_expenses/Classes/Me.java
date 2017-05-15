@@ -14,11 +14,13 @@ public class Me implements Parcelable {
     private String name;
     private Float amount;
     private Currency currency;
+    private String ImgUrl;
 
-    public Me(String name, Float amount, Currency currency) {
+    public Me(String name, Float amount, Currency currency, String ImgUrl) {
         this.name = name;
         this.amount = amount;
         this.currency = currency;
+        this.ImgUrl = ImgUrl;
     }
 
     public Currency getCurrency() {
@@ -32,6 +34,11 @@ public class Me implements Parcelable {
     public String getName() {
         return name;
     }
+
+    public String getImgUrl() {
+        return ImgUrl;
+    }
+
 
     public void setName(String name) {
         this.name = name;
@@ -65,11 +72,12 @@ public class Me implements Parcelable {
         dest.writeString(name);
         dest.writeFloat(amount);
         dest.writeString(currency.getCurrencyCode());
+        dest.writeString(ImgUrl);
     }
 
     public static final Parcelable.Creator<Me> CREATOR = new Parcelable.Creator<Me>() {
         public Me createFromParcel(Parcel in) {
-            return new Me(in.readString(), in.readFloat(), Currency.getInstance(in.readString()));
+            return new Me(in.readString(), in.readFloat(), Currency.getInstance(in.readString()),in.readString());
         }
 
         @Override

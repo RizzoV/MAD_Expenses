@@ -388,6 +388,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     addGroupRef = FirebaseDatabase.getInstance().getReference();
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("tipo").setValue(0);
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uName);
+                    if(mAuth.getCurrentUser().getPhotoUrl()!=null)
+                        addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("immagine").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
+
 
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("bilancio").setValue(0);
                     try {

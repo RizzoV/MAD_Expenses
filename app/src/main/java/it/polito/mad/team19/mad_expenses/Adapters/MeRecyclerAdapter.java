@@ -2,13 +2,20 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.ArrayList;
 
@@ -81,10 +88,28 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
                 amount.setTextColor(ContextCompat.getColor(context, R.color.textGreen));
             else
                 amount.setTextColor(ContextCompat.getColor(context, R.color.redMaterial));
-            if((position%2)==0)
-                this.image.setImageResource(R.drawable.man4);
+
+
+            if(current.getImgUrl() != null)
+            {
+                //modo più semplice per caricare immagini e renderle tonde
+                Glide.with(context).load(current.getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(image) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+
+                        circularBitmapDrawable.setCircular(true);
+                        image.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
+            }
             else
-                this.image.setImageResource(R.drawable.girl4);
+            {
+                //se non ho l'immagine Glide non deve più occuparsene
+                Glide.clear(image);
+                image.setImageResource(R.mipmap.ic_user_noimg);
+            }
 
             this.position = position;
             this.current = current;

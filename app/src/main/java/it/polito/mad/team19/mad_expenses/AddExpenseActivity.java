@@ -252,7 +252,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private void addListenerOnContributorsButton() {
         final Button contributorsButton = (Button) findViewById(R.id.contributors_button);
 
-        contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid()));
+        if(mAuth.getCurrentUser().getPhotoUrl()!=null)
+            contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getPhotoUrl().toString(), mAuth.getCurrentUser().getUid()));
+       else
+            contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid()));
+
         Log.d("Contributors", contributorsList.get(0).getName().toString());
 
 
@@ -426,6 +430,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
             for (FirebaseGroupMember member : excludedList) {
                 newExpenseRef.child("excluded").child(member.getUid()).setValue(member.getName());
+
             }
             for (FirebaseGroupMember member : contributorsList) {
                 newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());

@@ -1,10 +1,13 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,9 +16,13 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
@@ -47,6 +54,8 @@ public class MeActivity extends AppCompatActivity {
     ArrayList<Me> me = new ArrayList<>();
     ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<>();
 
+    ImageView my_thumb;
+
     NetworkChangeReceiver netChange;
     IntentFilter filter;
 
@@ -66,6 +75,8 @@ public class MeActivity extends AppCompatActivity {
         registerReceiver(netChange, filter);
 
         groupId = getIntent().getStringExtra("groupId");
+
+        my_thumb = (ImageView) findViewById(R.id.me_activity_thumb);
 
         credito_tv = (TextView) findViewById(R.id.credito_tv);
         debito_tv = (TextView) findViewById(R.id.debito_tv);
@@ -88,7 +99,21 @@ public class MeActivity extends AppCompatActivity {
         //Ludo: informazioni utente da fb
 
         mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser().getPhotoUrl()!=null)
+        {
+            Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(my_thumb) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(getResources(), resource);
 
+                    circularBitmapDrawable.setCircular(true);
+                    my_thumb.setImageDrawable(circularBitmapDrawable);
+                }
+            });
+        }
+        else
+            my_thumb.setImageDrawable(getResources().getDrawable(R.mipmap.ic_user_noimg));
         String uname = mAuth.getCurrentUser().getDisplayName();
         if (uname == null)
             uname = "User";
@@ -109,7 +134,10 @@ public class MeActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Log.d("MembriSnap", dataSnapshot.getValue().toString());
-                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                    if(child.child("immagine").hasChildren())
+                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
+                    else
+                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
                 }
 
                 getBalance();
@@ -155,6 +183,9 @@ public class MeActivity extends AppCompatActivity {
         }
 
         adapter.notifyDataSetChanged();
+
+        for(int i=0;i<me.size();i++)
+        Log.d("mebalance",me.get(i).getName().toString()+" "+me.get(i).getAmount().toString());
 
         //Ludo: grafico a torta
         PieChart pieChart = (PieChart) findViewById(R.id.chart);

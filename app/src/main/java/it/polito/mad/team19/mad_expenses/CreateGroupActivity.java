@@ -283,6 +283,8 @@ public class CreateGroupActivity extends AppCompatActivity {
         //mDatabase.child("gruppi").child(groupid).child("immagine").setValue(img);
         mDatabase.child("gruppi").child(groupid).child("membri").child(uid).child("tipo").setValue(1);
         mDatabase.child("gruppi").child(groupid).child("membri").child(uid).child("nome").setValue(uname);
+        if(mAuth.getCurrentUser().getPhotoUrl()!=null)
+            mDatabase.child("gruppi").child(groupid).child("membri").child(uid).child("immagine").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
         mDatabase.child("gruppi").child(groupid).child("nome").setValue(name);
         mDatabase.child("gruppi").child(groupid).child("tipo").setValue(type);
         mDatabase.child("gruppi").child(groupid).child("totale").setValue(0);

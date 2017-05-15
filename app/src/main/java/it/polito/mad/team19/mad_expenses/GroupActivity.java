@@ -112,6 +112,7 @@ public class GroupActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ProgressDialog barProgressDialog;
     private ArrayList<Me> balancesArrayTakenFromFragment = new ArrayList<>();
+    private int times=0;
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
@@ -444,7 +445,10 @@ public class GroupActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Log.d("MembriSnap", dataSnapshot.getValue().toString());
-                    groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                    if(child.child("immagine").exists())
+                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
+                    else
+                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
                 }
 
                 setBalance(expenseId, expenseTotal, expenseUuid, expenseUserName, contributors, excluded);
@@ -485,14 +489,27 @@ public class GroupActivity extends AppCompatActivity {
                         .child("debtors").child(groupMember.getUid());
                 debtorRef.child("riepilogo").child(contributor.getUid()).child("amount").setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
                 debtorRef.child("nome").setValue(groupMember.getName());
-                debtorRef.child("riepilogo").child(contributor.getUid()).child("nome").setValue(contributor.getName());
-
 
                 DatabaseReference creditorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
                         .child("contributors").child(contributor.getUid());
+
+                if(groupMember.getImgUrl()!=null) {
+                    debtorRef.child("immagine").setValue(groupMember.getImgUrl());
+                    creditorRef.child("riepilogo").child(groupMember.getUid()).child("immagine").setValue(groupMember.getImgUrl());
+                }
+
+                debtorRef.child("riepilogo").child(contributor.getUid()).child("nome").setValue(contributor.getName());
+
+
+
                 creditorRef.child("riepilogo").child(groupMember.getUid()).child("amount").setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
                 creditorRef.child("nome").setValue(contributor.getName());
                 creditorRef.child("riepilogo").child(groupMember.getUid()).child("nome").setValue(groupMember.getName());
+
+                if(contributor.getImgUrl()!=null) {
+                    creditorRef.child("immagine").setValue(contributor.getImgUrl());
+                    debtorRef.child("riepilogo").child(contributor.getUid()).child("immagine").setValue(contributor.getImgUrl());
+                }
             }
 
         }
@@ -532,6 +549,7 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     public void passBalancesArray(Collection<Me> balancesArray) {
+        balancesArrayTakenFromFragment.clear();
         for(Me b : balancesArray)
             balancesArrayTakenFromFragment.add(b);
     }
@@ -548,6 +566,8 @@ public class GroupActivity extends AppCompatActivity {
         private Activity mActivity;
 
         private HashMap<String, Me> balancesMap = new HashMap<>();
+        private int times = 0;
+        private boolean free = true;
 
         public ExpensesListFragment() {
             totalAmount = new Float(0);
@@ -695,17 +715,20 @@ public class GroupActivity extends AppCompatActivity {
                     totalAmount = (float) 0;
                     creditAmount = (float) 0;
                     debitAmount = (float) 0;
-                    balancesMap.clear();
                     expenses.clear();
+                    balancesMap.clear();
+
 
                     TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
                     TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
                     TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_total_amount_tv);
 
-                    if (dataSnapshot.hasChildren()) {
+
+                    if (dataSnapshot.hasChildren() && free) {
                         noExpenses_tv.setVisibility(View.GONE);
 
                         for (DataSnapshot expense : dataSnapshot.getChildren()) {
+
                             FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
                             firebaseExpense.setKey(expense.getKey());
                             expenses.add(new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey()));
@@ -720,13 +743,22 @@ public class GroupActivity extends AppCompatActivity {
                             if (meRef.exists()) {
                                 // Sono un contributor
                                 for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
-                                    if (balancesMap.containsKey(expenseBalance.getKey())) {
+
+                                    if (balancesMap.containsKey(expenseBalance.getKey().toString())) {
                                         if(expenseBalance.child("amount").exists())
                                             balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
-                                    } else {
-                                        if(expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
-                                            Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
-                                            balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                    } else
+                                        {
+                                            Log.d("balance","not exist key"+expenseBalance.getKey());
+                                            if(expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
+                                            Me newDebtor;
+
+                                                if(expenseBalance.child("immagine").exists())
+                                                newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),expenseBalance.child("immagine").getValue().toString());
+                                            else
+                                                newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),null);
+
+                                            balancesMap.put(expenseBalance.getKey().toString(), newDebtor);
                                         }
                                     }
                                 }
@@ -735,19 +767,26 @@ public class GroupActivity extends AppCompatActivity {
                                 if (meRef.exists()) {
                                     // Sono un debtor
                                     for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
-                                        if (balancesMap.containsKey(expenseBalance.getKey())) {
+                                        if (balancesMap.containsKey(expenseBalance.getKey().toString())) {
+
                                             if(expenseBalance.child("amount").exists())
                                                 balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
                                         } else {
                                             if(expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
-                                                Me newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"));
-                                                balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                                Me newDebtor;
+                                                if(expenseBalance.child("immagine").exists())
+                                                    newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),expenseBalance.child("immagine").getValue().toString());
+                                               else
+                                                    newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),null);
+                                                balancesMap.put(expenseBalance.getKey().toString(), newDebtor);
+
                                             }
                                         }
                                     }
                                 }
                             }
                         }
+
 
                         for(Me me : balancesMap.values()) {
                             float currentAmount = me.getAmount();
