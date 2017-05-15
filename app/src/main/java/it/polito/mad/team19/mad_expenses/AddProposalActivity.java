@@ -45,6 +45,7 @@ import java.util.UUID;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 
 /**
  * Created by Valentino on 04/04/2017.

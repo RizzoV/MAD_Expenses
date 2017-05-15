@@ -4,7 +4,7 @@ xmlns:tools="http://schemas.android.com/tools"
 tools:context="it.polito.mad.team19.mad_expenses.GroupActivity">
 
     <item
-        android:id="@+id/modify_group_name"
+        android:id="@+id/modify_group_details"
         android:icon="@drawable/ic_modify_expense"
         app:showAsAction="ifRoom"
         android:title="@string/modify_expense"

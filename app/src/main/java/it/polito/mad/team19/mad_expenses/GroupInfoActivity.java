@@ -1,8 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
 import android.content.DialogInterface;
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -11,9 +9,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -26,20 +21,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,12 +39,12 @@ import java.util.ArrayList;
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.Dialogs.DeleteMemberDialog;
+import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
+import it.polito.mad.team19.mad_expenses.Dialogs.ModifyGroupNameOrImageDialog;
 
-import static android.R.attr.data;
-import static android.R.attr.type;
-import static it.polito.mad.team19.mad_expenses.R.string.email;
-
-public class GroupInfoActivity extends AppCompatActivity implements DeleteMemberDialog.NoticeDialogListener {
+public class GroupInfoActivity extends AppCompatActivity implements DeleteMemberDialog.NoticeDialogListener,
+        ModifyGroupNameOrImageDialog.NoticeDialogListener, GalleryOrCameraDialog.NoticeDialogListener {
 
     private static final int GROUP_QUITTED = 99;
     ImageView image;
@@ -219,76 +207,15 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         int id = item.getItemId();
         final String groupId = getIntent().getStringExtra("groupId");
         final String old_string = collapsingToolbar.getTitle().toString();
+
+
         switch (id) {
-            case R.id.modify_group_name: {
-                LayoutInflater inflater = getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.dialogboxlayout_editaccount, null);
-                final EditText new_string;
+            case R.id.modify_group_details: {
 
-                new_string = (EditText) dialogView.findViewById(R.id.new_string);
+                DialogFragment newFragment = new ModifyGroupNameOrImageDialog();
+                newFragment.show(getSupportFragmentManager(), "modifyGroupDialog");
 
-                new_string.setText(old_string);
 
-                final AlertDialog alertDialog = new AlertDialog.Builder(this)
-                        .setView(dialogView)
-                        .setTitle(R.string.modify_group_name)
-                        .setPositiveButton(getString(R.string.edit), null)
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .create();
-
-                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(final DialogInterface dialog) {
-                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
-                        buttonPositive.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (new_string.getText().toString().trim().isEmpty()) {
-                                    new_string.setError(getString(R.string.mandatory_field));
-                                } else {
-                                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference groupNameRef = database.getReference()
-                                            .child("gruppi").child(groupId).child("nome");
-                                    groupNameRef.setValue(new_string.getText().toString());
-
-                                    //TODO: cambiare il nome in tutti gli utenti
-                                    DatabaseReference userGroupNameRef = database.getReference().child("gruppi").child(groupId)
-                                            .child("membri");
-                                    userGroupNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                                database.getReference().child("utenti").child(data.getKey()).child("gruppi")
-                                                        .child(groupId).child("nome").setValue(new_string.getText().toString());
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                    collapsingToolbar.setTitle(new_string.getText().toString());
-                                    Intent intent = new Intent();
-                                    intent.putExtra("newGroupName",new_string.getText().toString());
-                                    setResult(RESULT_OK,intent);
-                                    dialog.dismiss();
-
-                                }
-                            }
-                        });
-
-                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
-                        buttonNegative.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dialog.cancel();
-                            }
-                        });
-
-                    }
-                });
-                alertDialog.show();
             }
 
             default:
@@ -296,6 +223,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
 
     private void setListenerLeaveGroup(final String groupId)
@@ -454,6 +382,101 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
             netChange = null;
             Log.e("Receiver", "unregister on pause");
         }
+
+    }
+
+    @Override
+    public void onModifyNameClick(DialogFragment dialog) {
+
+        final String groupId = getIntent().getStringExtra("groupId");
+        final String old_string = collapsingToolbar.getTitle().toString();
+
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialogboxlayout_editaccount, null);
+
+        final EditText new_string;
+
+        new_string = (EditText) dialogView.findViewById(R.id.new_string);
+
+        new_string.setText(old_string);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setTitle(R.string.modify_group_name)
+                .setPositiveButton(getString(R.string.edit), null)
+                .setNegativeButton(getString(R.string.cancel), null)
+                .create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                buttonPositive.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (new_string.getText().toString().trim().isEmpty()) {
+                            new_string.setError(getString(R.string.mandatory_field));
+                        } else {
+                            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference groupNameRef = database.getReference()
+                                    .child("gruppi").child(groupId).child("nome");
+                            groupNameRef.setValue(new_string.getText().toString());
+
+                            //TODO: cambiare il nome in tutti gli utenti
+                            DatabaseReference userGroupNameRef = database.getReference().child("gruppi").child(groupId)
+                                    .child("membri");
+                            userGroupNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                        database.getReference().child("utenti").child(data.getKey()).child("gruppi")
+                                                .child(groupId).child("nome").setValue(new_string.getText().toString());
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                            collapsingToolbar.setTitle(new_string.getText().toString());
+                            Intent intent = new Intent();
+                            intent.putExtra("newGroupName",new_string.getText().toString());
+                            setResult(RESULT_OK,intent);
+                            dialog.dismiss();
+
+                        }
+                    }
+                });
+
+                Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                buttonNegative.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.cancel();
+                    }
+                });
+
+            }
+        });
+        alertDialog.show();
+
+    }
+
+    @Override
+    public void onModifyImageClick(DialogFragment dialog) {
+        DialogFragment newFragment = new GalleryOrCameraDialog();
+        newFragment.show(getSupportFragmentManager(), "imageDialog");
+    }
+
+    @Override
+    public void onDialogCameraClick(DialogFragment dialog) {
+
+
+    }
+
+    @Override
+    public void onDialogGalleryClick(DialogFragment dialog) {
 
     }
 }
