@@ -36,8 +36,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.ByteArrayOutputStream;
@@ -73,6 +75,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     IntentFilter filter;
 
 
+    CircularFillableLoaders imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +168,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                             getWindow().setLayout(AppBarLayout.LayoutParams.MATCH_PARENT,
                                     AppBarLayout.LayoutParams.MATCH_PARENT);
                             TextView message = (TextView)barProgressDialog.findViewById(R.id.tv_progressmsg);
+                            imageLoader = (CircularFillableLoaders) barProgressDialog.findViewById(R.id.circularFillableLoaders);
                             message.setText(getString(R.string.progressDialogTextAddGroup));
                         }
                     };
@@ -308,6 +312,17 @@ public class CreateGroupActivity extends AppCompatActivity {
             byte[] datas = baos.toByteArray();
             final String mCurrentPhotoName = imageToUpload.getName();
             UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
+
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (90.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    //System.out.println("Upload is " + progress + "% done");
+                    int currentprogress = (int) progress;
+
+                    imageLoader.setProgress(currentprogress);
+                }
+            });
 
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
