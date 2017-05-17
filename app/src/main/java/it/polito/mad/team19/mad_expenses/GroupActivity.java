@@ -402,7 +402,7 @@ public class GroupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_NEW_EXPENSE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_NEW_EXPENSE  && resultCode == RESULT_OK) {
             // Gestione calcolo debiti e crediti dovuti alla nuova spesa
 
             Log.d("ExpenseIDActivity", data.getStringExtra("expenseId").toString());
@@ -619,6 +619,7 @@ public class GroupActivity extends AppCompatActivity {
                     intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
                     intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                     intent.putExtra("ExpenseId", clicked.getFirebaseId());
+                    intent.putExtra("currentPersonalBalance", String.valueOf(creditAmount - debitAmount));
                     startActivity(intent);
                 }
             });

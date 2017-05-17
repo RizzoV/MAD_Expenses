@@ -247,6 +247,7 @@ public class CreateGroupActivity extends AppCompatActivity {
             try {
                 currentGroupBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputUri);
                 imageView.setImageBitmap(getCircleBitmap(currentGroupBitmap));
+                findViewById(R.id.group_people_img).setVisibility(View.GONE);
             } catch (IOException e) {
                 e.printStackTrace();
             }

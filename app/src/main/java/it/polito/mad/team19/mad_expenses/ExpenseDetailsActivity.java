@@ -50,6 +50,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ImageView expense_img;
     private LinearLayout expense_details_listview;
     private String expenseAuthor;
+    private String currentPersonalBalance;
     private String imgUrl;
     private String name;
     private String desc;
@@ -62,7 +63,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
     private ImageButton set_photo_button;
     private TextView set_photo_text_view;
-    //static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
 
     private AlertDialog alertDialog = null;
 
@@ -90,6 +90,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         cost = getIntent().getStringExtra("ExpenseCost");
         groupId = getIntent().getStringExtra("groupId");
         expenseId = getIntent().getStringExtra("ExpenseId");
+        currentPersonalBalance = getIntent().getStringExtra("currentPersonalBalance");
+        Log.e("DEbugbgbugbugbg", currentPersonalBalance);
 
         expense_name = (TextView) findViewById(R.id.expense_name);
         expense_desc = (TextView) findViewById(R.id.expense_description);
@@ -152,8 +154,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                     excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(), null, currentExcluded.getKey()));
 
 
-                Log.e("expenseDetailsList", "dimensione finale" + expenseDetailsList.size());
-
                 // Vale: dialog per la modifica dell'importo dovuto
                 for (int i = 0; i < edAdapter.getCount(); i++) {
                     final View itemView = edAdapter.getView(i, null, expense_details_listview);
@@ -193,9 +193,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                             child("debtors").child(expenseDebtorId).child("riepilogo").child(expenseContributorId).child("amount");
                                                     DatabaseReference creditAmountRef = firebase.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).
                                                             child("contributors").child(expenseContributorId).child("riepilogo").child(expenseDebtorId).child("amount");
+                                                    DatabaseReference balanceAmaount = firebase.getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
+                                                            .child("gruppi").child(groupId).child("bilancio");
 
                                                     String chosenAmount = debtEditText.getText().toString().trim().replace(",", ".");
 
+                                                    balanceAmaount.setValue(String.valueOf(Float.valueOf(currentPersonalBalance)
+                                                            - Float.valueOf(expenseDebtCurrentAmount.replace(",", ".")) + Float.valueOf(chosenAmount)));
                                                     debtAmountRef.setValue("-" + chosenAmount);
                                                     creditAmountRef.setValue(chosenAmount);
 
@@ -358,6 +362,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MODIFY_CODE && resultCode == RESULT_OK) {
+
             finish();
         }
     }
