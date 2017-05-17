@@ -31,6 +31,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -304,7 +305,7 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_group, menu);
@@ -314,47 +315,125 @@ public class GroupActivity extends AppCompatActivity {
         MenuItemCompat.setActionView(item, R.layout.notifications_ab_layout);
         RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
 
+        // Set up a listener which is able to get the number of notifications for the user in this group
+        final TextView tv = (TextView) notifCount.findViewById(R.id.counter);
+        final ImageView im = (ImageView) notifCount.findViewById(R.id.notifications_icon_action);
+
         final ArrayList<Notifications> notificationsList = new ArrayList<Notifications>();
-        for (int i = 0; i < 5; i++) {
-            notificationsList.add(new Notifications("Bbbbolz ha creato una nuova spesa", "18 Apr"));
-        }
-
-        final NotificationsAdapter adapter = new NotificationsAdapter(this, notificationsList);
-        notificationsListView.setAdapter(adapter);
+        final NotificationsAdapter[] adapter = new NotificationsAdapter[1];
 
 
-        notifCount.findViewById(R.id.notifications_icon_action).setOnClickListener(new View.OnClickListener() {
+        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("gruppi").child(groupId).child("notifiche");
+        myNotRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                Log.d("Clicked", "click");
-                //barProgressDialog.show();
-                notificationsDrawer.openDrawer(Gravity.RIGHT);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String mynot = dataSnapshot.getValue().toString();
+                Log.d("MyNot",mynot);
+                //Prendo il numero di notifiche
+                final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+
+
+                ValueEventListener getGroupAndNotifcations = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        int notNum = (int) dataSnapshot.getChildrenCount()-1;
+                        Log.d("MyNotNum",notNum+"");
+
+                        if(notNum>0)
+                        {
+                            tv.setText((notNum)+"");
+                            tv.setVisibility(View.VISIBLE);
+                        }
+                        else
+                            tv.setVisibility(View.INVISIBLE);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                };
+
+                adapter[0] = new NotificationsAdapter(GroupActivity.this, notificationsList,mynot);
+                notificationsListView.setAdapter(adapter[0]);
+
+                if(mynot!=null && !mynot.equals(0)) {
+                    notificationRef.orderByKey().startAt(mynot).addListenerForSingleValueEvent(getGroupAndNotifcations);
+                }
+
+                else
+                    notificationRef.addListenerForSingleValueEvent(getGroupAndNotifcations);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
+        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        notificationRef.orderByKey().addValueEventListener(new ValueEventListener() {
 
-        // Set up a listener which is able to get the number of notifications for the user in this group
-        final TextView tv = (TextView) notifCount.findViewById(R.id.counter);
-        ImageView im = (ImageView) notifCount.findViewById(R.id.notifications_icon_action);
-        DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child("gruppi").child(groupId).child("notifiche");
-        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int notificationsCount = dataSnapshot.getValue(Integer.class);
-                if (notificationsCount > 0) {
-                    tv.setText(String.valueOf(notificationsCount));
-                    tv.setVisibility(View.VISIBLE);
-                } else {
-                    tv.setVisibility(View.INVISIBLE);
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChildren())
+                {
+                    int i = 0;
+                    //aggiorno lista notifiche
+                    for(final DataSnapshot current : dataSnapshot.getChildren()) {
+
+
+
+                        if(i==dataSnapshot.getChildrenCount()-1)
+                        {
+                            //imposto ultima notifica letta quando apro drawer
+                            final DatabaseReference notificationRefUser = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("gruppi").child(groupId).child("notifiche");
+                            tv.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("Clicked", "click");
+                                    notificationsDrawer.openDrawer(Gravity.RIGHT);
+                                    notificationRefUser.setValue(current.getKey());
+                                }
+                            });
+
+                            im.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("Clicked", "click");
+                                    notificationsDrawer.openDrawer(Gravity.RIGHT);
+                                    notificationRefUser.setValue(current.getKey());
+                                    //aggiungere listener per aggionare ultima notifica
+
+                                }
+                            });
+                        }
+
+                        String desc;
+                        if (current.child("activity").getValue().toString().equals("ExpenseDetailsActivity"));
+                            desc = getResources().getString(R.string.addexpense);
+
+                        Notifications currentNot = current.getValue(Notifications.class);
+                        Log.d("CurrentNot",currentNot.toString());
+                        notificationsList.add(new Notifications(currentNot.getActivity(),currentNot.getData(),currentNot.getId(),currentNot.getUid(),currentNot.getUname(),current.getKey()));
+
+                        adapter[0].notifyDataSetChanged();
+
+                        i++;
+
+                    }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Notifications listener - The read failed: " + databaseError.getCode());
+
             }
         });
+
+
         return true;
     }
 

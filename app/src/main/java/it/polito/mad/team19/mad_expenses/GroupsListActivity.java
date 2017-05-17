@@ -43,7 +43,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOError;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Group;
@@ -75,6 +77,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     Snackbar sb;
     IntentFilter filter;
     private BroadcastReceiver connectionReceiver;
+    HashMap<String,Integer> listenerNot = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +150,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
 
                 Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
+                intent.putExtra("groupNotCount", ((Group) parent.getItemAtPosition(position)).getNotifyCnt().toString());
                 intent.putExtra("groupName", ((Group) parent.getItemAtPosition(position)).getName());
                 intent.putExtra("groupId", ((Group) parent.getItemAtPosition(position)).getGroupId());
                 intent.putExtra("groupImage", ((Group) parent.getItemAtPosition(position)).getImage());
@@ -221,8 +225,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     }
 
 
-                    groups.clear();
-                    ga.notifyDataSetChanged();
+                    //groups.clear();
+                    //ga.notifyDataSetChanged();
                     Log.d(TAG, "onAuthStateChanged:signed_outGroup");
                     firstTimeCheck = true;
 
@@ -411,35 +415,98 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         });
     }
 
-    void updateList(String uid)
+    void updateList(final String uid)
     {
-        Log.e(LOG_TAG, "updateList");
         progressBar.setVisibility(View.VISIBLE);
         mAuth = FirebaseAuth.getInstance();
         groups.clear();
+        ga.notifyDataSetInvalidated();
         ga.notifyDataSetChanged();
+        Log.d("updateList", "updateing");
         mDatabase = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
-        mDatabase.keepSynced(true);
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-
-                Log.d("ListenerForSingle", "messaggio che vuoi");
 
                 if (snapshot.hasChildren()) {
                     progressBar.setVisibility(View.GONE);
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.VISIBLE);
-                    for (DataSnapshot child : snapshot.getChildren()) {
+                    for (final DataSnapshot child : snapshot.getChildren())
+                    {
                         Log.d("Invite", child.toString());
 
-                        if (child.hasChild("immagine"))
-                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat(child.child("bilancio").getValue().toString()), Integer.parseInt(child.child("notifiche").getValue().toString()), child.child("immagine").getValue().toString(), child.getKey()));
+                        final String groupName = child.child("nome").getValue().toString();
+                        final Float bilancio = Float.parseFloat(child.child("bilancio").getValue().toString());
+                        final String immagine = child.child("immagine").getValue().toString();
+                        final String groupId = child.getKey();
+                        String mynot = child.child("notifiche").getValue().toString();
+
+                        //Prendo il numero di notifiche
+                        final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(child.getKey());
+
+
+                        ValueEventListener getGroupAndNotifcations = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                try
+                                {
+                                    int notNum = (int) dataSnapshot.getChildrenCount();
+
+
+                                    if (immagine!=null)
+                                        groups.add(new Group(groupName,bilancio,notNum-1,immagine,groupId));
+                                    else
+                                        groups.add(new Group(groupName,bilancio,notNum-1,null,groupId));
+
+                                    if(listenerNot.get(groupId)==null)
+                                    {
+                                        //aggiungo il listener per aggiungerle mentre cambiano
+                                        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications");
+                                        notificationRef.addValueEventListener(new ValueEventListener() {
+
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                int notificationsCount = (int) dataSnapshot.child(groupId).getChildrenCount();
+                                                if(listenerNot.get(groupId)!=null)
+
+                                                    if(listenerNot.get(groupId)!=null && listenerNot.get(groupId).intValue()!=notificationsCount)
+                                                        updateList(uid);
+
+                                                listenerNot.put(groupId,notificationsCount);
+
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
+
+                                    Log.d("Group",groups.toString());
+                                    ga.notifyDataSetChanged();
+                                }catch (IOError e)
+                                {
+                                    Log.e("ErrorUpdateList",e.toString());
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        };
+
+                        //inizia dall'ultima notifica che ho letto
+                        if(mynot!=null && !mynot.equals(0))
+                            notificationRef.orderByKey().startAt(mynot).addListenerForSingleValueEvent(getGroupAndNotifcations);
                         else
-                            groups.add(new Group(child.child("nome").getValue().toString(), Float.parseFloat(child.child("bilancio").getValue().toString()), Integer.parseInt(child.child("notifiche").getValue().toString()), null, child.getKey()));
+                            notificationRef.addListenerForSingleValueEvent(getGroupAndNotifcations);
+
                     }
-                    ga.notifyDataSetChanged();
 
                 } else {
                     progressBar.setVisibility(View.GONE);

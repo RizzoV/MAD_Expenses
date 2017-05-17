@@ -114,8 +114,14 @@ public class GroupsAdapter extends BaseAdapter {
             viewHolder.balance.setText("Non hai nessun debito/credito");
 
         /* Manage notifications count */
-        if(group.getNotifyCnt()>0)
+
+        Log.d("adapter",group.getGroupId()+" "+group.getNotifyCnt()+"");
+
+        if(group.getNotifyCnt()>0) {
+            viewHolder.notifications.setVisibility(View.VISIBLE);
+            viewHolder.notification_back.setVisibility(View.VISIBLE);
             viewHolder.notifications.setText(group.getNotifyCnt().toString());
+        }
         else {
             viewHolder.notifications.setVisibility(View.INVISIBLE);
             viewHolder.notification_back.setVisibility(View.INVISIBLE);

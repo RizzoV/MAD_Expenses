@@ -60,10 +60,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 
 /**
@@ -468,6 +471,29 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     public void finishTasks() {
+
+        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        String notificationId = notificationRef.push().getKey();
+
+        String username = mAuth.getCurrentUser().getDisplayName();
+
+        if(username==null)
+            username="User";
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        String formattedDate = df.format(c.getTime());
+
+        Map<String, Notifications> notification = new HashMap<String, Notifications>();
+        notification.put(notificationId, new Notifications("ExpenseDetailsActivity",formattedDate.toString(),idExpense,username.toString(),usrId));
+
+        notificationRef.setValue(notification);
+
+        //da mettere quando si apre la barra delle notifiche
+        //DatabaseReference notificationRef2 = FirebaseDatabase.getInstance().getReference().child("utenti").child(usrId).child("gruppi").child(groupId).child("notifiche");
+        //notificationRef2.setValue(notificationId);
+
+
         getIntent().putExtra("expenseId", idExpense);
         getIntent().putExtra("expenseTotal", expenseTotal + "");
         getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid());
