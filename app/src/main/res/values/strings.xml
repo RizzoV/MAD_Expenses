@@ -108,6 +108,7 @@
     <string name="menu_up_as_back">up_as_back</string>
     <string name="modify_group_name">Modify group name</string>
     <string name="modify_debt_value">Modify debt value</string>
+    <string name="cannot_modify_non_creditor">You cannot modify the value of a debt if you are not the creditor</string>
 
     <!-- Group details -->
     <string name="confirmLeaveGroupTitle">Confirm group abandon</string>

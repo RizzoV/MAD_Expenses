@@ -68,14 +68,14 @@
                             android:textSize="11sp"
                             android:layout_centerInParent="true"/>
 
-                        <ImageButton
+                        <!-- <ImageButton
                             android:id="@+id/add_image_btn"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:background="@mipmap/ic_add_img"
                             android:visibility="visible"
                             android:layout_alignRight="@id/expense_photo"
-                            android:layout_alignBottom="@id/expense_photo"/>
+                            android:layout_alignBottom="@id/expense_photo"/> -->
                         <!-- da mostrare al proprietario della spesa -->
                     </RelativeLayout>
 

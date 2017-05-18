@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -136,13 +137,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                     Log.d("Contributor", contributor.toString());
 
                     String contributor_img = null;
-                    if(contributor.child("immagine").exists())
+                    if (contributor.child("immagine").exists())
                         contributor_img = contributor.child("immagine").getValue().toString();
 
                     for (DataSnapshot debtor : contributor.child("riepilogo").getChildren()) {
 
                         String debtor_img = null;
-                        if(debtor.child("immagine").exists())
+                        if (debtor.child("immagine").exists())
                             debtor_img = debtor.child("immagine").getValue().toString();
 
                         expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img));
@@ -161,11 +162,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                     final String expenseContributorId = ((ExpenseDetail) edAdapter.getItem(i)).getCreditorId();
                     final String expenseDebtorId = ((ExpenseDetail) edAdapter.getItem(i)).getDebtorId();
                     final String expenseDebtCurrentAmount = ((ExpenseDetail) edAdapter.getItem(i)).getAmount();
-                    if(expenseContributorId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
-                    {
-                        itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                    itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(expenseContributorId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                 View dialogView = getLayoutInflater().inflate(R.layout.dialogboxlayout_edit_debit, null);
                                 final EditText debtEditText = (EditText) dialogView.findViewById(R.id.debt_edit_text);
                                 debtEditText.setText(expenseDebtCurrentAmount);
@@ -186,8 +186,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                             public void onClick(View view) {
                                                 if (debtEditText.getText().toString().trim().isEmpty()) {
                                                     debtEditText.setError(getString(R.string.mandatory_field));
-                                                }
-                                                else if (!debtEditText.getText().toString().trim().matches(AddExpenseActivity.COST_REGEX)) {
+                                                } else if (!debtEditText.getText().toString().trim().matches(AddExpenseActivity.COST_REGEX)) {
                                                     debtEditText.setError(getString(R.string.invalid_cost_field));
                                                 } else {
                                                     DatabaseReference debtAmountRef = firebase.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).
@@ -207,7 +206,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                     ((TextView) itemView.findViewById(R.id.debt_amount)).setText(
                                                             String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
 
-                                                    if(Float.valueOf(chosenAmount) > 0)
+                                                    if (Float.valueOf(chosenAmount) > 0)
                                                         itemView.findViewById(R.id.debt_amount).setBackground(ContextCompat.getDrawable(ExpenseDetailsActivity.this, R.drawable.rounded_corners_red));
                                                     else
                                                         itemView.findViewById(R.id.debt_amount).setBackground(ContextCompat.getDrawable(ExpenseDetailsActivity.this, R.drawable.rounded_corners_green));
@@ -231,9 +230,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                 // Apertura automatica della tastiera
                                 alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                                 alertDialog.show();
+
+                            } else {
+                                Snackbar.make(findViewById(android.R.id.content), R.string.cannot_modify_non_creditor, Snackbar.LENGTH_LONG).show();
                             }
-                        });
-                    }
+                        }
+                    });
+
                     expense_details_listview.addView(itemView);
                 }
             }

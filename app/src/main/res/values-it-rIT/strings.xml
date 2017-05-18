@@ -106,6 +106,7 @@
     <string name="delete_expense">Cancella spesa</string>
     <string name="menu_up_as_back">sopra_indietro</string>
     <string name="modify_debt_value">Modifica il valore del debito</string>
+    <string name="cannot_modify_non_creditor">Non puoi modificare il valore di un debito se non ne sei il creditore</string>
 
     <!-- Group details -->
     <string name="confirmLeaveGroupTitle">Conferma abbandono gruppo</string>
