@@ -12,6 +12,7 @@
 
 
     <LinearLayout
+        android:id="@+id/activity_me_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -162,10 +163,7 @@
                 android:id="@+id/fromto_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_below="@+id/debits_and_credits_tv" />
-
-
         </RelativeLayout>
     </LinearLayout>
 </ScrollView>
