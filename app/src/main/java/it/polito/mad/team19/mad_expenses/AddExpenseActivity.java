@@ -273,7 +273,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         Log.d("Contributors", contributorsList.get(0).getName().toString());
 
-
         contributorsButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -309,8 +308,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         final String TAG = "firebaseAuth";
 
-        FloatingActionButton doneBtn = (FloatingActionButton) findViewById(R.id.new_expense_done_btn);
-        doneBtn.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton doneFab = (FloatingActionButton) findViewById(R.id.new_expense_done_btn);
+        doneFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

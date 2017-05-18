@@ -1,13 +1,18 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +21,11 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -51,7 +60,7 @@ public class MeActivity extends AppCompatActivity {
     private String groupId;
     TextView credito_tv;
     TextView debito_tv;
-    ArrayList<Me> me = new ArrayList<>();
+    ArrayList<Me> otherMembersList = new ArrayList<>();
     ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<>();
 
     ImageView my_thumb;
@@ -99,8 +108,7 @@ public class MeActivity extends AppCompatActivity {
         //Ludo: informazioni utente da fb
 
         mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser().getPhotoUrl()!=null)
-        {
+        if (mAuth.getCurrentUser().getPhotoUrl() != null) {
             Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(my_thumb) {
                 @Override
                 protected void setResource(Bitmap resource) {
@@ -111,8 +119,7 @@ public class MeActivity extends AppCompatActivity {
                     my_thumb.setImageDrawable(circularBitmapDrawable);
                 }
             });
-        }
-        else
+        } else
             my_thumb.setImageDrawable(getResources().getDrawable(R.mipmap.ic_user_noimg));
         String uname = mAuth.getCurrentUser().getDisplayName();
         if (uname == null)
@@ -134,7 +141,7 @@ public class MeActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Log.d("MembriSnap", dataSnapshot.getValue().toString());
-                    if(child.child("immagine").hasChildren())
+                    if (child.child("immagine").hasChildren())
                         groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
                     else
                         groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
@@ -145,7 +152,7 @@ public class MeActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("MeActivity", "Unable to get the group memebers");
             }
         });
     }
@@ -153,7 +160,7 @@ public class MeActivity extends AppCompatActivity {
     private void getBalance() {
 
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.fromto_rv);
-        final MeRecyclerAdapter adapter = new MeRecyclerAdapter(this, me);
+        final MeRecyclerAdapter adapter = new MeRecyclerAdapter(this, otherMembersList);
         mRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(this);
@@ -169,13 +176,13 @@ public class MeActivity extends AppCompatActivity {
 
         ArrayList<Me> balancesArray = getIntent().getBundleExtra("balancesBundle").getParcelableArrayList("balancesArray");
 
-        if(balancesArray == null) {
+        if (balancesArray == null) {
             Log.e("MeActivity", "balancesArray è NULL");
             return;
         }
 
         for (Me otherMember : balancesArray) {
-            me.add(otherMember);
+            otherMembersList.add(otherMember);
             if (otherMember.getAmount() > 0)
                 credito += otherMember.getAmount();
             else
@@ -184,8 +191,77 @@ public class MeActivity extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
 
-        for(int i=0;i<me.size();i++)
-        Log.d("mebalance",me.get(i).getName().toString()+" "+me.get(i).getAmount().toString());
+        adapter.setOnItemClickListener(new MeRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+                final Me balance = adapter.getItemAtPosition(position);
+                final String otherId = balance.getId();
+
+                if(balance.getAmount() >= 0 ) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(MeActivity.this)
+                            .setTitle(R.string.confirmDebtExtinctionTitle)
+                            .setMessage(R.string.confirmDebtExtinction)
+                            .setPositiveButton(getString(R.string.yes), null)
+                            .setNegativeButton(getString(R.string.no), null)
+                            .create();
+
+                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(final DialogInterface dialog) {
+                            Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                            final String userId = mAuth.getCurrentUser().getUid();
+                            buttonPositive.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    final DatabaseReference expensesRef = FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId)
+                                            .child("expenses");
+                                    expensesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            for (DataSnapshot expense : dataSnapshot.getChildren()) {
+                                                if (expense.child("contributors").child(userId)
+                                                        .child("riepilogo").child(otherId).exists()) {
+                                                    expense.child("contributors").child(userId).child("riepilogo").child(otherId).child("amount").getRef().setValue("0");
+                                                    expense.child("debtors").child(otherId).child("riepilogo").child(userId).child("amount").getRef().setValue("0");
+                                                } else if (expense.child("contributors").child(otherId)
+                                                        .child("riepilogo").child(userId).exists()) {
+                                                    expense.child("contributors").child(otherId).child("riepilogo").child(userId).child("amount").getRef().setValue("0");
+                                                    expense.child("debtors").child(userId).child("riepilogo").child(otherId).child("amount").getRef().setValue("0");
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            Log.e("MeActivity", "Unable to extinguish the debt");
+                                        }
+                                    });
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                            buttonNegative.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                        }
+                    });
+                    alertDialog.show();
+                }
+                else {
+                    Snackbar.make(findViewById(android.R.id.content), R.string.cannotExtinguish, Snackbar.LENGTH_LONG).show();
+                }
+            }
+        });
+
+
+        for (int i = 0; i < otherMembersList.size(); i++)
+            Log.d("meBalance", otherMembersList.get(i).getName().toString() + " " + otherMembersList.get(i).getAmount().toString());
 
         //Ludo: grafico a torta
         PieChart pieChart = (PieChart) findViewById(R.id.chart);
@@ -205,10 +281,7 @@ public class MeActivity extends AppCompatActivity {
         PieDataSet set = new PieDataSet(entries, "Debito/Credito");
 
         if (debito != 0 && credito != 0)
-            set.setColors(new int[] {
-                            R.color.redMaterial, R.color.textGreen
-            },
-           getApplicationContext());
+            set.setColors(new int[]{ R.color.redMaterial, R.color.textGreen }, getApplicationContext());
         else {
             if (debito != 0)
                 set.setColors(new int[]{R.color.redMaterial}, getApplicationContext());

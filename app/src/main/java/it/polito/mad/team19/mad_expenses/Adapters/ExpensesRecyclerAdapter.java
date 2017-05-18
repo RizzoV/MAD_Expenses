@@ -60,7 +60,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
     }
 
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView image;
         TextView name;
@@ -82,9 +82,9 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(context, TopicActivity.class);
-                    i.putExtra("topicType","proposals");
-                    i.putExtra("topicId","xxxxxxxx");
-                    i.putExtra("topicName",current.getName());
+                    i.putExtra("topicType", "proposals");
+                    i.putExtra("topicId", "xxxxxxxx");
+                    i.putExtra("topicName", current.getName());
                     context.startActivity(i);
                 }
             });
@@ -102,7 +102,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             }
         }
 
-        public void setData (Expense current, int position) {
+        public void setData(Expense current, int position) {
             this.name.setText(current.getName());
             this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost()) + " " + Currency.getInstance("EUR").getSymbol());
             this.image.setImageResource(R.drawable.expenses_icon);
@@ -110,16 +110,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             this.current = current;
             this.description.setText(current.getDescritpion());
         }
-
-        /*@Override
-        public boolean onLongClick(View v) {
-            if (mItemLongClickListener != null) {
-                mItemLongClickListener.onItemLongClick(v,position);
-            }
-            return true;
-        }*/
     }
-    //LUDO: aggiunto metodo onItemClickListener
 
 
     public interface OnItemClickListener {

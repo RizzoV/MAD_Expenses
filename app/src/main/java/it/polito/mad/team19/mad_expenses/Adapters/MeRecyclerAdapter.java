@@ -26,44 +26,43 @@ import it.polito.mad.team19.mad_expenses.R;
  * Created by ikkoyeah on 31/03/17.
  */
 
-public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.MyViewHolder>
-{
+public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.MyViewHolder> {
 
-    ArrayList<Me> me;
-    Activity context;
+    private ArrayList<Me> me;
+    private Activity context;
     private LayoutInflater mInflater;
+    private OnItemClickListener mItemClickListener;
 
-    public MeRecyclerAdapter(Context context, ArrayList<Me> me)
-    {
+    public MeRecyclerAdapter(Context context, ArrayList<Me> me) {
         this.me = me;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(context);
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.me_list_fromto_row, parent, false);
         MyViewHolder holder = new MeRecyclerAdapter.MyViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position)
-    {
+    public void onBindViewHolder(MyViewHolder holder, int position) {
         Me currentObj = me.get(position);
-        holder.setData(currentObj,position);
+        holder.setData(currentObj, position);
+    }
+
+    public Me getItemAtPosition(int position) {
+        return me.get(position);
     }
 
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return me.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder
-    {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView image;
         TextView name;
@@ -71,27 +70,28 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
         int position;
         Me current;
 
-        public MyViewHolder(View itemView)
-        {
+        public MyViewHolder(View itemView) {
             super(itemView);
             image = (ImageView) itemView.findViewById(R.id.me_image);
             name = (TextView) itemView.findViewById(R.id.me_fromto);
             amount = (TextView) itemView.findViewById(R.id.me_amount);
+            itemView.setOnClickListener(this);
 
         }
 
-        public void setData (Me current, int position)
-        {
+        public void setData(Me current, int position) {
             this.name.setText(current.getName());
-            this.amount.setText(String.format("%.2f", current.getAmount())  + " " + current.getCurrency().getSymbol().toString());
-            if(current.getAmount()>0)
+            this.amount.setText(String.format("%.2f", current.getAmount()) + " " + current.getCurrency().getSymbol().toString());
+            if (current.getAmount() > 0)
                 amount.setTextColor(ContextCompat.getColor(context, R.color.textGreen));
-            else
+            else if (current.getAmount() < 0)
                 amount.setTextColor(ContextCompat.getColor(context, R.color.redMaterial));
+            else
+                amount.setTextColor(ContextCompat.getColor(context, R.color.grey));
 
 
-            if(current.getImgUrl() != null)
-            {
+
+            if (current.getImgUrl() != null) {
                 //modo più semplice per caricare immagini e renderle tonde
                 Glide.with(context).load(current.getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(image) {
                     @Override
@@ -103,9 +103,7 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
                         image.setImageDrawable(circularBitmapDrawable);
                     }
                 });
-            }
-            else
-            {
+            } else {
                 //se non ho l'immagine Glide non deve più occuparsene
                 Glide.clear(image);
                 image.setImageResource(R.mipmap.ic_user_noimg);
@@ -115,6 +113,21 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
             this.current = current;
 
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mItemClickListener != null) {
+                mItemClickListener.onItemClick(v, position);
+            }
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    public void setOnItemClickListener(final OnItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
     }
 }
 
