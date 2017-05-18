@@ -12,6 +12,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
@@ -78,17 +79,14 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
         final ImgHolder viewHolder;
 
-
         if (convertView == null) {
             convertView = context.getLayoutInflater().inflate(R.layout.expense_details_list_row, parent, false);
             viewHolder = new ImgHolder();
-            viewHolder.creditor_img=(ImageView)convertView.findViewById(R.id.creditor_icon);
-            viewHolder.debtor_img=(ImageView)convertView.findViewById(R.id.debtor_icon);
+            viewHolder.creditor_img = (ImageView) convertView.findViewById(R.id.creditor_icon);
+            viewHolder.debtor_img = (ImageView) convertView.findViewById(R.id.debtor_icon);
             convertView.setTag(viewHolder);
-        }
-        else
+        } else
             viewHolder = (ImgHolder) convertView.getTag();
-
 
         TextView creditorName = (TextView) convertView.findViewById(R.id.creditor_name);
         TextView debtorName = (TextView) convertView.findViewById(R.id.debtor_name);
@@ -101,22 +99,24 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
         debtorName.setText(ed.getDebtor());
         amount.setText(ed.getAmount() + " " + Currency.getInstance("EUR").getSymbol());
 
+        if (Float.valueOf(ed.getAmount().replace(",", ".")) == 0)
+            amount.setBackground(ContextCompat.getDrawable(context, R.drawable.rounded_corners_green));
 
-        // Manage creditor icon
-        if (ed.getCreditorImage() != null) {
-            Glide.with(context).load(ed.getCreditorImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.creditor_img) {
-                @Override
-                protected void setResource(Bitmap resource) {
-                    RoundedBitmapDrawable circularBitmapDrawable =
-                            RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                    circularBitmapDrawable.setCircular(true);
-                    viewHolder.creditor_img.setImageDrawable(circularBitmapDrawable);
-                }
-            });
-        } else {
-            Glide.clear(viewHolder.creditor_img);
-            viewHolder.creditor_img.setImageResource(R.mipmap.ic_user_noimg);
-        }
+            // Manage creditor icon
+            if (ed.getCreditorImage() != null) {
+                Glide.with(context).load(ed.getCreditorImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.creditor_img) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+                        circularBitmapDrawable.setCircular(true);
+                        viewHolder.creditor_img.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
+            } else {
+                Glide.clear(viewHolder.creditor_img);
+                viewHolder.creditor_img.setImageResource(R.mipmap.ic_user_noimg);
+            }
 
         // Manage debtor icon
         if (ed.getDebtorImage() != null) {
