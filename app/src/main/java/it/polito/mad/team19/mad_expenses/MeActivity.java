@@ -3,6 +3,7 @@ package it.polito.mad.team19.mad_expenses;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -191,14 +192,18 @@ public class MeActivity extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
 
+
+        /* Vale
+         * Azzeramento credito
+         */
         adapter.setOnItemClickListener(new MeRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(final View rowView, int position) {
 
                 final Me balance = adapter.getItemAtPosition(position);
                 final String otherId = balance.getId();
 
-                if(balance.getAmount() >= 0 ) {
+                if(balance.getAmount() > 0 ) {
                     AlertDialog alertDialog = new AlertDialog.Builder(MeActivity.this)
                             .setTitle(R.string.confirmDebtExtinctionTitle)
                             .setMessage(R.string.confirmDebtExtinction)
@@ -230,6 +235,13 @@ public class MeActivity extends AppCompatActivity {
                                                     expense.child("debtors").child(userId).child("riepilogo").child(otherId).child("amount").getRef().setValue("0");
                                                 }
                                             }
+
+                                            /* Vale
+                                             * Per visualizzare subito il valore aggiornato senza aspettare Firebase
+                                             */
+                                            subtractCredit(balance.getAmount());
+                                            balance.setAmount((float) 0);
+                                            adapter.notifyDataSetChanged();
                                         }
 
                                         @Override
@@ -253,7 +265,7 @@ public class MeActivity extends AppCompatActivity {
                     });
                     alertDialog.show();
                 }
-                else {
+                else if(balance.getAmount() < 0 ){
                     Snackbar.make(findViewById(android.R.id.content), R.string.cannotExtinguish, Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -261,7 +273,7 @@ public class MeActivity extends AppCompatActivity {
 
 
         for (int i = 0; i < otherMembersList.size(); i++)
-            Log.d("meBalance", otherMembersList.get(i).getName().toString() + " " + otherMembersList.get(i).getAmount().toString());
+            Log.d("meBalance", otherMembersList.get(i).getName() + " " + otherMembersList.get(i).getAmount().toString());
 
         //Ludo: grafico a torta
         PieChart pieChart = (PieChart) findViewById(R.id.chart);
@@ -350,5 +362,10 @@ public class MeActivity extends AppCompatActivity {
             Log.e("Receiver", "unregister on pause");
         }
 
+    }
+
+    public void subtractCredit(Float amount) {
+        String fields[] = credito_tv.getText().toString().split(" ");
+        credito_tv.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(fields[0].replace(",", ".")) - amount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
     }
 }
