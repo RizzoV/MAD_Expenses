@@ -68,17 +68,17 @@ public class NotificationsAdapter extends BaseAdapter {
         if(!newNot)
             ll.setBackgroundColor(Color.WHITE);
 
-
-            Log.d("notification", notification.getData().toString());
         String[] notDate = notification.getData().split("-");
         date.setText(notDate[0] + " " + getStringMonth(Integer.parseInt(notDate[1])));
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddExpenseActivity)));
-            text.setText(notification.getUname()+" "+context.getResources().getString(R.string.notififcationAddExpenseText));
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddExpenseActivity)))
+            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddExpenseText));
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddGroupActivity)));
-            text.setText(notification.getUname()+" "+context.getResources().getString(R.string.notififcationAddGroupText));
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddGroupActivity)))
+            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddGroupText));
 
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddMembersToGroupActivity)))
+            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddMembersToGroupText));
 
 
         return convertView;

@@ -67,4 +67,27 @@ public class Notifications
     public String getNotKey() {
         return notKey;
     }
+
+    public boolean compareActivity(String obj) {
+
+        boolean equals = true;
+
+        String[] compare = obj.trim().split("");
+        String[] temp = activity.trim().split("");
+
+        Log.d("Notifi",compare.length+""+temp.length);
+
+        if(compare.length!=temp.length)
+            return false;
+        else
+        {
+            for (int i = 0; i < temp.length - 1; i++) {
+                if (compare[i] != temp[i]) {
+                    equals = false;
+                }
+            }
+
+            return equals;
+        }
+    }
 }

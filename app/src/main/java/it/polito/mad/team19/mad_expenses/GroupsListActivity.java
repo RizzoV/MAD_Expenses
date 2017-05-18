@@ -44,11 +44,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOError;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Group;
+import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 
 import static com.github.mikephil.charting.charts.Chart.LOG_TAG;
 
@@ -368,6 +372,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                 groupIdName = results[1];
                                 Log.d("Invitations", "add person to group with id: " + groupIdName);
                                 addGroupToUser(uid, groupIdName);
+                                setNotification(groupIdName);
                             }
 
                         } else
@@ -415,6 +420,41 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         });
     }
 
+    public void setNotification(final String groupId) {
+        final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        final String notificationId = notificationRef.push().getKey();
+
+        String username = mAuth.getCurrentUser().getDisplayName();
+        final String userID = mAuth.getCurrentUser().getUid();
+
+        if (username == null)
+            username = "User";
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        final String formattedDate = df.format(c.getTime());
+
+        final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+
+        final String finalUsername = username;
+        notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot current : dataSnapshot.getChildren()) {
+                    Notifications currentNot = current.getValue(Notifications.class);
+                    notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
+                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddMembersToGroupActivity), formattedDate.toString(), groupId, userID, finalUsername.toString()));
+                    notificationRef.setValue(notification);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
     void updateList(final String uid)
     {
         progressBar.setVisibility(View.VISIBLE);

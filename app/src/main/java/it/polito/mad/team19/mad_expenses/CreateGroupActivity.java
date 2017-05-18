@@ -33,8 +33,11 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -371,28 +374,25 @@ public class CreateGroupActivity extends AppCompatActivity {
         }
     }
 
-    public void setNotification(String groupId)
+    public void setNotification(final String groupId)
     {
-        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
-        String notificationId = notificationRef.push().getKey();
+        final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        final String notificationId = notificationRef.push().getKey();
 
         String username = mAuth.getCurrentUser().getDisplayName();
-        String userId = mAuth.getCurrentUser().getUid();
+        final String userID = mAuth.getCurrentUser().getUid();
 
         if(username==null)
             username="User";
 
-
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-        String formattedDate = df.format(c.getTime());
+        final String formattedDate = df.format(c.getTime());
 
-        Map<String, Notifications> notification = new HashMap<String, Notifications>();
-        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddGroupActivity),formattedDate.toString(),groupId,userId,username.toString()));
+        final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddGroupActivity),formattedDate.toString(),groupId,userID, username.toString()));
         notificationRef.setValue(notification);
 
-        DatabaseReference notificationRef2 = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
-        notificationRef2.setValue(notificationId);
     }
 
     @Override

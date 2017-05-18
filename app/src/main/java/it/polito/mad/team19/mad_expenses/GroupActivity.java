@@ -321,19 +321,85 @@ public class GroupActivity extends AppCompatActivity {
         final ImageView im = (ImageView) notifCount.findViewById(R.id.notifications_icon_action);
 
         final ArrayList<Notifications> notificationsList = new ArrayList<Notifications>();
-        final NotificationsAdapter[] adapter = new NotificationsAdapter[1];
+        final NotificationsAdapter adapter = new NotificationsAdapter(GroupActivity.this, notificationsList, null);
+        notificationsListView.setAdapter(adapter);
 
 
+        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        notificationRef.orderByKey().addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChildren())
+                {
+                    int i = 0;
+                    setNotificationNumber(tv);
+                    notificationsList.clear();
+                    adapter.notifyDataSetChanged();
+                    //aggiorno lista notifiche
+                    for(final DataSnapshot current : dataSnapshot.getChildren()) {
+
+                        if(i==dataSnapshot.getChildrenCount()-1)
+                        {
+                            //imposto ultima notifica letta quando apro drawer
+                            final DatabaseReference notificationRefUser = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("gruppi").child(groupId).child("notifiche");
+                            tv.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("Clicked", "click");
+                                    notificationsDrawer.openDrawer(Gravity.RIGHT);
+                                    notificationRefUser.setValue(current.getKey());
+                                    setNotificationNumber(tv);
+                                }
+                            });
+
+                            im.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("Clicked", "click");
+                                    notificationsDrawer.openDrawer(Gravity.RIGHT);
+                                    notificationRefUser.setValue(current.getKey());
+                                    setNotificationNumber(tv);
+                                    //aggiungere listener per aggionare ultima notifica
+
+                                }
+                            });
+                        }
+
+
+                        Notifications currentNot = current.getValue(Notifications.class);
+                        Log.d("CurrentNot",currentNot.toString());
+                        notificationsList.add(new Notifications(currentNot.getActivity(),currentNot.getData(),currentNot.getId(),currentNot.getUid(),currentNot.getUname(),current.getKey()));
+                        adapter.notifyDataSetChanged();
+
+                        i++;
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        return true;
+    }
+
+    public void setNotificationNumber(final TextView tv){
         DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("gruppi").child(groupId).child("notifiche");
-        myNotRef.addValueEventListener(new ValueEventListener() {
+        myNotRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue()!=null) {
+                if (dataSnapshot.getValue()!=null)
+                {
                     String mynot = dataSnapshot.getValue().toString();
                     Log.d("MyNot", mynot);
                     //Prendo il numero di notifiche
                     final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
-
 
                     ValueEventListener getGroupAndNotifcations = new ValueEventListener() {
                         @Override
@@ -355,9 +421,6 @@ public class GroupActivity extends AppCompatActivity {
                         }
                     };
 
-                    adapter[0] = new NotificationsAdapter(GroupActivity.this, notificationsList, mynot);
-                    notificationsListView.setAdapter(adapter[0]);
-
                     if (mynot != null && !mynot.equals(0)) {
                         notificationRef.orderByKey().startAt(mynot).addListenerForSingleValueEvent(getGroupAndNotifcations);
                     } else
@@ -370,67 +433,6 @@ public class GroupActivity extends AppCompatActivity {
 
             }
         });
-
-        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
-        notificationRef.orderByKey().addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(final DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.hasChildren())
-                {
-                    int i = 0;
-                    //aggiorno lista notifiche
-                    for(final DataSnapshot current : dataSnapshot.getChildren()) {
-
-
-
-                        if(i==dataSnapshot.getChildrenCount()-1)
-                        {
-                            //imposto ultima notifica letta quando apro drawer
-                            final DatabaseReference notificationRefUser = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("gruppi").child(groupId).child("notifiche");
-                            tv.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("Clicked", "click");
-                                    notificationsDrawer.openDrawer(Gravity.RIGHT);
-                                    notificationRefUser.setValue(current.getKey());
-                                }
-                            });
-
-                            im.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("Clicked", "click");
-                                    notificationsDrawer.openDrawer(Gravity.RIGHT);
-                                    notificationRefUser.setValue(current.getKey());
-                                    //aggiungere listener per aggionare ultima notifica
-
-                                }
-                            });
-                        }
-
-
-                        Notifications currentNot = current.getValue(Notifications.class);
-                        Log.d("CurrentNot",currentNot.toString());
-                        notificationsList.add(new Notifications(currentNot.getActivity(),currentNot.getData(),currentNot.getId(),currentNot.getUid(),currentNot.getUname(),current.getKey()));
-
-                        adapter[0].notifyDataSetChanged();
-
-                        i++;
-
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-        return true;
     }
 
     @Override

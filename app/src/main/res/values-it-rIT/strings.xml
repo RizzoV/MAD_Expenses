@@ -114,11 +114,14 @@
     <string name="typeMessage">Scrivi messaggio</string>
 
     <!-- Notifications -->
-    <string name="notififcationAddExpenseActivity">AddExpenseActivity</string>
+    <string name="notififcationAddExpenseActivity">ExpenseDetailsActivity</string>
     <string name="notififcationAddExpenseText"> ha aggiunto una nuova spesa.</string>
 
-    <string name="notififcationAddGroupActivity">CreateGroupActivity</string>
+    <string name="notififcationAddGroupActivity">GroupInfoActivity</string>
     <string name="notififcationAddGroupText"> ha creato il gruppo.</string>
+
+    <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
+    <string name="notififcationAddMembersToGroupText"> è stato aggiunto.</string>
 
     <!-- Months -->
     <string name="january">Gen</string>

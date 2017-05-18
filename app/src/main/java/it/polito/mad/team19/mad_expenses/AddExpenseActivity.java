@@ -3,6 +3,7 @@ package it.polito.mad.team19.mad_expenses;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.Notification;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -472,8 +473,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
     public void finishTasks() {
 
-        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
-        String notificationId = notificationRef.push().getKey();
+        final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        final String notificationId = notificationRef.push().getKey();
 
         String username = mAuth.getCurrentUser().getDisplayName();
 
@@ -482,16 +483,28 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-        String formattedDate = df.format(c.getTime());
+        final String formattedDate = df.format(c.getTime());
 
-        Map<String, Notifications> notification = new HashMap<String, Notifications>();
-        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity),formattedDate.toString(),idExpense,usrId,username.toString()));
+        final Map<String, Notifications> notification = new HashMap<String, Notifications>();
 
-        notificationRef.setValue(notification);
+        final String finalUsername = username;
+        notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot current : dataSnapshot.getChildren()) {
+                    Notifications currentNot = current.getValue(Notifications.class);
+                    notification.put(current.getKey(),new Notifications(currentNot.getActivity(),currentNot.getData(),currentNot.getId(),currentNot.getUid(),currentNot.getUname(),current.getKey()));
+                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity),formattedDate.toString(),idExpense,usrId, finalUsername.toString()));
+                    notificationRef.setValue(notification);
+                }
+            }
 
-        //da mettere quando si apre la barra delle notifiche
-        //DatabaseReference notificationRef2 = FirebaseDatabase.getInstance().getReference().child("utenti").child(usrId).child("gruppi").child(groupId).child("notifiche");
-        //notificationRef2.setValue(notificationId);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
 
         getIntent().putExtra("expenseId", idExpense);
