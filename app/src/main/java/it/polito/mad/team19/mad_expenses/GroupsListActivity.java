@@ -37,6 +37,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -493,7 +494,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         //Prendo il numero di notifiche
                         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(child.getKey());
 
-
                         ValueEventListener getGroupAndNotifcations = new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -509,21 +509,17 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                                     if(listenerNot.get(groupId)==null)
                                     {
-                                        //aggiungo il listener per aggiungerle mentre cambiano
-                                        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications");
-                                        notificationRef.addValueEventListener(new ValueEventListener() {
+                                        Log.d("NoPollo",groupId);
 
+                                        DatabaseReference notAddRed = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+                                        notAddRed.addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                                int notificationsCount = (int) dataSnapshot.child(groupId).getChildrenCount();
-                                                if(listenerNot.get(groupId)!=null)
-
-                                                    if(listenerNot.get(groupId)!=null && listenerNot.get(groupId).intValue()!=notificationsCount)
+                                                if(listenerNot.get(groupId)==null)
+                                                    listenerNot.put(groupId, (int) dataSnapshot.getChildrenCount());
+                                                else
+                                                    if(listenerNot.get(groupId)<dataSnapshot.getChildrenCount())
                                                         updateList(uid);
-
-                                                listenerNot.put(groupId,notificationsCount);
-
-
                                             }
 
                                             @Override
@@ -531,8 +527,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                                             }
                                         });
-                                    }
+                                        //aggiungo il listener per aggiungerle mentre cambiano
 
+                                    }
                                     Log.d("Group",groups.toString());
                                     ga.notifyDataSetChanged();
                                 }catch (IOError e)
