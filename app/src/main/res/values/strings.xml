@@ -126,6 +126,9 @@
     <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
     <string name="notififcationAddMembersToGroupText"> joined the group.</string>
 
+    <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
+    <string name="notififcationRemoveMembersToGroupText"> left the group.</string>
+
 
     <!-- Months -->
     <string name="january">Jan</string>

@@ -81,6 +81,10 @@ public class NotificationsAdapter extends BaseAdapter {
             text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddMembersToGroupText));
 
 
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationRemoveMembersToGroupActivity)))
+            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationRemoveMembersToGroupText));
+
+
         return convertView;
     }
 

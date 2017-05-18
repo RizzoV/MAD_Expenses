@@ -123,6 +123,9 @@
     <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
     <string name="notififcationAddMembersToGroupText"> è stato aggiunto.</string>
 
+    <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
+    <string name="notififcationRemoveMembersToGroupText"> ha abbadonato il gruppo.</string>
+
     <!-- Months -->
     <string name="january">Gen</string>
     <string name="february">Feb</string>

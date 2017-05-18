@@ -51,12 +51,16 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Dialogs.DeleteMemberDialog;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 import it.polito.mad.team19.mad_expenses.Dialogs.ModifyGroupNameOrImageDialog;
@@ -216,6 +220,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
                     selectedUid.putString("currentUid",uid);
                     selectedUid.putString("selectedUid",contributors.get(position).getUid());
+                    selectedUid.putString("selectedUsername",contributors.get(position).getName());
                     selectedUid.putString("groupId",groupId);
                     selectedUid.putString("nextAdminId",getNextAdmin(uid,contributors));
                     selectedUid.putString("usersLeft", String.valueOf(contributors.size()));
@@ -256,6 +261,41 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     }
 
 
+    public void setNotification(final String groupId, final String userID, String username)
+    {
+        final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        final String notificationId = notificationRef.push().getKey();
+
+
+        if(username==null)
+            username="User";
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        final String formattedDate = df.format(c.getTime());
+        final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+
+
+        final String finalUsername = username;
+        notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot current : dataSnapshot.getChildren()) {
+                    Notifications currentNot = current.getValue(Notifications.class);
+                    notification.put(current.getKey(),new Notifications(currentNot.getActivity(),currentNot.getData(),currentNot.getId(),currentNot.getUid(),currentNot.getUname(),current.getKey()));
+                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity),formattedDate.toString(),notificationId,userID, finalUsername));
+                    notificationRef.setValue(notification);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
 
     private void setListenerLeaveGroup(final String groupId)
     {
@@ -264,6 +304,15 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         leaveGroup_cw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String username = mAuth.getCurrentUser().getDisplayName();
+                if(username==null)
+                    username = "user";
+
+                final String userID = mAuth.getCurrentUser().getUid();
+
+                setNotification(groupId,userID,username);
+
                 alertDialog = new AlertDialog.Builder(GroupInfoActivity.this)
                         .setMessage(R.string.confirmLeaveGroup)
                         .setPositiveButton(getString(R.string.yes), null)
@@ -350,8 +399,11 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     public void onDialogDeleteMemberClick(DialogFragment dialog) {
         Log.d("DebugDialogClick","eliminare membro: " + dialog.getArguments().getString("selectedUid") + "  " + dialog.getArguments().getString("groupId"));
         String userToDelete = dialog.getArguments().getString("selectedUid");
+        String usernameToDelete = dialog.getArguments().getString("selectedUsername");
         String groupId = dialog.getArguments().getString("groupId");
         String nexAdminId = dialog.getArguments().getString("nextAdminId");
+        setNotification(groupId,userToDelete,usernameToDelete);
+
 
         //rimuovo i due riferimenti tra gruppo e membro
         FirebaseDatabase database = FirebaseDatabase.getInstance();
