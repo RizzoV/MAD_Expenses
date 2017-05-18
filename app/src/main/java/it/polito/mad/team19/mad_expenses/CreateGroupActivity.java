@@ -33,8 +33,11 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -45,8 +48,13 @@ import com.soundcloud.android.crop.Crop;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 
 
 public class CreateGroupActivity extends AppCompatActivity {
@@ -281,7 +289,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void addGroupToFirebase(String uid, String uname, String name, String img, int type) {
-        String groupid = mDatabase.child("gruppi").push().getKey();
+        final String groupid = mDatabase.child("gruppi").push().getKey();
 
         //mDatabase.child("gruppi").child(groupid).child("immagine").setValue(img);
         mDatabase.child("gruppi").child(groupid).child("membri").child(uid).child("tipo").setValue(1);
@@ -344,6 +352,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                                     imageLinkUsrRef.setValue(uri.toString());
                                     setResult(1);
                                     barProgressDialog.dismiss();
+                                    setNotification(groupid);
                                     finish();
 
                                 }
@@ -361,8 +370,30 @@ public class CreateGroupActivity extends AppCompatActivity {
         else {
             setResult(1);
             barProgressDialog.dismiss();
+            setNotification(groupid);
             finish();
         }
+    }
+
+    public void setNotification(final String groupId)
+    {
+        final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        final String notificationId = notificationRef.push().getKey();
+
+        String username = mAuth.getCurrentUser().getDisplayName();
+        final String userID = mAuth.getCurrentUser().getUid();
+
+        if(username==null)
+            username="User";
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        final String formattedDate = df.format(c.getTime());
+
+        final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddGroupActivity),formattedDate.toString(),groupId,userID, username.toString()));
+        notificationRef.setValue(notification);
+
     }
 
     @Override

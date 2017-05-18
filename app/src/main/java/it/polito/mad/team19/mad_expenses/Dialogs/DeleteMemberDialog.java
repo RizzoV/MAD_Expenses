@@ -44,6 +44,7 @@ public class DeleteMemberDialog extends DialogFragment {
 
         Boolean isLastUser = new Boolean(getArguments().getString("usersLeft").compareTo("1") == 0);
         String currentUser = getArguments().getString("currentUid");
+        String usernameToDelete = getArguments().getString("selectedUsername");
         String userToDelete = getArguments().getString("selectedUid");
 
 

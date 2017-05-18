@@ -115,4 +115,33 @@
 
     <!-- Chat -->
     <string name="typeMessage">Type message</string>
+
+    <!-- Notifications -->
+    <string name="notififcationAddExpenseActivity">ExpenseDetailsActivity</string>
+    <string name="notififcationAddExpenseText"> added a new expense.</string>
+
+    <string name="notififcationAddGroupActivity">GroupInfoActivity</string>
+    <string name="notififcationAddGroupText"> created the group.</string>
+
+    <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
+    <string name="notififcationAddMembersToGroupText"> joined the group.</string>
+
+    <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
+    <string name="notififcationRemoveMembersToGroupText"> left the group.</string>
+
+
+    <!-- Months -->
+    <string name="january">Jan</string>
+    <string name="february">Feb</string>
+    <string name="march">Mar</string>
+    <string name="april">Apr</string>
+    <string name="may">May</string>
+    <string name="june">Jun</string>
+    <string name="july">Jul</string>
+    <string name="august">Aug</string>
+    <string name="september">Sep</string>
+    <string name="october">Oct</string>
+    <string name="november">Nov</string>
+    <string name="december">Dec</string>
+
 </resources>
