@@ -832,9 +832,9 @@ public class GroupActivity extends AppCompatActivity {
                                             Me newDebtor;
 
                                                 if(expenseBalance.child("immagine").exists())
-                                                newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),expenseBalance.child("immagine").getValue().toString());
+                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),expenseBalance.child("immagine").getValue().toString());
                                             else
-                                                newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),null);
+                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),null);
 
                                             balancesMap.put(expenseBalance.getKey().toString(), newDebtor);
                                         }
@@ -846,16 +846,15 @@ public class GroupActivity extends AppCompatActivity {
                                     // Sono un debtor
                                     for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
                                         if (balancesMap.containsKey(expenseBalance.getKey().toString())) {
-
                                             if(expenseBalance.child("amount").exists())
                                                 balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
                                         } else {
                                             if(expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
                                                 Me newDebtor;
                                                 if(expenseBalance.child("immagine").exists())
-                                                    newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),expenseBalance.child("immagine").getValue().toString());
+                                                    newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),expenseBalance.child("immagine").getValue().toString());
                                                else
-                                                    newDebtor = new Me(expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),null);
+                                                    newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),null);
                                                 balancesMap.put(expenseBalance.getKey().toString(), newDebtor);
 
                                             }

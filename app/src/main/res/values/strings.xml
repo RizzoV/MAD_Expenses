@@ -110,8 +110,13 @@
     <string name="modify_debt_value">Modify debt value</string>
 
     <!-- Group details -->
+    <string name="confirmLeaveGroupTitle">Confirm group abandon</string>
     <string name="confirmLeaveGroup">Are you sure you want to leave the group?</string>
     <string name="no">No</string>
+
+    <!-- Me activity -->
+    <string name="confirmDebtExtinctionTitle">Confirm debt extinction</string> <!-- ??????? -->
+    <string name="confirmDebtExtinction">Do you want to extinguish this debt?</string>
 
     <!-- Chat -->
     <string name="typeMessage">Type message</string>
@@ -119,13 +124,10 @@
     <!-- Notifications -->
     <string name="notififcationAddExpenseActivity">ExpenseDetailsActivity</string>
     <string name="notififcationAddExpenseText"> added a new expense.</string>
-
     <string name="notififcationAddGroupActivity">GroupInfoActivity</string>
     <string name="notififcationAddGroupText"> created the group.</string>
-
     <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
     <string name="notififcationAddMembersToGroupText"> joined the group.</string>
-
     <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
     <string name="notififcationRemoveMembersToGroupText"> left the group.</string>
 

@@ -314,6 +314,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 setNotification(groupId,userID,username);
 
                 alertDialog = new AlertDialog.Builder(GroupInfoActivity.this)
+                        .setTitle(R.string.confirmLeaveGroupTitle)
                         .setMessage(R.string.confirmLeaveGroup)
                         .setPositiveButton(getString(R.string.yes), null)
                         .setNegativeButton(getString(R.string.no), null)

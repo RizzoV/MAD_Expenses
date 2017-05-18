@@ -108,21 +108,22 @@
     <string name="modify_debt_value">Modifica il valore del debito</string>
 
     <!-- Group details -->
+    <string name="confirmLeaveGroupTitle">Conferma abbandono gruppo</string>
     <string name="confirmLeaveGroup">Sicuro di voler lasciare il gruppo?</string>
     <string name="no">No</string>
-
     <string name="typeMessage">Scrivi messaggio</string>
+
+    <!-- Me activity -->
+    <string name="confirmDebtExtinctionTitle">Conferma estinzione debito</string> <!-- ??????? -->
+    <string name="confirmDebtExtinction">Vuoi estinguere questo debito?</string>
 
     <!-- Notifications -->
     <string name="notififcationAddExpenseActivity">ExpenseDetailsActivity</string>
     <string name="notififcationAddExpenseText"> ha aggiunto una nuova spesa.</string>
-
     <string name="notififcationAddGroupActivity">GroupInfoActivity</string>
     <string name="notififcationAddGroupText"> ha creato il gruppo.</string>
-
     <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
     <string name="notififcationAddMembersToGroupText"> è stato aggiunto.</string>
-
     <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
     <string name="notififcationRemoveMembersToGroupText"> ha abbadonato il gruppo.</string>
 
