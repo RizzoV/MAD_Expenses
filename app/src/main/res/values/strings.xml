@@ -117,8 +117,13 @@
     <string name="typeMessage">Type message</string>
 
     <!-- Notifications -->
+    <string name="notififcationAddExpenseActivity">AddExpenseActivity</string>
+    <string name="notififcationAddExpenseText"> added a new expense.</string>
 
-    <string name="addexpense"> added a new expense.</string>
+    <string name="notififcationAddGroupActivity">CreateGroupActivity</string>
+    <string name="notififcationAddGroupText"> created the group.</string>
+
+
     <!-- Months -->
     <string name="january">Jan</string>
     <string name="february">Feb</string>

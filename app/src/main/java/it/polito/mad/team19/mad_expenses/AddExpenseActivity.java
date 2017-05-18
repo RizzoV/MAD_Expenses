@@ -485,7 +485,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         String formattedDate = df.format(c.getTime());
 
         Map<String, Notifications> notification = new HashMap<String, Notifications>();
-        notification.put(notificationId, new Notifications("ExpenseDetailsActivity",formattedDate.toString(),idExpense,username.toString(),usrId));
+        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity),formattedDate.toString(),idExpense,usrId,username.toString()));
 
         notificationRef.setValue(notification);
 

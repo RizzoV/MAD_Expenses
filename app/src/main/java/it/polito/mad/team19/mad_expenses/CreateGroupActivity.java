@@ -45,8 +45,13 @@ import com.soundcloud.android.crop.Crop;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 
 
 public class CreateGroupActivity extends AppCompatActivity {
@@ -280,7 +285,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void addGroupToFirebase(String uid, String uname, String name, String img, int type) {
-        String groupid = mDatabase.child("gruppi").push().getKey();
+        final String groupid = mDatabase.child("gruppi").push().getKey();
 
         //mDatabase.child("gruppi").child(groupid).child("immagine").setValue(img);
         mDatabase.child("gruppi").child(groupid).child("membri").child(uid).child("tipo").setValue(1);
@@ -343,6 +348,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                                     imageLinkUsrRef.setValue(uri.toString());
                                     setResult(1);
                                     barProgressDialog.dismiss();
+                                    setNotification(groupid);
                                     finish();
 
                                 }
@@ -360,8 +366,33 @@ public class CreateGroupActivity extends AppCompatActivity {
         else {
             setResult(1);
             barProgressDialog.dismiss();
+            setNotification(groupid);
             finish();
         }
+    }
+
+    public void setNotification(String groupId)
+    {
+        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        String notificationId = notificationRef.push().getKey();
+
+        String username = mAuth.getCurrentUser().getDisplayName();
+        String userId = mAuth.getCurrentUser().getUid();
+
+        if(username==null)
+            username="User";
+
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        String formattedDate = df.format(c.getTime());
+
+        Map<String, Notifications> notification = new HashMap<String, Notifications>();
+        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddGroupActivity),formattedDate.toString(),groupId,userId,username.toString()));
+        notificationRef.setValue(notification);
+
+        DatabaseReference notificationRef2 = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
+        notificationRef2.setValue(notificationId);
     }
 
     @Override

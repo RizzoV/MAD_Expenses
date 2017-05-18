@@ -71,10 +71,14 @@ public class NotificationsAdapter extends BaseAdapter {
 
             Log.d("notification", notification.getData().toString());
         String[] notDate = notification.getData().split("-");
-
-
-        text.setText(notification.getUname()+" "+context.getResources().getString(R.string.addexpense));
         date.setText(notDate[0] + " " + getStringMonth(Integer.parseInt(notDate[1])));
+
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddExpenseActivity)));
+            text.setText(notification.getUname()+" "+context.getResources().getString(R.string.notififcationAddExpenseText));
+
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddGroupActivity)));
+            text.setText(notification.getUname()+" "+context.getResources().getString(R.string.notififcationAddGroupText));
+
 
 
         return convertView;

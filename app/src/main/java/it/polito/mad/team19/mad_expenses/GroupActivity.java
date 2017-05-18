@@ -65,6 +65,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOError;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
@@ -327,45 +328,43 @@ public class GroupActivity extends AppCompatActivity {
         myNotRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String mynot = dataSnapshot.getValue().toString();
-                Log.d("MyNot",mynot);
-                //Prendo il numero di notifiche
-                final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+                if (dataSnapshot.getValue()!=null) {
+                    String mynot = dataSnapshot.getValue().toString();
+                    Log.d("MyNot", mynot);
+                    //Prendo il numero di notifiche
+                    final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
 
 
-                ValueEventListener getGroupAndNotifcations = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        int notNum = (int) dataSnapshot.getChildrenCount()-1;
-                        Log.d("MyNotNum",notNum+"");
+                    ValueEventListener getGroupAndNotifcations = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            int notNum = (int) dataSnapshot.getChildrenCount() - 1;
+                            Log.d("MyNotNum", notNum + "");
 
-                        if(notNum>0)
-                        {
-                            tv.setText((notNum)+"");
-                            tv.setVisibility(View.VISIBLE);
+                            if (notNum > 0) {
+                                tv.setText((notNum) + "");
+                                tv.setVisibility(View.VISIBLE);
+                            } else
+                                tv.setVisibility(View.INVISIBLE);
+
                         }
-                        else
-                            tv.setVisibility(View.INVISIBLE);
 
-                    }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        }
+                    };
 
-                    }
-                };
+                    adapter[0] = new NotificationsAdapter(GroupActivity.this, notificationsList, mynot);
+                    notificationsListView.setAdapter(adapter[0]);
 
-                adapter[0] = new NotificationsAdapter(GroupActivity.this, notificationsList,mynot);
-                notificationsListView.setAdapter(adapter[0]);
+                    if (mynot != null && !mynot.equals(0)) {
+                        notificationRef.orderByKey().startAt(mynot).addListenerForSingleValueEvent(getGroupAndNotifcations);
+                    } else
+                        notificationRef.addListenerForSingleValueEvent(getGroupAndNotifcations);
 
-                if(mynot!=null && !mynot.equals(0)) {
-                    notificationRef.orderByKey().startAt(mynot).addListenerForSingleValueEvent(getGroupAndNotifcations);
                 }
-
-                else
-                    notificationRef.addListenerForSingleValueEvent(getGroupAndNotifcations);
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -411,9 +410,6 @@ public class GroupActivity extends AppCompatActivity {
                             });
                         }
 
-                        String desc;
-                        if (current.child("activity").getValue().toString().equals("ExpenseDetailsActivity"));
-                            desc = getResources().getString(R.string.addexpense);
 
                         Notifications currentNot = current.getValue(Notifications.class);
                         Log.d("CurrentNot",currentNot.toString());

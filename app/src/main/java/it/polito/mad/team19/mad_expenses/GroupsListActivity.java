@@ -439,8 +439,15 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                         final String groupName = child.child("nome").getValue().toString();
                         final Float bilancio = Float.parseFloat(child.child("bilancio").getValue().toString());
-                        final String immagine = child.child("immagine").getValue().toString();
                         final String groupId = child.getKey();
+                        final String immagine;
+
+                        if(child.child("immagine").getValue()!=null)
+                            immagine = child.child("immagine").getValue().toString();
+                        else
+                            immagine = null;
+
+
                         String mynot = child.child("notifiche").getValue().toString();
 
                         //Prendo il numero di notifiche
