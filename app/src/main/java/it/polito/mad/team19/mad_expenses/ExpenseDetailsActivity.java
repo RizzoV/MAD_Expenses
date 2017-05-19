@@ -200,10 +200,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
                                                     String chosenAmount = debtEditText.getText().toString().trim().replace(",", ".");
 
-                                                    //TODO: check se senza va bene comunque (perchè c'è GroupActivity ad aggiornarlo)
-                                                    /* balanceAmaount.setValue(String.valueOf(Float.valueOf(currentPersonalBalance)
-                                                     *       - Float.valueOf(expenseDebtCurrentAmount.replace(",", ".")) + Float.valueOf(chosenAmount)));
-                                                     */
                                                     debtAmountRef.setValue("-" + chosenAmount);
                                                     creditAmountRef.setValue(chosenAmount);
 

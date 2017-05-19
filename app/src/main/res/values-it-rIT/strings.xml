@@ -19,7 +19,7 @@
     <string name="no_group_found">Nessun gruppo trovato!</string>
     <string name="youre_not_part_of_any_group">Non fai parte di nessun gruppo! :(</string>
     <string name="no_credit_and_debt">Nessun credito o debito</string>
-    <string name="group_and_credit">- Credito: </string>
+    <string name="group_and_credit">Credito: </string>
     <string name="group_debt">Debito: </string>
 
     <!-- Strings related to the creation of a new group -->

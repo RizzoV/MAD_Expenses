@@ -3,13 +3,6 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -104,13 +97,13 @@ public class GroupsAdapter extends BaseAdapter {
         } else {
             String debtText = String.format(Locale.getDefault(), "%.2f", debtAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol();
             String creditText = String.format(Locale.getDefault(), "%.2f", creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol();
-            String text_1 = context.getResources().getString(R.string.group_debt);
-            String text_2 = context.getResources().getString(R.string.group_and_credit);
-            String text_final = text_1 + " " + debtText + " " + text_2 + " " +  creditText;
+            String text_1 = context.getResources().getString(R.string.group_and_credit);
+            String text_2 = context.getResources().getString(R.string.group_debt);
+            String text_final = text_1 + " " + creditText + " - " + text_2 + " " +  debtText;
             Spannable spannable = new SpannableString(text_final);
-            spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimary)), text_1.length(), (text_1 + " " +debtText).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimary)), text_1.length(), (text_1 + " " + creditText).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context, R.color.redMaterial)),
-                    (text_1 + " " + debtText + " " + text_2).length(), (text_1 + " " + debtText + " " + text_2 + " " + creditText).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    (text_1 + " " + creditText + " - " + text_2).length(), text_final.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             viewHolder.balance.setText(spannable);
         }
