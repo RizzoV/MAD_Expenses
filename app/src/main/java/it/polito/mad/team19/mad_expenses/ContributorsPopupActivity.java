@@ -103,11 +103,13 @@ public class ContributorsPopupActivity extends Activity {
                 }
 
                 contributors_lv.invalidate();
-                //TODO: far funzionare sta listview, con le selezioni prese precedentemente
+
                 // Preselect eventual already selected members
                 for (FirebaseGroupMember fbgm : selectedMembers) {
+                    Log.e("DEBUG contributors", fbgm.getName());
+                    Log.e("DEBUG contributors 2", fbgm.getUid());
+                    Log.e("DEBUG contributors 3", fbgm.getImgUrl());
                     // Select them in the view
-
                     int itemPos = groupMembersAdapter.getPositionFromUid(fbgm.getUid());
 
                     if (itemPos != -1) {
@@ -191,7 +193,6 @@ public class ContributorsPopupActivity extends Activity {
             netChange = null;
             Log.e("Receiver", "unregister on pause");
         }
-
     }
 
 }

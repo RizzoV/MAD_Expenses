@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -39,10 +40,6 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
     public ExpenseDetailsAdapter(Context context, ArrayList<ExpenseDetail> detailsList) {
         this.detailsList = detailsList;
         this.context = (Activity) context;
-    }
-
-    public void setListData(ArrayList<ExpenseDetail> detailsList) {
-        this.detailsList = detailsList;
     }
 
     @Override
@@ -123,4 +120,12 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
         return convertView;
     }
 
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        for(ExpenseDetail ed : detailsList) {
+            Log.e("AAAAAAAAAA", ed.getDebtor() + ": " + ed.getAmount());
+        }
+    }
 }

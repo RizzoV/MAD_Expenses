@@ -105,7 +105,7 @@ public class GroupActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ProgressDialog barProgressDialog;
     private ArrayList<Me> balancesArrayTakenFromFragment = new ArrayList<>();
-    private int times=0;
+    private int times = 0;
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
@@ -322,17 +322,15 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onDataChange(final DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.hasChildren())
-                {
+                if (dataSnapshot.hasChildren()) {
                     int i = 0;
                     setNotificationNumber(tv);
                     notificationsList.clear();
                     adapter.notifyDataSetChanged();
                     //aggiorno lista notifiche
-                    for(final DataSnapshot current : dataSnapshot.getChildren()) {
+                    for (final DataSnapshot current : dataSnapshot.getChildren()) {
 
-                        if(i==dataSnapshot.getChildrenCount()-1)
-                        {
+                        if (i == dataSnapshot.getChildrenCount() - 1) {
                             //imposto ultima notifica letta quando apro drawer
                             final DatabaseReference notificationRefUser = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("gruppi").child(groupId).child("notifiche");
                             tv.setOnClickListener(new View.OnClickListener() {
@@ -358,14 +356,11 @@ public class GroupActivity extends AppCompatActivity {
                             });
                         }
 
-
                         Notifications currentNot = current.getValue(Notifications.class);
-                        Log.d("CurrentNot",currentNot.toString());
-                        notificationsList.add(new Notifications(currentNot.getActivity(),currentNot.getData(),currentNot.getId(),currentNot.getUid(),currentNot.getUname(),current.getKey()));
+                        notificationsList.add(new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
                         adapter.notifyDataSetChanged();
 
                         i++;
-
                     }
                 }
             }
@@ -376,19 +371,17 @@ public class GroupActivity extends AppCompatActivity {
             }
         });
 
-
         return true;
     }
 
-    public void setNotificationNumber(final TextView tv){
+    public void setNotificationNumber(final TextView tv) {
         DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("gruppi").child(groupId).child("notifiche");
         myNotRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue()!=null)
-                {
+                if (dataSnapshot.getValue() != null) {
                     String mynot = dataSnapshot.getValue().toString();
-                    Log.d("MyNot", mynot);
+
                     //Prendo il numero di notifiche
                     final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
 
@@ -396,29 +389,28 @@ public class GroupActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             int notNum = (int) dataSnapshot.getChildrenCount() - 1;
-                            Log.d("MyNotNum", notNum + "");
 
                             if (notNum > 0) {
-                                tv.setText((notNum) + "");
+                                tv.setText(String.valueOf(notNum));
                                 tv.setVisibility(View.VISIBLE);
                             } else
                                 tv.setVisibility(View.INVISIBLE);
-
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            Log.e("GroupActivity", "Could not get group and notificatons");
                         }
                     };
 
-                    if (mynot != null && !mynot.equals(0)) {
+                    if (mynot != null && !mynot.equals("0")) {
                         notificationRef.orderByKey().startAt(mynot).addListenerForSingleValueEvent(getGroupAndNotifcations);
                     } else
                         notificationRef.addListenerForSingleValueEvent(getGroupAndNotifcations);
 
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -470,7 +462,7 @@ public class GroupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_NEW_EXPENSE  && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_NEW_EXPENSE && resultCode == RESULT_OK) {
             // Gestione calcolo debiti e crediti dovuti alla nuova spesa
 
             Log.d("ExpenseIDActivity", data.getStringExtra("expenseId").toString());
@@ -485,7 +477,7 @@ public class GroupActivity extends AppCompatActivity {
                     data.getStringExtra("expenseUserName"), contributors, excluded);
         }
 
-        if (requestCode == GROUP_INFO_REQUEST ) {
+        if (requestCode == GROUP_INFO_REQUEST) {
             if (data != null) {
                 if (data.hasExtra("newGroupName")) {
                     TextView toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
@@ -513,7 +505,7 @@ public class GroupActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Log.d("MembriSnap", dataSnapshot.getValue().toString());
-                    if(child.child("immagine").exists())
+                    if (child.child("immagine").exists())
                         groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
                     else
                         groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
@@ -561,7 +553,7 @@ public class GroupActivity extends AppCompatActivity {
                 DatabaseReference creditorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
                         .child("contributors").child(contributor.getUid());
 
-                if(groupMember.getImgUrl()!=null) {
+                if (groupMember.getImgUrl() != null) {
                     debtorRef.child("immagine").setValue(groupMember.getImgUrl());
                     creditorRef.child("riepilogo").child(groupMember.getUid()).child("immagine").setValue(groupMember.getImgUrl());
                 }
@@ -569,12 +561,11 @@ public class GroupActivity extends AppCompatActivity {
                 debtorRef.child("riepilogo").child(contributor.getUid()).child("nome").setValue(contributor.getName());
 
 
-
                 creditorRef.child("riepilogo").child(groupMember.getUid()).child("amount").setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
                 creditorRef.child("nome").setValue(contributor.getName());
                 creditorRef.child("riepilogo").child(groupMember.getUid()).child("nome").setValue(groupMember.getName());
 
-                if(contributor.getImgUrl()!=null) {
+                if (contributor.getImgUrl() != null) {
                     creditorRef.child("immagine").setValue(contributor.getImgUrl());
                     debtorRef.child("riepilogo").child(contributor.getUid()).child("immagine").setValue(contributor.getImgUrl());
                 }
@@ -618,7 +609,7 @@ public class GroupActivity extends AppCompatActivity {
 
     public void passBalancesArray(Collection<Me> balancesArray) {
         balancesArrayTakenFromFragment.clear();
-        for(Me b : balancesArray)
+        for (Me b : balancesArray)
             balancesArrayTakenFromFragment.add(b);
     }
 
@@ -813,21 +804,19 @@ public class GroupActivity extends AppCompatActivity {
                                 // Sono un contributor
                                 for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
 
-                                    if (balancesMap.containsKey(expenseBalance.getKey().toString())) {
-                                        if(expenseBalance.child("amount").exists())
+                                    if (balancesMap.containsKey(expenseBalance.getKey())) {
+                                        if (expenseBalance.child("amount").exists())
                                             balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
-                                    } else
-                                        {
-                                            Log.d("balance","not exist key"+expenseBalance.getKey());
-                                            if(expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
+                                    } else {
+                                        if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
                                             Me newDebtor;
 
-                                                if(expenseBalance.child("immagine").exists())
-                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),expenseBalance.child("immagine").getValue().toString());
+                                            if (expenseBalance.child("immagine").exists())
+                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
                                             else
-                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),null);
+                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
 
-                                            balancesMap.put(expenseBalance.getKey().toString(), newDebtor);
+                                            balancesMap.put(expenseBalance.getKey(), newDebtor);
                                         }
                                     }
                                 }
@@ -836,17 +825,17 @@ public class GroupActivity extends AppCompatActivity {
                                 if (meRef.exists()) {
                                     // Sono un debtor
                                     for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
-                                        if (balancesMap.containsKey(expenseBalance.getKey().toString())) {
-                                            if(expenseBalance.child("amount").exists())
+                                        if (balancesMap.containsKey(expenseBalance.getKey())) {
+                                            if (expenseBalance.child("amount").exists())
                                                 balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
                                         } else {
-                                            if(expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
+                                            if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
                                                 Me newDebtor;
-                                                if(expenseBalance.child("immagine").exists())
-                                                    newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),expenseBalance.child("immagine").getValue().toString());
-                                               else
-                                                    newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"),null);
-                                                balancesMap.put(expenseBalance.getKey().toString(), newDebtor);
+                                                if (expenseBalance.child("immagine").exists())
+                                                    newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
+                                                else
+                                                    newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
+                                                balancesMap.put(expenseBalance.getKey(), newDebtor);
 
                                             }
                                         }
@@ -856,9 +845,9 @@ public class GroupActivity extends AppCompatActivity {
                         }
 
 
-                        for(Me me : balancesMap.values()) {
+                        for (Me me : balancesMap.values()) {
                             float currentAmount = me.getAmount();
-                            if(currentAmount > 0)
+                            if (currentAmount > 0)
                                 creditAmount += currentAmount;
                             else
                                 debtAmount += currentAmount;

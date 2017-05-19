@@ -65,7 +65,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.30"
+            android:layout_weight="0.23"
             android:orientation="vertical">
 
             <LinearLayout
@@ -78,7 +78,7 @@
                     android:id="@+id/expense_cost_amount_tv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.3"
+                    android:layout_weight="0.4"
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxEms="1"

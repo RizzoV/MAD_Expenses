@@ -240,6 +240,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
 
         if (requestCode == REQUEST_CONTRIBUTORS) {
+            Log.e("DEBUG", "IN");
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 contributorsList = extras.getParcelableArrayList("parceledContributors");
@@ -266,9 +267,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private void addListenerOnContributorsButton() {
         final Button contributorsButton = (Button) findViewById(R.id.contributors_button);
 
-        if(mAuth.getCurrentUser().getPhotoUrl()!=null)
+        if (mAuth.getCurrentUser().getPhotoUrl() != null)
             contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getPhotoUrl().toString(), mAuth.getCurrentUser().getUid()));
-       else
+        else
             contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid()));
 
         Log.d("Contributors", contributorsList.get(0).getName().toString());
@@ -321,7 +322,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         setContentView(R.layout.progress_dialog_layout);
                         getWindow().setLayout(AppBarLayout.LayoutParams.MATCH_PARENT,
                                 AppBarLayout.LayoutParams.MATCH_PARENT);
-                       imageLoader = (CircularFillableLoaders) barProgressDialog.findViewById(R.id.circularFillableLoaders);
+                        imageLoader = (CircularFillableLoaders) barProgressDialog.findViewById(R.id.circularFillableLoaders);
                     }
                 };
 
@@ -477,8 +478,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         String username = mAuth.getCurrentUser().getDisplayName();
 
-        if(username==null)
-            username="User";
+        if (username == null)
+            username = "User";
 
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -490,20 +491,19 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot current : dataSnapshot.getChildren()) {
+                for (DataSnapshot current : dataSnapshot.getChildren()) {
                     Notifications currentNot = current.getValue(Notifications.class);
-                    notification.put(current.getKey(),new Notifications(currentNot.getActivity(),currentNot.getData(),currentNot.getId(),currentNot.getUid(),currentNot.getUname(),current.getKey()));
-                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity),formattedDate.toString(),idExpense,usrId, finalUsername.toString()));
+                    notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
+                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, idExpense, usrId, finalUsername));
                     notificationRef.setValue(notification);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("AddExpenseActivity", "Unable to perform listen on notificationRef");
             }
         });
-
 
 
         getIntent().putExtra("expenseId", idExpense);
@@ -526,7 +526,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     public void addListenerOnImageButton() {
-
         imageButton = (ImageButton) findViewById(R.id.image);
 
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -724,7 +723,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             }
 
             //TODO checkare i contributors ed excluded della spesa che sto modificando
-
             isModifyActivity = true;
         }
     }
@@ -763,8 +761,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             public void onCancelled(DatabaseError databaseError) {
                 Log.e("AddExpenseActivity", "Could not retrieve the expense from Firebase");
             }
-
-
         });
     }
 
@@ -783,7 +779,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     private Intent getParentActivityIntentImpl() {
-        Intent i = null;
+        Intent i;
 
         // Here you need to do some logic to determine from which Activity you came.
         // example: you could pass a variable through your Intent extras and check that.
@@ -842,8 +838,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             netChange = null;
             Log.e("Receiver", "unregister on pause");
         }
-
-
     }
 }
 // other 'case' lines to check for other
