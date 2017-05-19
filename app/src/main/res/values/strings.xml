@@ -90,6 +90,9 @@
     <string name="no_group_found">No group found!</string>
     <string name="youre_not_part_of_any_group">You are not part of any group! :(</string>
     <string name="dialog_camera_or_gallery">Select image source</string>
+    <string name="no_credit_and_debt">You have no credits or debts</string>
+    <string name="group_and_credit">- Credit: </string>
+    <string name="group_debt">Debt: </string>
 
     <!-- Group activity -->
     <string name="noproposals">No proposals associated with the group :(</string>

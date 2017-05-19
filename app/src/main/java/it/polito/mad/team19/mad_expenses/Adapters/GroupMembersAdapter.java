@@ -74,7 +74,7 @@ public class GroupMembersAdapter extends BaseAdapter {
         ImageView cb = (ImageView) convertView.findViewById(R.id.contributor_checkbox);
 
         if(membersList.get(position).getImgUrl()!=null)
-            Glide.with(context).load(membersList.get(position).getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.img) {
+            Glide.with(context).load(membersList.get(position).getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.img) {
                 @Override
                 protected void setResource(Bitmap resource) {
                     RoundedBitmapDrawable circularBitmapDrawable =
@@ -85,7 +85,7 @@ public class GroupMembersAdapter extends BaseAdapter {
             });
     else {
         Glide.clear(viewHolder.img);
-        viewHolder.img.setImageResource(R.mipmap.ic_user_noimg);
+        viewHolder.img.setImageResource(R.drawable.ic_user_noimg);
     }
 
 

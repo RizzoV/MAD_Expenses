@@ -8,13 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -31,7 +24,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -65,7 +57,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOError;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
@@ -638,7 +629,7 @@ public class GroupActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Float totalAmount;
-        private Float debitAmount;
+        private Float debtAmount;
         private Float creditAmount;
         private Activity mActivity;
 
@@ -647,9 +638,9 @@ public class GroupActivity extends AppCompatActivity {
         private boolean free = true;
 
         public ExpensesListFragment() {
-            totalAmount = new Float(0);
-            debitAmount = new Float(0);
-            creditAmount = new Float(0);
+            totalAmount = (float) 0;
+            debtAmount = (float) 0;
+            creditAmount = (float) 0;
         }
 
         /**
@@ -696,7 +687,7 @@ public class GroupActivity extends AppCompatActivity {
                     intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
                     intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                     intent.putExtra("ExpenseId", clicked.getFirebaseId());
-                    intent.putExtra("currentPersonalBalance", String.valueOf(creditAmount - debitAmount));
+                    intent.putExtra("currentPersonalBalance", String.valueOf(creditAmount - debtAmount));
                     startActivity(intent);
                 }
             });
@@ -792,7 +783,7 @@ public class GroupActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     totalAmount = (float) 0;
                     creditAmount = (float) 0;
-                    debitAmount = (float) 0;
+                    debtAmount = (float) 0;
                     expenses.clear();
                     balancesMap.clear();
 
@@ -870,15 +861,17 @@ public class GroupActivity extends AppCompatActivity {
                             if(currentAmount > 0)
                                 creditAmount += currentAmount;
                             else
-                                debitAmount += currentAmount;
+                                debtAmount += currentAmount;
                         }
 
-                        debitAmount = Math.abs(debitAmount);
+                        debtAmount = Math.abs(debtAmount);
                         creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
-                        debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debitAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                        debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
                         totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
 
-                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").setValue(creditAmount-debitAmount);
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);
+
                         pBar.setVisibility(View.GONE);
 
                     } else {

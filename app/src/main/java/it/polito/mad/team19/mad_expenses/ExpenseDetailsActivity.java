@@ -193,13 +193,17 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                             child("debtors").child(expenseDebtorId).child("riepilogo").child(expenseContributorId).child("amount");
                                                     DatabaseReference creditAmountRef = firebase.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).
                                                             child("contributors").child(expenseContributorId).child("riepilogo").child(expenseDebtorId).child("amount");
-                                                    DatabaseReference balanceAmaount = firebase.getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())
-                                                            .child("gruppi").child(groupId).child("bilancio");
+                                                    DatabaseReference creditAmount = firebase.getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                            .child("gruppi").child(groupId).child("credito");
+                                                    DatabaseReference debtAmount = firebase.getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                            .child("gruppi").child(groupId).child("debito");
 
                                                     String chosenAmount = debtEditText.getText().toString().trim().replace(",", ".");
 
-                                                    balanceAmaount.setValue(String.valueOf(Float.valueOf(currentPersonalBalance)
-                                                            - Float.valueOf(expenseDebtCurrentAmount.replace(",", ".")) + Float.valueOf(chosenAmount)));
+                                                    //TODO: check se senza va bene comunque (perchè c'è GroupActivity ad aggiornarlo)
+                                                    /* balanceAmaount.setValue(String.valueOf(Float.valueOf(currentPersonalBalance)
+                                                     *       - Float.valueOf(expenseDebtCurrentAmount.replace(",", ".")) + Float.valueOf(chosenAmount)));
+                                                     */
                                                     debtAmountRef.setValue("-" + chosenAmount);
                                                     creditAmountRef.setValue(chosenAmount);
 

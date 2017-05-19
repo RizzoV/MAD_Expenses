@@ -159,7 +159,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 intent.putExtra("groupName", ((Group) parent.getItemAtPosition(position)).getName());
                 intent.putExtra("groupId", ((Group) parent.getItemAtPosition(position)).getGroupId());
                 intent.putExtra("groupImage", ((Group) parent.getItemAtPosition(position)).getImage());
-                intent.putExtra("groupMyBalance", ((Group) parent.getItemAtPosition(position)).getBalance().toString());
+                intent.putExtra("groupMyCredit", ((Group) parent.getItemAtPosition(position)).getCredit().toString());
+                intent.putExtra("groupMyDebt", ((Group) parent.getItemAtPosition(position)).getDebt().toString());
                 startActivityForResult(intent,GROUP_ACTIVITY);
 
             }
@@ -333,7 +334,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             }
             case GROUP_ACTIVITY:
                 {
-
                     if(connectionReceiver==null) {
                         registerConnectionReceiver(filter);
                         Log.e("Receiver","register group acitivty");
@@ -402,7 +402,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("immagine").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
 
 
-                    addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("bilancio").setValue(0);
+                    addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("credito").setValue(0);
+                    addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("debito").setValue(0);
                     try {
                         addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("immagine").setValue(snapshot.child("immagine").getValue().toString());
                     } catch (NullPointerException e) {
@@ -479,7 +480,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         Log.d("Invite", child.toString());
 
                         final String groupName = child.child("nome").getValue().toString();
-                        final Float bilancio = Float.parseFloat(child.child("bilancio").getValue().toString());
+                        final Float credito = Float.parseFloat(child.child("credito").getValue().toString());
+                        final Float debito = Float.parseFloat(child.child("debito").getValue().toString());
                         final String groupId = child.getKey();
                         final String immagine;
 
@@ -501,16 +503,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                 {
                                     int notNum = (int) dataSnapshot.getChildrenCount();
 
-
                                     if (immagine!=null)
-                                        groups.add(new Group(groupName,bilancio,notNum-1,immagine,groupId));
+                                        groups.add(new Group(groupName,credito, debito, notNum-1,immagine,groupId));
                                     else
-                                        groups.add(new Group(groupName,bilancio,notNum-1,null,groupId));
+                                        groups.add(new Group(groupName,credito, debito, notNum-1,null,groupId));
 
                                     if(listenerNot.get(groupId)==null)
                                     {
-                                        Log.d("NoPollo",groupId);
-
                                         DatabaseReference notAddRed = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
                                         notAddRed.addValueEventListener(new ValueEventListener() {
                                             @Override
@@ -540,7 +539,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
-
+                                Log.e("GroupsListActivity", "Unable to get groups and notifications");
                             }
                         };
 

@@ -93,7 +93,7 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
 
             if (current.getImgUrl() != null) {
                 //modo più semplice per caricare immagini e renderle tonde
-                Glide.with(context).load(current.getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(image) {
+                Glide.with(context).load(current.getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(image) {
                     @Override
                     protected void setResource(Bitmap resource) {
                         RoundedBitmapDrawable circularBitmapDrawable =
@@ -106,7 +106,7 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
             } else {
                 //se non ho l'immagine Glide non deve più occuparsene
                 Glide.clear(image);
-                image.setImageResource(R.mipmap.ic_user_noimg);
+                image.setImageResource(R.drawable.ic_user_noimg);
             }
 
             this.position = position;

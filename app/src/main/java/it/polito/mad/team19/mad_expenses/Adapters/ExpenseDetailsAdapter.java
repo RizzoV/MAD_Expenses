@@ -90,7 +90,7 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
             // Manage creditor icon
             if (ed.getCreditorImage() != null) {
-                Glide.with(context).load(ed.getCreditorImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.creditor_img) {
+                Glide.with(context).load(ed.getCreditorImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.creditor_img) {
                     @Override
                     protected void setResource(Bitmap resource) {
                         RoundedBitmapDrawable circularBitmapDrawable =
@@ -101,12 +101,12 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
                 });
             } else {
                 Glide.clear(viewHolder.creditor_img);
-                viewHolder.creditor_img.setImageResource(R.mipmap.ic_user_noimg);
+                viewHolder.creditor_img.setImageResource(R.drawable.ic_user_noimg);
             }
 
         // Manage debtor icon
         if (ed.getDebtorImage() != null) {
-            Glide.with(context).load(ed.getDebtorImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.debtor_img) {
+            Glide.with(context).load(ed.getDebtorImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.debtor_img) {
                 @Override
                 protected void setResource(Bitmap resource) {
                     RoundedBitmapDrawable circularBitmapDrawable =
@@ -117,7 +117,7 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
             });
         } else {
             Glide.clear(viewHolder.debtor_img);
-            viewHolder.debtor_img.setImageResource(R.mipmap.ic_user_noimg);
+            viewHolder.debtor_img.setImageResource(R.drawable.ic_user_noimg);
         }
 
         return convertView;

@@ -112,7 +112,7 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
             if(current.getImgUrl() != null)
             {
                 //modo più semplice per caricare immagini e renderle tonde
-                Glide.with(context).load(current.getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(thumb) {
+                Glide.with(context).load(current.getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(thumb) {
                     @Override
                     protected void setResource(Bitmap resource) {
                         RoundedBitmapDrawable circularBitmapDrawable =
@@ -127,7 +127,7 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
             {
                 //se non ho l'immagine Glide non deve più occuparsene
                 Glide.clear(thumb);
-                thumb.setImageResource(R.mipmap.ic_user_noimg);
+                thumb.setImageResource(R.drawable.ic_user_noimg);
             }
 
         }

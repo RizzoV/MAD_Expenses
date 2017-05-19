@@ -104,7 +104,7 @@ public class MeActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser().getPhotoUrl() != null) {
-            Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.ic_user_noimg).centerCrop().error(R.mipmap.ic_user_noimg).into(new BitmapImageViewTarget(my_thumb) {
+            Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(my_thumb) {
                 @Override
                 protected void setResource(Bitmap resource) {
                     RoundedBitmapDrawable circularBitmapDrawable =
@@ -115,7 +115,7 @@ public class MeActivity extends AppCompatActivity {
                 }
             });
         } else
-            my_thumb.setImageDrawable(getResources().getDrawable(R.mipmap.ic_user_noimg));
+            my_thumb.setImageDrawable(getResources().getDrawable(R.drawable.ic_user_noimg));
         String uname = mAuth.getCurrentUser().getDisplayName();
         if (uname == null)
             uname = "User";
