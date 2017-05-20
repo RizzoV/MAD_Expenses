@@ -108,7 +108,7 @@ public class ContributorsPopupActivity extends Activity {
                 for (FirebaseGroupMember fbgm : selectedMembers) {
                     Log.e("DEBUG contributors", fbgm.getName());
                     Log.e("DEBUG contributors 2", fbgm.getUid());
-                    Log.e("DEBUG contributors 3", fbgm.getImgUrl());
+                    Log.e("DEBUG contributors 3", fbgm.getImgUrl() + " - ");
                     // Select them in the view
                     int itemPos = groupMembersAdapter.getPositionFromUid(fbgm.getUid());
 
@@ -164,7 +164,8 @@ public class ContributorsPopupActivity extends Activity {
                 Intent intent = new Intent();
                 Bundle b = new Bundle();
                 b.putParcelableArrayList("parceledContributors", selectedMembers);
-                intent.putExtras(b);
+                intent.putExtra("contributorsBundle", b);
+                ArrayList<FirebaseGroupMember> a = intent.getBundleExtra("contributorsBundle").getParcelableArrayList("parceledContributors");
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -179,7 +180,7 @@ public class ContributorsPopupActivity extends Activity {
             netChange.setViewForSnackbar(findViewById(android.R.id.content));
             netChange.setDialogShowTrue(false);
             registerReceiver(netChange, filter);
-            Log.e("Receiver", "register on resum");
+            Log.d("Receiver", "register on resum");
         }
     }
 

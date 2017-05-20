@@ -107,7 +107,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     NetworkChangeReceiver netChange;
     IntentFilter filter;
 
-
     //Jured: modifyActivity variables
     private Boolean isModifyActivity;
     String oldName;
@@ -146,7 +145,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         mImageView = (ImageView) findViewById(R.id.camera_img);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
-
 
         dateEditText = (EditText) findViewById(R.id.new_expense_data_et);
         dateEditText.setInputType(InputType.TYPE_NULL);
@@ -242,8 +240,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         if (requestCode == REQUEST_CONTRIBUTORS) {
             Log.e("DEBUG", "IN");
             if (resultCode == RESULT_OK) {
-                Bundle extras = data.getExtras();
-                contributorsList = extras.getParcelableArrayList("parceledContributors");
+                Bundle b = data.getBundleExtra("contributorsBundle");
+                contributorsList = b.getParcelableArrayList("parceledContributors");
                 for (FirebaseGroupMember m : contributorsList)
                     Log.d("CurrentContributor", m.getName());
             }
@@ -272,7 +270,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         else
             contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid()));
 
-        Log.d("Contributors", contributorsList.get(0).getName().toString());
+        Log.d("Contributors", contributorsList.get(0).getName());
 
         contributorsButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -280,7 +278,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Intent i = new Intent(AddExpenseActivity.this, ContributorsPopupActivity.class);
                 i.putExtra("groupId", groupId);
                 ArrayList<FirebaseGroupMember> initialContributors = new ArrayList<>(contributorsList);
-                //all'inizio chi crea la spesa è un contributor
+                // All'inizio chi crea la spesa è un contributor
                 Bundle b = new Bundle();
                 b.putParcelableArrayList("contributorsList", initialContributors);
                 i.putExtra("contributorsBundle", b);
@@ -695,7 +693,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty()) {
                 contributorsList = getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList");
-                Log.d("ContributorB", contributorsList.get(0).getUid().toString());
+                Log.e("Contributor", contributorsList.get(0).getName());
             }
 
             if (!getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList").isEmpty()) {
@@ -703,7 +701,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             }
 
             getSupportActionBar().setTitle(R.string.modify_expense);
-            //getSupportActionBar().home
 
             nameEditText.setText(oldName);
             descriptionEditText.setText(oldDesc);
@@ -750,6 +747,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                             oldExpenseVersionId = oldExpenseId;
                         }
                         barProgressDialog.dismiss();
+                        setResult(RESULT_OK, getIntent());
                         finish();
                     }
 

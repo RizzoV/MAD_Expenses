@@ -45,6 +45,7 @@ import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 public class ExpenseDetailsActivity extends AppCompatActivity {
 
+    private static final int MODIFIED = 8;
     private TextView expense_name;
     private TextView expense_desc;
     private TextView expense_cost;
@@ -133,8 +134,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot expense) {
                 for (DataSnapshot contributor : expense.child("contributors").getChildren()) {
-                    Log.d("Contributor", contributor.toString());
-
                     String contributor_img = null;
                     if (contributor.child("immagine").exists())
                         contributor_img = contributor.child("immagine").getValue().toString();
@@ -148,10 +147,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                         expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img));
                         edAdapter.notifyDataSetChanged();
                     }
-                    contributorsList.add(new FirebaseGroupMember(contributor.getValue().toString(), null, contributor.getKey()));
+                    contributorsList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));
                 }
                 for (DataSnapshot currentExcluded : expense.child("excluded").getChildren())
-                    excludedList.add(new FirebaseGroupMember(currentExcluded.getValue().toString(), null, currentExcluded.getKey()));
+                    excludedList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey()));
 
 
                 // Vale: dialog per la modifica dell'importo dovuto
@@ -201,13 +200,12 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                     debtAmountRef.setValue("-" + chosenAmount);
                                                     creditAmountRef.setValue(chosenAmount);
 
-                                                    Log.e("POSITION", String.valueOf(position));
                                                     ((ExpenseDetail) edAdapter.getItem(position)).setAmount(String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)));
                                                     edAdapter.notifyDataSetChanged();
 
                                                     ((TextView) itemView.findViewById(R.id.debt_amount)).setText(
                                                          String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
-                                                    
+
                                                     if (Float.valueOf(chosenAmount) > 0)
                                                       itemView.findViewById(R.id.debt_amount).setBackground(ContextCompat.getDrawable(ExpenseDetailsActivity.this, R.drawable.rounded_corners_red));
                                                     else
@@ -277,7 +275,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String expenseAuthor = dataSnapshot.getValue(String.class);
-                if (expenseAuthor.equals(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()))
+                if (expenseAuthor.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
                     // Inflate the menu; this adds items to the action bar if it is present.
                     getMenuInflater().inflate(R.menu.menu_expense_details, finalMenu);
             }
@@ -373,7 +371,15 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MODIFY_CODE && resultCode == RESULT_OK) {
-
+            setResult(MODIFIED, getIntent());
+            Bundle b = new Bundle();
+            b.putParcelableArrayList("contributors", data.getParcelableArrayListExtra("contributors"));
+            b.putParcelableArrayList("excluded", data.getParcelableArrayListExtra("excluded"));
+            getIntent().putExtras(b);
+            getIntent().putExtra("expenseId", data.getStringExtra("expenseId"));
+            getIntent().putExtra("expenseTotal", data.getStringExtra("expenseTotal"));
+            getIntent().putExtra("expenseUId", data.getStringExtra("expenseUId"));
+            getIntent().putExtra("expenseUserName", data.getStringExtra("expenseUserName"));
             finish();
         }
     }

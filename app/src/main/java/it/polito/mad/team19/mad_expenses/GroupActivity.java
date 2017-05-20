@@ -66,6 +66,7 @@ import java.util.Locale;
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.NotificationsAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
+import it.polito.mad.team19.mad_expenses.Classes.BalanceCalculator;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
@@ -86,7 +87,9 @@ public class GroupActivity extends AppCompatActivity {
     private static final int REQUEST_NEW_EXPENSE = 2;
     private static final int REQUEST_NEW_PROPOSAL = 3;
     private static final int GROUP_INFO_REQUEST = 4;
+    private static final int EXPENSE_DETAILS = 5;
     private static final int GROUP_QUITTED = 99;
+    private static final int MODIFIED = 8;
 
     private PagerAdapter mSectionsPagerAdapter;
 
@@ -462,10 +465,10 @@ public class GroupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_NEW_EXPENSE && resultCode == RESULT_OK) {
+        if ((requestCode == REQUEST_NEW_EXPENSE  && resultCode == RESULT_OK) || resultCode == MODIFIED) {
             // Gestione calcolo debiti e crediti dovuti alla nuova spesa
 
-            Log.d("ExpenseIDActivity", data.getStringExtra("expenseId").toString());
+            Log.d("ExpenseIDActivity", data.getStringExtra("expenseId"));
             if (groupMembersList.size() > 0)
                 groupMembersList.clear();
 
@@ -473,7 +476,8 @@ public class GroupActivity extends AppCompatActivity {
             ArrayList<FirebaseGroupMember> excluded = data.getParcelableArrayListExtra("excluded");
 
             //TODO: far avviare tutto in un thread
-            getMembers(data.getStringExtra("expenseId").toString(), Float.parseFloat(data.getStringExtra("expenseTotal")), data.getStringExtra("expenseUId"),
+            Log.e("DEBUG", "IN");
+            calculateBalances(data.getStringExtra("expenseId"), Float.parseFloat(data.getStringExtra("expenseTotal")), data.getStringExtra("expenseUId"),
                     data.getStringExtra("expenseUserName"), contributors, excluded);
         }
 
@@ -490,13 +494,11 @@ public class GroupActivity extends AppCompatActivity {
                 setResult(99);
                 finish();
             }
-
         }
-
     }
 
-    private void getMembers(final String expenseId, final float expenseTotal, final String expenseUuid, final String expenseUserName,
-                            final ArrayList<FirebaseGroupMember> contributors, final ArrayList<FirebaseGroupMember> excluded) {
+    private void calculateBalances (final String expenseId, final float expenseTotal, final String expenseUuid, final String expenseUserName,
+                                   final ArrayList<FirebaseGroupMember> contributors, final ArrayList<FirebaseGroupMember> excluded) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
 
@@ -506,13 +508,11 @@ public class GroupActivity extends AppCompatActivity {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Log.d("MembriSnap", dataSnapshot.getValue().toString());
                     if (child.child("immagine").exists())
-                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
+                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue(String.class), child.child("immagine").getValue(String.class), child.getKey()));
                     else
-                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue(String.class), null, child.getKey()));
                 }
-
-                setBalance(expenseId, expenseTotal, expenseUuid, expenseUserName, contributors, excluded);
-
+                BalanceCalculator.calculate(groupId, expenseId, groupMembersList, expenseTotal, contributors, excluded);
             }
 
             @Override
@@ -520,58 +520,6 @@ public class GroupActivity extends AppCompatActivity {
                 Log.e("GroupActivity", "Unable to read group members");
             }
         });
-    }
-
-    private void setBalance(String idExpense, float expenseTotal, String expenseUserUid, String expenseUserName, ArrayList<FirebaseGroupMember> contributors, ArrayList<FirebaseGroupMember> excluded) {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        for (FirebaseGroupMember groupMember : groupMembersList) {
-            Boolean stop = Boolean.FALSE;
-            for (FirebaseGroupMember excludedMember : excluded) {
-                if (groupMember.getUid().equals(excludedMember.getUid())) {
-                    stop = Boolean.TRUE;
-                    break;
-                }
-            }
-
-            for (FirebaseGroupMember contributor : contributors) {
-                if (groupMember.getUid().equals(contributor.getUid())) {
-                    stop = Boolean.TRUE;
-                    break;
-                }
-            }
-
-            if (stop)
-                continue;
-
-            for (FirebaseGroupMember contributor : contributors) {
-                DatabaseReference debtorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
-                        .child("debtors").child(groupMember.getUid());
-                debtorRef.child("riepilogo").child(contributor.getUid()).child("amount").setValue(String.format("%.2f", -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
-                debtorRef.child("nome").setValue(groupMember.getName());
-
-                DatabaseReference creditorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
-                        .child("contributors").child(contributor.getUid());
-
-                if (groupMember.getImgUrl() != null) {
-                    debtorRef.child("immagine").setValue(groupMember.getImgUrl());
-                    creditorRef.child("riepilogo").child(groupMember.getUid()).child("immagine").setValue(groupMember.getImgUrl());
-                }
-
-                debtorRef.child("riepilogo").child(contributor.getUid()).child("nome").setValue(contributor.getName());
-
-
-                creditorRef.child("riepilogo").child(groupMember.getUid()).child("amount").setValue(String.format("%.2f", +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
-                creditorRef.child("nome").setValue(contributor.getName());
-                creditorRef.child("riepilogo").child(groupMember.getUid()).child("nome").setValue(groupMember.getName());
-
-                if (contributor.getImgUrl() != null) {
-                    creditorRef.child("immagine").setValue(contributor.getImgUrl());
-                    debtorRef.child("riepilogo").child(contributor.getUid()).child("immagine").setValue(contributor.getImgUrl());
-                }
-            }
-
-        }
     }
 
     protected void onResume() {
@@ -679,7 +627,7 @@ public class GroupActivity extends AppCompatActivity {
                     intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                     intent.putExtra("ExpenseId", clicked.getFirebaseId());
                     intent.putExtra("currentPersonalBalance", String.valueOf(creditAmount - debtAmount));
-                    startActivity(intent);
+                    startActivityForResult(intent, EXPENSE_DETAILS);
                 }
             });
 

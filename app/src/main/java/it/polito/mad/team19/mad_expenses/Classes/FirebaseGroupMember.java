@@ -18,8 +18,6 @@ public class FirebaseGroupMember implements Parcelable {
     //LUDO: per ceccare
     private boolean checked = false;
 
-    public FirebaseGroupMember() {}
-
     public FirebaseGroupMember(String name, String imgUrl, String uid)
     {
         this.name = name;

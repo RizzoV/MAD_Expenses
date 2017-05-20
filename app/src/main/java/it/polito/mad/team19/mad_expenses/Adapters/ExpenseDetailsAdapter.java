@@ -119,13 +119,4 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
         return convertView;
     }
-
-
-    @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
-        for(ExpenseDetail ed : detailsList) {
-            Log.e("AAAAAAAAAA", ed.getDebtor() + ": " + ed.getAmount());
-        }
-    }
 }
