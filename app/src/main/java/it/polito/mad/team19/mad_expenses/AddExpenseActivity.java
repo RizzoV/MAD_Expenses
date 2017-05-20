@@ -228,8 +228,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 String[] projection = {MediaStore.Images.Media.DATA};
                 @SuppressWarnings("deprecation")
                 Cursor cursor = managedQuery(selectedImage, projection, null, null, null);
-                int column_index = cursor
-                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
                 Log.d("DebugGalleryImage:2", mCurrentPhotoPath);
@@ -238,12 +237,13 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
 
         if (requestCode == REQUEST_CONTRIBUTORS) {
-            Log.e("DEBUG", "IN");
             if (resultCode == RESULT_OK) {
                 Bundle b = data.getBundleExtra("contributorsBundle");
                 contributorsList = b.getParcelableArrayList("parceledContributors");
-                for (FirebaseGroupMember m : contributorsList)
-                    Log.d("CurrentContributor", m.getName());
+                if(contributorsList != null) {
+                    for (FirebaseGroupMember m : contributorsList)
+                        Log.d("CurrentContributor", m.getName() + " ");
+                }
             }
         }
 
@@ -251,8 +251,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 excludedList = extras.getParcelableArrayList("parceledExcluded");
-                for (FirebaseGroupMember m : excludedList)
-                    Log.d("CurrentExcluded", m.getName());
+                if(excludedList != null) {
+                    for (FirebaseGroupMember m : excludedList)
+                        Log.d("CurrentExcluded", m.getName() + " ");
+                }
             }
         }
     }
