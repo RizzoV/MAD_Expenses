@@ -301,7 +301,8 @@ public class CreateGroupActivity extends AppCompatActivity {
         mDatabase.child("gruppi").child(groupid).child("totale").setValue(0);
         mDatabase.child("gruppi").child(groupid).child("stato").setValue("created");
 
-        mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("bilancio").setValue(0);
+        mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("credito").setValue(0);
+        mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("debito").setValue(0);
         //mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("immagine").setValue(img);
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("nome").setValue(name);
         mDatabase.child("utenti").child(uid).child("gruppi").child(groupid).child("notifiche").setValue(0);

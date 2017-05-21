@@ -119,8 +119,8 @@
     <string name="no">No</string>
 
     <!-- Me activity -->
-    <string name="confirmDebtExtinctionTitle">Confirm debt extinction</string> <!-- ??????? -->
-    <string name="confirmDebtExtinction">Do you want to extinguish this debt?</string>
+    <string name="confirmDebtExtinctionTitle">Confirm credit extinction</string> <!-- ??????? -->
+    <string name="confirmDebtExtinction">Do you want to extinguish this credit?</string>
     <string name="cannotExtinguish">Unable to extinguish a debt</string>
 
     <!-- Chat -->

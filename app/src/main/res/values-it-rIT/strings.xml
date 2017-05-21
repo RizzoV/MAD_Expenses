@@ -118,8 +118,8 @@
     <string name="typeMessage">Scrivi messaggio</string>
 
     <!-- Me activity -->
-    <string name="confirmDebtExtinctionTitle">Conferma estinzione debito</string> <!-- ??????? -->
-    <string name="confirmDebtExtinction">Vuoi estinguere questo debito?</string>
+    <string name="confirmDebtExtinctionTitle">Conferma estinzione credito</string> <!-- ??????? -->
+    <string name="confirmDebtExtinction">Vuoi estinguere questo credito?</string>
     <string name="cannotExtinguish">Impossibile estinguere un debito</string>
 
     <!-- Notifications -->
