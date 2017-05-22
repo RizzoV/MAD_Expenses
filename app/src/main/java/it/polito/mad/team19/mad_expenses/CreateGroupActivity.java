@@ -395,6 +395,9 @@ public class CreateGroupActivity extends AppCompatActivity {
         notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddGroupActivity),formattedDate.toString(),groupId,userID, username.toString()));
         notificationRef.setValue(notification);
 
+        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userID).child(groupId).child("notifiche");
+        myNotRef.setValue(notificationId);
+
     }
 
     @Override

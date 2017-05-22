@@ -494,10 +494,18 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 for (DataSnapshot current : dataSnapshot.getChildren()) {
                     Notifications currentNot = current.getValue(Notifications.class);
                     notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
-                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, idExpense, usrId, finalUsername));
-                    notificationRef.setValue(notification);
                 }
-            }
+
+
+
+                notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, idExpense, usrId, finalUsername));
+                notificationRef.setValue(notification);
+
+                DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(usrId).child("gruppi").child(groupId).child("notifiche");
+                myNotRef.setValue(notificationId);
+
+                }
+
 
             @Override
             public void onCancelled(DatabaseError databaseError) {

@@ -280,12 +280,15 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot current : dataSnapshot.getChildren()) {
+                for (DataSnapshot current : dataSnapshot.getChildren()) {
                     Notifications currentNot = current.getValue(Notifications.class);
-                    notification.put(current.getKey(),new Notifications(currentNot.getActivity(),currentNot.getData(),currentNot.getId(),currentNot.getUid(),currentNot.getUname(),current.getKey()));
+                    notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
+                }
                     notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity),formattedDate.toString(),notificationId,userID, finalUsername));
                     notificationRef.setValue(notification);
-                }
+
+                DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child(groupId).child("notifiche");
+                myNotRef.setValue(notificationId);
             }
 
             @Override
