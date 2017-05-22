@@ -606,7 +606,7 @@ public class GroupActivity extends AppCompatActivity {
             final ArrayList<Expense> expenses = new ArrayList<>();
 
             final RecyclerView expensesListRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-            final ExpensesRecyclerAdapter expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+            final ExpensesRecyclerAdapter expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses,getActivity().getIntent().getStringExtra("groupId") );
             expensesListRecyclerView.setAdapter(expensesListAdapter);
 
             LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());

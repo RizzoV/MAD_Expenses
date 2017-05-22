@@ -15,7 +15,9 @@
         android:divider="@null"
         android:layout_above="@+id/chatControls"
         android:listSelector="@android:color/transparent"
-        tools:listitem="@layout/topic_msg_row" />
+        tools:listitem="@layout/topic_msg_row"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"/>
 
 
     <LinearLayout

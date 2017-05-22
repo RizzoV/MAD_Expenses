@@ -49,6 +49,7 @@ dependencies {
     compile 'com.google.firebase:firebase-invites:10.2.1'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'com.android.support:support-v4:25.3.1'
+    compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.7'
     testCompile 'junit:junit:4.12'
 }
 
