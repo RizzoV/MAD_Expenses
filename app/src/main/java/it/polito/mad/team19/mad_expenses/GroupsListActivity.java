@@ -208,6 +208,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
             }
         });
+
     }
 
     @Override

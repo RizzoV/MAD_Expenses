@@ -379,13 +379,25 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     private void uploadInfos() {
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         String uuid = myRef.push().getKey();
         idExpense = uuid;
         final DatabaseReference newExpenseRef = myRef.child(uuid);
 
+        AsyncFirebaseImageLoader async = new AsyncFirebaseImageLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(),
+                isModifyActivity, oldExpenseId, excludedList, contributorsList);
+
+        async.execute();
+        /*
+
+
         if (mCurrentPhotoPath != null) {
+
+
+
             groupImagesRef = storageRef.child("images").child(groupId);
             final File imageToUpload = new File(mCurrentPhotoPath);
             Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
@@ -471,7 +483,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
             }
             finishTasks();
-        }
+        }*/
+
+       finishTasks();
     }
 
     public void finishTasks() {

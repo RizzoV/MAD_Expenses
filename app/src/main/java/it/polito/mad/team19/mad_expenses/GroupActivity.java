@@ -66,7 +66,6 @@ import java.util.Locale;
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.NotificationsAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
-import it.polito.mad.team19.mad_expenses.Classes.BalanceCalculator;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
@@ -475,6 +474,9 @@ public class GroupActivity extends AppCompatActivity {
             ArrayList<FirebaseGroupMember> contributors = data.getParcelableArrayListExtra("contributors");
             ArrayList<FirebaseGroupMember> excluded = data.getParcelableArrayListExtra("excluded");
 
+
+
+
             //TODO: far avviare tutto in un thread
             Log.e("DEBUG", "IN");
             calculateBalances(data.getStringExtra("expenseId"), Float.parseFloat(data.getStringExtra("expenseTotal")), data.getStringExtra("expenseUId"),
@@ -512,7 +514,17 @@ public class GroupActivity extends AppCompatActivity {
                     else
                         groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue(String.class), null, child.getKey()));
                 }
-                BalanceCalculator.calculate(groupId, expenseId, groupMembersList, expenseTotal, contributors, excluded);
+               // BalanceCalculator.calculate(groupId, expenseId, groupMembersList, expenseTotal, contributors, excluded);
+
+                /////////////////////JURED PROVA//////////////////////////
+
+
+                AsyncFirebaseBalanceLoader async = new AsyncFirebaseBalanceLoader(groupId, expenseId, groupMembersList, expenseTotal, contributors, excluded);
+                async.execute();
+
+                //////////////////////////////////////////////////////////
+
+
             }
 
             @Override
