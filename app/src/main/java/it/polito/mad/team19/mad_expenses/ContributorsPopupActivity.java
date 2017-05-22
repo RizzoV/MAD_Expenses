@@ -106,9 +106,7 @@ public class ContributorsPopupActivity extends Activity {
 
                 // Preselect eventual already selected members
                 for (FirebaseGroupMember fbgm : selectedMembers) {
-                    Log.e("DEBUG contributors", fbgm.getName());
-                    Log.e("DEBUG contributors 2", fbgm.getUid());
-                    Log.e("DEBUG contributors 3", fbgm.getImgUrl() + " - ");
+                    Log.e("DEBUG contributors", fbgm.getName() + "-");
                     // Select them in the view
                     int itemPos = groupMembersAdapter.getPositionFromUid(fbgm.getUid());
 

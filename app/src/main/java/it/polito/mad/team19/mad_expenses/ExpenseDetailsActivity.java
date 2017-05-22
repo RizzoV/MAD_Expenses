@@ -149,9 +149,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                     }
                     contributorsList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));
                 }
-                for (DataSnapshot currentExcluded : expense.child("excluded").getChildren())
+                for (DataSnapshot currentExcluded : expense.child("excluded").getChildren()) {
                     excludedList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey()));
-
+                    Log.e("EDA E in", currentExcluded.child("nome").getValue(String.class) + "-");
+                }
 
                 // Vale: dialog per la modifica dell'importo dovuto
                 for (int i = 0; i < edAdapter.getCount(); i++) {
@@ -346,19 +347,16 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);
                 changeExpenseIntent.putExtra("ModifyIntent", "1");
+                Bundle b = new Bundle();
                 if (contributorsList != null) {
-                    Bundle b = new Bundle();
                     b.putParcelableArrayList("contributorsList", contributorsList);
-                    changeExpenseIntent.putExtra("contributorsBundle", b);
                 }
                 if (excludedList != null) {
-                    Bundle e = new Bundle();
-                    e.putParcelableArrayList("excludedList", excludedList);
-                    changeExpenseIntent.putExtra("excludedBundle", e);
-
-                    startActivityForResult(changeExpenseIntent, MODIFY_CODE);
-
+                    b.putParcelableArrayList("excludedList", excludedList);
                 }
+
+                changeExpenseIntent.putExtras(b);
+                startActivityForResult(changeExpenseIntent, MODIFY_CODE);
             }
 
             default:
