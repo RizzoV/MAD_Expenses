@@ -47,6 +47,8 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("ProposalName");
         desc = getIntent().getStringExtra("ProposalDesc");
         proposalId = getIntent().getStringExtra("proposalId");
+        groupId = getIntent().getStringExtra("groupId");
+
 
         final String username = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         final String userImgUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
@@ -68,9 +70,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(ProposalDetailsActivity.this, TopicActivity.class);
                 i.putExtra("topicType","proposals");
-                i.putExtra("topicId","xxxxxxxx");
                 i.putExtra("topicName",name);
-                i.putExtra("ProposalInfoIntent","true");
+                i.putExtra("groupId", groupId);
+                i.putExtra("proposalId", proposalId);
                 startActivity(i);
             }
         });

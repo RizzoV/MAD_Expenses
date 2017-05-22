@@ -895,6 +895,7 @@ public class GroupActivity extends AppCompatActivity {
                     final Intent intent = new Intent(getActivity(), ProposalDetailsActivity.class);
                     Log.d("Expenses", clicked.toString());
                     intent.putExtra("ProposalName", clicked.getName());
+                    intent.putExtra("proposalId", clicked.getFirebaseId().toString());
                     //intent.putExtra("ProposalImgUrl", clicked.getImage());
                     intent.putExtra("ProposalDesc", clicked.getDescription());
                     intent.putExtra("ProposalCost", String.format(Locale.getDefault(), "%.2f", clicked.getExtimatedCost()));

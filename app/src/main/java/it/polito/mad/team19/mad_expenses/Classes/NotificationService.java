@@ -198,8 +198,6 @@ public class NotificationService extends IntentService{
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         mContext = this;
-        FirebaseApp.initializeApp(getApplicationContext());
-
 
         mAuth = FirebaseAuth.getInstance();
 
