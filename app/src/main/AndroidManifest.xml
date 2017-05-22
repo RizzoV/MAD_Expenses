@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -135,7 +137,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" /></activity>
 
+
+        <receiver android:name=".Classes.StartBackgroundNotificationService" android:enabled="true">
+            <intent-filter>
+                <action android:name="it.polito.mad.team19.mad_expenses" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <service android:name=".Classes.NotificationService"></service>
+
     </application>
 
 </manifest>
