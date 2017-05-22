@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -44,6 +45,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 
@@ -137,11 +139,6 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                     empty = true;
                 }
 
-                if (TextUtils.isEmpty(descriptionEditText.getText().toString())) {
-                    descriptionEditText.setError(getString(R.string.mandatory_field));
-                    empty = true;
-                }
-
                 //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
                 if (TextUtils.isEmpty(costEditText.getText().toString())) {
                     costEditText.setError(getString(R.string.mandatory_field));
@@ -169,7 +166,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                         }
                     };
 
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
                     //DatabaseReference myRef =
                     DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("proposals");
                     String uuid = UUID.randomUUID().toString();
@@ -200,20 +197,22 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                             // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
                             groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
-
                                     .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                         @Override
                                         public void onSuccess(Uri uri) {
-
                                             Log.d("DebugUriRequest",uri.toString());
-                                            newProposalRef.setValue(new FirebaseExpense(usrId,nameEditText.getText().toString(), descriptionEditText.getText().toString(),
+                                            newProposalRef.setValue(new FirebaseProposal(nameEditText.getText().toString(), descriptionEditText.getText().toString(), usrId,
                                                     Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
+
+                                            AsyncProposalWaitingForLoader apwfl = new AsyncProposalWaitingForLoader(database.getReference(), newProposalRef.getKey(), groupId);
+
+                                            apwfl.execute();
+
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception exception) {
-                                    // Handle any errors
-                                    mCurrentPhotoFirebaseUri = Uri.EMPTY;
+                                    Log.e("AddProposalActivity", "Error #1");
                                 }
                             });
 

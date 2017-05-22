@@ -13,17 +13,17 @@ public class Proposal {
     private String name;
     private String description;
     private Float extimatedCost;
-    private Image image;
+    private String imageUrl;
     private Currency currency;
-
-
     private String firebaseId;
+    private String author;
 
-    public Proposal(String name, String description, Float extimatedCost, Image image, Currency currency, String firebaseId) {
+    public Proposal(String name, String description, String author, Float extimatedCost, String imageUrl, Currency currency, String firebaseId) {
         this.name = name;
         this.description = description;
+        this.author = author;
         this.extimatedCost = extimatedCost;
-        this.image = image;
+        this.imageUrl = imageUrl;
         this.currency = currency;
         this.firebaseId = firebaseId;
     }
@@ -31,7 +31,6 @@ public class Proposal {
     public String getFirebaseId() {
         return firebaseId;
     }
-
 
     public Currency getCurrency() {
         return currency;
@@ -41,9 +40,12 @@ public class Proposal {
         this.currency = currency;
     }
 
-
     public String getName() {
         return name;
+    }
+
+    public String getAuthor() {
+        return author;
     }
 
     public String getDescription() {
@@ -54,8 +56,10 @@ public class Proposal {
         return extimatedCost;
     }
 
-    public Image getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
+
+
 }
 

@@ -121,6 +121,7 @@
     <string name="nobody">Nobody</string>
     <string name="accept">Accept</string>
     <string name="deny">Refuse</string>
+    <string name="waitingFor">Waiting for:</string>
 
     <string name="slogan">Sharing costs never be so easy!</string>
 
