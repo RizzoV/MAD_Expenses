@@ -21,14 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProposalDetailsActivity extends AppCompatActivity {
 
-    private String desc;
-    private String name;
-    private String cost;
-    private TextView author_tv;
-    private TextView cost_tv;
-    private TextView desc_tv;
-    private TextView name_tv;
-    private CardView cw_topic;
     private Button accept;
     private Button deny;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -43,14 +35,16 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Dettagli Proposta");
 
-        cost = getIntent().getStringExtra("ProposalCost");
-        name = getIntent().getStringExtra("ProposalName");
-        desc = getIntent().getStringExtra("ProposalDesc");
-        proposalId = getIntent().getStringExtra("proposalId");
+        String desc;
+        final String name;
+        String cost;
+        String authorId;
 
-        final String username = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-        final String userImgUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
-
+        final TextView author_tv;
+        TextView cost_tv;
+        TextView desc_tv;
+        TextView name_tv;
+        CardView cw_topic;
         cw_topic = (CardView) findViewById(R.id.proposal_topic_cw);
         author_tv = (TextView) findViewById(R.id.proposal_author_value);
         cost_tv = (TextView) findViewById(R.id.proposal_cost);
@@ -58,6 +52,29 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         name_tv = (TextView) findViewById(R.id.proposal_name);
         accept = (Button) findViewById(R.id.btn_accept_proposal);
         deny = (Button) findViewById(R.id.btn_deny_proposal);
+
+        cost = getIntent().getStringExtra("ProposalCost");
+        name = getIntent().getStringExtra("ProposalName");
+        desc = getIntent().getStringExtra("ProposalDesc");
+        proposalId = getIntent().getStringExtra("ProposalId");
+        groupId = getIntent().getStringExtra("groupId");
+
+        // Retrieve the author name
+        authorId = getIntent().getStringExtra("ProposalAuthorId");
+        database.getReference().child("gruppi").child(groupId).child("membri").child(authorId).child("nome").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                author_tv.setText(dataSnapshot.getValue(String.class));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("ProposalDetailsActivity", "Could not retrieve the name of he author");
+            }
+        });
+
+        final String username = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        final String userImgUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
 
         desc_tv.setText(desc);
         cost_tv.setText(cost);
@@ -112,9 +129,31 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                // If the user is in the waitingFor list, remove him from here
+                                database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("waitingFor").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.hasChildren()) {
+                                            for(DataSnapshot user : dataSnapshot.getChildren()) {
+                                                if(user.getKey().equals(userId)) {
+                                                    user.getRef().removeValue();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.e("ProposalDetailsActivity", "Could not retrieve the waitingFor list 2");
+                                    }
+                                });
+
                                 // Add the user to the list of accepters
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("accepters").child(userId).child("nome").setValue(username);
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("accepters").child(userId).child("immagine").setValue(userImgUrl);
+
+                                dialog.dismiss();
                             }
                         });
 
@@ -168,9 +207,31 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                // If the user is in the waitingFor list, remove him from here
+                                database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("waitingFor").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.hasChildren()) {
+                                            for(DataSnapshot user : dataSnapshot.getChildren()) {
+                                                if(user.getKey().equals(userId)) {
+                                                    user.getRef().removeValue();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.e("ProposalDetailsActivity", "Could not retrieve the waitingFor list 3");
+                                    }
+                                });
+
                                 // Add the user to the list of refusers
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers").child(userId).child("nome").setValue(username);
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers").child(userId).child("immagine").setValue(userImgUrl);
+
+                                dialog.dismiss();
                             }
                         });
 
@@ -189,7 +250,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
         // Add listeners on the lists of accepters and refusers of the proposal
         final TextView acceptersTextView = (TextView) findViewById(R.id.accepted_list_string);
-        DatabaseReference acceptersRef = database.getReference().child("groups").child(groupId).child("proposals").child(proposalId).child("accepters");
+        DatabaseReference acceptersRef = database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("accepters");
         acceptersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -197,9 +258,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                 if(dataSnapshot.hasChildren()) {
                     for (DataSnapshot accepter : dataSnapshot.getChildren()) {
 
-                        // If the user is a accepter, grey out the refuse accept
+                        // If the user is an accepter, grey out the accept button
                         if(accepter.getKey().equals(userId)) {
-                            accept.setAlpha(.5f);
+                            accept.setAlpha(.3f);
                             accept.setClickable(false);
                             deny.setAlpha(1f);
                             deny.setClickable(true);
@@ -207,9 +268,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
                         // Add the accepter to the list of accepters
                         if(acceptersList.length() == 0)
-                            acceptersList.concat(accepter.child("name").getValue(String.class));
+                            acceptersList = acceptersList.concat(accepter.child("nome").getValue(String.class));
                         else
-                            acceptersList.concat(", " + accepter.child("name").getValue(String.class));
+                            acceptersList = acceptersList.concat(", " + accepter.child("nome").getValue(String.class));
                     }
                 }
                 if(acceptersList.length() != 0)
@@ -225,8 +286,8 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         });
 
         final TextView refusersTextView = (TextView) findViewById(R.id.refused_list_string);
-        DatabaseReference refusersRef = database.getReference().child("groups").child(groupId).child("proposals").child(proposalId).child("refusers");
-        acceptersRef.addValueEventListener(new ValueEventListener() {
+        DatabaseReference refusersRef = database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers");
+        refusersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String refusersList = new String();
@@ -235,7 +296,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
                         // If the user is a refuser, grey out the refuse button
                         if(refuser.getKey().equals(userId)) {
-                            deny.setAlpha(.5f);
+                            deny.setAlpha(.3f);
                             deny.setClickable(false);
                             accept.setAlpha(1f);
                             accept.setClickable(true);
@@ -243,9 +304,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
                         // Add the refuser to the list of refusers
                         if(refusersList.length() == 0)
-                            refusersList.concat(refuser.child("name").getValue(String.class));
+                            refusersList = refusersList.concat(refuser.child("nome").getValue(String.class));
                         else
-                            refusersList.concat(", " + refuser.child("name").getValue(String.class));
+                            refusersList = refusersList.concat(", " + refuser.child("nome").getValue(String.class));
                     }
                 }
                 if(refusersList.length() != 0)
@@ -257,6 +318,35 @@ public class ProposalDetailsActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e("ProposalDetailsActivity", "Could not retrieve the list of refusers");
+            }
+        });
+
+        // Add listeners on the lists of accepters and refusers of the proposal
+        final TextView waitingForTextView = (TextView) findViewById(R.id.waiting_list_string);
+        DatabaseReference waitingRef = database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("waitingFor");
+        waitingRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String waitingList = new String();
+                if(dataSnapshot.hasChildren()) {
+                    for (DataSnapshot user : dataSnapshot.getChildren()) {
+
+                        // Add the user to waitingList
+                        if(waitingList.length() == 0)
+                            waitingList = waitingList.concat(user.getValue(String.class));
+                        else
+                            waitingList = waitingList.concat(", " + user.getValue(String.class));
+                    }
+                }
+                if(waitingList.length() != 0)
+                    waitingForTextView.setText(waitingList);
+                else
+                    waitingForTextView.setText(getResources().getString(R.string.nobody));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("ProposalDetailsActivity", "Could not retrieve the waitingFor node");
             }
         });
     }

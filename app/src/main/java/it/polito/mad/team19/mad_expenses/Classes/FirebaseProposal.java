@@ -9,29 +9,20 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class FirebaseProposal
 {
-    private String key;
     private String name;
     private String description;
     private Float cost;
-    private String image;
+    private String imageUrl;
+    private String author;
 
     public FirebaseProposal () {}
 
-    public FirebaseProposal(String name, String description, Float cost, String image)
-    {
+    public FirebaseProposal(String name, String description, String author, Float cost, String image) {
         this.name = name;
         this.description = description;
         this.cost = cost;
-        this.image = image;
-        this.key = null;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
+        this.author = author;
+        this.imageUrl = image;
     }
 
     public String getName() {
@@ -40,6 +31,10 @@ public class FirebaseProposal
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAuthor() {
+        return author;
     }
 
     public String getDescription() {
@@ -58,12 +53,12 @@ public class FirebaseProposal
         this.cost = cost;
     }
 
-    public String getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageUrl(String image) {
+        this.imageUrl = image;
     }
 
 }

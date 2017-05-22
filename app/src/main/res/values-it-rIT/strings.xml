@@ -120,6 +120,7 @@
     <string name="nobody">Nessuno</string>
     <string name="accept">Accetta</string>
     <string name="deny">Rifiuta</string>
+    <string name="waitingFor">In attesa di:</string>
 
 
     <!-- Group details -->

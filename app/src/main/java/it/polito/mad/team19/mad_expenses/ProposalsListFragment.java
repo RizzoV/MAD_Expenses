@@ -78,69 +78,49 @@ public class ProposalsListFragment extends Fragment {
                 final Intent intent = new Intent(getActivity(), ProposalDetailsActivity.class);
                 Log.d("Expenses", clicked.toString());
                 intent.putExtra("ProposalName", clicked.getName());
-                //intent.putExtra("ProposalImgUrl", clicked.getImage());
+                intent.putExtra("ProposalImgUrl", clicked.getImageUrl());
                 intent.putExtra("ProposalDesc", clicked.getDescription());
                 intent.putExtra("ProposalCost", String.format(Locale.getDefault(), "%.2f", clicked.getExtimatedCost()));
-                //intent.putExtra("ProposalAuthorId", clicked.getAuthor());
+                intent.putExtra("ProposalAuthorId", clicked.getAuthor());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
-                //intent.putExtra("ProposalId", clicked.getFirebaseId());
+                intent.putExtra("ProposalId", clicked.getFirebaseId());
                 startActivity(intent);
             }
         });
 
-
-        final TextView noproposalstv = (TextView) rootView.findViewById(R.id.noproposals_tv);
-
+        final TextView noProposals_tv = (TextView) rootView.findViewById(R.id.noproposals_tv);
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("gruppi").child(getActivity().getIntent().getStringExtra("groupId")).child("proposals");
-
-
-        myRef.addValueEventListener(new ValueEventListener() {
+        DatabaseReference proposalsRef = database.getReference("gruppi").child(getActivity().getIntent().getStringExtra("groupId")).child("proposals");
+        proposalsRef.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChildren()) {
-                    noproposalstv.setVisibility(View.GONE);
+                    noProposals_tv.setVisibility(View.GONE);
                     //Ludo: ogni volta che si ricrea la lista, prima bisogna svuotarla per non avere elementi doppi
                     proposals.clear();
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         FirebaseProposal fp = child.getValue(FirebaseProposal.class);
-                        proposals.add(new Proposal(fp.getName(), fp.getDescription(), fp.getCost(), null, Currency.getInstance("EUR"),child.getKey()));
+                        proposals.add(new Proposal(fp.getName(), fp.getDescription(), fp.getAuthor(), fp.getCost(), fp.getImageUrl(), Currency.getInstance("EUR"), child.getKey()));
+
                         //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                         adapter.notifyDataSetChanged();
-
-
-                        //pBar.setVisibility(View.GONE);
                     }
                 } else {
-                    //pBar.setVisibility(View.GONE);
-                    noproposalstv.setVisibility(View.VISIBLE);
+                    noProposals_tv.setVisibility(View.VISIBLE);
                 }
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("ProposalsListFragment", "Could not retrieve the list of proposals");
             }
         });
 
 
-        //RecyclerView expensesList = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-        //expensesList.setAdapter(adapter);
-
-        //final LinearLayout meCardsViewLayout = (LinearLayout) rootView.findViewById(R.id.cards);
-
+        // Make the fab appear/disappear based on crolling
         final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-
-            /*fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Intent i = new Intent(getActivity(), AddExpenseActivity.class);
-                    //startActivity(i);
-                }
-            });*/
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

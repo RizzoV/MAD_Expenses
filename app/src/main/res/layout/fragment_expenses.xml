@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.team19.mad_expenses.GroupActivity$ExpensesListFragment">
+    tools:context="it.polito.mad.team19.mad_expenses.ExpensesListFragment">
 
     <LinearLayout
         android:id="@+id/frag_expenses_upper_ll"
@@ -25,8 +25,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 app:cardElevation="1dp"
-                android:layout_marginBottom="@dimen/smaller_vertical_margin"
-                card_view:cardCornerRadius="0dp">
+                card_view:cardCornerRadius="0dp"
+                android:backgroundTint="@color/lightPrimary">
 
 
                 <LinearLayout
@@ -77,7 +77,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 card_view:cardCornerRadius="0dp"
-                app:cardElevation="1dp">
+                app:cardElevation="1dp"
+                android:backgroundTint="@color/lightPrimary">
 
 
                 <LinearLayout
