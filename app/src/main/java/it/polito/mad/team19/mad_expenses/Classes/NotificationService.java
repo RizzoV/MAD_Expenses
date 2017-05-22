@@ -112,7 +112,7 @@ public class NotificationService extends IntentService{
                                             ValueEventListener getNewNot = new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    if(dataSnapshot.getChildrenCount()>1)
+                                                    if(dataSnapshot.getChildrenCount()>0)
                                                     {
                                                         for(DataSnapshot not :  dataSnapshot.getChildren())
                                                         {
