@@ -46,7 +46,6 @@
 
     <!-- Personal profile -->
     <string name="debits_and_credits">Debits and credits</string>
-
     <string name="mandatory_field">Mandatory Field!</string>
     <string name="invalid_cost_field">Invalid Field!</string>
 
@@ -113,6 +112,16 @@
     <string name="modify_debt_value">Modify debt value</string>
     <string name="cannot_modify_non_creditor">You cannot modify the value of a debt if you are not the creditor</string>
 
+    <!-- Proposal details -->
+    <string name="confirmProposalVoteAccept">Are you sure you want to accept the proposal?</string>
+    <string name="confirmProposalVoteExclude">Are you sure you want to exclude yourself from the proposal?</string>
+    <string name="confirmProposalVoteDeny">Are you sure you want to reject te proposal?</string>
+    <string name="acceptedBy">Accepted by:</string>
+    <string name="refusedBy">Refused by:</string>
+    <string name="nobody">Nobody</string>
+    <string name="accept">Accept</string>
+    <string name="deny">Refuse</string>
+
     <!-- Group details -->
     <string name="confirmLeaveGroupTitle">Confirm group abandon</string>
     <string name="confirmLeaveGroup">Are you sure you want to leave the group?</string>
@@ -135,7 +144,6 @@
     <string name="notififcationAddMembersToGroupText"> joined the group.</string>
     <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
     <string name="notififcationRemoveMembersToGroupText"> left the group.</string>
-
 
     <!-- Months -->
     <string name="january">Jan</string>

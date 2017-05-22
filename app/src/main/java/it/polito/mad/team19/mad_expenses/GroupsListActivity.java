@@ -116,7 +116,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     private void addAllViewListener() {
         filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        Log.e("Receiver","register start");
+        Log.d("Receiver","register start");
         registerConnectionReceiver(filter);
 
 
@@ -145,7 +145,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     closeSnack();
                     unregisterReceiver(connectionReceiver);
                     connectionReceiver = null;
-                    Log.e("Receiver","unregister fab");
+                    Log.d("Receiver","unregister fab");
                 }
 
                 Intent i = new Intent(GroupsListActivity.this, CreateGroupActivity.class);
@@ -166,7 +166,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     closeSnack();
                     unregisterReceiver(connectionReceiver);
                     connectionReceiver = null;
-                    Log.e("Receiver","unregister group");
+                    Log.d("Receiver","unregister group");
                 }
 
 
@@ -181,6 +181,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
             }
         });
+
     }
 
     @Override
@@ -189,7 +190,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         //updateList(uid);
         if(connectionReceiver==null) {
             registerConnectionReceiver(filter);
-            Log.e("Receiver", "register on resum");
+            Log.d("Receiver", "register on resum");
         }
 
 
@@ -206,7 +207,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             closeSnack();
             unregisterReceiver(connectionReceiver);
             connectionReceiver = null;
-            Log.e("Receiver","unregister on pause");
+            Log.d("Receiver","unregister on pause");
         }
 
         if(mAuth!=null)
@@ -243,7 +244,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         closeSnack();
                         unregisterReceiver(connectionReceiver);
                         connectionReceiver = null;
-                        Log.e("Receiver","unregister muauth");
+                        Log.d("Receiver","unregister muauth");
                     }
 
 
@@ -256,7 +257,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         closeSnack();
                         unregisterReceiver(connectionReceiver);
                         connectionReceiver = null;
-                        Log.e("Receiver","unregister account");
+                        Log.d("Receiver","unregister account");
                     }
 
                     Intent intent = new Intent(GroupsListActivity.this, GoogleSignInActivity.class);
@@ -288,7 +289,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     closeSnack();
                     unregisterReceiver(connectionReceiver);
                     connectionReceiver = null;
-                    Log.e("Receiver","unregister account");
+                    Log.d("Receiver","unregister account");
                 }
 
 
@@ -309,7 +310,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                 if(connectionReceiver==null) {
                     registerConnectionReceiver(filter);
-                    Log.e("Receiver","register group create");
+                    Log.d("Receiver","register group create");
                 }
                 if (resultCode == 1)
                     progressBar.setVisibility(View.VISIBLE);
@@ -324,7 +325,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             {
                 if(connectionReceiver==null) {
                     registerConnectionReceiver(filter);
-                    Log.e("Receiver","register account");
+                    Log.d("Receiver","register account");
                 }
                 break;
             }
@@ -332,7 +333,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                 if(connectionReceiver==null) {
                     registerConnectionReceiver(filter);
-                    Log.e("Receiver","register");
+                    Log.d("Receiver","register");
                 }
 
                 if (resultCode == 0)
@@ -352,7 +353,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 {
                     if(connectionReceiver==null) {
                         registerConnectionReceiver(filter);
-                        Log.e("Receiver","register group acitivty");
+                        Log.d("Receiver","register group acitivty");
                     }
 
                     //TODO Jured: controllare se update list va bene qui

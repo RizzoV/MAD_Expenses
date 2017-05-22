@@ -55,7 +55,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 {
 
     private static final int STORAGE_REQUEST = 666;
-    ImageButton imageButton;
+    private ImageButton imageButton;
 
     private ImageView mImageView;
     private FirebaseAuth mAuth;
@@ -67,14 +67,14 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
     private String mCurrentPhotoName;
     private Uri mCurrentPhotoFirebaseUri;
     private static final int EXP_CREATED = 1;
-    StorageReference storageRef;
-    StorageReference groupImagesRef;
-    EditText nameEditText;
-    EditText descriptionEditText;
-    EditText costEditText;
+    private StorageReference storageRef;
+    private StorageReference groupImagesRef;
+    private EditText nameEditText;
+    private EditText descriptionEditText;
+    private EditText costEditText;
 
-    NetworkChangeReceiver netChange;
-    IntentFilter filter;
+    private NetworkChangeReceiver netChange;
+    private IntentFilter filter;
 
     static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
 
@@ -89,32 +89,26 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         netChange.setViewForSnackbar(findViewById(android.R.id.content));
         netChange.setDialogShowTrue(false);
         registerReceiver(netChange, filter);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         mImageView = (ImageView) findViewById(R.id.camera_img);
 
-
-        groupId = getIntent().getExtras().getString("groupId");
+        groupId = getIntent().getStringExtra("groupId");
         usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         setTitle(R.string.create_new_proposal);
 
-        //imageButton = (ImageButton) findViewById(R.id.image);
-
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
-
+        // Set listeners on Done and Image buttons
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(AddProposalActivity.this,
                         new String[]{android.Manifest.permission.READ_CONTACTS},
                         STORAGE_REQUEST);
-
             } else {
                 // The permission is granted, we can perform the action
-
                 addListenerOnDoneButton();
                 addListenerOnImageButton();
-
             }
         }
         else{
@@ -552,7 +546,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
             netChange.setViewForSnackbar(findViewById(android.R.id.content));
             netChange.setDialogShowTrue(false);
             registerReceiver(netChange, filter);
-            Log.e("Receiver", "register on resum");
+            Log.d("Receiver", "register on resum");
         }
     }
 
@@ -564,7 +558,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
             netChange.closeSnack();
             unregisterReceiver(netChange);
             netChange = null;
-            Log.e("Receiver", "unregister on pause");
+            Log.d("Receiver", "unregister on pause");
         }
 
 

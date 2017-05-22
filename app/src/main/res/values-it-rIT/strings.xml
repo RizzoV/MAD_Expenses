@@ -111,6 +111,17 @@
     <string name="modify_debt_value">Modifica il valore del debito</string>
     <string name="cannot_modify_non_creditor">Non puoi modificare il valore di un debito se non ne sei il creditore</string>
 
+    <!-- Proposal details -->
+    <string name="confirmProposalVoteAccept">Sicuro di voler accettare la proposta?</string>
+    <string name="confirmProposalVoteExclude">Sicuro di voler escluderti dalla proposta?</string>
+    <string name="confirmProposalVoteDeny">Sicuro di voler rifiutare la proposta?</string>
+    <string name="acceptedBy">Accettata da:</string>
+    <string name="refusedBy">Rifiutata da:</string>
+    <string name="nobody">Nessuno</string>
+    <string name="accept">Accetta</string>
+    <string name="deny">Rifiuta</string>
+
+
     <!-- Group details -->
     <string name="confirmLeaveGroupTitle">Conferma abbandono gruppo</string>
     <string name="confirmLeaveGroup">Sicuro di voler lasciare il gruppo?</string>
