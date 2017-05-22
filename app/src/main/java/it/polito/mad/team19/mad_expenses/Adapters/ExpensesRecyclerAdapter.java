@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +33,13 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
     //LUDO: aggiunto metodo onItemClickListener
     private OnItemClickListener mItemClickListener;
     private OnItemLongClickListener mItemLongClickListener;
+    private String groupId;
 
-    public ExpensesRecyclerAdapter(Context context, ArrayList<Expense> expenses) {
+    public ExpensesRecyclerAdapter(Context context, ArrayList<Expense> expenses, String groupId) {
         this.expenses = expenses;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(this.context);
+        this.groupId = groupId;
     }
 
     @Override
@@ -60,11 +63,12 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
     }
 
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView image;
         TextView name;
         TextView amount;
+        Button topic_btn;
         int position;
         Expense current;
         TextView description;
@@ -76,23 +80,15 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             name = (TextView) itemView.findViewById(R.id.expense_name_tv);
             amount = (TextView) itemView.findViewById(R.id.expense_cost_amount_tv);
             description = (TextView) itemView.findViewById(R.id.expense_description_tv);
-            Button topic_btn = (Button) itemView.findViewById(R.id.topic_button);
+            topic_btn = (Button) itemView.findViewById(R.id.topic_button);
 
-            topic_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(context, TopicActivity.class);
-                    i.putExtra("topicType", "proposals");
-                    i.putExtra("topicId", "xxxxxxxx");
-                    i.putExtra("topicName", current.getName());
-                    context.startActivity(i);
-                }
-            });
 
             //LUDO: aggiunto metodo onItemClickListener
             this.itemView = itemView;
             itemView.setOnClickListener(this);
         }
+
+
 
         //LUDO: aggiunto metodo onItemClickListener
         @Override
@@ -102,15 +98,36 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             }
         }
 
-        public void setData(Expense current, int position) {
+        public void setData (final Expense current, int position) {
             this.name.setText(current.getName());
             this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost()) + " " + Currency.getInstance("EUR").getSymbol());
             this.image.setImageResource(R.drawable.expenses_icon);
             this.position = position;
             this.current = current;
             this.description.setText(current.getDescritpion());
+
+            this.topic_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(context, TopicActivity.class);
+                    i.putExtra("topicType","expenses");
+                    i.putExtra("topicName",current.getName());
+                    i.putExtra("groupId", groupId);
+                    i.putExtra("expenseId", current.getFirebaseId());
+                    context.startActivity(i);
+                }
+            });
         }
+
+        /*@Override
+        public boolean onLongClick(View v) {
+            if (mItemLongClickListener != null) {
+                mItemLongClickListener.onItemLongClick(v,position);
+            }
+            return true;
+        }*/
     }
+    //LUDO: aggiunto metodo onItemClickListener
 
 
     public interface OnItemClickListener {

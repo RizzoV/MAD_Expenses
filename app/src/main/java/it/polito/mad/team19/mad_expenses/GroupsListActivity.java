@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
@@ -45,6 +46,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOError;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,6 +55,7 @@ import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Group;
+import it.polito.mad.team19.mad_expenses.Classes.NotificationService;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 
 import static com.github.mikephil.charting.charts.Chart.LOG_TAG;
@@ -83,10 +86,16 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     IntentFilter filter;
     private BroadcastReceiver connectionReceiver;
     HashMap<String,Integer> listenerNot = new HashMap<>();
+    Intent notIntent;
+    NotificationService notificationService;
+    boolean serviceIsRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        notIntent = new Intent(this,NotificationService.class);
+
 
         if(myFirebaseDatabase == null) {
             myFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -95,6 +104,40 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         FirebaseApp.initializeApp(getApplicationContext());
         setContentView(R.layout.activity_groups_list);
         addAllViewListener();
+    }
+
+    private void StartNotificationsService()
+    {
+        Log.d("Service","initialiasing...");
+        DatabaseReference groupsIDs = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
+        groupsIDs.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(notificationService!=null)
+                    stopService(notIntent);
+
+                ArrayList<String> groupsId = new ArrayList<String>();
+
+                groupsId.clear();
+
+                for(DataSnapshot child : dataSnapshot.getChildren())
+                    if(!groupsId.contains(child.getKey()))
+                        groupsId.add(child.getKey());
+
+                Log.d("Service",groupsId.toString());
+                Bundle args = new Bundle();
+                args.putSerializable("groupsId",groupsId);
+                notIntent.putExtra("groupsIdBundle",args);
+                notIntent.putExtra("uid",uid);
+                startService(notIntent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void addAllViewListener() {
@@ -165,6 +208,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
             }
         });
+
     }
 
     @Override
@@ -215,6 +259,12 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         uName = "User";
                     else if (uName.trim().isEmpty())
                         uName = "User";
+
+                    if(!serviceIsRunning)
+                    {
+                        serviceIsRunning = true;
+                        StartNotificationsService();
+                    }
 
                     if (firstTimeCheck) {
                         checkInvitations();
@@ -445,11 +495,16 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 for (DataSnapshot current : dataSnapshot.getChildren()) {
                     Notifications currentNot = current.getValue(Notifications.class);
                     notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
+                }
+
                     notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddMembersToGroupActivity), formattedDate.toString(), groupId, userID, finalUsername.toString()));
                     notificationRef.setValue(notification);
 
+                    DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child(groupId).child("notifiche");
+                    myNotRef.setValue(notificationId);
+
                 }
-            }
+
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -465,6 +520,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         ga.notifyDataSetInvalidated();
         ga.notifyDataSetChanged();
         Log.d("updateList", "updateing");
+
+
         mDatabase = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
