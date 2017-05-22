@@ -77,20 +77,15 @@ public class ExcludedPopupActivity extends Activity {
                 Log.d("DebugContributorsCheck", "Selected item no. " + position);
                 FirebaseGroupMember selectedMember = (FirebaseGroupMember) parent.getItemAtPosition(position);
                 if (!selectedMember.isChecked()) {
-                    Log.e("EXCLUDED", "adding" + selectedMember.getName());
                     selectedMember.check(true);
                     selectedMembers.add(selectedMember);
                 } else {
                     selectedMember.check(false);
-                    Log.e("EXCLUDED", "removing" + selectedMember.getName());
                     for(FirebaseGroupMember fbgm : selectedMembers)
                         if(fbgm.getUid().equals(selectedMember.getUid())) {
                             selectedMembers.remove(fbgm);
                             break;
                         }
-                }
-                for(FirebaseGroupMember fbgm : selectedMembers) {
-                    Log.e("new slecetedMembers", "-" + fbgm.getName());
                 }
                 groupMembersAdapter.notifyDataSetChanged();
             }
@@ -105,9 +100,6 @@ public class ExcludedPopupActivity extends Activity {
                 b.putParcelableArrayList("parceledExcluded", selectedMembers);
                 intent.putExtras(b);
                 setResult(RESULT_OK, intent);
-                for(FirebaseGroupMember fbgm : selectedMembers) {
-                    Log.e("Passed", "- " + fbgm.getName());
-                }
                 finish();
             }
         });
@@ -167,7 +159,7 @@ public class ExcludedPopupActivity extends Activity {
             netChange.setViewForSnackbar(findViewById(android.R.id.content));
             netChange.setDialogShowTrue(false);
             registerReceiver(netChange, filter);
-            Log.e("Receiver", "register on resum");
+            Log.d("Receiver", "register on resum");
         }
     }
 
@@ -179,7 +171,7 @@ public class ExcludedPopupActivity extends Activity {
             netChange.closeSnack();
             unregisterReceiver(netChange);
             netChange = null;
-            Log.e("Receiver", "unregister on pause");
+            Log.d("Receiver", "unregister on pause");
         }
 
     }

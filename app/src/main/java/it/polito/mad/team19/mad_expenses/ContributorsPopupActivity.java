@@ -106,7 +106,7 @@ public class ContributorsPopupActivity extends Activity {
 
                 // Preselect eventual already selected members
                 for (FirebaseGroupMember fbgm : selectedMembers) {
-                    Log.e("DEBUG contributors", fbgm.getName() + "-");
+                    Log.d("DEBUG contributors", fbgm.getName() + "-");
                     // Select them in the view
                     int itemPos = groupMembersAdapter.getPositionFromUid(fbgm.getUid());
 
@@ -190,7 +190,7 @@ public class ContributorsPopupActivity extends Activity {
             netChange.closeSnack();
             unregisterReceiver(netChange);
             netChange = null;
-            Log.e("Receiver", "unregister on pause");
+            Log.d("Receiver", "unregister on pause");
         }
     }
 

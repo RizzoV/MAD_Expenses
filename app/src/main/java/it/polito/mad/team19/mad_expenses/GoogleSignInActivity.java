@@ -153,7 +153,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
             netChange = new NetworkChangeReceiver();
             netChange.setDialogShowTrue(true);
             registerReceiver(netChange,filter);
-            Log.e("Receiver", "register on resum");
+            Log.d("Receiver", "register on resum");
         }
     }
 
@@ -166,7 +166,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
             netChange.closeDialog();
             unregisterReceiver(netChange);
             netChange = null;
-            Log.e("Receiver","unregister on pause");
+            Log.d("Receiver","unregister on pause");
         }
 
     }

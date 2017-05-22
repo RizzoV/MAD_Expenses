@@ -833,7 +833,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             netChange.setViewForSnackbar(findViewById(android.R.id.content));
             netChange.setDialogShowTrue(false);
             registerReceiver(netChange, filter);
-            Log.e("Receiver", "register on resum");
+            Log.d("Receiver", "register on resum");
         }
     }
 
@@ -845,7 +845,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             netChange.closeSnack();
             unregisterReceiver(netChange);
             netChange = null;
-            Log.e("Receiver", "unregister on pause");
+            Log.d("Receiver", "unregister on pause");
         }
     }
 }
