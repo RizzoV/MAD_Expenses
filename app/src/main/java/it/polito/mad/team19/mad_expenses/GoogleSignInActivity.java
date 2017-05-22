@@ -41,11 +41,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    EditText email;
-    EditText pswd;
     TextView register;
-    Button signIn;
-    boolean empty = false;
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
@@ -61,11 +57,6 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
         //netChange.setViewForSnackbar(findViewById(android.R.id.content));
         netChange.setDialogShowTrue(true);
         registerReceiver(netChange,filter);
-
-        email = (EditText) findViewById(R.id.login_fire_email_et);
-        pswd = (EditText) findViewById(R.id.login_fire_pswd_et);
-        signIn = (Button) findViewById(R.id.btn_sign_in);
-        register = (TextView) findViewById(R.id.register_tv);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -85,32 +76,6 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
             }
         });
 
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (TextUtils.isEmpty(email.getText().toString())) {
-                    email.setError(getString(R.string.mandatory_field));
-                    empty = true;
-                }
-
-                if (TextUtils.isEmpty(pswd.getText().toString())) {
-                    pswd.setError(getString(R.string.mandatory_field));
-                    empty = true;
-                }
-
-                if (!empty)
-                    signInWithEmailAndPswd(email.getText().toString(), pswd.getText().toString());
-            }
-        });
-
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(GoogleSignInActivity.this, FirebaseSignUpActivity.class);
-                startActivity(intent);
-            }
-        });
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -229,28 +194,6 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         setResult(0);
 
-    }
-
-    public void signInWithEmailAndPswd(final String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithEmail:failed", task.getException());
-                            Toast.makeText(GoogleSignInActivity.this, R.string.auth_failed,
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(email).build();
-                            mAuth.getCurrentUser().updateProfile(profileUpdates);
-                        }
-                    }
-                });
     }
 
     public boolean onKeyDown(int keycode, KeyEvent event) {
