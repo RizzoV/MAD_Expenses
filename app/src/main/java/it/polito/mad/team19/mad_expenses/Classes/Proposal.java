@@ -16,13 +16,22 @@ public class Proposal {
     private Image image;
     private Currency currency;
 
-    public Proposal(String name, String description, Float extimatedCost, Image image, Currency currency) {
+
+    private String firebaseId;
+
+    public Proposal(String name, String description, Float extimatedCost, Image image, Currency currency, String firebaseId) {
         this.name = name;
         this.description = description;
         this.extimatedCost = extimatedCost;
         this.image = image;
         this.currency = currency;
+        this.firebaseId = firebaseId;
     }
+
+    public String getFirebaseId() {
+        return firebaseId;
+    }
+
 
     public Currency getCurrency() {
         return currency;

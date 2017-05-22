@@ -618,7 +618,7 @@ public class GroupActivity extends AppCompatActivity {
             final ArrayList<Expense> expenses = new ArrayList<>();
 
             final RecyclerView expensesListRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-            final ExpensesRecyclerAdapter expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses);
+            final ExpensesRecyclerAdapter expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses,getActivity().getIntent().getStringExtra("groupId") );
             expensesListRecyclerView.setAdapter(expensesListAdapter);
 
             LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
@@ -881,7 +881,7 @@ public class GroupActivity extends AppCompatActivity {
             final ArrayList<Proposal> proposals = new ArrayList<Proposal>();
 
             RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.proposals_rv);
-            final ProposalsRecyclerAdapter adapter = new ProposalsRecyclerAdapter(getActivity(), proposals);
+            final ProposalsRecyclerAdapter adapter = new ProposalsRecyclerAdapter(getActivity(), proposals, getActivity().getIntent().getStringExtra("groupId"));
             mRecyclerView.setAdapter(adapter);
 
             LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
@@ -923,7 +923,7 @@ public class GroupActivity extends AppCompatActivity {
                         proposals.clear();
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             FirebaseProposal fp = child.getValue(FirebaseProposal.class);
-                            proposals.add(new Proposal(fp.getName(), fp.getDescription(), fp.getCost(), null, Currency.getInstance("EUR")));
+                            proposals.add(new Proposal(fp.getName(), fp.getDescription(), fp.getCost(), null, Currency.getInstance("EUR"),child.getKey()));
                             //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                             adapter.notifyDataSetChanged();
 

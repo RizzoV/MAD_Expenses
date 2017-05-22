@@ -54,6 +54,10 @@ public class TopicAdapter extends BaseAdapter {
         RelativeLayout container = (RelativeLayout) convertView.findViewById(R.id.container);
         TextView name = (TextView) convertView.findViewById(R.id.name_msg);
         TextView msg = (TextView) convertView.findViewById(R.id.msg);
+        TextView date = (TextView) convertView.findViewById(R.id.date_msg);
+
+        date.setText(msgList.get(position).getDate());
+
 
 
         if(msgList.get(position).isMe())
