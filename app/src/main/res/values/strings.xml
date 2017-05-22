@@ -123,6 +123,9 @@
     <string name="deny">Refuse</string>
     <string name="waitingFor">Waiting for:</string>
 
+    <string name="slogan">Sharing costs never be so easy!</string>
+
+
     <!-- Group details -->
     <string name="confirmLeaveGroupTitle">Confirm group abandon</string>
     <string name="confirmLeaveGroup">Are you sure you want to leave the group?</string>

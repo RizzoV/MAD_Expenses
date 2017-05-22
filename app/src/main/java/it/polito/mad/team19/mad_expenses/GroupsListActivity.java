@@ -96,49 +96,22 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
         notIntent = new Intent(this,NotificationService.class);
 
+        if(!serviceIsRunning)
+        {
+            serviceIsRunning = true;
+            startService(notIntent);
 
-        if(myFirebaseDatabase == null) {
-            myFirebaseDatabase = FirebaseDatabase.getInstance();
-                   myFirebaseDatabase.setPersistenceEnabled(true);
+            if(myFirebaseDatabase == null) {
+                myFirebaseDatabase = FirebaseDatabase.getInstance();
+                myFirebaseDatabase.setPersistenceEnabled(true);
+            }
         }
+
         FirebaseApp.initializeApp(getApplicationContext());
         setContentView(R.layout.activity_groups_list);
         addAllViewListener();
     }
 
-    private void StartNotificationsService()
-    {
-        Log.d("Service","initialiasing...");
-        DatabaseReference groupsIDs = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi");
-        groupsIDs.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(notificationService!=null)
-                    stopService(notIntent);
-
-                ArrayList<String> groupsId = new ArrayList<String>();
-
-                groupsId.clear();
-
-                for(DataSnapshot child : dataSnapshot.getChildren())
-                    if(!groupsId.contains(child.getKey()))
-                        groupsId.add(child.getKey());
-
-                Log.d("Service",groupsId.toString());
-                Bundle args = new Bundle();
-                args.putSerializable("groupsId",groupsId);
-                notIntent.putExtra("groupsIdBundle",args);
-                notIntent.putExtra("uid",uid);
-                startService(notIntent);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
     private void addAllViewListener() {
         filter = new IntentFilter();
@@ -259,12 +232,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         uName = "User";
                     else if (uName.trim().isEmpty())
                         uName = "User";
-
-                    if(!serviceIsRunning)
-                    {
-                        serviceIsRunning = true;
-                        StartNotificationsService();
-                    }
 
                     if (firstTimeCheck) {
                         checkInvitations();
