@@ -21,13 +21,6 @@
             android:layout_marginTop="10dp"
             android:src="@drawable/circle" />
 
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/edit_user_img"
-            android:layout_alignBottom="@id/user_img"
-            android:layout_alignRight="@+id/user_img"
-            android:background="@mipmap/ic_add_img" />
     </RelativeLayout>
 
     <LinearLayout
