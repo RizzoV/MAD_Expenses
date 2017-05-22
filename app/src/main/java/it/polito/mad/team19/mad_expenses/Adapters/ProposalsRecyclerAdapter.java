@@ -29,14 +29,17 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
     Activity context;
     private LayoutInflater mInflater;
 
+    private String groupId;
+
     //LUDO: aggiunto metodo onItemClickListener
     private ExpensesRecyclerAdapter.OnItemClickListener mItemClickListener;
     private ExpensesRecyclerAdapter.OnItemLongClickListener mItemLongClickListener;
 
-    public ProposalsRecyclerAdapter(Context context, ArrayList<Proposal> proposals) {
+    public ProposalsRecyclerAdapter(Context context, ArrayList<Proposal> proposals, String groupId) {
         this.proposals = proposals;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(context);
+        this.groupId = groupId;
     }
 
     @Override
@@ -84,8 +87,9 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
                 public void onClick(View v) {
                     Intent i = new Intent(context, TopicActivity.class);
                     i.putExtra("topicType","proposals");
-                    i.putExtra("topicId","xxxxxxxx");
                     i.putExtra("topicName",current.getName());
+                    i.putExtra("groupId", groupId);
+                    i.putExtra("proposalId", current.getFirebaseId());
                     context.startActivity(i);
                 }
             });

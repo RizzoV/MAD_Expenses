@@ -20,7 +20,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import it.polito.mad.team19.mad_expenses.Adapters.TopicAdapter;
@@ -41,6 +43,7 @@ public class TopicActivity extends AppCompatActivity {
     String name;
     String topicType;
     String expenseId;
+    String proposalId;
     String idMessage;
 
     private FirebaseAuth mAuth;
@@ -71,7 +74,6 @@ public class TopicActivity extends AppCompatActivity {
         registerReceiver(netChange, filter);
 
         topicType = getIntent().getStringExtra("topicType");
-        tid = getIntent().getStringExtra("topicId");
         name = getIntent().getStringExtra("topicName");
 
         Log.d("Topic","type: "+topicType);
@@ -83,14 +85,21 @@ public class TopicActivity extends AppCompatActivity {
         final ArrayList<Topic> msgList = new ArrayList<Topic>();
 
         groupId = getIntent().getStringExtra("groupId");
-        expenseId = getIntent().getStringExtra("expenseId");
-
-        usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference newMessageRef = database.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child("topic").child("messages");// TODO: 19/05/2017 è corretto?crea il nodo messages?
+        final DatabaseReference newMessageRef;
 
+        if (topicType.equals("expenses"))
+        {
+            expenseId = getIntent().getStringExtra("expenseId");
+            newMessageRef = database.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child("topic").child("messages");
+        }
+        else
+            {
+            proposalId = getIntent().getStringExtra("proposalId");
+            newMessageRef = database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("topic").child("messages");
+            }
+        usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         newMessageRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -99,16 +108,16 @@ public class TopicActivity extends AppCompatActivity {
                 {
                     for(DataSnapshot topic:dataSnapshot.getChildren())
                     {
-                        if(topic.child("name").getValue()!=null && topic.child("text").getValue()!=null && topic.child("uid").getValue()!=null )
+                        if(topic.child("date").getValue()!=null && topic.child("name").getValue()!=null && topic.child("text").getValue()!=null && topic.child("uid").getValue()!=null )
                         {
                             if(topicMap.get(topic.getKey()) == null)
                             {
                                 topicMap.put(topic.getKey(), 69);
 
                             if(topic.child("uid").equals(usrId))
-                                msgList.add(new Topic(topic.child("name").getValue().toString(), topic.child("text").getValue().toString(), false));
+                                msgList.add(new Topic(topic.child("name").getValue().toString(), topic.child("text").getValue().toString(),topic.child("date").getValue().toString(), false));
                             else
-                                msgList.add(new Topic(topic.child("name").getValue().toString(), topic.child("text").getValue().toString(), true));
+                                msgList.add(new Topic(topic.child("name").getValue().toString(), topic.child("text").getValue().toString(),topic.child("date").getValue().toString(), true));
 
                                 adapter.notifyDataSetChanged();
                             }
@@ -129,10 +138,15 @@ public class TopicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+
                 String uuid = newMessageRef.push().getKey();
                 newMessageRef.child(uuid).child("text").setValue((messageEditText.getText().toString()));
                 newMessageRef.child(uuid).child("name").setValue(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 newMessageRef.child(uuid).child("uid").setValue(usrId);
+                newMessageRef.child(uuid).child("date").setValue(df.format(c.getTime()));
 
                 messageEditText.setText("");
             }

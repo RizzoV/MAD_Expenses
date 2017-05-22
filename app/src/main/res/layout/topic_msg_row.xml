@@ -34,4 +34,19 @@
         android:id="@+id/msg"
         android:text="Bbbolz"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="textStart"
+        android:layout_below="@id/msg"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/secondaryText"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:id="@+id/date_msg"
+        android:layout_marginBottom="5dp"/>
+
+
+
 </RelativeLayout>

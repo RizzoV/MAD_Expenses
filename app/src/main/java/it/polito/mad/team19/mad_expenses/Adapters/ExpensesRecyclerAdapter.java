@@ -111,7 +111,6 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
                 public void onClick(View v) {
                     Intent i = new Intent(context, TopicActivity.class);
                     i.putExtra("topicType","expenses");
-                    i.putExtra("topicId","xxxxxxxx");
                     i.putExtra("topicName",current.getName());
                     i.putExtra("groupId", groupId);
                     i.putExtra("expenseId", current.getFirebaseId());

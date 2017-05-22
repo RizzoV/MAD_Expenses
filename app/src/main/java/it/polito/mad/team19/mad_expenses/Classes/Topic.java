@@ -9,11 +9,13 @@ public class  Topic {
     private String name;
     private String msg;
     private boolean me;
+    private String date;
 
-    public Topic(String name, String msg, boolean me) {
+    public Topic(String name, String msg, String date, boolean me) {
         this.name = name;
         this.msg = msg;
-        this.me=me;
+        this.me = me;
+        this.date = date;
     }
 
     public String getMsg() {
@@ -26,5 +28,9 @@ public class  Topic {
 
     public boolean isMe() {
         return me;
+    }
+
+    public String getDate() {
+        return date;
     }
 }
