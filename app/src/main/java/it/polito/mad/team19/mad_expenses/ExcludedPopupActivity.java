@@ -77,11 +77,20 @@ public class ExcludedPopupActivity extends Activity {
                 Log.d("DebugContributorsCheck", "Selected item no. " + position);
                 FirebaseGroupMember selectedMember = (FirebaseGroupMember) parent.getItemAtPosition(position);
                 if (!selectedMember.isChecked()) {
+                    Log.e("EXCLUDED", "adding" + selectedMember.getName());
                     selectedMember.check(true);
-                    selectedMembers.add((FirebaseGroupMember) parent.getItemAtPosition(position));
+                    selectedMembers.add(selectedMember);
                 } else {
                     selectedMember.check(false);
-                    selectedMembers.remove(parent.getItemAtPosition(position));
+                    Log.e("EXCLUDED", "removing" + selectedMember.getName());
+                    for(FirebaseGroupMember fbgm : selectedMembers)
+                        if(fbgm.getUid().equals(selectedMember.getUid())) {
+                            selectedMembers.remove(fbgm);
+                            break;
+                        }
+                }
+                for(FirebaseGroupMember fbgm : selectedMembers) {
+                    Log.e("new slecetedMembers", "-" + fbgm.getName());
                 }
                 groupMembersAdapter.notifyDataSetChanged();
             }
@@ -96,6 +105,9 @@ public class ExcludedPopupActivity extends Activity {
                 b.putParcelableArrayList("parceledExcluded", selectedMembers);
                 intent.putExtras(b);
                 setResult(RESULT_OK, intent);
+                for(FirebaseGroupMember fbgm : selectedMembers) {
+                    Log.e("Passed", "- " + fbgm.getName());
+                }
                 finish();
             }
         });

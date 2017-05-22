@@ -427,10 +427,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                                     Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
 
                             for (FirebaseGroupMember member : excludedList) {
-                                newExpenseRef.child("excluded").child(member.getUid()).setValue(member.getName());
+                                newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
+                                newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
                             }
                             for (FirebaseGroupMember member : contributorsList) {
-                                newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());
+                                newExpenseRef.child("contributors").child(member.getUid()).child("nome").setValue(member.getName());
+                                newExpenseRef.child("contributors").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
                             }
 
                             Log.d("DebugIsModifyFlag", isModifyActivity.toString());
@@ -456,11 +458,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
                     Float.valueOf(costEditText.getText().toString().replace(",", "."))));
             for (FirebaseGroupMember member : excludedList) {
-                newExpenseRef.child("excluded").child(member.getUid()).setValue(member.getName());
-
+                newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
+                newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
             }
             for (FirebaseGroupMember member : contributorsList) {
-                newExpenseRef.child("contributors").child(member.getUid()).setValue(member.getName());
+                newExpenseRef.child("contributors").child(member.getUid()).child("nome").setValue(member.getName());
+                newExpenseRef.child("contributors").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
             }
 
             Log.d("DebugIsModifyFlag", isModifyActivity.toString());
@@ -701,13 +704,19 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             oldExpenseId = getIntent().getStringExtra("ExpenseId");
 
 
-            if (!getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList").isEmpty()) {
-                contributorsList = getIntent().getBundleExtra("contributorsBundle").getParcelableArrayList("contributorsList");
-                Log.e("Contributor", contributorsList.get(0).getName());
+            if (!getIntent().getParcelableArrayListExtra("contributorsList").isEmpty()) {
+                contributorsList = getIntent().getParcelableArrayListExtra("contributorsList");
             }
 
-            if (!getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList").isEmpty()) {
-                excludedList = getIntent().getBundleExtra("excludedBundle").getParcelableArrayList("excludedList");
+            if (!getIntent().getParcelableArrayListExtra("excludedList").isEmpty()) {
+                excludedList = getIntent().getParcelableArrayListExtra("excludedList");
+            }
+
+            for(FirebaseGroupMember fbgm : contributorsList)
+                Log.e("AEA C IN", fbgm.getName() + "-");
+
+            for(FirebaseGroupMember fbgm : excludedList) {
+                Log.e("AEA E IN", fbgm.getName() + "-");
             }
 
             getSupportActionBar().setTitle(R.string.modify_expense);
