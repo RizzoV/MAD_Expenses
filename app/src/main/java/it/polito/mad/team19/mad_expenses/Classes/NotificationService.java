@@ -61,125 +61,116 @@ public class NotificationService extends IntentService{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                if(dataSnapshot.hasChildren())
-                {
-                    for(DataSnapshot group : dataSnapshot.getChildren())
-                    {
+                if(dataSnapshot.hasChildren()) {
+                    for (DataSnapshot group : dataSnapshot.getChildren()) {
                         final DatabaseReference notification = FirebaseDatabase.getInstance().getReference().child("notifications");
                         final String groupId = group.getKey();
-                        final String groupName = group.child("nome").getValue().toString();
-                        Log.d("Service",groupId);
+                        if (group.child("nome").getValue() != null) {
+                            final String groupName = group.child("nome").getValue().toString();
+                            Log.d("Service", groupId);
 
-                        notification.child(groupId).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot)
-                            {
-                                DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi").child(groupId).child("notifiche");
-                                if(listenerNot.get(groupId)==null)
-                                {
-                                    listenerNot.put(groupId, (int) dataSnapshot.getChildrenCount());
+                            notification.child(groupId).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi").child(groupId).child("notifiche");
+                                    if (listenerNot.get(groupId) == null) {
+                                        listenerNot.put(groupId, (int) dataSnapshot.getChildrenCount());
 
-                                    //cancel displayed not
-                                    myNotRef.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if(dataSnapshot.getValue()!=null)
-                                                if(displayedNot.size()>0)
-                                                    mNotificationManager.cancelAll();
+                                        //cancel displayed not
+                                        myNotRef.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.getValue() != null)
+                                                    if (displayedNot.size() > 0)
+                                                        mNotificationManager.cancelAll();
 
-                                        }
+                                            }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
 
-                                        }
-                                    });
-                                }
+                                            }
+                                        });
+                                    }
 
-                                if(listenerNot.get(groupId)<dataSnapshot.getChildrenCount())
-                                {
-                                    Log.d("Service","new notification added");
+                                    if (listenerNot.get(groupId) < dataSnapshot.getChildrenCount()) {
+                                        Log.d("Service", "new notification added");
 
-                                    myNotRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot)
-                                        {
-                                            final String myNot = dataSnapshot.getValue().toString();
-                                            Log.d("Service","mynot "+myNot);
+                                        myNotRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                final String myNot = dataSnapshot.getValue().toString();
+                                                Log.d("Service", "mynot " + myNot);
 
-                                            DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+                                                DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
 
-                                            ValueEventListener getNewNot = new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    if(dataSnapshot.getChildrenCount()>0)
-                                                    {
-                                                        for(DataSnapshot not :  dataSnapshot.getChildren())
-                                                        {
-                                                            if(!not.getKey().equals(myNot))
-                                                            {
-                                                                Log.d("Service","new not added to node");
-                                                                if(displayedNot.get(not.getKey())==null)
-                                                                {
-                                                                    Log.d("Service","displayed not: "+not.toString());
-                                                                    displayedNot.put(not.getKey(), 1);
+                                                ValueEventListener getNewNot = new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        if (dataSnapshot.getChildrenCount() > 0) {
+                                                            for (DataSnapshot not : dataSnapshot.getChildren()) {
+                                                                if (!not.getKey().equals(myNot)) {
+                                                                    Log.d("Service", "new not added to node");
+                                                                    if (displayedNot.get(not.getKey()) == null) {
+                                                                        Log.d("Service", "displayed not: " + not.toString());
+                                                                        displayedNot.put(not.getKey(), 1);
 
-                                                                    String uname = not.child("uname").getValue().toString();
-                                                                    String text = "ND";
+                                                                        String uname = not.child("uname").getValue().toString();
+                                                                        String text = "ND";
 
-                                                                    if(not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddExpenseActivity)))
-                                                                        text = uname + " " + mContext.getResources().getString(R.string.notififcationAddExpenseText);
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddExpenseActivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationAddExpenseText);
 
-                                                                    if(not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddGroupActivity)))
-                                                                        text = uname + " " + mContext.getResources().getString(R.string.notififcationAddGroupText);
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddGroupActivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationAddGroupText);
 
-                                                                    if(not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddMembersToGroupActivity)))
-                                                                        text = uname + " " + mContext.getResources().getString(R.string.notififcationAddMembersToGroupText);
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddMembersToGroupActivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationAddMembersToGroupText);
 
-                                                                    if(not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationRemoveMembersToGroupActivity)))
-                                                                        text = uname + " " + mContext.getResources().getString(R.string.notififcationRemoveMembersToGroupText);
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationRemoveMembersToGroupActivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationRemoveMembersToGroupText);
 
 
+                                                                        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
+                                                                        mBuilder.setSmallIcon(R.drawable.ic_not_piggy);
+                                                                        mBuilder.setContentTitle(groupName);
+                                                                        mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round));
+                                                                        mBuilder.setContentText(text);
 
-                                                                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
-                                                                    mBuilder.setSmallIcon(R.drawable.ic_not_piggy);
-                                                                    mBuilder.setContentTitle(groupName);
-                                                                    mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher_round));
-                                                                    mBuilder.setContentText(text);
+                                                                        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                                                                    mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                                                                    mNotificationManager.notify(displayedNot.size(), mBuilder.build());
+                                                                        mNotificationManager.notify(displayedNot.size(), mBuilder.build());
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
-                                                }
 
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
 
-                                                }
-                                            };
+                                                    }
+                                                };
 
-                                            notificationRef.orderByKey().startAt(myNot).addListenerForSingleValueEvent(getNewNot);
-                                        }
+                                                notificationRef.orderByKey().startAt(myNot).addListenerForSingleValueEvent(getNewNot);
+                                            }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
 
-                                        }
-                                    });
+                                            }
+                                        });
+
+                                    }
 
                                 }
 
-                            }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -198,8 +189,6 @@ public class NotificationService extends IntentService{
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         mContext = this;
-        FirebaseApp.initializeApp(getApplicationContext());
-
 
         mAuth = FirebaseAuth.getInstance();
 

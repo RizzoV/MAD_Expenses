@@ -114,7 +114,7 @@ public class TopicActivity extends AppCompatActivity {
                             {
                                 topicMap.put(topic.getKey(), 69);
 
-                            if(topic.child("uid").equals(usrId))
+                            if(!topic.child("uid").getValue().toString().equals(usrId))
                                 msgList.add(new Topic(topic.child("name").getValue().toString(), topic.child("text").getValue().toString(),topic.child("date").getValue().toString(), false));
                             else
                                 msgList.add(new Topic(topic.child("name").getValue().toString(), topic.child("text").getValue().toString(),topic.child("date").getValue().toString(), true));
