@@ -2,15 +2,20 @@ package it.polito.mad.team19.mad_expenses.Classes;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.icu.text.LocaleDisplayNames;
 import android.icu.text.StringPrepParseException;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
@@ -25,6 +30,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import it.polito.mad.team19.mad_expenses.AccountActivity;
+import it.polito.mad.team19.mad_expenses.GroupActivity;
+import it.polito.mad.team19.mad_expenses.GroupInfoActivity;
+import it.polito.mad.team19.mad_expenses.GroupsListActivity;
+import it.polito.mad.team19.mad_expenses.MeActivity;
 import it.polito.mad.team19.mad_expenses.R;
 
 
@@ -66,6 +76,14 @@ public class NotificationService extends IntentService{
                         final String groupId = group.getKey();
                         if (group.child("nome").getValue() != null) {
                             final String groupName = group.child("nome").getValue().toString();
+
+                            final String groupImage;
+                            if(group.child("immagine").getValue()!=null)
+
+                                groupImage = group.child("immagine").getValue().toString();
+                            else
+                                groupImage = null;
+
                             Log.d("Service", groupId);
 
                             notification.child(groupId).addValueEventListener(new ValueEventListener() {
@@ -130,15 +148,61 @@ public class NotificationService extends IntentService{
 
 
                                                                         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
+                                                                        mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+                                                                        mBuilder.setLights(Color.parseColor(getString(R.color.colorPrimary)), 3000, 3000);
+                                                                        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                                                        mBuilder.setSound(alarmSound);
                                                                         mBuilder.setSmallIcon(R.drawable.ic_not_piggy);
                                                                         mBuilder.setContentTitle(groupName);
                                                                         mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round));
                                                                         mBuilder.setContentText(text);
+                                                                        mBuilder.setAutoCancel(true);
+
+                                                                        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
+                                                                        stackBuilder.addParentStack(GroupsListActivity.class);
+                                                                        Intent intent = new Intent(mContext,GroupsListActivity.class);;
+
+                                                                        String activity = not.child("activity").getValue().toString();
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationAddGroupActivity)))
+                                                                            intent =  new Intent(mContext,GroupsListActivity.class);
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationAddMembersToGroupActivity)))
+                                                                        {
+                                                                            intent =new Intent(mContext,GroupInfoActivity.class);
+                                                                            intent.putExtra("groupImage",groupImage);
+                                                                            intent.putExtra("groupName",groupName);
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationRemoveMembersToGroupActivity))) {
+                                                                            intent =new Intent(mContext,GroupInfoActivity.class);
+                                                                            intent.putExtra("groupImage",groupImage);
+                                                                            intent.putExtra("groupName",groupName);
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationAddExpenseActivity))) {
+                                                                            intent = new Intent(mContext, GroupActivity.class);
+                                                                            intent.putExtra("groupImage",groupImage);
+                                                                            intent.putExtra("groupName",groupName);
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
+                                                                        stackBuilder.addNextIntent(intent);
+                                                                        PendingIntent resultPendingIntent =
+                                                                                stackBuilder.getPendingIntent(
+                                                                                        0,
+                                                                                        PendingIntent.FLAG_UPDATE_CURRENT
+                                                                                );
+
+                                                                        mBuilder.setContentIntent(resultPendingIntent);
+
 
                                                                         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
                                                                         mNotificationManager.notify(displayedNot.size(), mBuilder.build());
-                                                                    }
+
+                                                                        }
                                                                 }
                                                             }
                                                         }
