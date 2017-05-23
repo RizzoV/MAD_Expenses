@@ -19,6 +19,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+
 public class ProposalDetailsActivity extends AppCompatActivity {
 
     private Button accept;
@@ -35,9 +39,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Dettagli Proposta");
 
-        String desc;
+        final String desc;
         final String name;
-        String cost;
+        final String cost;
         String authorId;
 
         final TextView author_tv;
@@ -349,5 +353,65 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                 Log.e("ProposalDetailsActivity", "Could not retrieve the waitingFor node");
             }
         });
+
+        // Show the possibility to transform the proposal into an expense if everybody has voted
+        final CardView transformPropInExpense_cv = (CardView) findViewById(R.id.card_transform_prop_in_expense);
+        DatabaseReference waitingForRef = database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("waitingFor");
+        waitingForRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.hasChildren())
+                    transformPropInExpense_cv.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("ProposalDetailsActivity", "could not retrieve the waitingFor list");
+            }
+        });
+
+        transformPropInExpense_cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
+
+                contributors.add(new FirebaseGroupMember(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString(), userId));
+
+                database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        ArrayList<FirebaseGroupMember> excluded = new ArrayList<>();
+
+                        if(dataSnapshot.hasChildren()) {
+                            for(DataSnapshot refuser : dataSnapshot.getChildren()) {
+                                excluded.add(new FirebaseGroupMember(refuser.child("nome").getValue(String.class), refuser.child("immagine").getValue(String.class), refuser.getKey()));
+                            }
+                        }
+
+                        // Make the expense creation activity start
+                        Intent i = new Intent(ProposalDetailsActivity.this, AddExpenseActivity.class);
+                        i.putExtra("ExpenseName", name);
+                        i.putExtra("ExpenseDesc", desc);
+                        //i.putExtra("ExpenseImgUrl", );
+                        i.putExtra("ExpenseAuthorId",userId);
+                        i.putExtra("ExpenseCost", cost);
+                        i.putExtra("groupId", groupId);
+                        i.putExtra("ExpenseId,", "fake");
+                        i.putExtra("ModifyIntent", "true");
+                        i.putExtra("butDoNotTrack", "true");
+                        i.putExtra("contributorsList", contributors);
+                        i.putExtra("excludedList", excluded);
+                        Log.e("GOING TO", "START");
+                        startActivity(i);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("ProposalDetailsActivity", "Could not retrieve the list of refusers 17");
+                    }
+                });
+            }
+        });
+
     }
 }
