@@ -388,7 +388,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         AsyncFirebaseImageLoader async = new AsyncFirebaseImageLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(),
-                isModifyActivity, oldExpenseId, excludedList, contributorsList);
+                isModifyActivity, oldExpenseId, excludedList, contributorsList,this);
 
         async.execute();
         /*
@@ -485,8 +485,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             finishTasks();
         }*/
 
-       finishTasks();
+       //finishTasks();
     }
+
+
 
     public void finishTasks() {
 

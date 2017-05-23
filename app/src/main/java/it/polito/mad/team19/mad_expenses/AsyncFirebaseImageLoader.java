@@ -1,5 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -48,9 +50,10 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
 
     private Boolean isModifyActivity;
     private String oldExpenseId;
+    private Context mContext;
 
     public AsyncFirebaseImageLoader(String idExpense, String groupId, String usrId, String mCurrentPhotoPath, String mCurrentPhotoName, String nameEditText, String descriptionEditText, String costEditText
-    , Boolean isModifyActivity, String oldExpenseId, ArrayList<FirebaseGroupMember> excludedList, ArrayList<FirebaseGroupMember> contributorsList) {
+    , Boolean isModifyActivity, String oldExpenseId, ArrayList<FirebaseGroupMember> excludedList, ArrayList<FirebaseGroupMember> contributorsList, Context mContext) {
         this.idExpense = idExpense;
         this.groupId = groupId;
         this.usrId = usrId;
@@ -63,6 +66,7 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
         this.oldExpenseId = oldExpenseId;
         this.excludedList = excludedList;
         this.contributorsList = contributorsList;
+        this.mContext = mContext;
 
     }
 
@@ -75,6 +79,7 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
         final DatabaseReference newExpenseRef = myRef.child(idExpense);
 
         if (mCurrentPhotoPath != null) {
+            storageRef = FirebaseStorage.getInstance().getReference();
             groupImagesRef = storageRef.child("images").child(groupId);
             final File imageToUpload = new File(mCurrentPhotoPath);
             Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
@@ -119,7 +124,7 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
                             }
 
                             //TODO: aggiungere quello in fondo
-                            //finishTasks();
+                            ((AddExpenseActivity)mContext).finishTasks();
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -148,9 +153,14 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
             if (isModifyActivity) {
                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
             }
-            //finishTasks();
+            ((AddExpenseActivity)mContext).finishTasks();
         }
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
     }
 
     private Bitmap shrinkBitmap(String file, int width, int height) {
