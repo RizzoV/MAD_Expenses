@@ -542,9 +542,34 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         setResult(RESULT_OK, getIntent());
 
         //Jured: gestione della modifica
-        if (isModifyActivity) {
+        if (isModifyActivity && (getIntent().getStringExtra("butDoNotTrack") == null)) {
             moveFirebaseExpenseNode();
-        } else {
+        }
+        // Vale: e della trasformazione di una proposta in spesa
+        else if(getIntent().getStringExtra("butDoNotTrack") != null) {
+            FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId).child("membri").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<>();
+                    if(dataSnapshot.hasChildren()) {
+                        for(DataSnapshot groupMember : dataSnapshot.getChildren()) {
+                            groupMembersList.add(new FirebaseGroupMember(groupMember.child("nome").getValue(String.class), groupMember.child("immagine").getValue(String.class), groupMember.getKey()));
+                        }
+                    }
+
+                    AsyncFirebaseBalanceLoader async = new AsyncFirebaseBalanceLoader(groupId, idExpense, groupMembersList, expenseTotal, contributorsList, excludedList);
+                    async.execute();
+                    barProgressDialog.dismiss();
+                    finish();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("AddExpenseActivity", "Could not retrieve the list of group members");
+                }
+            });
+        }
+        else {
             barProgressDialog.dismiss();
             finish();
         }
@@ -726,13 +751,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 excludedList = getIntent().getParcelableArrayListExtra("excludedList");
             }
 
-            for(FirebaseGroupMember fbgm : contributorsList)
-                Log.e("AEA C IN", fbgm.getName() + "-");
-
-            for(FirebaseGroupMember fbgm : excludedList) {
-                Log.e("AEA E IN", fbgm.getName() + "-");
-            }
-
             getSupportActionBar().setTitle(R.string.modify_expense);
 
             nameEditText.setText(oldName);
@@ -752,7 +770,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Log.e("ExpenseDetailsActivity", "Exception:\n" + e.toString());
             }
 
-            //TODO checkare i contributors ed excluded della spesa che sto modificando
             isModifyActivity = true;
         }
     }

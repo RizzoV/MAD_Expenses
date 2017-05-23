@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/smaller_vertical_margin"
+    android:background="@color/activitiesBackgroundColor"
     android:clipChildren="true"
     android:fillViewport="true"
-    android:background="@color/activitiesBackgroundColor"
+    android:paddingTop="@dimen/smaller_vertical_margin"
     tools:context="it.polito.mad.team19.mad_expenses.ExpenseDetailsActivity">
 
     <LinearLayout
@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/smaller_horizontal_margin"
-            app:cardElevation="4dp"
-            android:layout_marginRight="@dimen/smaller_horizontal_margin">
+            android:layout_marginRight="@dimen/smaller_horizontal_margin"
+            app:cardElevation="4dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -32,8 +32,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/smaller_horizontal_margin"
                     android:layout_marginBottom="@dimen/smaller_vertical_margin"
+                    android:layout_marginStart="@dimen/smaller_horizontal_margin"
                     android:text="Pizza"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/big_titles_size" />
@@ -51,30 +51,30 @@
                             android:id="@+id/proposal_photo"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
+                            android:layout_marginBottom="10dp"
                             android:layout_marginEnd="@dimen/smaller_horizontal_margin"
                             android:layout_marginStart="@dimen/smaller_horizontal_margin"
                             android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
                             android:src="@drawable/circle" />
 
                         <TextView
                             android:id="@+id/add_proposals_photo_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Modifica Immagine"
-                            android:textColor="@color/colorPrimary"
+                            android:layout_centerInParent="true"
                             android:maxEms="5"
+                            android:text="Modifica Immagine"
                             android:textAlignment="center"
-                            android:textSize="11sp"
-                            android:layout_centerInParent="true"/>
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="11sp" />
 
                     </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin">
+                        android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/proposal_author_header"
@@ -102,8 +102,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/smaller_vertical_margin"
                             android:text="Costo:"
-                            android:textSize="@dimen/normal_text_size"
-                            android:textColor="@color/colorPrimary" />
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/normal_text_size" />
 
                         <TextView
                             android:id="@+id/proposal_cost"
@@ -121,8 +121,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/smaller_vertical_margin"
                             android:text="Descrizione:"
-                            android:textSize="@dimen/normal_text_size"
-                            android:textColor="@color/colorPrimary" />
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/normal_text_size" />
 
                         <TextView
                             android:id="@+id/proposal_description"
@@ -139,22 +139,138 @@
             </RelativeLayout>
         </android.support.v7.widget.CardView>
 
-
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/proposal_topic_cw"
-            app:cardElevation="4dp"
             android:layout_marginLeft="@dimen/smaller_horizontal_margin"
             android:layout_marginRight="@dimen/smaller_horizontal_margin"
-            android:layout_marginTop="@dimen/smaller_vertical_margin">
-
+            android:layout_marginTop="@dimen/smaller_vertical_margin"
+            app:cardElevation="4dp">
 
             <LinearLayout
-                android:padding="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_accept_proposal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:drawableEnd="@drawable/ic_state_ok"
+                        android:gravity="center"
+                        android:text="Accetta"
+                        android:textColor="@color/textGreen" />
+
+                    <Button
+                        android:id="@+id/btn_deny_proposal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:drawableEnd="@drawable/ic_state_deny"
+                        android:gravity="center"
+                        android:text="Rifiuta"
+                        android:textColor="@color/redMaterial" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/smaller_vertical_margin">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/acceptedBy"
+                        android:textColor="@color/secondaryText"
+                        android:textSize="@dimen/normal_text_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/accepted_list_string"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/smaller_horizontal_margin"
+                        android:text="@string/nobody"
+                        android:textColor="@color/secondaryText"
+                        android:textSize="@dimen/normal_text_size" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/smaller_vertical_margin">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/refusedBy"
+                        android:textColor="@color/secondaryText"
+                        android:textSize="@dimen/normal_text_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/refused_list_string"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/smaller_horizontal_margin"
+                        android:text="@string/nobody"
+                        android:textColor="@color/secondaryText"
+                        android:textSize="@dimen/normal_text_size" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/smaller_vertical_margin">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/waitingFor"
+                        android:textColor="@color/secondaryText"
+                        android:textSize="@dimen/normal_text_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/waiting_list_string"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/smaller_horizontal_margin"
+                        android:text="@string/nobody"
+                        android:textColor="@color/secondaryText"
+                        android:textSize="@dimen/normal_text_size" />
+                </LinearLayout>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/proposal_topic_cw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/smaller_horizontal_margin"
+            android:layout_marginRight="@dimen/smaller_horizontal_margin"
+            android:layout_marginTop="@dimen/smaller_vertical_margin"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
 
                 <ImageView
                     android:layout_width="40dp"
@@ -164,125 +280,46 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textSize="20sp"
                     android:gravity="center"
                     android:text="Visualizza la discussione"
-                    android:textColor="@color/secondaryText" />
+                    android:textColor="@color/secondaryText"
+                    android:textSize="20sp" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
+            android:id="@+id/card_transform_prop_in_expense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardElevation="4dp"
             android:layout_marginLeft="@dimen/smaller_horizontal_margin"
             android:layout_marginRight="@dimen/smaller_horizontal_margin"
             android:layout_marginTop="@dimen/smaller_vertical_margin"
-            android:layout_marginBottom="@dimen/smaller_vertical_margin">
+            app:cardElevation="4dp"
+            android:clickable="true"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:padding="16dp">
+                
+                <ImageView
+                    android:layout_width="38dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/ic_bag"/>
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_height="wrap_content">
-                   <Button
-                       android:layout_width="wrap_content"
-                       android:layout_height="match_parent"
-                       android:id="@+id/btn_accept_proposal"
-                       android:layout_marginEnd="16dp"
-                       android:layout_marginStart="16dp"
-                       android:layout_weight="1"
-                       android:gravity="center"
-                       android:textColor="@color/textGreen"
-                       android:background="@android:color/transparent"
-                       android:text="Accetta"
-                       android:drawableEnd="@drawable/ic_state_ok" />
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:id="@+id/btn_deny_proposal"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textColor="@color/redMaterial"
-                        android:background="@android:color/transparent"
-                        android:text="Rifiuta"
-                        android:drawableEnd="@drawable/ic_state_deny" />
-                </LinearLayout>
-
-                <LinearLayout
+                <TextView
+                    android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/smaller_vertical_margin">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/acceptedBy"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/normal_text_size"
-                        android:textColor="@color/secondaryText"/>
+                    android:text="@string/transformInExpense"
+                    android:textColor="@color/secondaryText"
+                    android:textSize="@dimen/titles_size"
+                    android:gravity="center"
+                    android:layout_gravity="center"/>
 
-                    <TextView
-                        android:id="@+id/accepted_list_string"
-                        android:layout_marginLeft="@dimen/smaller_horizontal_margin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nobody"
-                        android:textSize="@dimen/normal_text_size"
-                        android:textColor="@color/secondaryText" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/smaller_vertical_margin">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/refusedBy"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/normal_text_size"
-                        android:textColor="@color/secondaryText"/>
-
-                    <TextView
-                        android:id="@+id/refused_list_string"
-                        android:layout_marginLeft="@dimen/smaller_horizontal_margin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nobody"
-                        android:textSize="@dimen/normal_text_size"
-                        android:textColor="@color/secondaryText" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/smaller_vertical_margin">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/waitingFor"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/normal_text_size"
-                        android:textColor="@color/secondaryText"/>
-
-                    <TextView
-                        android:id="@+id/waiting_list_string"
-                        android:layout_marginLeft="@dimen/smaller_horizontal_margin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nobody"
-                        android:textSize="@dimen/normal_text_size"
-                        android:textColor="@color/secondaryText" />
-                </LinearLayout>
             </LinearLayout>
+
         </android.support.v7.widget.CardView>
     </LinearLayout>
 </ScrollView>
