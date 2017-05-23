@@ -26,7 +26,7 @@
                 android:layout_weight="0.5"
                 app:cardElevation="1dp"
                 card_view:cardCornerRadius="0dp"
-                android:backgroundTint="@color/lightPrimary">
+                android:backgroundTint="@color/colorAccent">
 
 
                 <LinearLayout
@@ -78,7 +78,7 @@
                 android:layout_weight="0.5"
                 card_view:cardCornerRadius="0dp"
                 app:cardElevation="1dp"
-                android:backgroundTint="@color/lightPrimary">
+                android:backgroundTint="@color/colorAccent">
 
 
                 <LinearLayout

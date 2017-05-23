@@ -51,7 +51,6 @@ public class NotificationService extends IntentService{
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         Log.d("Service","Started");
-
     }
 
     private void getGroupsList(final Context mContext)
@@ -83,7 +82,6 @@ public class NotificationService extends IntentService{
                                                 if (dataSnapshot.getValue() != null)
                                                     if (displayedNot.size() > 0)
                                                         mNotificationManager.cancelAll();
-
                                             }
 
                                             @Override
