@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
@@ -499,7 +500,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             username = "User";
 
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         final String formattedDate = df.format(c.getTime());
 
         final Map<String, Notifications> notification = new HashMap<String, Notifications>();
@@ -512,8 +513,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     Notifications currentNot = current.getValue(Notifications.class);
                     notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
                 }
-
-
 
                 notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, idExpense, usrId, finalUsername));
                 notificationRef.setValue(notification);
