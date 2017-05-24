@@ -141,6 +141,12 @@ public class NotificationService extends IntentService{
                                                                         if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddExpenseActivity)))
                                                                             text = uname + " " + mContext.getResources().getString(R.string.notififcationAddExpenseText);
 
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddExpenseFromProposalText)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationAddExpenseFromProposalText);
+
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddProposalActivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationAddProposalText);
+
                                                                         if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddGroupActivity)))
                                                                             text = uname + " " + mContext.getResources().getString(R.string.notififcationAddGroupText);
 
@@ -149,6 +155,12 @@ public class NotificationService extends IntentService{
 
                                                                         if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationRemoveMembersToGroupActivity)))
                                                                             text = uname + " " + mContext.getResources().getString(R.string.notififcationRemoveMembersToGroupText);
+
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAcceptedProposalActivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationAcceptedProposalText);
+
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationDenyProposalActivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationDenyProposalText);
 
 
                                                                         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
@@ -193,6 +205,39 @@ public class NotificationService extends IntentService{
                                                                             intent.putExtra("groupName",groupName);
                                                                             intent.putExtra("groupId",groupId);
                                                                         }
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationAddExpenseFromProposalActivity))) {
+                                                                            intent = new Intent(mContext, GroupActivity.class);
+                                                                            intent.putExtra("groupImage",groupImage);
+                                                                            intent.putExtra("groupName",groupName);
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationAcceptedProposalActivity)))
+                                                                        {
+                                                                            intent = new Intent(mContext, GroupActivity.class);
+                                                                            intent.putExtra("groupImage",groupImage);
+                                                                            intent.putExtra("groupName",groupName);
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationDenyProposalActivity)))
+                                                                        {
+                                                                            intent = new Intent(mContext, GroupActivity.class);
+                                                                            intent.putExtra("groupImage",groupImage);
+                                                                            intent.putExtra("groupName",groupName);
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationAddProposalActivity)))
+                                                                        {
+                                                                            intent = new Intent(mContext, GroupActivity.class);
+                                                                            intent.putExtra("groupImage",groupImage);
+                                                                            intent.putExtra("groupName",groupName);
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
+
 
                                                                         stackBuilder.addNextIntent(intent);
                                                                         PendingIntent resultPendingIntent =

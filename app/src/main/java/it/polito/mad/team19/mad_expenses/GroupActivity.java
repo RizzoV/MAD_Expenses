@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -35,6 +37,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -45,6 +49,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionItemTarget;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -251,6 +259,7 @@ public class GroupActivity extends AppCompatActivity {
                 startActivityForResult(i, requestCode);
             }
         });
+
     }
 
     public int convertDipToPixels(float dips) {
@@ -372,7 +381,80 @@ public class GroupActivity extends AppCompatActivity {
             }
         });
 
+        DatabaseReference groupStatusRef = FirebaseDatabase.getInstance().getReference()
+                .child("gruppi").child(groupId).child("stato");
+
+        groupStatusRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null)
+                    if(dataSnapshot.getValue().toString().compareTo("created") == 0)
+                        showCaseHint();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         return true;
+    }
+
+    private void showCaseHint () {
+        final Toolbar  mToolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        ViewTarget navigationButtonViewTarget = new ViewTarget(mToolbar);
+
+        final ShowcaseView showcaseView = new ShowcaseView.Builder(this)
+                .setStyle(R.style.CustomShowcaseMaterial)
+                .withMaterialShowcase()
+                .setTarget(navigationButtonViewTarget)
+                .build();
+
+        showcaseView.setContentTitle(getString(R.string.new_group_add_members));
+        showcaseView.setContentText(getString(R.string.add_new_members_hint));
+        showcaseView.setButtonText(getString(R.string.got_it));
+        showcaseView.hideButton();
+
+        float density = getResources().getDisplayMetrics().density;
+        int paddingDp = (int)(45 * density);
+
+        showcaseView.setPadding(paddingDp,paddingDp,paddingDp,paddingDp);
+
+        Target reOrderTarget = new Target() {
+            @Override
+            public Point getPoint() {
+                return new ViewTarget(mToolbar.findViewById(R.id.person_add)).getPoint();
+            }
+        };
+
+        showcaseView.setShowcase(reOrderTarget, true);
+
+        showcaseView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("DebugShowcase", "onClick GotIt!");
+                FirebaseDatabase.getInstance().getReference()
+                        .child("gruppi").child(groupId).child("stato").setValue("seen");
+
+                ActionMenuItemView addMemberMenuItem = (ActionMenuItemView) findViewById(R.id.person_add);
+                addMemberMenuItem.performClick();
+
+
+                showcaseView.hide();
+            }
+        });
+
+        showcaseView.overrideButtonClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("DebugShowcase", "onClick GotIt!");
+                FirebaseDatabase.getInstance().getReference()
+                        .child("gruppi").child(groupId).child("stato").setValue("seen");
+                showcaseView.hide();
+            }
+        });
     }
 
     public void setNotificationNumber(final TextView tv) {
@@ -535,6 +617,8 @@ public class GroupActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+
+
         if (netChange == null) {
             netChange = new NetworkChangeReceiver();
             netChange.setViewForSnackbar(findViewById(android.R.id.content));
@@ -557,13 +641,31 @@ public class GroupActivity extends AppCompatActivity {
 
     }
 
-    private void onInviteClicked() {
-        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                .setMessage(getString(R.string.invitation_message))
-                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link) + "/" + groupId))
-                .setCallToActionText(getString(R.string.invitation_cta))
-                .build();
-        startActivityForResult(intent, REQUEST_INVITE);
+    private void onInviteClicked()
+    {
+        DatabaseReference getLastNotRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        getLastNotRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String lastNotKey = "0";
+                for(DataSnapshot not : dataSnapshot.getChildren())
+                    lastNotKey = not.getKey();
+
+                Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                        .setMessage(getString(R.string.invitation_message))
+                        .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link) + "/" + groupId+"/"+lastNotKey))
+                        .setCallToActionText(getString(R.string.invitation_cta))
+                        .build();
+                startActivityForResult(intent, REQUEST_INVITE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     public void passBalancesArray(Collection<Me> balancesArray) {

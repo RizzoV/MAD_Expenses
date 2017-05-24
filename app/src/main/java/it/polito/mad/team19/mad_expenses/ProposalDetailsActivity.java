@@ -26,9 +26,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 
 public class ProposalDetailsActivity extends AppCompatActivity {
 
@@ -186,6 +192,45 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("accepters").child(userId).child("nome").setValue(username);
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("accepters").child(userId).child("immagine").setValue(userImgUrl);
 
+                                final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+                                final String notificationId = notificationRef.push().getKey();
+
+                                String username = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+                                if (username == null)
+                                    username = "User";
+
+                                Calendar c = Calendar.getInstance();
+                                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                                final String formattedDate = df.format(c.getTime());
+
+                                final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+
+                                final String finalUsername = username;
+                                notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot current : dataSnapshot.getChildren()) {
+                                            Notifications currentNot = current.getValue(Notifications.class);
+                                            notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
+                                        }
+
+                                        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAcceptedProposalActivity), formattedDate, proposalId, userId, finalUsername));
+                                        notificationRef.setValue(notification);
+
+                                        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
+                                        myNotRef.setValue(notificationId);
+
+                                    }
+
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.e("AddExpenseActivity", "Unable to perform listen on notificationRef");
+                                    }
+                                });
+
+
                                 dialog.dismiss();
                             }
                         });
@@ -263,6 +308,46 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 // Add the user to the list of refusers
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers").child(userId).child("nome").setValue(username);
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers").child(userId).child("immagine").setValue(userImgUrl);
+
+                                final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+                                final String notificationId = notificationRef.push().getKey();
+
+                                String username = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+                                if (username == null)
+                                    username = "User";
+
+                                Calendar c = Calendar.getInstance();
+                                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                                final String formattedDate = df.format(c.getTime());
+
+                                final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+
+                                final String finalUsername = username;
+                                notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot current : dataSnapshot.getChildren()) {
+                                            Notifications currentNot = current.getValue(Notifications.class);
+                                            notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
+                                        }
+
+                                        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationDenyProposalActivity), formattedDate, proposalId, userId, finalUsername));
+                                        notificationRef.setValue(notification);
+
+                                        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
+                                        myNotRef.setValue(notificationId);
+
+                                    }
+
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.e("AddExpenseActivity", "Unable to perform listen on notificationRef");
+                                    }
+                                });
+
+
 
                                 dialog.dismiss();
                             }
@@ -427,6 +512,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         i.putExtra("groupId", groupId);
                         i.putExtra("ExpenseId,", "fake");
                         i.putExtra("ModifyIntent", "true");
+                        i.putExtra("CreateExpenseFromProposal", "true");
                         i.putExtra("butDoNotTrack", "true");
                         i.putExtra("contributorsList", contributors);
                         i.putExtra("excludedList", excluded);

@@ -38,23 +38,17 @@ public class TopicActivity extends AppCompatActivity {
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
-    String Type;
     String tid;
     String name;
     String topicType;
     String expenseId;
     String proposalId;
-    String idMessage;
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    //private FirebaseStorage storage;
     private String usrId;
     private String groupId;
-    StorageReference storageRef;
 
     EditText messageEditText;
-    boolean name_visibility;
 
     TopicAdapter adapter;
     private HashMap<String, Integer> topicMap = new HashMap<>();
@@ -155,21 +149,6 @@ public class TopicActivity extends AppCompatActivity {
             }
         });
 
-        // TODO: 19/05/2017 
-        // 1 - put extras, done!
-        // 2 - node messages on Firebase, done!
-        // 3 - differentiate expenses and proposals
-        // 4 - verify authentication, not necessary!
-
-        /*for(int i=0;i<20;i++)
-        {
-            if(i%2==0)
-                msgList.add(new Topic("Bbbolz","Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",true));
-            else
-                msgList.add(new Topic("Jureeee","Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",false));
-
-        }*/
-
         adapter = new TopicAdapter(this,msgList);
         msg_lv.setAdapter(adapter);
     }
@@ -213,17 +192,9 @@ public class TopicActivity extends AppCompatActivity {
     }
 
     private Intent getParentActivityIntentImpl() {
-        Intent i = null;
-
-        // Here you need to do some logic to determine from which Activity you came.
-        // example: you could pass a variable through your Intent extras and check that.
+        Intent i;
         i = new Intent(this, ProposalDetailsActivity.class);
-        // set any flags or extras that you need.
-        // If you are reusing the previous Activity (i.e. bringing it to the top
-        // without re-creating a new instance) set these flags:
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        // if you are re-using the parent Activity you may not need to set any extras
-        //i.putExtra("someExtra", "whateverYouNeed");
         return i;
     }
 }

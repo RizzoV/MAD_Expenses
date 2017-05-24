@@ -50,6 +50,9 @@ dependencies {
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.7'
+
+    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
+
     testCompile 'junit:junit:4.12'
 }
 
