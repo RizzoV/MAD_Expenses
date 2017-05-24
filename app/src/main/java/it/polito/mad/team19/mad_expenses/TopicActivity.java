@@ -138,17 +138,20 @@ public class TopicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Calendar c = Calendar.getInstance();
-                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                if(!messageEditText.getText().toString().trim().isEmpty())
+                {
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 
-                String uuid = newMessageRef.push().getKey();
-                newMessageRef.child(uuid).child("text").setValue((messageEditText.getText().toString()));
-                newMessageRef.child(uuid).child("name").setValue(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                newMessageRef.child(uuid).child("uid").setValue(usrId);
-                newMessageRef.child(uuid).child("date").setValue(df.format(c.getTime()));
+                    String uuid = newMessageRef.push().getKey();
+                    newMessageRef.child(uuid).child("text").setValue((messageEditText.getText().toString()));
+                    newMessageRef.child(uuid).child("name").setValue(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                    newMessageRef.child(uuid).child("uid").setValue(usrId);
+                    newMessageRef.child(uuid).child("date").setValue(df.format(c.getTime()));
 
-                messageEditText.setText("");
+                    messageEditText.setText("");
+                }
             }
         });
 
