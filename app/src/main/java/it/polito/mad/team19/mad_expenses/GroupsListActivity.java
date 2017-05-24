@@ -102,9 +102,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             startService(notIntent);
 
             if(myFirebaseDatabase == null) {
-/*
+
                 FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-*/
                 myFirebaseDatabase = FirebaseDatabase.getInstance();
             }
         }
