@@ -10,29 +10,29 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 
 /**
- * Created by Jured on 22/05/17.
+ * Created by Valentino on 24/05/17.
  */
 
-public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
+public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
 
-    private String idExpense;
+    private String proposalId;
     private String groupId;
     private String usrId;
     private String mCurrentPhotoPath;
@@ -45,16 +45,11 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
     private String descriptionEditText;
     private String costEditText;
 
-    private ArrayList<FirebaseGroupMember> excludedList;
-    private ArrayList<FirebaseGroupMember> contributorsList;
-
-    private Boolean isModifyActivity;
-    private String oldExpenseId;
     private Context mContext;
 
-    public AsyncFirebaseImageLoader(String idExpense, String groupId, String usrId, String mCurrentPhotoPath, String mCurrentPhotoName, String nameEditText, String descriptionEditText, String costEditText
-    , Boolean isModifyActivity, String oldExpenseId, ArrayList<FirebaseGroupMember> excludedList, ArrayList<FirebaseGroupMember> contributorsList, Context mContext) {
-        this.idExpense = idExpense;
+    public AsyncFirebaseProposalLoader(String proposalId, String groupId, String usrId, String mCurrentPhotoPath, String mCurrentPhotoName,
+                                       String nameEditText, String descriptionEditText, String costEditText, Context mContext) {
+        this.proposalId = proposalId;
         this.groupId = groupId;
         this.usrId = usrId;
         this.mCurrentPhotoPath = mCurrentPhotoPath;
@@ -62,21 +57,15 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
         this.nameEditText = nameEditText;
         this.descriptionEditText = descriptionEditText;
         this.costEditText = costEditText;
-        this.isModifyActivity = isModifyActivity;
-        this.oldExpenseId = oldExpenseId;
-        this.excludedList = excludedList;
-        this.contributorsList = contributorsList;
         this.mContext = mContext;
-
     }
 
     @Override
     protected Void doInBackground(Void... params) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("proposals");
 
-
-        final DatabaseReference newExpenseRef = myRef.child(idExpense);
+        final DatabaseReference newProposalRef = myRef.child(proposalId);
 
         if (mCurrentPhotoPath != null) {
             storageRef = FirebaseStorage.getInstance().getReference();
@@ -88,9 +77,9 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
             byte[] datas = baos.toByteArray();
             mCurrentPhotoName = imageToUpload.getName();
             UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
+
+
             // Register observers to listen for when the download is done or if it fails
-
-
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -104,28 +93,33 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
                     groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
+                            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Float.valueOf(costEditText.replace(",", ".")), uri.toString()));
 
-                            //Log.e("DebugIsModifyFlag", oldExpenseVersionId);
-                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.toString(), descriptionEditText.toString(),
-                                    Float.valueOf(costEditText.toString().replace(",", ".")), uri.toString()));
+                            // Vale: Aggiungi waitingFor
+                            final ArrayList<FirebaseGroupMember> groupMembers = new ArrayList<>();
 
-                            for (FirebaseGroupMember member : excludedList) {
-                                newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
-                                newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
-                            }
-                            for (FirebaseGroupMember member : contributorsList) {
-                                newExpenseRef.child("contributors").child(member.getUid()).child("nome").setValue(member.getName());
-                                newExpenseRef.child("contributors").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
-                            }
+                            DatabaseReference groupMembersReference  = database.getReference().child("gruppi").child(groupId).child("membri");
+                            groupMembersReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if(dataSnapshot.hasChildren()) {
+                                        for(DataSnapshot member : dataSnapshot.getChildren()) {
+                                            groupMembers.add(new FirebaseGroupMember(member.child("nome").getValue(String.class), member.child("immagine").getValue(String.class), member.getKey()));
+                                        }
 
-                            Log.d("DebugIsModifyFlag", isModifyActivity.toString());
-                            if (isModifyActivity) {
-                                newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
-                            }
+                                        for(FirebaseGroupMember fbgm : groupMembers) {
+                                            database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("waitingFor").child(fbgm.getUid()).setValue(fbgm.getName());
+                                        }
+                                    }
+                                }
 
-                            //TODO: aggiungere quello in fondo
-                            ((AddExpenseActivity)mContext).finishTasks();
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.e("AsyncProposalWaitingFor", "Could not retrieve the list of group members");
+                                }
+                            });
 
+                            ((AddProposalActivity)mContext).finishTasks();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -137,24 +131,36 @@ public class AsyncFirebaseImageLoader extends AsyncTask<Void,Void,Void> {
                 }
             });
         } else {
-            Log.d("DebugCaricamentoSpesa", "NoImage");
-            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.toString(), descriptionEditText.toString(),
-                    Float.valueOf(costEditText.toString().replace(",", "."))));
-            for (FirebaseGroupMember member : excludedList) {
-                newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
-                newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
-            }
-            for (FirebaseGroupMember member : contributorsList) {
-                newExpenseRef.child("contributors").child(member.getUid()).child("nome").setValue(member.getName());
-                newExpenseRef.child("contributors").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
-            }
+            Log.d("DebugCaricamentoPropost", "NoImage");
+            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Float.valueOf(costEditText.replace(",","."))));
 
-            Log.d("DebugIsModifyFlag", isModifyActivity.toString());
-            if (isModifyActivity) {
-                newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
-            }
-            ((AddExpenseActivity)mContext).finishTasks();
+            // Vale: Aggiungi waitingFor
+            final ArrayList<FirebaseGroupMember> groupMembers = new ArrayList<>();
+
+            DatabaseReference groupMembersReference  = database.getReference().child("gruppi").child(groupId).child("membri");
+            groupMembersReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.hasChildren()) {
+                        for(DataSnapshot member : dataSnapshot.getChildren()) {
+                            groupMembers.add(new FirebaseGroupMember(member.child("nome").getValue(String.class), member.child("immagine").getValue(String.class), member.getKey()));
+                        }
+
+                        for(FirebaseGroupMember fbgm : groupMembers) {
+                            database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("waitingFor").child(fbgm.getUid()).setValue(fbgm.getName());
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("AsyncProposalWaitingFor", "Could not retrieve the list of group members");
+                }
+            });
+
+            ((AddProposalActivity)mContext).finishTasks();
         }
+
         return null;
     }
 

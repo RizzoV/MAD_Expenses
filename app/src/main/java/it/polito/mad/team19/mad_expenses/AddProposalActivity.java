@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,8 +30,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -41,12 +43,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
+import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 
 /**
@@ -74,6 +80,8 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
     private EditText nameEditText;
     private EditText descriptionEditText;
     private EditText costEditText;
+
+    private String proposalId;
 
     private NetworkChangeReceiver netChange;
     private IntentFilter filter;
@@ -128,7 +136,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
             @Override
             public void onClick(View v) {
 
-                boolean empty = false;
+                boolean invalidFields = false;
 
                 nameEditText = (EditText) findViewById(R.id.new_proposal_name_et);
                 descriptionEditText = (EditText) findViewById(R.id.new_proposal_description_et);
@@ -136,19 +144,19 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 
                 if (TextUtils.isEmpty(nameEditText.getText().toString())) {
                     nameEditText.setError(getString(R.string.mandatory_field));
-                    empty = true;
+                    invalidFields = true;
                 }
 
                 //Jured: aggiunta validazione form inserimento costo (punto o virgola vanno bene per dividere intero da centesimi)
                 if (TextUtils.isEmpty(costEditText.getText().toString())) {
                     costEditText.setError(getString(R.string.mandatory_field));
-                    empty = true;
+                    invalidFields = true;
                 } else if (!costEditText.getText().toString().matches(COST_REGEX)) {
                     costEditText.setError(getString(R.string.invalid_cost_field));
-                    empty = true;
+                    invalidFields = true;
                 }
 
-                if (!empty) {
+                if (!invalidFields) {
                     mAuth = FirebaseAuth.getInstance();
                     mAuthListener = new FirebaseAuth.AuthStateListener() {
 
@@ -166,70 +174,67 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                         }
                     };
 
-                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    //DatabaseReference myRef =
-                    DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("proposals");
-                    String uuid = UUID.randomUUID().toString();
-                    final DatabaseReference newProposalRef = myRef.child(uuid);
 
-                    groupImagesRef = storageRef.child("images").child(groupId);
+                    Float proposalTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
 
-                    File imageToUpload = new File(mCurrentPhotoPath);
-
-                    //TODO chiedere i permessi di accesso alla memoria (Marshmallow+)
-                    //TODO contemplare il caso in cui non vi sia alcuna immagine allegata
-                    Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-                    byte[] datas = baos.toByteArray();
-                    mImageView.setImageBitmap(fileBitmap);
-                    mCurrentPhotoName= imageToUpload.getName();
-                    UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
-                    // Register observers to listen for when the download is done or if it fails
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle unsuccessful uploads
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                            // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                            groupImagesRef.child(mCurrentPhotoName).getDownloadUrl()
-                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            Log.d("DebugUriRequest",uri.toString());
-                                            newProposalRef.setValue(new FirebaseProposal(nameEditText.getText().toString(), descriptionEditText.getText().toString(), usrId,
-                                                    Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
-
-                                            AsyncProposalWaitingForLoader apwfl = new AsyncProposalWaitingForLoader(database.getReference(), newProposalRef.getKey(), groupId);
-
-                                            apwfl.execute();
-
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    Log.e("AddProposalActivity", "Error #1");
-                                }
-                            });
-
-                        }
-                    });
-
-
-                    //ADD TO REVERT
-                    //uploadImageToFirebase(mCurrentPhotoPath);
-
-                    //newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                    //        Float.valueOf(costEditText.getText().toString().replace(",", ".")), "sample/link.png"));
-
+                    uploadInfos();
 
                     setResult(EXP_CREATED);
                     finish();
                 }
+            }
+        });
+    }
+
+    private void uploadInfos() {
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("proposals");
+        proposalId = myRef.push().getKey();
+
+        AsyncFirebaseProposalLoader async = new AsyncFirebaseProposalLoader(proposalId, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), this);
+
+        async.execute();
+    }
+
+    public void finishTasks() {
+
+        final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        final String notificationId = notificationRef.push().getKey();
+
+        String username = mAuth.getCurrentUser().getDisplayName();
+
+        if (username == null)
+            username = "User";
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        final String formattedDate = df.format(c.getTime());
+
+        final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+
+        final String finalUsername = username;
+        notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot current : dataSnapshot.getChildren()) {
+                    Notifications currentNot = current.getValue(Notifications.class);
+                    notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
+                }
+
+                //TODO: cambiare stringa per proposal
+                notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, proposalId, usrId, finalUsername));
+                notificationRef.setValue(notification);
+
+                DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(usrId).child("gruppi").child(groupId).child("notifiche");
+                myNotRef.setValue(notificationId);
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("AddProposalActivity", "Unable to perform listen on notificationRef");
             }
         });
     }
@@ -241,22 +246,8 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //FOR EXAMPLE
-                // Toast.makeText(MyAndroidAppActivity.this,"ImageButton is clicked!", Toast.LENGTH_SHORT).show();
-
-                // TO REPLACE WITH THE CODE FOR THE UPLOAD OF THE IMAGE
-                //Snackbar.make(view, "Replace with your image", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
-                //TO LOAD IMAGE FROM GALLERY (error with RESULT_LOAD_IMAGE)
-                //Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                //startActivityForResult(i, RESULT_LOAD_IMAGE);
-
-                ////////////////////////////////////
-                ////dispatchTakePictureIntent();////
-                ////////////////////////////////////
                 DialogFragment newFragment = new GalleryOrCameraDialog();
                 newFragment.show(getSupportFragmentManager(), "imageDialog");
-
             }
 
         });
@@ -296,119 +287,55 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         StorageReference storageRef = storage.getReference();
         StorageReference groupImagesRef = storageRef.child("images").child(groupId);
 
-        if(requestCode == REQUEST_TAKE_PHOTO) {
-
-            Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-            mImageView.setImageBitmap(fileBitmap);
-
-
-            //uploadImageToFirebase(mCurrentPhotoPath);
-
-            /*
-            File imageToUpload = new File(mCurrentPhotoPath);
-            Uri file = Uri.fromFile(imageToUpload);
-
-
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-            byte[] datas = baos.toByteArray();
-            mImageView.setImageBitmap(fileBitmap);
-            UploadTask uploadTask = groupImagesRef.child(imageToUpload.getName()).putBytes(datas);
-            */
-
-            //UploadTask uploadTask = groupImagesRef.child(imageToUpload.getName()).putFile(file);
-
-            Log.d("DEBUG APP: ", mCurrentPhotoPath);
+        if (requestCode == REQUEST_TAKE_PHOTO) {
+            if (mCurrentPhotoPath != null) {
+                Log.d("DebugTakePhoto2", mCurrentPhotoPath);
+                setImageView(mCurrentPhotoPath);
+            }
         }
 
-        if(requestCode == REQUEST_GALLERY_IMAGE){
-
+        if (requestCode == REQUEST_GALLERY_IMAGE) {
             if (data != null) {
-
                 Uri selectedImage = data.getData();
-
-                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-
-                Log.d("DebugGalleryImage:", selectedImage.getPath());
-
+                Log.d("DebugGalleryImage", selectedImage.getPath());
                 String[] projection = {MediaStore.Images.Media.DATA};
                 @SuppressWarnings("deprecation")
                 Cursor cursor = managedQuery(selectedImage, projection, null, null, null);
-                int column_index = cursor
-                        .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
-
-                Log.d("DebugGalleryImage2:", mCurrentPhotoPath);
-
+                Log.d("DebugGalleryImage2", mCurrentPhotoPath);
                 setImageView(mCurrentPhotoPath);
-
-
             }
-            //uploadImageToFirebase(mCurrentPhotoPath);
-
-            /*
-                File imageToUpload = new File(selectedImagePath);
-
-                Bitmap fileBitmap = BitmapFactory.decodeFile(selectedImagePath);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
-                byte[] datas = baos.toByteArray();
-                mImageView.setImageBitmap(fileBitmap);
-                UploadTask uploadTask = groupImagesRef.child(imageToUpload.getName()).putBytes(datas);
-                */
-
         }
     }
 
     private void setImageView(String mCurrentPhotoPath) {
-
-        //TODO Bolz: fare la bitmap circolare
-        Bitmap fileBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+        Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
         mImageView.setImageBitmap(fileBitmap);
     }
 
-    /*if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
+    private Bitmap shrinkBitmap(String file, int width, int height) {
 
-            StorageReference storageRef = storage.getReference();
+        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+        bmpFactoryOptions.inJustDecodeBounds = true;
+        Bitmap bitmap;
+        BitmapFactory.decodeFile(file, bmpFactoryOptions); // Vale: No need to store the bitmap in the dedicated variable, I'm just loading its infos
 
-            // Create a child reference
-            // imagesRef now points to "images"
-            StorageReference imagesRef = storageRef.child("images");
+        int heightRatio = (int) Math.ceil(bmpFactoryOptions.outHeight / (float) height);
+        int widthRatio = (int) Math.ceil(bmpFactoryOptions.outWidth / (float) width);
 
-            // Child references can also take paths
-            // spaceRef now points to "images/space.jpg
-            // imagesRef still points to "images"
-            StorageReference schcuntrinRef = storageRef.child("images/primoschcuntrin.jpg");
-
-            // Get the data from an ImageView as bytes
-            mImageView.setDrawingCacheEnabled(true);
-            mImageView.buildDrawingCache();
-            Bitmap bitmap = mImageView.getDrawingCache();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] datas = baos.toByteArray();
-
-            UploadTask uploadTask = schcuntrinRef.putBytes(datas);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                    //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                }
-            });
+        if (heightRatio > 1 || widthRatio > 1) {
+            if (heightRatio > widthRatio)
+                bmpFactoryOptions.inSampleSize = heightRatio;
+            else
+                bmpFactoryOptions.inSampleSize = widthRatio;
         }
-    }*/
+
+        bmpFactoryOptions.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+        return bitmap;
+    }
 
     private void uploadImageToFirebase(String filePath){
 
@@ -478,7 +405,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        File photoFile = null;
+        File photoFile;
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             photoFile = null;

@@ -17,6 +17,10 @@ public class FirebaseProposal
 
     public FirebaseProposal () {}
 
+    public FirebaseProposal(String name, String description, String author, Float cost) {
+        this(name, description, author, cost, null);
+    }
+
     public FirebaseProposal(String name, String description, String author, Float cost, String image) {
         this.name = name;
         this.description = description;
