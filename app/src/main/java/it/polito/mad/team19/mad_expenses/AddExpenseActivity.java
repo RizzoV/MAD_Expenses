@@ -396,7 +396,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         async.execute();
         /*
-
+        SPOSTATO TUTTO IN UN ASYNCTASK AsyncFirebaseImageLoader
 
         if (mCurrentPhotoPath != null) {
 

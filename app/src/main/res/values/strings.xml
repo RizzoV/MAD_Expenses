@@ -166,5 +166,8 @@
     <string name="october">Oct</string>
     <string name="november">Nov</string>
     <string name="december">Dec</string>
+    <string name="got_it">Got it!</string>
+    <string name="new_group_add_members">You\'ve created a new group</string>
+    <string name="add_new_members_hint">Start adding members to your new group</string>
 
 </resources>
