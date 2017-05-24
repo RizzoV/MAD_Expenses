@@ -111,6 +111,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     String oldGroupId;
     String oldExpenseId;
     String oldExpenseVersionId;
+    byte[] oldExpenseImageBitmap;
 
     CircularFillableLoaders imageLoader;
 
@@ -633,6 +634,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             oldCost = getIntent().getStringExtra("ExpenseCost");
             oldGroupId = getIntent().getStringExtra("groupId");
             oldExpenseId = getIntent().getStringExtra("ExpenseId");
+            oldExpenseImageBitmap = getIntent().getByteArrayExtra("ExpenseImage");
+
+            Bitmap bmp = BitmapFactory.decodeByteArray(oldExpenseImageBitmap, 0, oldExpenseImageBitmap.length);
+            ((ImageView) findViewById(R.id.camera_img)).setImageBitmap(bmp);
 
 
             if (!getIntent().getParcelableArrayListExtra("contributorsList").isEmpty()) {
