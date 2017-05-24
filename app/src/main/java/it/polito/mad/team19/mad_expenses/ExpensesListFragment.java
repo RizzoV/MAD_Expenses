@@ -219,7 +219,7 @@ public class ExpensesListFragment extends Fragment {
 
                         FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
                         firebaseExpense.setKey(expense.getKey());
-                        expenses.add(new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey()));
+                        expenses.add(0, new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey()));
 
                         //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                         expensesListAdapter.notifyDataSetChanged();

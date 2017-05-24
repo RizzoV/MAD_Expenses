@@ -102,7 +102,7 @@ public class ProposalsListFragment extends Fragment {
                     proposals.clear();
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         FirebaseProposal fp = child.getValue(FirebaseProposal.class);
-                        proposals.add(new Proposal(fp.getName(), fp.getDescription(), fp.getAuthor(), fp.getCost(), fp.getImageUrl(), Currency.getInstance("EUR"), child.getKey()));
+                        proposals.add(0, new Proposal(fp.getName(), fp.getDescription(), fp.getAuthor(), fp.getCost(), fp.getImageUrl(), Currency.getInstance("EUR"), child.getKey()));
 
                         //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                         adapter.notifyDataSetChanged();

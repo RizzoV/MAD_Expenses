@@ -104,9 +104,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e("IN DATACHANGE", dataSnapshot.toString());
                 String imgUrl = dataSnapshot.child("imageUrl").getValue(String.class);
-                Log.e("imgUrl", imgUrl + " -");
                 if (imgUrl != null) {
                     set_photo_tv.setText(R.string.loading_image);
                     showExpenseImage(imgUrl);
