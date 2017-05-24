@@ -101,6 +101,12 @@ public class NotificationsAdapter extends BaseAdapter {
             });
         }
 
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationDenyPayedDebtActivity)))
+        {
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationDenyPayedDebtText));
+
+        }
+
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddExpenseFromProposalActivity)))
         {
             text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddExpenseFromProposalText));
