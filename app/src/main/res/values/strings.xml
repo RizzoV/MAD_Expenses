@@ -111,6 +111,7 @@
     <string name="modify_group_name">Modify group name</string>
     <string name="modify_debt_value">Modify debt value</string>
     <string name="cannot_modify_non_creditor">You cannot modify the value of a debt if you are not the creditor</string>
+    <string name="no_image">No image</string>
 
     <!-- Proposal details -->
     <string name="confirmProposalVoteAccept">Are you sure you want to accept the proposal?</string>
@@ -123,6 +124,7 @@
     <string name="deny">Refuse</string>
     <string name="waitingFor">Waiting for:</string>
     <string name="transformInExpense">Transform in expense</string>
+    <string name="loading_image">Loading image&#8230;</string>
 
 
     <string name="allreadyMembers">You are already in this group!</string>
@@ -176,5 +178,10 @@
     <string name="october">Oct</string>
     <string name="november">Nov</string>
     <string name="december">Dec</string>
+    <string name="got_it">Got it!</string>
+
+    <!-- Showcase hint text-->
+    <string name="new_group_add_members">You\'ve created a new group</string>
+    <string name="add_new_members_hint">Start adding members to your new group</string>
 
 </resources>

@@ -39,12 +39,13 @@
     <string name="date">Data</string>
     <string name="price">Prezzo</string>
     <string name="create_new_expense">Crea una nuova spesa</string>
-    <string name="add_expense_image">Aggiungi la prova di acquisto</string>
+    <string name="add_expense_image">Nessuna</string>
     <string name="create_expense_button">Crea Spesa</string>
     <string name="select_contributors">Seleziona contribuenti</string>
     <string name="select_exluded">Seleziona esclusi</string>
     <string name="select_contributors_description">Seleziona le persone che hanno già pagato la spesa:</string>
     <string name="select_excluded_description">Selecziona le persone escluse dalla spesa:</string>
+    <string name="no_image">Nessuna immagine</string>
 
     <!-- Strings related to the creation of a new proposal -->
     <string name="proposal_name">Nome della Proposta</string>
@@ -122,6 +123,7 @@
     <string name="deny">Rifiuta</string>
     <string name="waitingFor">In attesa di:</string>
     <string name="transformInExpense">Trasforma in spesa</string>
+    <string name="loading_image">Caricamento immagine&#8230;</string>
 
 
 
@@ -174,6 +176,11 @@
     <string name="october">Ott</string>
     <string name="november">Nov</string>
     <string name="december">Dic</string>
+    <string name="got_it">Got it!</string>
+
+    <!-- Showcase hint text-->
+    <string name="new_group_add_members">Hai creato un nuovo gruppo</string>
+    <string name="add_new_members_hint">Inizia aggiungendo nuovi membri</string>
 
 
 </resources>

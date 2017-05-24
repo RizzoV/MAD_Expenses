@@ -63,10 +63,10 @@
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:maxEms="5"
-                            android:text="Modifica Immagine"
+                            android:text="@string/no_image"
                             android:textAlignment="center"
                             android:textColor="@color/colorPrimary"
-                            android:textSize="11sp" />
+                            android:textSize="12sp" />
 
                     </RelativeLayout>
 

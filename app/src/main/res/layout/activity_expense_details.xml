@@ -61,11 +61,11 @@
                             android:id="@+id/add_expense_photo_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Aggiungi prova d'acquisto"
+                            android:text="@string/no_image"
                             android:textColor="@color/colorPrimary"
                             android:maxEms="5"
                             android:textAlignment="center"
-                            android:textSize="11sp"
+                            android:textSize="12sp"
                             android:layout_centerInParent="true"/>
 
                         <!-- <ImageButton

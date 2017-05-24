@@ -2,7 +2,10 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.provider.ContactsContract;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,8 +13,12 @@ import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,6 +44,8 @@ public class ProposalDetailsActivity extends AppCompatActivity {
     private String proposalId;
     private String groupId;
     private String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private ImageView proposal_img;
+    private TextView set_photo_tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +71,8 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         name_tv = (TextView) findViewById(R.id.proposal_name);
         accept = (Button) findViewById(R.id.btn_accept_proposal);
         deny = (Button) findViewById(R.id.btn_deny_proposal);
+        proposal_img = (ImageView) findViewById(R.id.proposal_photo);
+        set_photo_tv = (TextView) findViewById(R.id.add_proposals_photo_tv);
 
         cost = getIntent().getStringExtra("ProposalCost");
         name = getIntent().getStringExtra("ProposalName");
@@ -90,12 +101,30 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         cost_tv.setText(cost);
         name_tv.setText(name);
 
+        database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e("IN DATACHANGE", dataSnapshot.toString());
+                String imgUrl = dataSnapshot.child("imageUrl").getValue(String.class);
+                Log.e("imgUrl", imgUrl + " -");
+                if (imgUrl != null) {
+                    set_photo_tv.setText(R.string.loading_image);
+                    showExpenseImage(imgUrl);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("ProposalDetailsActivity", "Could not read the proposal");
+            }
+        });
+
         cw_topic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(ProposalDetailsActivity.this, TopicActivity.class);
-                i.putExtra("topicType","proposals");
-                i.putExtra("topicName",name);
+                i.putExtra("topicType", "proposals");
+                i.putExtra("topicName", name);
                 i.putExtra("groupId", groupId);
                 i.putExtra("proposalId", proposalId);
                 startActivity(i);
@@ -123,9 +152,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.hasChildren()) {
-                                            for(DataSnapshot refuser : dataSnapshot.getChildren()) {
-                                                if(refuser.getKey().equals(userId)) {
+                                        if (dataSnapshot.hasChildren()) {
+                                            for (DataSnapshot refuser : dataSnapshot.getChildren()) {
+                                                if (refuser.getKey().equals(userId)) {
                                                     refuser.getRef().removeValue();
                                                     break;
                                                 }
@@ -143,9 +172,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("waitingFor").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.hasChildren()) {
-                                            for(DataSnapshot user : dataSnapshot.getChildren()) {
-                                                if(user.getKey().equals(userId)) {
+                                        if (dataSnapshot.hasChildren()) {
+                                            for (DataSnapshot user : dataSnapshot.getChildren()) {
+                                                if (user.getKey().equals(userId)) {
                                                     user.getRef().removeValue();
                                                     break;
                                                 }
@@ -228,9 +257,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("accepters").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.hasChildren()) {
-                                            for(DataSnapshot accepter : dataSnapshot.getChildren()) {
-                                                if(accepter.getKey().equals(userId)) {
+                                        if (dataSnapshot.hasChildren()) {
+                                            for (DataSnapshot accepter : dataSnapshot.getChildren()) {
+                                                if (accepter.getKey().equals(userId)) {
                                                     accepter.getRef().removeValue();
                                                     break;
                                                 }
@@ -248,9 +277,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("waitingFor").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.hasChildren()) {
-                                            for(DataSnapshot user : dataSnapshot.getChildren()) {
-                                                if(user.getKey().equals(userId)) {
+                                        if (dataSnapshot.hasChildren()) {
+                                            for (DataSnapshot user : dataSnapshot.getChildren()) {
+                                                if (user.getKey().equals(userId)) {
                                                     user.getRef().removeValue();
                                                     break;
                                                 }
@@ -318,11 +347,11 @@ public class ProposalDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String acceptersList = new String();
-                if(dataSnapshot.hasChildren()) {
+                if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot accepter : dataSnapshot.getChildren()) {
 
                         // If the user is an accepter, grey out the accept button
-                        if(accepter.getKey().equals(userId)) {
+                        if (accepter.getKey().equals(userId)) {
                             accept.setAlpha(.3f);
                             accept.setClickable(false);
                             deny.setAlpha(1f);
@@ -330,13 +359,13 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         }
 
                         // Add the accepter to the list of accepters
-                        if(acceptersList.length() == 0)
+                        if (acceptersList.length() == 0)
                             acceptersList = acceptersList.concat(accepter.child("nome").getValue(String.class));
                         else
                             acceptersList = acceptersList.concat(", " + accepter.child("nome").getValue(String.class));
                     }
                 }
-                if(acceptersList.length() != 0)
+                if (acceptersList.length() != 0)
                     acceptersTextView.setText(acceptersList);
                 else
                     acceptersTextView.setText(getResources().getString(R.string.nobody));
@@ -354,11 +383,11 @@ public class ProposalDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String refusersList = new String();
-                if(dataSnapshot.hasChildren()) {
+                if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot refuser : dataSnapshot.getChildren()) {
 
                         // If the user is a refuser, grey out the refuse button
-                        if(refuser.getKey().equals(userId)) {
+                        if (refuser.getKey().equals(userId)) {
                             deny.setAlpha(.3f);
                             deny.setClickable(false);
                             accept.setAlpha(1f);
@@ -366,13 +395,13 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         }
 
                         // Add the refuser to the list of refusers
-                        if(refusersList.length() == 0)
+                        if (refusersList.length() == 0)
                             refusersList = refusersList.concat(refuser.child("nome").getValue(String.class));
                         else
                             refusersList = refusersList.concat(", " + refuser.child("nome").getValue(String.class));
                     }
                 }
-                if(refusersList.length() != 0)
+                if (refusersList.length() != 0)
                     refusersTextView.setText(refusersList);
                 else
                     refusersTextView.setText(getResources().getString(R.string.nobody));
@@ -391,17 +420,17 @@ public class ProposalDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String waitingList = new String();
-                if(dataSnapshot.hasChildren()) {
+                if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot user : dataSnapshot.getChildren()) {
 
                         // Add the user to waitingList
-                        if(waitingList.length() == 0)
+                        if (waitingList.length() == 0)
                             waitingList = waitingList.concat(user.getValue(String.class));
                         else
                             waitingList = waitingList.concat(", " + user.getValue(String.class));
                     }
                 }
-                if(waitingList.length() != 0)
+                if (waitingList.length() != 0)
                     waitingForTextView.setText(waitingList);
                 else
                     waitingForTextView.setText(getResources().getString(R.string.nobody));
@@ -419,7 +448,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         waitingForRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.hasChildren())
+                if (!dataSnapshot.hasChildren())
                     transformPropInExpense_cv.setVisibility(View.VISIBLE);
             }
 
@@ -441,8 +470,8 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         ArrayList<FirebaseGroupMember> excluded = new ArrayList<>();
 
-                        if(dataSnapshot.hasChildren()) {
-                            for(DataSnapshot refuser : dataSnapshot.getChildren()) {
+                        if (dataSnapshot.hasChildren()) {
+                            for (DataSnapshot refuser : dataSnapshot.getChildren()) {
                                 excluded.add(new FirebaseGroupMember(refuser.child("nome").getValue(String.class), refuser.child("immagine").getValue(String.class), refuser.getKey()));
                             }
                         }
@@ -452,7 +481,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         i.putExtra("ExpenseName", name);
                         i.putExtra("ExpenseDesc", desc);
                         //i.putExtra("ExpenseImgUrl", );
-                        i.putExtra("ExpenseAuthorId",userId);
+                        i.putExtra("ExpenseAuthorId", userId);
                         i.putExtra("ExpenseCost", cost);
                         i.putExtra("groupId", groupId);
                         i.putExtra("ExpenseId,", "fake");
@@ -472,6 +501,24 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+
+    private void showExpenseImage(String imageUrl) {
+        try {
+            Glide.with(this).load(imageUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.circle).into(new BitmapImageViewTarget(proposal_img) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    proposal_img.setImageDrawable(circularBitmapDrawable);
+
+                    set_photo_tv.setVisibility(View.GONE);
+                }
+            });
+        } catch (Exception e) {
+            Log.e("ExpenseDetailsActivity", "Exception:\n" + e.toString());
+        }
 
     }
 }
