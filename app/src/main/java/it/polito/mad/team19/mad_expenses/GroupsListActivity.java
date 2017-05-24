@@ -397,14 +397,15 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if(dataSnapshot.hasChildren())
                                         {
-                                            Log.d("Invitations", "add person to group with id: " + groupIdName);
-                                            addGroupToUser(uid, groupIdName);
-                                            setNotification(groupIdName);
+                                            Snackbar.make(findViewById(android.R.id.content), getString(R.string.allreadyMembers), Snackbar.LENGTH_SHORT)
+                                                    .show();
+                                            updateList(uid);
                                         }
                                         else
                                         {
-                                            Snackbar.make(findViewById(android.R.id.content), getString(R.string.allreadyMembers), Snackbar.LENGTH_SHORT)
-                                                    .show();
+                                            Log.d("Invitations", "add person to group with id: " + groupIdName);
+                                            addGroupToUser(uid, groupIdName);
+                                            setNotification(groupIdName);
                                         }
                                     }
 
