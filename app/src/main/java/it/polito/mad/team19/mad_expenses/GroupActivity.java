@@ -321,7 +321,7 @@ public class GroupActivity extends AppCompatActivity {
         final TextView tv = (TextView) notifCount.findViewById(R.id.counter);
         final ImageView im = (ImageView) notifCount.findViewById(R.id.notifications_icon_action);
 
-        final ArrayList<Notifications> notificationsList = new ArrayList<Notifications>();
+        final ArrayList<DataSnapshot> notificationsList = new ArrayList<DataSnapshot>();
         final NotificationsAdapter adapter = new NotificationsAdapter(GroupActivity.this, notificationsList, null);
         notificationsListView.setAdapter(adapter);
 
@@ -366,8 +366,7 @@ public class GroupActivity extends AppCompatActivity {
                             });
                         }
 
-                        Notifications currentNot = current.getValue(Notifications.class);
-                        notificationsList.add(new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
+                        notificationsList.add(current);
                         adapter.notifyDataSetChanged();
 
                         i++;

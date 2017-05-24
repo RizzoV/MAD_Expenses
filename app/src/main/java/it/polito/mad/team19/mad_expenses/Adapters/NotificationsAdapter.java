@@ -11,10 +11,15 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+
 import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.AccountActivity;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
+import it.polito.mad.team19.mad_expenses.ExpenseDetailsActivity;
+import it.polito.mad.team19.mad_expenses.GroupInfoActivity;
+import it.polito.mad.team19.mad_expenses.ProposalDetailsActivity;
 import it.polito.mad.team19.mad_expenses.R;
 
 /**
@@ -23,12 +28,12 @@ import it.polito.mad.team19.mad_expenses.R;
 
 public class NotificationsAdapter extends BaseAdapter {
 
-    ArrayList<Notifications> notitifcationsList;
+    ArrayList<DataSnapshot> notitifcationsList;
     Activity context;
     String myNot;
     boolean newNot = false;
 
-    public NotificationsAdapter(Context context, ArrayList<Notifications> notificationsList,String myNot) {
+    public NotificationsAdapter(Context context, ArrayList<DataSnapshot> notificationsList, String myNot) {
         this.notitifcationsList = notificationsList;
         this.context = (Activity) context;
         this.myNot = myNot;
@@ -62,121 +67,153 @@ public class NotificationsAdapter extends BaseAdapter {
         TextView text=(TextView)convertView.findViewById(R.id.notification_text);
         TextView date=(TextView)convertView.findViewById(R.id.notification_date);
 
-        Notifications notification=notitifcationsList.get(notitifcationsList.size()-1-position);
+        final DataSnapshot notification=notitifcationsList.get(notitifcationsList.size()-1-position);
 
 
-        if(notification.getNotKey().equals(myNot))
+        if(notification.getKey().equals(myNot))
             newNot=true;
 
         if(!newNot)
             ll.setBackgroundColor(Color.WHITE);
 
-        String[] notDate = notification.getData().split("-");
+        String[] notDate = notification.child("data").getValue().toString().split("-");
         date.setText(notDate[0] + " " + getStringMonth(Integer.parseInt(notDate[1])));
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddExpenseActivity)))
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddExpenseActivity)))
         {
-            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddExpenseText));
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddExpenseText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent i = new Intent(context, AccountActivity.class);
-                    context.startActivity(i);*/
+                    Intent intent = new Intent(context, ExpenseDetailsActivity.class);
+                    intent.putExtra("ExpenseName",notification.child("ExpenseName").getValue().toString());
+                    intent.putExtra("ExpenseDesc",notification.child("ExpenseDesc").getValue().toString());
+                    intent.putExtra("ExpenseAuthorId",notification.child("ExpenseAuthorId").getValue().toString());
+                    if(notification.child("ExpenseImgUrl").getValue()!=null)
+                        intent.putExtra("ExpenseImgUrl",notification.child("ExpenseImgUrl").getValue().toString());
+                    intent.putExtra("ExpenseCost",notification.child("ExpenseCost").getValue().toString());
+                    intent.putExtra("ExpenseId",notification.child("id").getValue().toString());
+                    intent.putExtra("groupId",notification.child("groupId").getValue().toString());
+                    context.startActivity(intent);
                 }
             });
         }
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddExpenseFromProposalActivity)))
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddExpenseFromProposalActivity)))
         {
-            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddExpenseFromProposalText));
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddExpenseFromProposalText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent i = new Intent(context, AccountActivity.class);
-                    context.startActivity(i);*/
+                    Intent intent = new Intent(context, ExpenseDetailsActivity.class);
+                    intent.putExtra("ExpenseName",notification.child("ExpenseName").getValue().toString());
+                    intent.putExtra("ExpenseDesc",notification.child("ExpenseDesc").getValue().toString());
+                    intent.putExtra("ExpenseAuthorId",notification.child("ExpenseAuthorId").getValue().toString());
+                    if(notification.child("ExpenseImgUrl").getValue()!=null)
+                        intent.putExtra("ExpenseImgUrl",notification.child("ExpenseImgUrl").getValue().toString());
+                    intent.putExtra("ExpenseCost",notification.child("ExpenseCost").getValue().toString());
+                    intent.putExtra("ExpenseId",notification.child("id").getValue().toString());
+                    intent.putExtra("groupId",notification.child("groupId").getValue().toString());
+                    context.startActivity(intent);
                 }
             });
         }
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddProposalActivity)))
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddProposalActivity)))
         {
-            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddProposalText));
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddProposalText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent i = new Intent(context, AccountActivity.class);
-                    context.startActivity(i);*/
-                }
-            });
-
-        }
-
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddGroupActivity))) {
-            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddGroupText));
-
-            ll.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    /*Intent i = new Intent(context, AccountActivity.class);
-                    context.startActivity(i);*/
-                }
-            });
-
-        }
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddMembersToGroupActivity)))
-        {
-            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddMembersToGroupText));
-
-            ll.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    /*Intent i = new Intent(context, AccountActivity.class);
-                    context.startActivity(i);*/
+                    Intent intent = new Intent(context, ProposalDetailsActivity.class);
+                    intent.putExtra("ProposalName",notification.child("ProposalName").getValue().toString());
+                    intent.putExtra("ProposalCost",notification.child("ProposalCost").getValue().toString());
+                    intent.putExtra("ProposalDesc",notification.child("ProposalDesc").getValue().toString());
+                    intent.putExtra("ProposalId",notification.child("id").getValue().toString());
+                    intent.putExtra("ProposalAuthorId",notification.child("uid").getValue().toString());
+                    intent.putExtra("groupId",notification.child("groupId").getValue().toString());
+                    context.startActivity(intent);
                 }
             });
 
         }
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationRemoveMembersToGroupActivity)))
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddGroupActivity))) {
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddGroupText));
+
+        }
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddMembersToGroupActivity)))
         {
-            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationRemoveMembersToGroupText));
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddMembersToGroupText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent i = new Intent(context, AccountActivity.class);
-                    context.startActivity(i);*/
+                    Intent intent =new Intent(context,GroupInfoActivity.class);
+                    intent.putExtra("groupImage",notification.child("GroupImage").getValue().toString());
+                    intent.putExtra("groupName",notification.child("GroupName").getValue().toString());
+                    intent.putExtra("groupId",notification.child("id").getValue().toString());
+                    context.startActivity(intent);
                 }
             });
 
         }
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAcceptedProposalActivity)))
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationRemoveMembersToGroupActivity)))
         {
-            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAcceptedProposalText));
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationRemoveMembersToGroupText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent i = new Intent(context, AccountActivity.class);
-                    context.startActivity(i);*/
+                    Intent intent =new Intent(context,GroupInfoActivity.class);
+                    intent.putExtra("groupImage",notification.child("GroupImage").getValue().toString());
+                    intent.putExtra("groupName",notification.child("GroupName").getValue().toString());
+                    intent.putExtra("groupId",notification.child("id").getValue().toString());
+                    context.startActivity(intent);
                 }
             });
 
         }
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationDenyProposalActivity)))
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAcceptedProposalActivity)))
         {
-            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationDenyProposalText));
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAcceptedProposalText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent i = new Intent(context, AccountActivity.class);
-                    context.startActivity(i);*/
+                    Intent intent = new Intent(context, ProposalDetailsActivity.class);
+                    intent.putExtra("ProposalName",notification.child("ProposalName").getValue().toString());
+                    intent.putExtra("ProposalCost",notification.child("ProposalCost").getValue().toString());
+                    intent.putExtra("ProposalDesc",notification.child("ProposalDesc").getValue().toString());
+                    intent.putExtra("ProposalId",notification.child("id").getValue().toString());
+                    intent.putExtra("ProposalAuthorId",notification.child("uid").getValue().toString());
+                    intent.putExtra("groupId",notification.child("groupId").getValue().toString());
+                    context.startActivity(intent);
+                }
+            });
+
+        }
+
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationDenyProposalActivity)))
+        {
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationDenyProposalText));
+
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ProposalDetailsActivity.class);
+                    intent.putExtra("ProposalName",notification.child("ProposalName").getValue().toString());
+                    intent.putExtra("ProposalCost",notification.child("ProposalCost").getValue().toString());
+                    intent.putExtra("ProposalDesc",notification.child("ProposalDesc").getValue().toString());
+                    intent.putExtra("ProposalId",notification.child("id").getValue().toString());
+                    intent.putExtra("ProposalAuthorId",notification.child("uid").getValue().toString());
+                    intent.putExtra("groupId",notification.child("groupId").getValue().toString());
+                    context.startActivity(intent);
                 }
             });
 

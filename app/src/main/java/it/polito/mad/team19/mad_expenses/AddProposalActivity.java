@@ -219,6 +219,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         notification.put("data", formattedDate);
         notification.put("id", proposalId);
         notification.put("uid", usrId);
+        notification.put("groupId", groupId);
         notification.put("uname", username);
         notification.put("PropoposalName", nameEditText.getText().toString());
         notification.put("ProposalDesc", descriptionEditText.getText().toString());

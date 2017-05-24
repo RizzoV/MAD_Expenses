@@ -398,7 +398,11 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                         {
                                             Log.d("Invitations", "add person to group with id: " + groupIdName);
                                             addGroupToUser(uid, groupIdName,lastNotKey);
-                                            setNotification(groupIdName);
+                                            String groupImage=null;
+                                            if(dataSnapshot.child("immagine").getValue()!=null)
+                                                groupImage = dataSnapshot.child("immagine").getValue().toString();
+
+                                            setNotification(groupIdName,dataSnapshot.child("nome").getValue().toString(),groupImage);
                                         }
                                     }
 
@@ -456,7 +460,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         });
     }
 
-    public void setNotification(final String groupId) {
+    public void setNotification(String groupId, String groupName, String groupImage)
+    {
         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
         final String notificationId = notificationRef.push().getKey();
 
@@ -476,6 +481,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
         notification.put("data", formattedDate);
         notification.put("id", groupId);
+        notification.put("GroupName", groupName);
+        if(groupImage!=null)
+            notification.put("GroupImage", groupImage);
         notification.put("uid", userID);
         notification.put("uname", username);
 
