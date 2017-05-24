@@ -253,6 +253,9 @@ public class MeActivity extends AppCompatActivity {
                                             notification.put("id", groupId);
                                             notification.put("uid", userId);
                                             notification.put("groupId", groupId);
+                                            notification.put("GroupName", dataSnapshot.child("nome").getValue().toString());
+                                            if(dataSnapshot.child("immagine").getValue()!=null)
+                                            notification.put("GroupImage", dataSnapshot.child("immagine").getValue().toString());
                                             notification.put("uname", username);
 
                                             notificationRef.child(notificationId).updateChildren(notification);

@@ -201,7 +201,7 @@ public class NotificationService extends IntentService{
                                                                         }
 
                                                                         if(activity.equals(getResources().getString(R.string.notififcationDenyPayedDebtActivity))) {
-                                                                            intent =new Intent(mContext,GroupInfoActivity.class);
+                                                                            intent =new Intent(mContext,GroupActivity.class);
                                                                             intent.putExtra("groupImage",groupImage);
                                                                             intent.putExtra("groupName",groupName);
                                                                             intent.putExtra("groupId",groupId);

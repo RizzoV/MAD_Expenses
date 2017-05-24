@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import it.polito.mad.team19.mad_expenses.AccountActivity;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.ExpenseDetailsActivity;
+import it.polito.mad.team19.mad_expenses.GroupActivity;
 import it.polito.mad.team19.mad_expenses.GroupInfoActivity;
 import it.polito.mad.team19.mad_expenses.ProposalDetailsActivity;
 import it.polito.mad.team19.mad_expenses.R;
