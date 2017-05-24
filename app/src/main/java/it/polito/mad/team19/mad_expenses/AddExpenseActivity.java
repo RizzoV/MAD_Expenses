@@ -218,21 +218,24 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         StorageReference storageRef = storage.getReference();
         StorageReference groupImagesRef = storageRef.child("images").child(groupId);
 
-        if (requestCode == REQUEST_TAKE_PHOTO)
-            Log.d("DEBUG APP: ", mCurrentPhotoPath);
-
+        if (requestCode == REQUEST_TAKE_PHOTO) {
+            if (mCurrentPhotoPath != null) {
+                Log.d("DebugTakePhoto2", mCurrentPhotoPath);
+                setImageView(mCurrentPhotoPath);
+            }
+        }
 
         if (requestCode == REQUEST_GALLERY_IMAGE) {
             if (data != null) {
                 Uri selectedImage = data.getData();
-                Log.d("DebugGalleryImage:", selectedImage.getPath());
+                Log.d("DebugGalleryImage", selectedImage.getPath());
                 String[] projection = {MediaStore.Images.Media.DATA};
                 @SuppressWarnings("deprecation")
                 Cursor cursor = managedQuery(selectedImage, projection, null, null, null);
                 int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
-                Log.d("DebugGalleryImage:2", mCurrentPhotoPath);
+                Log.d("DebugGalleryImage2", mCurrentPhotoPath);
                 setImageView(mCurrentPhotoPath);
             }
         }

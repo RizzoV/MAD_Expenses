@@ -219,14 +219,6 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                         }
                     });
 
-
-                    //ADD TO REVERT
-                    //uploadImageToFirebase(mCurrentPhotoPath);
-
-                    //newExpenseRef.setValue(new FirebaseExpense(nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                    //        Float.valueOf(costEditText.getText().toString().replace(",", ".")), "sample/link.png"));
-
-
                     setResult(EXP_CREATED);
                     finish();
                 }
