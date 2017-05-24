@@ -398,35 +398,23 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         final String formattedDate = df.format(c.getTime());
 
-        final Map<String, Notifications> notification = new HashMap<String, Notifications>();
 
-        final String finalUsername = username;
-        notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot current : dataSnapshot.getChildren()) {
-                    Notifications currentNot = current.getValue(Notifications.class);
-                    notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
-                }
+        HashMap<String, Object> notification = new HashMap<>();
+        if(getIntent().getStringExtra("CreateExpenseFromProposal")!=null)
+            notification.put("activity", getString(R.string.notififcationAddExpenseFromProposalActivity));
+        else
+            notification.put("activity", getString(R.string.notififcationAddExpenseActivity));
 
-                if(getIntent().getStringExtra("CreateExpenseFromProposal")!=null)
-                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseFromProposalActivity), formattedDate, idExpense, usrId, finalUsername));
-                else
-                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, idExpense, usrId, finalUsername));
+        notification.put("data", formattedDate);
+        notification.put("id", idExpense);
+        notification.put("uid", usrId);
+        notification.put("uname", username);
 
-                notificationRef.setValue(notification);
+        notificationRef.child(notificationId).updateChildren(notification);
 
-                DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(usrId).child("gruppi").child(groupId).child("notifiche");
-                myNotRef.setValue(notificationId);
+        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(usrId).child("gruppi").child(groupId).child("notifiche");
+        myNotRef.setValue(notificationId);
 
-                }
-
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("AddExpenseActivity", "Unable to perform listen on notificationRef");
-            }
-        });
 
 
         getIntent().putExtra("expenseId", idExpense);

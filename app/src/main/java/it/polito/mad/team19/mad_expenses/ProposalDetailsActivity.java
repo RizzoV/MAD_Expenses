@@ -175,31 +175,19 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
                                 final String formattedDate = df.format(c.getTime());
 
-                                final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+                                HashMap<String, Object> notification = new HashMap<>();
 
-                                final String finalUsername = username;
-                                notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        for (DataSnapshot current : dataSnapshot.getChildren()) {
-                                            Notifications currentNot = current.getValue(Notifications.class);
-                                            notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
-                                        }
+                                notification.put("activity", getString(R.string.notififcationAcceptedProposalActivity));
 
-                                        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAcceptedProposalActivity), formattedDate, proposalId, userId, finalUsername));
-                                        notificationRef.setValue(notification);
+                                notification.put("data", formattedDate);
+                                notification.put("id", proposalId);
+                                notification.put("uid", userId);
+                                notification.put("uname", username);
 
-                                        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
-                                        myNotRef.setValue(notificationId);
+                                notificationRef.child(notificationId).updateChildren(notification);
 
-                                    }
-
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        Log.e("AddExpenseActivity", "Unable to perform listen on notificationRef");
-                                    }
-                                });
+                                DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
+                                myNotRef.setValue(notificationId);
 
 
                                 dialog.dismiss();
@@ -292,33 +280,19 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
                                 final String formattedDate = df.format(c.getTime());
 
-                                final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+                                HashMap<String, Object> notification = new HashMap<>();
 
-                                final String finalUsername = username;
-                                notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        for (DataSnapshot current : dataSnapshot.getChildren()) {
-                                            Notifications currentNot = current.getValue(Notifications.class);
-                                            notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
-                                        }
+                                notification.put("activity", getString(R.string.notififcationDenyProposalActivity));
 
-                                        notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationDenyProposalActivity), formattedDate, proposalId, userId, finalUsername));
-                                        notificationRef.setValue(notification);
+                                notification.put("data", formattedDate);
+                                notification.put("id", proposalId);
+                                notification.put("uid", userId);
+                                notification.put("uname", username);
 
-                                        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
-                                        myNotRef.setValue(notificationId);
+                                notificationRef.child(notificationId).updateChildren(notification);
 
-                                    }
-
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        Log.e("AddExpenseActivity", "Unable to perform listen on notificationRef");
-                                    }
-                                });
-
-
+                                DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
+                                myNotRef.setValue(notificationId);
 
                                 dialog.dismiss();
                             }
