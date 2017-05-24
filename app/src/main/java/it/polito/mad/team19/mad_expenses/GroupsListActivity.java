@@ -383,15 +383,36 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                             Log.d("Invitations", "" + deepLink);
                             String deepLinkName;
-                            String groupIdName;
+                            final String groupIdName;
                             String results[] = deepLink.split("/");
                             deepLinkName = results[0];
 
-                            if (deepLinkName.equals("addPersonToGroup")) {
+                            if (deepLinkName.equals("addPersonToGroup"))
+                            {
                                 groupIdName = results[1];
-                                Log.d("Invitations", "add person to group with id: " + groupIdName);
-                                addGroupToUser(uid, groupIdName);
-                                setNotification(groupIdName);
+
+                                DatabaseReference hasGroupYetRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi").child(groupIdName);
+                                hasGroupYetRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.hasChildren())
+                                        {
+                                            Log.d("Invitations", "add person to group with id: " + groupIdName);
+                                            addGroupToUser(uid, groupIdName);
+                                            setNotification(groupIdName);
+                                        }
+                                        else
+                                        {
+                                            Snackbar.make(findViewById(android.R.id.content), getString(R.string.allreadyMembers), Snackbar.LENGTH_SHORT)
+                                                    .show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
 
                         } else

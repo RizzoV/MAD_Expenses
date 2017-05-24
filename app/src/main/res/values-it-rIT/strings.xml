@@ -140,15 +140,26 @@
     <string name="confirmDebtExtinction">Vuoi estinguere questo credito?</string>
     <string name="cannotExtinguish">Impossibile estinguere un debito</string>
 
+    <string name="allreadyMembers">Fai già parte di questo gruppo!</string>
+
+
     <!-- Notifications -->
     <string name="notififcationAddExpenseActivity">ExpenseDetailsActivity</string>
     <string name="notififcationAddExpenseText"> ha aggiunto una nuova spesa.</string>
+    <string name="notififcationAddExpenseFromProposalActivity">ExpenseFromProposalDetailsActivity</string>
+    <string name="notififcationAddExpenseFromProposalText"> ha trasformato una proposta in spesa.</string>
+    <string name="notififcationAddProposalActivity">ProposalsDetailsActivity</string>
+    <string name="notififcationAddProposalText"> ha aggiunto una nuova proposta.</string>
     <string name="notififcationAddGroupActivity">GroupInfoActivity</string>
     <string name="notififcationAddGroupText"> ha creato il gruppo.</string>
     <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
     <string name="notififcationAddMembersToGroupText"> è stato aggiunto.</string>
     <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
     <string name="notififcationRemoveMembersToGroupText"> ha abbadonato il gruppo.</string>
+    <string name="notififcationAcceptedProposalActivity">ProposalDetailsActivityAccepted</string>
+    <string name="notififcationAcceptedProposalText"> ha accettato la proposta.</string>
+    <string name="notififcationDenyProposalActivity">ProposalDetailsActivityDenied</string>
+    <string name="notififcationDenyProposalText"> ha rifiutato la proposta.</string>
 
     <!-- Months -->
     <string name="january">Gen</string>
