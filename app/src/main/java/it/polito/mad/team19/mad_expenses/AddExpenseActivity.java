@@ -384,7 +384,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
 
-    public void finishTasks() {
+    public void finishTasks(String expenseName, String expenseDesc, String expenseImgUrl,String expenseAuthorId, String cost)
+    {
 
         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
         final String notificationId = notificationRef.push().getKey();
@@ -407,6 +408,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         notification.put("data", formattedDate);
         notification.put("id", idExpense);
+        notification.put("ExpenseName", expenseName);
+        notification.put("ExpenseDesc", expenseDesc);
+        notification.put("ExpenseImgUrl", expenseImgUrl);
+        notification.put("ExpenseAuthorId", expenseAuthorId);
+        notification.put("ExpenseCost", cost);
         notification.put("uid", usrId);
         notification.put("uname", username);
 

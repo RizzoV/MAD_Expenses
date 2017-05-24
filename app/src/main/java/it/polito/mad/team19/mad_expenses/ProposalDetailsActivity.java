@@ -212,6 +212,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 notification.put("id", proposalId);
                                 notification.put("uid", userId);
                                 notification.put("uname", username);
+                                notification.put("PropoposalName", name);
+                                notification.put("ProposalDesc", desc);
+                                notification.put("ProposalCost", cost);
 
                                 notificationRef.child(notificationId).updateChildren(notification);
 
@@ -317,7 +320,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 notification.put("id", proposalId);
                                 notification.put("uid", userId);
                                 notification.put("uname", username);
-
+                                notification.put("PropoposalName", name);
+                                notification.put("ProposalDesc", desc);
+                                notification.put("ProposalCost", cost);
                                 notificationRef.child(notificationId).updateChildren(notification);
 
                                 DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");

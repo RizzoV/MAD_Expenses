@@ -53,7 +53,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ImageView expense_img;
     private LinearLayout expense_details_listview;
     private String expenseAuthor;
-    private String currentPersonalBalance;
+    //private String currentPersonalBalance;
     private String imgUrl;
     private String name;
     private String desc;
@@ -93,7 +93,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         cost = getIntent().getStringExtra("ExpenseCost");
         groupId = getIntent().getStringExtra("groupId");
         expenseId = getIntent().getStringExtra("ExpenseId");
-        currentPersonalBalance = getIntent().getStringExtra("currentPersonalBalance");
+        //currentPersonalBalance = getIntent().getStringExtra("currentPersonalBalance");
 
         expense_name = (TextView) findViewById(R.id.expense_name);
         expense_desc = (TextView) findViewById(R.id.expense_description);

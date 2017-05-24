@@ -96,6 +96,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
+    String imageUrl;
+    String groupName;
 
 
     @Override
@@ -114,8 +116,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         toolbar = (Toolbar) findViewById(R.id.group_info_tb);
         leaveGroup_cw = (CardView) findViewById(R.id.leaveGroup);
 
-        String imageUrl = getIntent().getStringExtra("groupImage");
-        String groupName = getIntent().getStringExtra("groupName");
+        imageUrl = getIntent().getStringExtra("groupImage");
+        groupName = getIntent().getStringExtra("groupName");
         groupId = getIntent().getStringExtra("groupId");
 
        Log.d("DebugGroupInfo",groupName);
@@ -282,6 +284,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         notification.put("id", groupId);
         notification.put("uid", userID);
         notification.put("uname", username);
+        notification.put("GroupImage", imageUrl);
+        notification.put("GroupName", groupName);
 
         notificationRef.child(notificationId).updateChildren(notification);
 

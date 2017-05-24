@@ -120,7 +120,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
                                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
                             }
 
-                            ((AddExpenseActivity)mContext).finishTasks();
+                            ((AddExpenseActivity)mContext).finishTasks(nameEditText,descriptionEditText,usrId,uri.toString(),costEditText);
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -148,7 +148,8 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
             if (isModifyActivity) {
                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
             }
-            ((AddExpenseActivity)mContext).finishTasks();
+
+            ((AddExpenseActivity)mContext).finishTasks(nameEditText,descriptionEditText,usrId,"none",costEditText);
         }
         return null;
     }
