@@ -641,13 +641,31 @@ public class GroupActivity extends AppCompatActivity {
 
     }
 
-    private void onInviteClicked() {
-        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                .setMessage(getString(R.string.invitation_message))
-                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link) + "/" + groupId))
-                .setCallToActionText(getString(R.string.invitation_cta))
-                .build();
-        startActivityForResult(intent, REQUEST_INVITE);
+    private void onInviteClicked()
+    {
+        DatabaseReference getLastNotRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+        getLastNotRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String lastNotKey = "0";
+                for(DataSnapshot not : dataSnapshot.getChildren())
+                    lastNotKey = not.getKey();
+
+                Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                        .setMessage(getString(R.string.invitation_message))
+                        .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link) + "/" + groupId+"/"+lastNotKey))
+                        .setCallToActionText(getString(R.string.invitation_cta))
+                        .build();
+                startActivityForResult(intent, REQUEST_INVITE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     public void passBalancesArray(Collection<Me> balancesArray) {

@@ -3,7 +3,6 @@ package it.polito.mad.team19.mad_expenses;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.Notification;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -39,8 +38,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -49,12 +46,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -65,7 +59,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
@@ -335,11 +328,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                 boolean invalidFields = false;
 
-                //Jured: spostate nella onCreate();
-                /*nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
-                descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
-                costEditText = (EditText) findViewById(R.id.new_expense_cost_et);*/
-
                 if (TextUtils.isEmpty(nameEditText.getText().toString())) {
                     nameEditText.setError(getString(R.string.mandatory_field));
                     invalidFields = true;
@@ -370,7 +358,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         }
                     };
 
-                    //TODO tagliare il valore di cost a due cifre decimali
                     expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
 
                     uploadInfos();
@@ -388,110 +375,13 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         String uuid = myRef.push().getKey();
         idExpense = uuid;
-        final DatabaseReference newExpenseRef = myRef.child(uuid);
 
-        AsyncFirebaseImageLoader async = new AsyncFirebaseImageLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
+        AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(),
                 isModifyActivity, oldExpenseId, excludedList, contributorsList,this);
 
         async.execute();
-        /*
-        SPOSTATO TUTTO IN UN ASYNCTASK AsyncFirebaseImageLoader
-
-        if (mCurrentPhotoPath != null) {
-
-
-
-            groupImagesRef = storageRef.child("images").child(groupId);
-            final File imageToUpload = new File(mCurrentPhotoPath);
-            Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            fileBitmap.compress(Bitmap.CompressFormat.JPEG, 85, baos);
-            byte[] datas = baos.toByteArray();
-            mImageView.setImageBitmap(fileBitmap);
-            mCurrentPhotoName = imageToUpload.getName();
-            UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
-            // Register observers to listen for when the download is done or if it fails
-
-            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = (90.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                    //System.out.println("Upload is " + progress + "% done");
-                    int currentprogress = (int) progress;
-
-                    imageLoader.setProgress(currentprogress);
-                }
-            });
-
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                    // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                    groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-
-                            //Log.e("DebugIsModifyFlag", oldExpenseVersionId);
-                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                                    Float.valueOf(costEditText.getText().toString().replace(",", ".")), uri.toString()));
-
-                            for (FirebaseGroupMember member : excludedList) {
-                                newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
-                                newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
-                            }
-                            for (FirebaseGroupMember member : contributorsList) {
-                                newExpenseRef.child("contributors").child(member.getUid()).child("nome").setValue(member.getName());
-                                newExpenseRef.child("contributors").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
-                            }
-
-                            Log.d("DebugIsModifyFlag", isModifyActivity.toString());
-                            if (isModifyActivity) {
-                                newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
-                            }
-
-                            //TODO: aggiungere quello in fondo
-                            finishTasks();
-
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle any errors
-                            mCurrentPhotoFirebaseUri = Uri.EMPTY;
-                        }
-                    });
-                }
-            });
-        } else {
-            Log.d("DebugCaricamentoSpesa", "NoImage");
-            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText.getText().toString(), descriptionEditText.getText().toString(),
-                    Float.valueOf(costEditText.getText().toString().replace(",", "."))));
-            for (FirebaseGroupMember member : excludedList) {
-                newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
-                newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
-            }
-            for (FirebaseGroupMember member : contributorsList) {
-                newExpenseRef.child("contributors").child(member.getUid()).child("nome").setValue(member.getName());
-                newExpenseRef.child("contributors").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
-            }
-
-            Log.d("DebugIsModifyFlag", isModifyActivity.toString());
-            if (isModifyActivity) {
-                newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
-            }
-            finishTasks();
-        }*/
-
-       //finishTasks();
     }
-
 
 
     public void finishTasks() {
@@ -519,7 +409,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
                 }
 
-                notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, idExpense, usrId, finalUsername));
+                if(getIntent().getStringExtra("CreateExpenseFromProposal")!=null)
+                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseFromProposalActivity), formattedDate, idExpense, usrId, finalUsername));
+                else
+                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, idExpense, usrId, finalUsername));
+
                 notificationRef.setValue(notification);
 
                 DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(usrId).child("gruppi").child(groupId).child("notifiche");

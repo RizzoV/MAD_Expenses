@@ -125,6 +125,7 @@
     <string name="transformInExpense">Transform in expense</string>
 
 
+    <string name="allreadyMembers">You are already in this group!</string>
 
 
     <string name="slogan">Sharing costs never be so easy!</string>
@@ -146,12 +147,21 @@
     <!-- Notifications -->
     <string name="notififcationAddExpenseActivity">ExpenseDetailsActivity</string>
     <string name="notififcationAddExpenseText"> added a new expense.</string>
+    <string name="notififcationAddExpenseFromProposalActivity">ExpenseFromProposalDetailsActivity</string>
+    <string name="notififcationAddExpenseFromProposalText"> added a new expense from proposal.</string>
+    <string name="notififcationAddProposalActivity">ProposalDetailsActivity</string>
+    <string name="notififcationAddProposalText"> added a new proposal.</string>
     <string name="notififcationAddGroupActivity">GroupInfoActivity</string>
     <string name="notififcationAddGroupText"> created the group.</string>
     <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
     <string name="notififcationAddMembersToGroupText"> joined the group.</string>
     <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
     <string name="notififcationRemoveMembersToGroupText"> left the group.</string>
+    <string name="notififcationAcceptedProposalActivity">ProposalDetailsActivityAccepted</string>
+    <string name="notififcationAcceptedProposalText"> accepted the proposal.</string>
+    <string name="notififcationDenyProposalActivity">ProposalDetailsActivityDenied</string>
+    <string name="notififcationDenyProposalText"> denied the proposal.</string>
+
 
     <!-- Months -->
     <string name="january">Jan</string>

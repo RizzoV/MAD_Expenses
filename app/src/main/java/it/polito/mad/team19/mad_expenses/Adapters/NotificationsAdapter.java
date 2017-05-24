@@ -2,6 +2,7 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import it.polito.mad.team19.mad_expenses.AccountActivity;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.R;
 
@@ -62,6 +64,7 @@ public class NotificationsAdapter extends BaseAdapter {
 
         Notifications notification=notitifcationsList.get(notitifcationsList.size()-1-position);
 
+
         if(notification.getNotKey().equals(myNot))
             newNot=true;
 
@@ -72,18 +75,112 @@ public class NotificationsAdapter extends BaseAdapter {
         date.setText(notDate[0] + " " + getStringMonth(Integer.parseInt(notDate[1])));
 
         if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddExpenseActivity)))
+        {
             text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddExpenseText));
 
-        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddGroupActivity)))
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Intent i = new Intent(context, AccountActivity.class);
+                    context.startActivity(i);*/
+                }
+            });
+        }
+
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddExpenseFromProposalActivity)))
+        {
+            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddExpenseFromProposalText));
+
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Intent i = new Intent(context, AccountActivity.class);
+                    context.startActivity(i);*/
+                }
+            });
+        }
+
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddProposalActivity)))
+        {
+            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddProposalText));
+
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Intent i = new Intent(context, AccountActivity.class);
+                    context.startActivity(i);*/
+                }
+            });
+
+        }
+
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddGroupActivity))) {
             text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddGroupText));
 
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Intent i = new Intent(context, AccountActivity.class);
+                    context.startActivity(i);*/
+                }
+            });
+
+        }
         if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAddMembersToGroupActivity)))
+        {
             text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAddMembersToGroupText));
 
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Intent i = new Intent(context, AccountActivity.class);
+                    context.startActivity(i);*/
+                }
+            });
+
+        }
 
         if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationRemoveMembersToGroupActivity)))
+        {
             text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationRemoveMembersToGroupText));
 
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Intent i = new Intent(context, AccountActivity.class);
+                    context.startActivity(i);*/
+                }
+            });
+
+        }
+
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationAcceptedProposalActivity)))
+        {
+            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationAcceptedProposalText));
+
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Intent i = new Intent(context, AccountActivity.class);
+                    context.startActivity(i);*/
+                }
+            });
+
+        }
+
+        if(notification.getActivity().equals(context.getResources().getString(R.string.notififcationDenyProposalActivity)))
+        {
+            text.setText(notification.getUname() + " " + context.getResources().getString(R.string.notififcationDenyProposalText));
+
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Intent i = new Intent(context, AccountActivity.class);
+                    context.startActivity(i);*/
+                }
+            });
+
+        }
 
         return convertView;
     }
