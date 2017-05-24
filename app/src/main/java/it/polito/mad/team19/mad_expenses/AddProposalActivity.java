@@ -224,7 +224,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                 }
 
                 //TODO: cambiare stringa per proposal
-                notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddExpenseActivity), formattedDate, proposalId, usrId, finalUsername));
+                notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddProposalActivity), formattedDate, proposalId, usrId, finalUsername));
                 notificationRef.setValue(notification);
 
                 DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(usrId).child("gruppi").child(groupId).child("notifiche");
