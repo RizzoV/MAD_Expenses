@@ -52,6 +52,10 @@ public class NotificationService extends IntentService{
     protected FirebaseAuth.AuthStateListener mAuthStateListener;
     protected FirebaseAuth mAuth;
 
+    static {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    }
+
 
     public NotificationService()
     {
@@ -249,6 +253,7 @@ public class NotificationService extends IntentService{
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("LocalService", "Received start id " + startId + ": " + intent);
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
 
         mContext = this;
 

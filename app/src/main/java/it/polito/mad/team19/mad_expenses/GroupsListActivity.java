@@ -103,7 +103,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
             if(myFirebaseDatabase == null) {
 
-                FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+                //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
                 myFirebaseDatabase = FirebaseDatabase.getInstance();
             }
         }
