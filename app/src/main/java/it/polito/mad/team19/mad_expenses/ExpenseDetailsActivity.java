@@ -36,8 +36,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
@@ -218,6 +221,44 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                     String chosenAmount = debtEditText.getText().toString().trim().replace(",", ".");
                                                     debtAmountRef.setValue("-" + chosenAmount);
                                                     creditAmountRef.setValue(chosenAmount);
+
+                                                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                                                    final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+                                                    final String notificationId = notificationRef.push().getKey();
+
+                                                    String username = mAuth.getCurrentUser().getDisplayName();
+                                                    String uid = mAuth.getCurrentUser().getUid();
+
+                                                    if (username == null)
+                                                        username = "User";
+
+                                                    Calendar c = Calendar.getInstance();
+                                                    SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                                                    final String formattedDate = df.format(c.getTime());
+
+
+                                                    HashMap<String, Object> notification = new HashMap<>();
+
+                                                    notification.put("activity", getString(R.string.notififcationChangedExpenseBalancectivity));
+
+                                                    notification.put("data", formattedDate);
+                                                    notification.put("id", expenseId);
+                                                    notification.put("ExpenseName", name);
+                                                    notification.put("ExpenseDesc", desc);
+                                                    if(imgUrl!=null)
+                                                        notification.put("ExpenseImgUrl", imgUrl);
+                                                    notification.put("ExpenseAuthorId", authorId);
+                                                    notification.put("ExpenseCost", cost);
+                                                    notification.put("uid", uid);
+                                                    notification.put("groupId", groupId);
+                                                    notification.put("uname", username);
+
+                                                    notificationRef.child(notificationId).updateChildren(notification);
+
+                                                    DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi").child(groupId).child("notifiche");
+                                                    myNotRef.setValue(notificationId);
+
+
 
                                                     ((ExpenseDetail) edAdapter.getItem(position)).setAmount(String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)));
                                                     edAdapter.notifyDataSetChanged();

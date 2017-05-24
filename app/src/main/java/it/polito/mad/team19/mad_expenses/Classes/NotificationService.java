@@ -164,6 +164,12 @@ public class NotificationService extends IntentService{
                                                                         if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationDenyProposalActivity)))
                                                                             text = uname + " " + mContext.getResources().getString(R.string.notififcationDenyProposalText);
 
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationDenyPayedDebtActivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationDenyPayedDebtText);
+
+                                                                        if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationChangedExpenseBalancectivity)))
+                                                                            text = uname + " " + mContext.getResources().getString(R.string.notififcationChangedExpenseBalanceText);
+
 
                                                                         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
                                                                         mBuilder.setVibrate(new long[] { 500, 500 });
@@ -194,6 +200,13 @@ public class NotificationService extends IntentService{
                                                                             intent.putExtra("groupId",groupId);
                                                                         }
 
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationDenyPayedDebtActivity))) {
+                                                                            intent =new Intent(mContext,GroupInfoActivity.class);
+                                                                            intent.putExtra("groupImage",groupImage);
+                                                                            intent.putExtra("groupName",groupName);
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
                                                                         if(activity.equals(getResources().getString(R.string.notififcationRemoveMembersToGroupActivity))) {
                                                                             intent =new Intent(mContext,GroupInfoActivity.class);
                                                                             intent.putExtra("groupImage",groupImage);
@@ -202,6 +215,18 @@ public class NotificationService extends IntentService{
                                                                         }
 
                                                                         if(activity.equals(getResources().getString(R.string.notififcationAddExpenseActivity))) {
+                                                                            intent = new Intent(mContext, ExpenseDetailsActivity.class);
+                                                                            intent.putExtra("ExpenseName",not.child("ExpenseName").getValue().toString());
+                                                                            intent.putExtra("ExpenseDesc",not.child("ExpenseDesc").getValue().toString());
+                                                                            intent.putExtra("ExpenseAuthorId",not.child("ExpenseAuthorId").getValue().toString());
+                                                                            if(not.child("ExpenseImgUrl").getValue()!=null)
+                                                                                intent.putExtra("ExpenseImgUrl",not.child("ExpenseImgUrl").getValue().toString());
+                                                                            intent.putExtra("ExpenseCost",not.child("ExpenseCost").getValue().toString());
+                                                                            intent.putExtra("ExpenseId",not.child("id").getValue().toString());
+                                                                            intent.putExtra("groupId",groupId);
+                                                                        }
+
+                                                                        if(activity.equals(getResources().getString(R.string.notififcationChangedExpenseBalancectivity))) {
                                                                             intent = new Intent(mContext, ExpenseDetailsActivity.class);
                                                                             intent.putExtra("ExpenseName",not.child("ExpenseName").getValue().toString());
                                                                             intent.putExtra("ExpenseDesc",not.child("ExpenseDesc").getValue().toString());

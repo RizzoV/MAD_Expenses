@@ -39,8 +39,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -229,6 +232,33 @@ public class MeActivity extends AppCompatActivity {
                                                     expense.child("debtors").child(userId).child("riepilogo").child(otherId).child("amount").getRef().setValue("0");
                                                 }
                                             }
+
+                                            final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
+                                            final String notificationId = notificationRef.push().getKey();
+
+                                            String username = mAuth.getCurrentUser().getDisplayName();
+
+                                            if (username == null)
+                                                username = "User";
+
+                                            Calendar c = Calendar.getInstance();
+                                            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                                            final String formattedDate = df.format(c.getTime());
+
+
+                                            HashMap<String, Object> notification = new HashMap<>();
+
+                                            notification.put("activity", getString(R.string.notififcationDenyPayedDebtActivity));
+                                            notification.put("data", formattedDate);
+                                            notification.put("id", groupId);
+                                            notification.put("uid", userId);
+                                            notification.put("groupId", groupId);
+                                            notification.put("uname", username);
+
+                                            notificationRef.child(notificationId).updateChildren(notification);
+
+                                            DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userId).child("gruppi").child(groupId).child("notifiche");
+                                            myNotRef.setValue(notificationId);
 
                                             /* Vale
                                              * Per visualizzare subito il valore aggiornato senza aspettare Firebase

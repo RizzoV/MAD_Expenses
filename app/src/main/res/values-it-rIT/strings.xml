@@ -163,6 +163,13 @@
     <string name="notififcationAcceptedProposalText"> ha accettato la proposta.</string>
     <string name="notififcationDenyProposalActivity">ProposalDetailsActivityDenied</string>
     <string name="notififcationDenyProposalText"> ha rifiutato la proposta.</string>
+    <string name="notififcationDenyPayedDebtActivity">GroupActivityDebtPayed</string>
+    <string name="notififcationDenyPayedDebtText"> ha estinto il tuo debito.</string>
+    <string name="notififcationChangedExpenseBalancectivity">ExpenseDetailsActivityChangedBalance</string>
+    <string name="notififcationChangedExpenseBalanceText"> ha cambiato il debito della spesa.</string>
+    <string name="notififcationTopicNewMessageActivity">TopicActivityNewMessage</string>
+    <string name="notififcationTopicNewMessageText"> ha mandato un nuovo messaggio.</string>
+
 
     <!-- Months -->
     <string name="january">Gen</string>
