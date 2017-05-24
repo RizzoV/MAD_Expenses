@@ -270,25 +270,15 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        final Menu finalMenu = menu;
-        String groupId = getIntent().getStringExtra("groupId");
-        String expenseId = getIntent().getStringExtra("ExpenseId");
+        Menu finalMenu = menu;
+        String expenseAuthorId = getIntent().getStringExtra("ExpenseAuthorId");
 
-        DatabaseReference authorRef = FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("expenses").child(expenseId).child("author");
-        authorRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String expenseAuthor = dataSnapshot.getValue(String.class);
-                if (expenseAuthor.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if (expenseAuthorId.equals(mAuth.getCurrentUser().getUid()))
                     // Inflate the menu; this adds items to the action bar if it is present.
                     getMenuInflater().inflate(R.menu.menu_expense_details, finalMenu);
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("ExpenseDetailsActivity", "Unable to read expense author");
-            }
-        });
 
         return true;
     }

@@ -411,7 +411,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         notification.put("id", idExpense);
         notification.put("ExpenseName", expenseName);
         notification.put("ExpenseDesc", expenseDesc);
-        notification.put("ExpenseImgUrl", expenseImgUrl);
+        if(expenseImgUrl!=null)
+            notification.put("ExpenseImgUrl", expenseImgUrl);
         notification.put("ExpenseAuthorId", expenseAuthorId);
         notification.put("ExpenseCost", cost);
         notification.put("uid", usrId);
