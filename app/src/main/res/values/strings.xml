@@ -165,7 +165,7 @@
     <string name="notififcationDenyProposalActivity">ProposalDetailsActivityDenied</string>
     <string name="notififcationDenyProposalText"> denied the proposal.</string>
     <string name="notififcationDenyPayedDebtActivity">GroupActivityDebtPayed</string>
-    <string name="notififcationDenyPayedDebtText"> extinct your debt.</string>
+    <string name="notififcationDenyPayedDebtText"> extinct a debt.</string>
     <string name="notififcationChangedExpenseBalancectivity">ExpenseDetailsActivityChangedBalance</string>
     <string name="notififcationChangedExpenseBalanceText"> change the expense debt.</string>
     <string name="notififcationTopicNewMessageActivity">TopicActivityNewMessage</string>
