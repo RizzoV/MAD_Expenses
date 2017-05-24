@@ -164,7 +164,7 @@ public class NotificationService extends IntentService{
 
 
                                                                         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
-                                                                        mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+                                                                        mBuilder.setVibrate(new long[] { 500, 500 });
                                                                         mBuilder.setLights(Color.parseColor(getString(R.color.colorPrimary)), 3000, 3000);
                                                                         //Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                                                         Uri alarmSound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notitification);
