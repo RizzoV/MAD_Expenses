@@ -384,12 +384,14 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                             Log.d("Invitations", "" + deepLink);
                             String deepLinkName;
                             final String groupIdName;
+                            final String lastNotKey;
                             String results[] = deepLink.split("/");
                             deepLinkName = results[0];
 
                             if (deepLinkName.equals("addPersonToGroup"))
                             {
                                 groupIdName = results[1];
+                                lastNotKey = results[2];
 
                                 DatabaseReference hasGroupYetRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi").child(groupIdName);
                                 hasGroupYetRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -404,7 +406,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                         else
                                         {
                                             Log.d("Invitations", "add person to group with id: " + groupIdName);
-                                            addGroupToUser(uid, groupIdName);
+                                            addGroupToUser(uid, groupIdName,lastNotKey);
                                             setNotification(groupIdName);
                                         }
                                     }
@@ -422,7 +424,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 });
     }
 
-    private void addGroupToUser(final String uid, final String groupIdName) {
+    private void addGroupToUser(final String uid, final String groupIdName, final String lastNotKey) {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef2 = database.getReference("gruppi").child(groupIdName);
@@ -438,6 +440,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     addGroupRef = FirebaseDatabase.getInstance().getReference();
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("tipo").setValue(0);
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uName);
+
                     if(mAuth.getCurrentUser().getPhotoUrl()!=null)
                         addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("immagine").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
 
@@ -450,7 +453,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         Log.d("Group", "noimage");
                     }
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("nome").setValue(snapshot.child("nome").getValue().toString());
-                    addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("notifiche").setValue(0);
+                    addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("notifiche").setValue(lastNotKey);
                     updateList(uid);
                 }
             }
@@ -482,7 +485,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot current : dataSnapshot.getChildren()) {
+                for (DataSnapshot current : dataSnapshot.getChildren())
+                {
                     Notifications currentNot = current.getValue(Notifications.class);
                     notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
                 }
