@@ -44,7 +44,7 @@
     <string name="select_contributors">Seleziona contribuenti</string>
     <string name="select_exluded">Seleziona esclusi</string>
     <string name="select_contributors_description">Seleziona le persone che hanno già pagato la spesa:</string>
-    <string name="select_excluded_description">Selecziona le persone escluse dalla spesa:</string>
+    <string name="select_excluded_description">Seleziona le persone escluse dalla spesa:</string>
     <string name="no_image">Nessuna immagine</string>
 
     <!-- Strings related to the creation of a new proposal -->
@@ -111,6 +111,7 @@
     <string name="menu_up_as_back">sopra_indietro</string>
     <string name="modify_debt_value">Modifica il valore del debito</string>
     <string name="cannot_modify_non_creditor">Non puoi modificare il valore di un debito se non ne sei il creditore</string>
+    <string name="view_topic">Visualizza la discussione</string>
 
     <!-- Proposal details -->
     <string name="confirmProposalVoteAccept">Sicuro di voler accettare la proposta?</string>
