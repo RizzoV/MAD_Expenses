@@ -69,7 +69,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/description"
-                        android:inputType="none"
+                        android:inputType="textCapSentences"
                         android:maxLines="10"
                         android:paddingLeft="@dimen/activity_horizontal_margin" />
                 </android.support.design.widget.TextInputLayout>

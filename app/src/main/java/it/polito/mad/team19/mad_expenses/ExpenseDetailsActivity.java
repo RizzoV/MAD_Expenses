@@ -12,6 +12,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,6 +68,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
     private ImageButton set_photo_button;
     private TextView set_photo_text_view;
+    private CardView viewTopic_cv;
 
     private AlertDialog alertDialog = null;
 
@@ -104,12 +106,27 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_details_listview = (LinearLayout) findViewById(R.id.debtors_and_debts_listview);
         set_photo_button = (ImageButton) findViewById(R.id.add_image_btn);
         set_photo_text_view = (TextView) findViewById(R.id.add_expense_photo_tv);
+        viewTopic_cv = (CardView) findViewById(R.id.expense_topic_cw);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
         //TODO: gestire currency diverse dall'Euro
         expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
         expense_author.setText("loading...");
+
+
+        viewTopic_cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ExpenseDetailsActivity.this, TopicActivity.class);
+                i.putExtra("topicType", "expenses");
+                i.putExtra("topicName", name);
+                i.putExtra("groupId", groupId);
+                i.putExtra("expenseId", expenseId);
+                startActivity(i);
+            }
+        });
+
 
         final FirebaseDatabase firebase = FirebaseDatabase.getInstance();
 
