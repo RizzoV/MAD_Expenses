@@ -120,7 +120,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         Log.d("Receiver","register start");
         registerConnectionReceiver(filter);
 
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(AppInvite.API)
                 .enableAutoManage(this, this)
@@ -132,7 +131,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_launcher);
         getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
-
 
         debug_tv = (TextView) findViewById(R.id.debug_tv);
         debug_ll = (RelativeLayout) findViewById(R.id.debug_ll);
@@ -170,7 +168,6 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     Log.d("Receiver","unregister group");
                 }
 
-
                 Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
                 intent.putExtra("groupNotCount", ((Group) parent.getItemAtPosition(position)).getNotifyCnt().toString());
                 intent.putExtra("groupName", ((Group) parent.getItemAtPosition(position)).getName());
@@ -179,10 +176,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 intent.putExtra("groupMyCredit", ((Group) parent.getItemAtPosition(position)).getCredit().toString());
                 intent.putExtra("groupMyDebt", ((Group) parent.getItemAtPosition(position)).getDebt().toString());
                 startActivityForResult(intent,GROUP_ACTIVITY);
-
             }
         });
-
     }
 
     @Override
@@ -193,16 +188,12 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             registerConnectionReceiver(filter);
             Log.d("Receiver", "register on resum");
         }
-
-
         mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //updateList(uid);
-
 
         if(connectionReceiver!=null) {
             closeSnack();
@@ -479,32 +470,19 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         final String formattedDate = df.format(c.getTime());
 
-        final Map<String, Notifications> notification = new HashMap<String, Notifications>();
+        HashMap<String, Object> notification = new HashMap<>();
 
-        final String finalUsername = username;
-        notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot current : dataSnapshot.getChildren())
-                {
-                    Notifications currentNot = current.getValue(Notifications.class);
-                    notification.put(current.getKey(), new Notifications(currentNot.getActivity(), currentNot.getData(), currentNot.getId(), currentNot.getUid(), currentNot.getUname(), current.getKey()));
-                }
+        notification.put("activity", getString(R.string.notififcationAddMembersToGroupActivity));
 
-                    notification.put(notificationId, new Notifications(getResources().getString(R.string.notififcationAddMembersToGroupActivity), formattedDate.toString(), groupId, userID, finalUsername.toString()));
-                    notificationRef.setValue(notification);
+        notification.put("data", formattedDate);
+        notification.put("id", groupId);
+        notification.put("uid", userID);
+        notification.put("uname", username);
 
-                    DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child(groupId).child("notifiche");
-                    myNotRef.setValue(notificationId);
+        notificationRef.child(notificationId).updateChildren(notification);
 
-                }
-
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userID).child("gruppi").child(groupId).child("notifiche");
+        myNotRef.setValue(notificationId);
     }
     void updateList(final String uid)
     {
@@ -555,9 +533,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                     int notNum = (int) dataSnapshot.getChildrenCount();
 
                                     if (immagine!=null)
-                                        groups.add(new Group(groupName,credito, debito, notNum-1,immagine,groupId));
+                                        groups.add(0, new Group(groupName,credito, debito, notNum-1,immagine,groupId));
                                     else
-                                        groups.add(new Group(groupName,credito, debito, notNum-1,null,groupId));
+                                        groups.add(0, new Group(groupName,credito, debito, notNum-1,null,groupId));
 
                                     if(listenerNot.get(groupId)==null)
                                     {

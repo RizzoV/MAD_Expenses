@@ -254,9 +254,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String imgUrl = dataSnapshot.getValue(String.class);
-                if (imgUrl != null)
+                if (imgUrl != null) {
+                    set_photo_text_view.setText(R.string.loading_image);
                     Log.d("ExpenseDetailsActivity", "Debug image url:" + imgUrl);
-                showExpenseImage(imgUrl);
+                    showExpenseImage(imgUrl);
+                }
             }
 
             @Override

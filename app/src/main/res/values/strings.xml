@@ -111,6 +111,7 @@
     <string name="modify_group_name">Modify group name</string>
     <string name="modify_debt_value">Modify debt value</string>
     <string name="cannot_modify_non_creditor">You cannot modify the value of a debt if you are not the creditor</string>
+    <string name="no_image">No image</string>
 
     <!-- Proposal details -->
     <string name="confirmProposalVoteAccept">Are you sure you want to accept the proposal?</string>
@@ -123,6 +124,7 @@
     <string name="deny">Refuse</string>
     <string name="waitingFor">Waiting for:</string>
     <string name="transformInExpense">Transform in expense</string>
+    <string name="loading_image">Loading image&#8230;</string>
 
 
     <string name="allreadyMembers">You are already in this group!</string>
