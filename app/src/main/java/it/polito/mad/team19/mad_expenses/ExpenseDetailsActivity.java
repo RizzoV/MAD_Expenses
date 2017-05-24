@@ -34,6 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
@@ -338,6 +339,20 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             case R.id.modifyExpense: {
                 Log.d("ModifyExpense", "starting modify activity");
 
+                final Bitmap[] fileBitmap = new Bitmap[1];
+                final byte[][] datas = new byte[1][1];
+                Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(expense_img) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        fileBitmap[0]= resource;
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        fileBitmap[0].compress(Bitmap.CompressFormat.JPEG, 85, baos);
+                        datas[0] = baos.toByteArray();
+                    }
+                });
+
+
                 Intent changeExpenseIntent = new Intent(this, AddExpenseActivity.class);
                 changeExpenseIntent.putExtra("ExpenseName", name);
                 changeExpenseIntent.putExtra("ExpenseImgUrl", imgUrl);
@@ -347,6 +362,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);
                 changeExpenseIntent.putExtra("ModifyIntent", "1");
+                changeExpenseIntent.putExtra("ExpenseImage", datas[0]);
+
                 Bundle b = new Bundle();
                 if (contributorsList != null) {
                     b.putParcelableArrayList("contributorsList", contributorsList);
