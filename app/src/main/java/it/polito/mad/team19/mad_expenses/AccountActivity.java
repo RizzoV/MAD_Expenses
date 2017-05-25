@@ -41,7 +41,6 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     FirebaseAuth.AuthStateListener mAuthListener;
     Button signOut;
     Button pswd_reset;
-    ImageView edit_email;
     ImageView edit_name;
     TextView email;
     TextView displayedName;
@@ -60,11 +59,10 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
         netChange = new NetworkChangeReceiver();
         netChange.setViewForSnackbar(findViewById(android.R.id.content));
         netChange.setDialogShowTrue(false);
-        registerReceiver(netChange,filter);
+        registerReceiver(netChange, filter);
 
         signOut = (Button) findViewById(R.id.btn_signout);
         pswd_reset = (Button) findViewById(R.id.reset_passwd);
-        edit_email = (ImageView) findViewById(R.id.edit_user_email);
         edit_name = (ImageView) findViewById(R.id.edit_user_name);
 
         //TODO: permettere di modificare anche l'immagine
@@ -84,7 +82,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onClick(View v) {
 
-                    if(mGoogleApiClient.isConnected())
+                if (mGoogleApiClient.isConnected())
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                             new ResultCallback<Status>() {
                                 @Override
@@ -98,19 +96,11 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
         });
 
 
-        edit_email.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Email", "edit");
-                showAddContactDialog(getString(R.string.changeemail), email.getText().toString(), 0);
-            }
-        });
-
         edit_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("Name", "edit");
-                showAddContactDialog(getString(R.string.changename), displayedName.getText().toString(), 1);
+                showAddContactDialog(getString(R.string.changename), displayedName.getText().toString());
             }
         });
 
@@ -159,7 +149,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     }
 
 
-    public void showAddContactDialog(String title, String old_string, final int type) {
+    public void showAddContactDialog(String title, String old_string) {
         LayoutInflater inflater = getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialogboxlayout_edit_account, null);
         final EditText new_string;
@@ -186,38 +176,22 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
                             new_string.setError(getString(R.string.mandatory_field));
                         } else {
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            switch (type) {
-                                case 0:
-                                    user.updateEmail(new_string.getText().toString().trim())
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Log.d("Email", "User email address updated.");
-                                                        email.setText(new_string.getText().toString().trim());
-                                                        dialog.cancel();
-                                                    }
-                                                }
-                                            });
-                                    break;
-                                case 1:
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(new_string.getText().toString())
-                                            .build();
-                                    user.updateProfile(profileUpdates)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Log.d("Name", "Name updated.");
-                                                        displayedName.setText(new_string.getText().toString());
-                                                        //TODO: modificare anche il nome nei vari campi members dei gruppi associati all'utente
-                                                        dialog.cancel();
-                                                    }
-                                                }
-                                            });
-                                    break;
-                            }
+
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(new_string.getText().toString())
+                                    .build();
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d("Name", "Name updated.");
+                                                displayedName.setText(new_string.getText().toString());
+                                                //TODO: modificare anche il nome nei vari campi members dei gruppi associati all'utente
+                                                dialog.cancel();
+                                            }
+                                        }
+                                    });
                         }
                     }
                 });
@@ -253,11 +227,11 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     @Override
     protected void onResume() {
         super.onResume();
-        if(netChange==null) {
+        if (netChange == null) {
             netChange = new NetworkChangeReceiver();
             netChange.setViewForSnackbar(findViewById(android.R.id.content));
             netChange.setDialogShowTrue(false);
-            registerReceiver(netChange,filter);
+            registerReceiver(netChange, filter);
             Log.d("Receiver", "register on resum");
         }
     }
@@ -266,11 +240,11 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     protected void onPause() {
         super.onPause();
 
-        if(netChange!=null) {
+        if (netChange != null) {
             netChange.closeSnack();
             unregisterReceiver(netChange);
             netChange = null;
-            Log.d("Receiver","unregister on pause");
+            Log.d("Receiver", "unregister on pause");
         }
 
     }
@@ -278,6 +252,6 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.e("AccountActivity", "Could not connect");
     }
 }

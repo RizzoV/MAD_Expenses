@@ -47,26 +47,26 @@
                     android:text="@string/username"
                     android:textColor="@color/colorPrimary" />
 
-            <TextView
-                android:layout_below="@id/username_header"
-                android:id="@+id/displayed_name_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="User"
-                android:textColor="@color/primaryText"
-                android:textSize="20sp"
-                android:layout_gravity="center_vertical"/>
+                <TextView
+                    android:id="@+id/displayed_name_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/username_header"
+                    android:layout_gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="User"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/edit_user_name"
-                android:layout_gravity="right"
-                android:padding="10dp"
-                android:src="@drawable/ic_edit"
-                android:layout_alignEnd="@id/displayed_name_tv"
-                android:layout_below="@id/username_header"/>
+                <ImageView
+                    android:id="@+id/edit_user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@id/displayed_name_tv"
+                    android:layout_below="@id/username_header"
+                    android:layout_gravity="right"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_edit" />
             </RelativeLayout>
         </android.support.v7.widget.CardView>
 
@@ -94,21 +94,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/other_infos"
+                    android:layout_gravity="center_vertical"
                     android:padding="10dp"
                     android:text="Email"
-                    android:layout_gravity="center_vertical"
                     android:textColor="@color/primaryText"
                     android:textSize="20sp" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/edit_user_email"
-                    android:layout_gravity="right"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_edit"
-                    android:layout_alignEnd="@id/email_tv"
-                    android:layout_below="@id/other_infos"/>
             </RelativeLayout>
 
         </android.support.v7.widget.CardView>
@@ -137,10 +127,10 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:visibility="gone"
                 android:background="@drawable/buttons_background"
                 android:text="Reset password"
-                android:textColor="#fff" />
+                android:textColor="#fff"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
