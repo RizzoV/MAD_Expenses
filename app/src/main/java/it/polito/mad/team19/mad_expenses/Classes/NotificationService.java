@@ -145,7 +145,7 @@ public class NotificationService extends IntentService{
                                                                             if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddExpenseActivity)))
                                                                                 text = uname + " " + mContext.getResources().getString(R.string.notififcationAddExpenseText);
 
-                                                                            if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddExpenseFromProposalText)))
+                                                                            if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddExpenseFromProposalActivity)))
                                                                                 text = uname + " " + mContext.getResources().getString(R.string.notififcationAddExpenseFromProposalText);
 
                                                                             if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationAddProposalActivity)))
