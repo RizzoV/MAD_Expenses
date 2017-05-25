@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         final String userImgUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
 
         desc_tv.setText(desc);
-        cost_tv.setText(cost);
+        cost_tv.setText(cost + " " + Currency.getInstance(Locale.ITALY).getSymbol());
         name_tv.setText(name);
 
         database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -498,6 +499,10 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         i.putExtra("excludedList", excluded);
                         Log.e("GOING TO", "START");
                         startActivity(i);
+
+                        // Delete the proposal
+                        database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).removeValue();
+                        finish();
                     }
 
                     @Override

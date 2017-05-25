@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:background="@drawable/chat_back_wall"
+    android:background="@color/topicBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -35,7 +35,7 @@
 
         <EditText
             android:background="#fff"
-            android:padding="4dp"
+            android:padding="12dp"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"
             android:id="@+id/messageEdit"
@@ -48,6 +48,8 @@
             android:layout_weight="0.75"/>
 
         <Button
+            android:layout_marginStart="@dimen/smaller_horizontal_margin"
+            android:layout_marginEnd="@dimen/smaller_horizontal_margin"
             android:id="@+id/chatSendButton"
             android:layout_marginTop="2dp"
             android:gravity="center"
