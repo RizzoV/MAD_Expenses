@@ -181,7 +181,10 @@ public class NotificationsAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent =new Intent(context,GroupInfoActivity.class);
-                    intent.putExtra("groupImage",notification.child("GroupImage").getValue().toString());
+                    String image = null;
+                    if(notification.child("GroupImage").getValue()!=null)
+                        image = notification.child("GroupImage").getValue().toString();
+                    intent.putExtra("groupImage",image);
                     intent.putExtra("groupName",notification.child("GroupName").getValue().toString());
                     intent.putExtra("groupId",notification.child("id").getValue().toString());
                     context.startActivity(intent);
@@ -198,7 +201,10 @@ public class NotificationsAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent =new Intent(context,GroupInfoActivity.class);
-                    intent.putExtra("groupImage",notification.child("GroupImage").getValue().toString());
+                    String image = null;
+                    if(notification.child("GroupImage").getValue()!=null)
+                        image = notification.child("GroupImage").getValue().toString();
+                    intent.putExtra("groupImage",image);
                     intent.putExtra("groupName",notification.child("GroupName").getValue().toString());
                     intent.putExtra("groupId",notification.child("id").getValue().toString());
                     context.startActivity(intent);

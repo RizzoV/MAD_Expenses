@@ -385,7 +385,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
 
-    public void finishTasks(String expenseName, String expenseDesc, String expenseImgUrl,String expenseAuthorId, String cost)
+    public void finishTasks(String expenseName, String expenseDesc, String expenseImgUrl, String expenseAuthorId, String cost, final String groupId)
     {
 
         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
