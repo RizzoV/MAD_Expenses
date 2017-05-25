@@ -418,7 +418,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                 hasGroupYetRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.getKey().equals(groupIdName))
+                                        if(dataSnapshot.hasChildren())
                                         {
                                             Snackbar.make(findViewById(android.R.id.content), getString(R.string.allreadyMembers), Snackbar.LENGTH_SHORT)
                                                     .show();
@@ -426,16 +426,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                         }
                                         else
                                         {
-                                            if(dataSnapshot.hasChildren()) {
                                                 Log.d("Invitations", "add person to group with id: " + groupIdName);
                                                 addGroupToUser(uid, groupIdName, lastNotKey);
-                                                String groupImage = null;
 
-                                                if (dataSnapshot.child("immagine").getValue() != null)
-                                                    groupImage = dataSnapshot.child("immagine").getValue().toString();
-
-                                                setNotification(groupIdName, dataSnapshot.child("nome").getValue().toString(), groupImage);
-                                            }
                                         }
                                     }
 
@@ -482,6 +475,14 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     }
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("nome").setValue(snapshot.child("nome").getValue().toString());
                     addGroupRef.child("utenti").child(uid).child("gruppi").child(groupIdName).child("notifiche").setValue(lastNotKey);
+
+                    String groupImage = null;
+
+                    if (snapshot.child("immagine").getValue() != null)
+                        groupImage = snapshot.child("immagine").getValue().toString();
+
+                    setNotification(groupIdName,snapshot.child("nome").getValue().toString(), groupImage);
+
                     updateList(uid);
                 }
             }
