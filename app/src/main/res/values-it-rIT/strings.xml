@@ -102,6 +102,7 @@
     <string name="continue_string">Continua</string>
     <string name="add_person">Aggiungi membro</string>
     <string name="notifications">Notifiche</string>
+    <string name="got_it">Capito!</string>
 
     <!-- Expense details -->
     <string name="confirmExpenseDeletion">Sei sicuro di voler cancellare la spesa?</string>
@@ -184,7 +185,6 @@
     <string name="october">Ott</string>
     <string name="november">Nov</string>
     <string name="december">Dic</string>
-    <string name="got_it">Got it!</string>
 
     <!-- Showcase hint text-->
     <string name="new_group_add_members">Hai creato un nuovo gruppo</string>

@@ -393,7 +393,7 @@ public class GroupActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("GroupActivity", "Could not read the group status");
             }
         });
 
@@ -414,7 +414,7 @@ public class GroupActivity extends AppCompatActivity {
         showcaseView.setContentTitle(getString(R.string.new_group_add_members));
         showcaseView.setContentText(getString(R.string.add_new_members_hint));
         showcaseView.setButtonText(getString(R.string.got_it));
-        showcaseView.hideButton();
+        //showcaseView.hideButton();
 
         float density = getResources().getDisplayMetrics().density;
         int paddingDp = (int)(45 * density);
@@ -554,11 +554,6 @@ public class GroupActivity extends AppCompatActivity {
             ArrayList<FirebaseGroupMember> contributors = data.getParcelableArrayListExtra("contributors");
             ArrayList<FirebaseGroupMember> excluded = data.getParcelableArrayListExtra("excluded");
 
-
-
-
-            //TODO: far avviare tutto in un thread
-            Log.e("DEBUG", "IN");
             calculateBalances(data.getStringExtra("expenseId"), Float.parseFloat(data.getStringExtra("expenseTotal")), data.getStringExtra("expenseUId"),
                     data.getStringExtra("expenseUserName"), contributors, excluded);
         }
@@ -582,9 +577,9 @@ public class GroupActivity extends AppCompatActivity {
     private void calculateBalances (final String expenseId, final float expenseTotal, final String expenseUuid, final String expenseUserName,
                                    final ArrayList<FirebaseGroupMember> contributors, final ArrayList<FirebaseGroupMember> excluded) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("membri");
+        DatabaseReference groupMembersRef = database.getReference("gruppi").child(groupId).child("membri");
 
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        groupMembersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
@@ -594,16 +589,10 @@ public class GroupActivity extends AppCompatActivity {
                     else
                         groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue(String.class), null, child.getKey()));
                 }
-               // BalanceCalculator.calculate(groupId, expenseId, groupMembersList, expenseTotal, contributors, excluded);
 
-                /////////////////////JURED PROVA//////////////////////////
-
-
+                // Calculate expense balances asynchronously
                 AsyncFirebaseBalanceLoader async = new AsyncFirebaseBalanceLoader(groupId, expenseId, groupMembersList, expenseTotal, contributors, excluded);
                 async.execute();
-
-                //////////////////////////////////////////////////////////
-
 
             }
 
