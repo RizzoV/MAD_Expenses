@@ -284,11 +284,8 @@ public class NotificationService extends IntentService{
 
 
                                                                             stackBuilder.addNextIntent(intent);
-                                                                            PendingIntent resultPendingIntent =
-                                                                                    stackBuilder.getPendingIntent(
-                                                                                            0,
-                                                                                            PendingIntent.FLAG_UPDATE_CURRENT
-                                                                                    );
+                                                                            PendingIntent resultPendingIntent = PendingIntent.getActivities(mContext,0,
+                                                                                    new Intent[]{new Intent(mContext,GroupsListActivity.class),intent},PendingIntent.FLAG_UPDATE_CURRENT);
 
                                                                             mBuilder.setContentIntent(resultPendingIntent);
                                                                             mBuilder.setOnlyAlertOnce(true);
