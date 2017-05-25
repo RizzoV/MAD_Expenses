@@ -80,8 +80,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
     private String groupId;
     private String usrId;
-    Boolean isContributorsClicked = true;
-    Boolean isExcludedClicked = true;
     private static final int EXP_CREATED = 1;
     private String mCurrentPhotoPath = null;
     private String mCurrentPhotoName;
@@ -502,6 +500,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private void setImageView(String mCurrentPhotoPath) {
         Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
         mImageView.setImageBitmap(fileBitmap);
+        mImageView.setVisibility(View.VISIBLE);
     }
 
 

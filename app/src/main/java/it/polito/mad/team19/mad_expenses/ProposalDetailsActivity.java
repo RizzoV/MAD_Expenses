@@ -46,6 +46,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
     private String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private ImageView proposal_img;
     private TextView set_photo_tv;
+    private String imgUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +105,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String imgUrl = dataSnapshot.child("imageUrl").getValue(String.class);
+                imgUrl = dataSnapshot.child("imageUrl").getValue(String.class);
                 if (imgUrl != null) {
                     set_photo_tv.setText(R.string.loading_image);
                     showExpenseImage(imgUrl);
@@ -485,7 +486,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         Intent i = new Intent(ProposalDetailsActivity.this, AddExpenseActivity.class);
                         i.putExtra("ExpenseName", name);
                         i.putExtra("ExpenseDesc", desc);
-                        //i.putExtra("ExpenseImgUrl", );
+                        i.putExtra("ExpenseImgUrl", imgUrl);
                         i.putExtra("ExpenseAuthorId", userId);
                         i.putExtra("ExpenseCost", cost);
                         i.putExtra("groupId", groupId);

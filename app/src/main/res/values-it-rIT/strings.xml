@@ -39,7 +39,7 @@
     <string name="date">Data</string>
     <string name="price">Prezzo</string>
     <string name="create_new_expense">Crea una nuova spesa</string>
-    <string name="add_expense_image">Nessuna</string>
+    <string name="add_expense_image">Aggiungi un\'immagine alla spesa</string>
     <string name="create_expense_button">Crea Spesa</string>
     <string name="select_contributors">Seleziona contribuenti</string>
     <string name="select_exluded">Seleziona esclusi</string>

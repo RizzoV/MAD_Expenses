@@ -96,14 +96,15 @@
 
     <ImageView
         android:id="@+id/camera_img"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginTop="10dp"
+        android:adjustViewBounds="true"
         android:src="@drawable/circle"
         app:layout_anchor="@id/new_proposal_card"
         app:layout_anchorGravity="bottom|center_horizontal"
-        />
+        android:scaleType="centerCrop"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/new_proposal_done_btn"

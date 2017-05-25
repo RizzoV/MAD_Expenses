@@ -35,7 +35,7 @@
 
         <EditText
             android:background="#fff"
-            android:padding="5dp"
+            android:padding="4dp"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"
             android:id="@+id/messageEdit"

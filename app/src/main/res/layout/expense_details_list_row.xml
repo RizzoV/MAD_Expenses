@@ -33,7 +33,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:src="@mipmap/ic_user_noimg_old" />
+            android:src="@drawable/ic_user_noimg" />
     </LinearLayout>
 
     <LinearLayout

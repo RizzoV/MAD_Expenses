@@ -84,7 +84,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     GroupsAdapter ga;
     Snackbar sb;
     IntentFilter filter;
-    private BroadcastReceiver connectionReceiver;
+    private BroadcastReceiver connectionReceiver = null;
     HashMap<String,Integer> listenerNot = new HashMap<>();
     Intent notIntent;
     NotificationService notificationService;

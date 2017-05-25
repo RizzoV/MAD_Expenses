@@ -30,7 +30,7 @@
             android:id="@+id/debug_tv"
             android:textColor="@color/secondaryText"
             android:text="@string/no_group_found"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_no_items_found_size"
             />
 
             <!-- <ImageView
