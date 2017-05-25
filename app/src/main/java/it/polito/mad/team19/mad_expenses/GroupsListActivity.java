@@ -142,8 +142,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             public void onClick(View view) {
                 if(connectionReceiver!=null) {
                     closeSnack();
-                    unregisterReceiver(connectionReceiver);
-                    connectionReceiver = null;
+                    try {
+                        unregisterReceiver(connectionReceiver);
+                        connectionReceiver = null;
+                    }catch (Exception e)
+                    {
+                        Log.d("ExceptionRx",e.toString());
+                    }
                     Log.d("Receiver","unregister fab");
                 }
 
@@ -163,8 +168,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                 if(connectionReceiver!=null) {
                     closeSnack();
-                    unregisterReceiver(connectionReceiver);
-                    connectionReceiver = null;
+                    try {
+                        unregisterReceiver(connectionReceiver);
+                        connectionReceiver = null;
+                    }catch (Exception e)
+                    {
+                        Log.d("ExceptionRx",e.toString());
+                    }
                     Log.d("Receiver","unregister group");
                 }
 
@@ -197,8 +207,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
         if(connectionReceiver!=null) {
             closeSnack();
-            unregisterReceiver(connectionReceiver);
-            connectionReceiver = null;
+            try {
+                unregisterReceiver(connectionReceiver);
+                connectionReceiver = null;
+            }catch (Exception e)
+            {
+                Log.d("ExceptionRx",e.toString());
+            }
             Log.d("Receiver","unregister on pause");
         }
 
@@ -234,8 +249,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                     if(connectionReceiver!=null) {
                         closeSnack();
-                        unregisterReceiver(connectionReceiver);
-                        connectionReceiver = null;
+                        try {
+                            unregisterReceiver(connectionReceiver);
+                            connectionReceiver = null;
+                        }catch (Exception e)
+                        {
+                            Log.d("ExceptionRx",e.toString());
+                        }
                         Log.d("Receiver","unregister muauth");
                     }
 
@@ -247,8 +267,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                     if(connectionReceiver!=null) {
                         closeSnack();
-                        unregisterReceiver(connectionReceiver);
-                        connectionReceiver = null;
+                        try {
+                            unregisterReceiver(connectionReceiver);
+                            connectionReceiver = null;
+                        }catch (Exception e)
+                        {
+                            Log.d("ExceptionRx",e.toString());
+                        }
                         Log.d("Receiver","unregister account");
                     }
 
@@ -279,8 +304,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
                 if(connectionReceiver!=null) {
                     closeSnack();
-                    unregisterReceiver(connectionReceiver);
-                    connectionReceiver = null;
+                    try {
+                        unregisterReceiver(connectionReceiver);
+                        connectionReceiver = null;
+                    }catch (Exception e)
+                    {
+                        Log.d("ExceptionRx",e.toString());
+                    }
                     Log.d("Receiver","unregister account");
                 }
 
@@ -492,10 +522,11 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userID).child("gruppi").child(groupId).child("notifiche");
         myNotRef.setValue(notificationId);
     }
-    void updateList(final String uid)
+    void updateList(String userid)
     {
         progressBar.setVisibility(View.VISIBLE);
         mAuth = FirebaseAuth.getInstance();
+        final String uid = mAuth.getCurrentUser().getUid();
         groups.clear();
         ga.notifyDataSetInvalidated();
         ga.notifyDataSetChanged();

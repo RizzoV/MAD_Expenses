@@ -100,7 +100,6 @@ public class CreateGroupActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        Log.d("User", mAuth.getCurrentUser().getUid());
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();

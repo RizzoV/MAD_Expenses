@@ -454,7 +454,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                     AsyncFirebaseBalanceLoader async = new AsyncFirebaseBalanceLoader(groupId, idExpense, groupMembersList, expenseTotal, contributorsList, excludedList);
                     async.execute();
-                    barProgressDialog.dismiss();
+
+                    if(barProgressDialog.isShowing())
+                        barProgressDialog.dismiss();
+
                     finish();
                 }
 
@@ -638,8 +641,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             oldExpenseId = getIntent().getStringExtra("ExpenseId");
             oldExpenseImageBitmap = getIntent().getByteArrayExtra("ExpenseImage");
 
-            Bitmap bmp = BitmapFactory.decodeByteArray(oldExpenseImageBitmap, 0, oldExpenseImageBitmap.length);
-            ((ImageView) findViewById(R.id.camera_img)).setImageBitmap(bmp);
+            if(oldExpenseImageBitmap!=null) {
+                Bitmap bmp = BitmapFactory.decodeByteArray(oldExpenseImageBitmap, 0, oldExpenseImageBitmap.length);
+                ((ImageView) findViewById(R.id.camera_img)).setImageBitmap(bmp);
+            }
 
 
             if (!getIntent().getParcelableArrayListExtra("contributorsList").isEmpty()) {
