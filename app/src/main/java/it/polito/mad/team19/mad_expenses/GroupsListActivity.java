@@ -418,7 +418,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                 hasGroupYetRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.hasChildren())
+                                        if(dataSnapshot.child("nome").getValue()!=null)
                                         {
                                             Snackbar.make(findViewById(android.R.id.content), getString(R.string.allreadyMembers), Snackbar.LENGTH_SHORT)
                                                     .show();
