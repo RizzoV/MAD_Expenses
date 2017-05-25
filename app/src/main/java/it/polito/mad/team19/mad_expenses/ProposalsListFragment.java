@@ -37,6 +37,11 @@ public class ProposalsListFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final int PROPOSAL_DETAILS = 1;
+
+    private ArrayList<Proposal> proposals = new ArrayList<Proposal>();
+    private Proposal clicked;
+    private ProposalsRecyclerAdapter adapter;
 
     public ProposalsListFragment() {
     }
@@ -53,18 +58,35 @@ public class ProposalsListFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == PROPOSAL_DETAILS) {
+            FirebaseDatabase.getInstance().getReference().child("gruppi").child(getActivity().getIntent().getStringExtra("groupId")).child("proposals").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(!dataSnapshot.hasChildren()) {
+                        proposals.clear();
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_proposals, container, false);
-        //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-        //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-
-        final ArrayList<Proposal> proposals = new ArrayList<Proposal>();
 
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.proposals_rv);
-        final ProposalsRecyclerAdapter adapter = new ProposalsRecyclerAdapter(getActivity(), proposals, getActivity().getIntent().getStringExtra("groupId"));
+        adapter = new ProposalsRecyclerAdapter(getActivity(), proposals, getActivity().getIntent().getStringExtra("groupId"));
         mRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
@@ -74,7 +96,7 @@ public class ProposalsListFragment extends Fragment {
         adapter.SetOnItemClickListener(new ExpensesRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Proposal clicked = proposals.get(position);
+                clicked = proposals.get(position);
                 final Intent intent = new Intent(getActivity(), ProposalDetailsActivity.class);
                 Log.d("Expenses", clicked.toString());
                 intent.putExtra("ProposalName", clicked.getName());
@@ -84,7 +106,7 @@ public class ProposalsListFragment extends Fragment {
                 intent.putExtra("ProposalAuthorId", clicked.getAuthor());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                 intent.putExtra("ProposalId", clicked.getFirebaseId());
-                startActivity(intent);
+                startActivityForResult(intent, PROPOSAL_DETAILS);
             }
         });
 
