@@ -418,7 +418,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                 hasGroupYetRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.hasChildren())
+                                        if(dataSnapshot.getKey().equals(groupIdName))
                                         {
                                             Snackbar.make(findViewById(android.R.id.content), getString(R.string.allreadyMembers), Snackbar.LENGTH_SHORT)
                                                     .show();
@@ -426,13 +426,16 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                         }
                                         else
                                         {
-                                            Log.d("Invitations", "add person to group with id: " + groupIdName);
-                                            addGroupToUser(uid, groupIdName,lastNotKey);
-                                            String groupImage=null;
-                                            if(dataSnapshot.child("immagine").getValue()!=null)
-                                                groupImage = dataSnapshot.child("immagine").getValue().toString();
+                                            if(dataSnapshot.hasChildren()) {
+                                                Log.d("Invitations", "add person to group with id: " + groupIdName);
+                                                addGroupToUser(uid, groupIdName, lastNotKey);
+                                                String groupImage = null;
 
-                                            setNotification(groupIdName,dataSnapshot.child("nome").getValue().toString(),groupImage);
+                                                if (dataSnapshot.child("immagine").getValue() != null)
+                                                    groupImage = dataSnapshot.child("immagine").getValue().toString();
+
+                                                setNotification(groupIdName, dataSnapshot.child("nome").getValue().toString(), groupImage);
+                                            }
                                         }
                                     }
 
