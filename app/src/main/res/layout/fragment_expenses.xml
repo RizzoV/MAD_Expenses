@@ -166,7 +166,7 @@
             android:visibility="gone"
             android:textColor="@color/secondaryText"
             android:layout_marginStart="@dimen/smaller_horizontal_margin"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="@dimen/smaller_horizontal_margin"
             android:layout_marginTop="@dimen/smaller_vertical_margin"
             android:textSize="@dimen/text_no_items_found_size"
             android:textAlignment="center"

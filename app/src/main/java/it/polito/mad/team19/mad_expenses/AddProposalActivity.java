@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -95,6 +96,14 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         registerReceiver(netChange, filter);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+
+        TextView name = (TextView) findViewById(R.id.new_proposal_name_tv);
+        TextView description = (TextView) findViewById(R.id.new_proposal_description_tv);
+        TextView price = (TextView) findViewById(R.id.new_proposal_price_tv);
+
+        name.setText(name.getText() + ":");
+        description.setText(description.getText() + ":");
+        price.setText(price.getText() + ":");
 
         groupId = getIntent().getStringExtra("groupId");
         usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();

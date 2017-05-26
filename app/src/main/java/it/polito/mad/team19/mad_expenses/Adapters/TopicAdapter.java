@@ -50,8 +50,7 @@ public class TopicAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent)
     {
 
-        if (convertView==null)
-        {
+        if (convertView==null) {
             convertView=context.getLayoutInflater().inflate(R.layout.topic_msg_row,parent,false);
         }
 
@@ -71,7 +70,7 @@ public class TopicAdapter extends BaseAdapter {
         {
             name.setVisibility(View.GONE);
             msg.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
-            date.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+            date.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
             msg.setPadding(paddingDp,paddingDp,paddingDp,0);
 
             container.setBackground(context.getResources().getDrawable(R.drawable.chat_my_bubble));

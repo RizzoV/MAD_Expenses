@@ -24,9 +24,6 @@
     <string name="distributed_description">In a distributed group all of its members can insert or dispute expenses, create, accept or refuse proposals, and open topics</string>
     <string name="search_person">Search person</string>
     <string name="create_new_group">Create the group</string>
-    <string name="expense_name_suggestion">Hotel room</string>
-    <string name="expense_description_suggestion">Double room, two nights</string>
-    <string name="expense_cost_suggestion">231</string>
 
     <!-- Expense creation -->
     <string name="expense_name">Expense name</string>
@@ -40,6 +37,9 @@
     <string name="select_exluded">Select excluded</string>
     <string name="select_contributors_description">Select the people who already paid for the expense:</string>
     <string name="select_excluded_description">Select the people who is excluded from the expense:</string>
+    <string name="expense_name_suggestion"><i>e.g: Hotel room</i></string>
+    <string name="expense_description_suggestion"><i>e.g: Double room, two nights</i></string>
+    <string name="expense_cost_suggestion"><i>e.g: 23</i></string>
 
     <!-- Strings related to the creation of a new proposal -->
     <string name="proposal_name">Proposal name</string>

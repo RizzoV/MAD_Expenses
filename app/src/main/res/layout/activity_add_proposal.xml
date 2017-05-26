@@ -21,7 +21,7 @@
             android:padding="@dimen/smaller_horizontal_margin">
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/new_expense_lin_layout"
+                android:id="@+id/new_proposal_lin_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
@@ -30,7 +30,7 @@
                 android:paddingTop="@dimen/activity_vertical_margin">
 
                 <TextView
-                    android:id="@+id/new_expense_name_tv"
+                    android:id="@+id/new_proposal_name_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/proposal_name"
@@ -134,7 +134,7 @@
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:padding="@dimen/fab_margin"
             android:src="@drawable/ic_check"
-            app:layout_anchor="@id/new_expense_lin_layout"
+            app:layout_anchor="@id/new_proposal_lin_layout"
             app:layout_anchorGravity="bottom|right" />
 
     </android.support.design.widget.CoordinatorLayout>

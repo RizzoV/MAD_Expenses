@@ -13,7 +13,7 @@
         android:padding="@dimen/smaller_horizontal_margin"
         android:layout_marginStart="@dimen/smaller_horizontal_margin"
         android:layout_marginTop="@dimen/smaller_vertical_margin"
-        android:layout_marginEnd="5dp"
+        android:layout_marginEnd="@dimen/smaller_horizontal_margin"
         android:textColor="@color/secondaryText"
         android:textAlignment="center"
         android:text="@string/noproposals"/>
