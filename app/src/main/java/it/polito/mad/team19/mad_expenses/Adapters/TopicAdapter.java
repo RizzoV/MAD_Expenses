@@ -65,7 +65,7 @@ public class TopicAdapter extends BaseAdapter {
         date.setText(msgList.get(position).getDate());
 
         float density = context.getResources().getDisplayMetrics().density;
-        int paddingDp = (int)(10 * density);
+        int paddingDp = (int)(5 * density);
 
         if(msgList.get(position).isMe())
         {
@@ -85,7 +85,7 @@ public class TopicAdapter extends BaseAdapter {
             name.setVisibility(View.VISIBLE);
             name.setText(msgList.get(position).getName());
             name.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-            date.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+            date.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
             msg.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
             msg.setPadding(paddingDp,0,paddingDp,0);
 

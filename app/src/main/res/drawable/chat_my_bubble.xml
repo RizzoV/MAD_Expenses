@@ -12,15 +12,15 @@
             android:pivotY="0%"
             android:toDegrees="0" >
             <shape android:shape="rectangle" >
-                <solid android:color="#b2dfdb" />
+                <solid android:color="@color/topicMyMessagesBackground" />
             </shape>
         </rotate>
     </item>
     <item android:left="16dp"
         android:bottom="10dp">
         <shape android:shape="rectangle">
-            <solid android:color="#b2dfdb" />
-            <corners android:radius="5dp" />
+            <solid android:color="@color/topicMyMessagesBackground" />
+            <corners android:radius="10dp" />
         </shape>
     </item>
 

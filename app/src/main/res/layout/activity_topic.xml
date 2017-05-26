@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:background="@color/topicBackground"
+    android:background="@color/lightPrimary"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -34,7 +34,7 @@
         >
 
         <EditText
-            android:background="#fff"
+            android:background="@drawable/chat_edittext_background"
             android:padding="12dp"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"

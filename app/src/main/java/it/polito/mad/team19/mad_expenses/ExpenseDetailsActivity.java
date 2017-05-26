@@ -23,7 +23,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -80,6 +82,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     NetworkChangeReceiver netChange;
     IntentFilter filter;
 
+    private boolean zoomOut = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,7 +123,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
         expense_author.setText("loading...");
 
-
+        // Click listener on the topic card view
         viewTopic_cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,6 +133,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 i.putExtra("groupId", groupId);
                 i.putExtra("expenseId", expenseId);
                 startActivity(i);
+            }
+        });
+
+        // Click listener on the image
+        expense_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
@@ -156,7 +168,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot expense) {
-                if(expense.child("debtors").hasChildren()) {
+                if (expense.child("debtors").hasChildren()) {
                     for (DataSnapshot contributor : expense.child("contributors").getChildren()) {
                         String contributor_img = null;
                         if (contributor.child("immagine").exists())
@@ -301,9 +313,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
                         expense_details_listview.addView(itemView);
                     }
-                }
-                else {
-                  findViewById(R.id.balances_card).setVisibility(View.GONE);
+                } else {
+                    findViewById(R.id.balances_card).setVisibility(View.GONE);
                 }
             }
 
@@ -340,8 +351,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if (expenseAuthorId.equals(mAuth.getCurrentUser().getUid()))
-                    // Inflate the menu; this adds items to the action bar if it is present.
-                    getMenuInflater().inflate(R.menu.menu_expense_details, finalMenu);
+            // Inflate the menu; this adds items to the action bar if it is present.
+            getMenuInflater().inflate(R.menu.menu_expense_details, finalMenu);
 
 
         return true;
@@ -393,20 +404,18 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 return true;
             }
             case R.id.modifyExpense: {
-
                 final Bitmap[] fileBitmap = new Bitmap[1];
                 final byte[][] datas = new byte[1][1];
                 Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(expense_img) {
                     @Override
                     protected void setResource(Bitmap resource) {
-                        fileBitmap[0]= resource;
+                        fileBitmap[0] = resource;
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         fileBitmap[0].compress(Bitmap.CompressFormat.JPEG, 85, baos);
                         datas[0] = baos.toByteArray();
                     }
                 });
-
 
                 Intent changeExpenseIntent = new Intent(this, AddExpenseActivity.class);
                 changeExpenseIntent.putExtra("ExpenseName", name);

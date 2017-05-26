@@ -569,7 +569,6 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                 dialog.cancel();
                             }
                         });
-
                     }
                 });
                 alertDialog.show();

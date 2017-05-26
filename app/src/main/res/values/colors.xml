@@ -15,7 +15,7 @@
     <color name="notificationCircle">#1976d2</color>
 
     <color name="grey">#8f8f8f</color>
-    <color name="topicBackground">#fff7e5</color>
+    <color name="topicMyMessagesBackground">#fff7e5</color>
 
     <color name="colorPrimaryAlpha">#dd009688</color>
     <color name="colorPrimaryDarkAlpha">#dd00796B</color>
