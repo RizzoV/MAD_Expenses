@@ -29,6 +29,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteInvitationResult;
 import com.google.android.gms.appinvite.AppInviteReferral;
@@ -637,6 +639,19 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 Log.e("GroupListActivity", "Unable to read user's groups");
             }
         });
+    }
+
+    //Jured: prova showcase senza gruppi
+    private void showcaseHint() {
+        final ShowcaseView showcaseView =new ShowcaseView.Builder(this)
+                .setTarget(new ViewTarget((FloatingActionButton) findViewById(R.id.groups_list_fab)))
+                .setStyle(R.style.CustomShowcaseMaterial)
+                .withMaterialShowcase()
+                .setContentTitle(getString(R.string.no_group))
+                .setContentText(getString(R.string.add_group_hint))
+                .build();
+
+        showcaseView.hideButton();
     }
 
     @Override

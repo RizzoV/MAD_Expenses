@@ -48,6 +48,8 @@ import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
+//TODO Jured: aggiungi click sulla tab History
+
 public class ExpenseDetailsActivity extends AppCompatActivity {
 
     private static final int MODIFIED = 8;

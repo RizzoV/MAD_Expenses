@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-
     <application
         android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
@@ -126,28 +125,32 @@
         </activity>
         <activity
             android:name=".TopicActivity"
-            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GroupActivity" />
+        </activity>
+        <activity
+            android:name=".ProposalDetailsActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GroupActivity" />
         </activity>
-        <activity android:name=".ProposalDetailsActivity"
-        android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".GroupActivity" /></activity>
 
-
-        <receiver android:name=".Classes.StartBackgroundNotificationService" android:enabled="true">
+        <receiver
+            android:name=".Classes.StartBackgroundNotificationService"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="it.polito.mad.team19.mad_expenses" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <service android:name=".Classes.NotificationService"></service>
+        <service android:name=".Classes.NotificationService" />
 
+        <activity android:name=".HistoryPopupActivity"></activity>
     </application>
 
 </manifest>

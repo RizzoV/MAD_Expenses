@@ -62,10 +62,9 @@ public class GroupMembersAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = context.getLayoutInflater().inflate(R.layout.group_members_popup_list_row, parent, false);
             viewHolder = new ImgHolder();
-            viewHolder.img=(ImageView)convertView.findViewById(R.id.user_img_contacts_list);
+            viewHolder.img = (ImageView) convertView.findViewById(R.id.user_img_contacts_list);
             convertView.setTag(viewHolder);
-        }
-        else
+        } else
             viewHolder = (ImgHolder) convertView.getTag();
 
         TextView username = (TextView) convertView.findViewById(R.id.username_checkedtv);
@@ -73,7 +72,7 @@ public class GroupMembersAdapter extends BaseAdapter {
         //LUDO: per ceccare
         ImageView cb = (ImageView) convertView.findViewById(R.id.contributor_checkbox);
 
-        if(membersList.get(position).getImgUrl()!=null)
+        if (membersList.get(position).getImgUrl() != null)
             Glide.with(context).load(membersList.get(position).getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.img) {
                 @Override
                 protected void setResource(Bitmap resource) {
@@ -83,13 +82,13 @@ public class GroupMembersAdapter extends BaseAdapter {
                     viewHolder.img.setImageDrawable(circularBitmapDrawable);
                 }
             });
-    else {
-        Glide.clear(viewHolder.img);
-        viewHolder.img.setImageResource(R.drawable.ic_user_noimg);
-    }
+        else {
+            Glide.clear(viewHolder.img);
+            viewHolder.img.setImageResource(R.drawable.ic_user_noimg);
+        }
 
 
-        if(membersList.get(position).isChecked())
+        if (membersList.get(position).isChecked())
             cb.setVisibility(View.VISIBLE);
         else
             cb.setVisibility(View.INVISIBLE);

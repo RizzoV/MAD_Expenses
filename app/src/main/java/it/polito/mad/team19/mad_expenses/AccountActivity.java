@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
@@ -37,6 +38,8 @@ import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 public class AccountActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
+
+    private static final String VALID_EMAIL_REGEX = "^(.+)@(.+)$";
     private static final String TAG = "FirebaseSignIn";
     FirebaseAuth.AuthStateListener mAuthListener;
     Button signOut;
@@ -172,9 +175,14 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
                 buttonPositive.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        //if(!new_string.getText().toString().trim().matches(VALID_EMAIL_REGEX)) {
+                        //    Snackbar.make(findViewById(android.R.id.content), getString(R.string.invalid_email), Snackbar.LENGTH_INDEFINITE).show();
+                        //    dialog.cancel();
+                        //}
                         if (new_string.getText().toString().trim().isEmpty()) {
                             new_string.setError(getString(R.string.mandatory_field));
-                        } else {
+                        }
+                        else {
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
