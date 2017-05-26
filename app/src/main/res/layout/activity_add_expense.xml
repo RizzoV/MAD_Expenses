@@ -76,7 +76,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/description"
                             android:textColor="@color/colorPrimary"
-                            android:textSize="@dimen/titles_size" />
+                            android:textSize="18sp" />
 
                         <EditText
                             android:id="@+id/new_expense_description_et"
@@ -100,14 +100,13 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/price"
                                 android:textColor="@color/colorPrimary"
-                                android:textSize="@dimen/titles_size" />
+                                android:textSize="18sp" />
 
                             <EditText
                                 android:id="@+id/new_expense_cost_et"
                                 android:layout_width="0dp"
                                 android:layout_weight="0.85"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/activity_horizontal_margin"
                                 android:hint="@string/expense_cost_suggestion"
                                 android:inputType="numberDecimal"
                                 android:maxLines="1"
@@ -128,14 +127,13 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/date"
                                 android:textColor="@color/colorPrimary"
-                                android:textSize="@dimen/titles_size" />
+                                android:textSize="18sp" />
 
                             <EditText
                                 android:id="@+id/new_expense_data_et"
                                 android:layout_width="0dp"
                                 android:layout_weight="0.85"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/activity_horizontal_margin"
                                 android:inputType="date"
                                 android:maxLines="10"
                                 android:paddingEnd="@dimen/activity_horizontal_margin"
@@ -144,6 +142,7 @@
                                 android:textSize="@dimen/normal_text_size" />
 
                         </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -153,13 +152,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/smaller_horizontal_margin"
                     android:layout_marginStart="@dimen/smaller_horizontal_margin"
-                    android:layout_marginTop="@dimen/activity_vertical_margin">
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_marginBottom="40dp">
 
                     <Button
                         android:id="@+id/contributors_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="40dp"
                         android:layout_marginEnd="@dimen/activity_horizontal_margin"
                         android:layout_marginStart="@dimen/smaller_horizontal_margin"
                         android:layout_marginTop="@dimen/smaller_vertical_margin"

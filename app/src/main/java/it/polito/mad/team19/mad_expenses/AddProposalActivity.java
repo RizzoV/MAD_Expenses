@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
@@ -15,11 +14,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.FileProvider;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,11 +32,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -45,16 +42,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
-import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 
 /**
@@ -65,9 +58,8 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 {
 
     private static final int STORAGE_REQUEST = 666;
-    private ImageButton imageButton;
+    private ImageView imageView;
 
-    private ImageView mImageView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseStorage storage;
@@ -103,8 +95,6 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         registerReceiver(netChange, filter);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
-
-        mImageView = (ImageView) findViewById(R.id.camera_img);
 
         groupId = getIntent().getStringExtra("groupId");
         usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -235,9 +225,9 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 
     public void addListenerOnImageButton() {
 
-        imageButton = (ImageButton) findViewById(R.id.new_expense_image_button);
+        imageView = (ImageView) findViewById(R.id.new_proposal_imageView);
 
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DialogFragment newFragment = new GalleryOrCameraDialog();
@@ -306,7 +296,9 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
 
     private void setImageView(String mCurrentPhotoPath) {
         Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
-        mImageView.setImageBitmap(fileBitmap);
+        RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), fileBitmap);
+        circularBitmapDrawable.setCircular(true);
+        imageView.setImageDrawable(circularBitmapDrawable);
     }
 
     private Bitmap shrinkBitmap(String file, int width, int height) {
@@ -342,7 +334,6 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
         byte[] datas = baos.toByteArray();
-        mImageView.setImageBitmap(fileBitmap);
         mCurrentPhotoName= imageToUpload.getName();
         UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
         // Register observers to listen for when the download is done or if it fails

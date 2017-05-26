@@ -171,7 +171,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         TextView description_tv = (TextView) findViewById(R.id.new_expense_description_tv);
         TextView date_tv = (TextView) findViewById(R.id.new_expense_date_tv);
 
-
         name_tv.setText(name_tv.getText() + ":");
         price_tv.setText(price_tv.getText() + ":");
         description_tv.setText(description_tv.getText() + ":");
@@ -650,7 +649,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             if(oldExpenseImageBitmap!=null) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(oldExpenseImageBitmap, 0, oldExpenseImageBitmap.length);
-                ((ImageView) findViewById(R.id.camera_img)).setImageBitmap(bmp);
+                imageView = (ImageView) findViewById(R.id.new_expense_imageView);
+                RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bmp);
+                circularBitmapDrawable.setCircular(true);
+                imageView.setImageDrawable(circularBitmapDrawable);
+
             }
 
 

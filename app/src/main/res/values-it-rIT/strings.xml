@@ -34,7 +34,7 @@
     <string name="create_new_group">Crea il gruppo</string>
 
     <!-- Expense creation -->
-    <string name="expense_name">Nome della Spesa</string>
+    <string name="expense_name">Nome della spesa</string>
     <string name="description">Descrizione</string>
     <string name="date">Data</string>
     <string name="price">Prezzo</string>
@@ -48,10 +48,10 @@
     <string name="no_image">Nessuna immagine</string>
     <string name="expense_name_suggestion">Camera d\'albergo</string>
     <string name="expense_description_suggestion">Matrimoniale, due notti</string>
-    <string name="expense_cost_suggestion">17</string>
+    <string name="expense_cost_suggestion">231</string>
 
     <!-- Strings related to the creation of a new proposal -->
-    <string name="proposal_name">Nome della Proposta</string>
+    <string name="proposal_name">Nome della proposta</string>
     <string name="create_new_proposal">Crea una nuova proposta</string>
     <string name="add_proposal_image">Aggiungi una immagine alla proposta</string>
     <string name="create_proposal_button">Crea proposta</string>
