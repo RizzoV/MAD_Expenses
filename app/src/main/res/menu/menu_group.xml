@@ -7,22 +7,19 @@
     <item
         android:id="@+id/person_add"
         android:icon="@drawable/ic_group_add"
-        app:showAsAction="ifRoom"
         android:title="@string/add_person"
-        />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/personal_profile_icon"
         android:icon="@drawable/ic_person"
-        app:showAsAction="ifRoom"
         android:title="@string/personal_balance"
-        />
+        app:showAsAction="never" />
     <item
         android:id="@+id/notifications_icon"
-        app:actionLayout="@layout/notifications_ab_layout"
         android:icon="@drawable/ic_notifications"
-        app:showAsAction="always"
         android:title="@string/notifications"
-        />
+        app:actionLayout="@layout/notifications_ab_layout"
+        app:showAsAction="always" />
 
 </menu>

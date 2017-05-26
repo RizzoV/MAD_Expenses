@@ -14,7 +14,7 @@
     <string name="total">Total</string>
     <string name="title_activity_login">Sign in</string>
 
-    <!-- Strings related to the creation of a new group -->
+    <!-- Group creation -->
     <string name="group_name">Group name</string>
     <string name="group_members">Group members</string>
     <string name="group_structure">Group structure:</string>
@@ -24,8 +24,11 @@
     <string name="distributed_description">In a distributed group all of its members can insert or dispute expenses, create, accept or refuse proposals, and open topics</string>
     <string name="search_person">Search person</string>
     <string name="create_new_group">Create the group</string>
+    <string name="expense_name_suggestion">Hotel room</string>
+    <string name="expense_description_suggestion">Double room, two nights</string>
+    <string name="expense_cost_suggestion">231</string>
 
-    <!-- Strings related to the creation of a new expense -->
+    <!-- Expense creation -->
     <string name="expense_name">Expense name</string>
     <string name="description">Description</string>
     <string name="date">Date</string>

@@ -32,8 +32,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -57,11 +57,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
-import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 
 /**
@@ -72,8 +70,7 @@ import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCameraDialog.NoticeDialogListener {
 
     private static final int STORAGE_REQUEST = 666;
-    private ImageButton imageButton;
-    private ImageView mImageView;
+    private ImageView imageView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseStorage storage;
@@ -83,7 +80,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private static final int EXP_CREATED = 1;
     private String mCurrentPhotoPath = null;
     private String mCurrentPhotoName;
-    private Uri mCurrentPhotoFirebaseUri;
     StorageReference storageRef;
     StorageReference groupImagesRef;
     EditText nameEditText;
@@ -135,13 +131,13 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         setTitle(R.string.create_new_expense);
 
-        mImageView = (ImageView) findViewById(R.id.camera_img);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
         dateEditText = (EditText) findViewById(R.id.new_expense_data_et);
         dateEditText.setInputType(InputType.TYPE_NULL);
         dateEditText.setFocusable(false);
+        dateEditText.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
 
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +165,17 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         nameEditText = (EditText) findViewById(R.id.new_expense_name_et);
         descriptionEditText = (EditText) findViewById(R.id.new_expense_description_et);
         costEditText = (EditText) findViewById(R.id.new_expense_cost_et);
+
+        TextView name_tv = (TextView) findViewById(R.id.new_expense_name_tv);
+        TextView price_tv = (TextView) findViewById(R.id.new_expense_price_tv);
+        TextView description_tv = (TextView) findViewById(R.id.new_expense_description_tv);
+        TextView date_tv = (TextView) findViewById(R.id.new_expense_date_tv);
+
+
+        name_tv.setText(name_tv.getText() + ":");
+        price_tv.setText(price_tv.getText() + ":");
+        description_tv.setText(description_tv.getText() + ":");
+        date_tv.setText(date_tv.getText() + ":");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -472,9 +479,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     public void addListenerOnImageButton() {
-        imageButton = (ImageButton) findViewById(R.id.image);
+        imageView = (ImageView) findViewById(R.id.new_expense_imageView);
 
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DialogFragment newFragment = new GalleryOrCameraDialog();
@@ -499,8 +506,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
     private void setImageView(String mCurrentPhotoPath) {
         Bitmap fileBitmap = shrinkBitmap(mCurrentPhotoPath, 1000, 1000);
-        mImageView.setImageBitmap(fileBitmap);
-        mImageView.setVisibility(View.VISIBLE);
+        RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), fileBitmap);
+        circularBitmapDrawable.setCircular(true);
+        imageView.setImageDrawable(circularBitmapDrawable);
     }
 
 
@@ -661,12 +669,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             costEditText.setText(oldCost);
 
             try {
-                Glide.with(this).load(oldImgUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.circle).into(new BitmapImageViewTarget(mImageView) {
+                Glide.with(this).load(oldImgUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.circle).into(new BitmapImageViewTarget(imageView) {
                     @Override
                     protected void setResource(Bitmap resource) {
                         RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
                         circularBitmapDrawable.setCircular(true);
-                        mImageView.setImageDrawable(circularBitmapDrawable);
+                        imageView.setImageDrawable(circularBitmapDrawable);
                     }
                 });
             } catch (Exception e) {

@@ -10,6 +10,11 @@
     android:background="@color/activitiesBackgroundColor"
     tools:context="it.polito.mad.team19.mad_expenses.ExpenseDetailsActivity">
 
+    <!-- <fragment android:name="it.polito.mad.team19.mad_expenses.FullscreenImageFragment"
+        android:id="@+id/fragment_place"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" /> -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -54,6 +59,7 @@
                             android:layout_marginEnd="@dimen/smaller_horizontal_margin"
                             android:layout_marginStart="@dimen/smaller_horizontal_margin"
                             android:layout_marginTop="10dp"
+                            android:adjustViewBounds="true"
                             android:layout_marginBottom="10dp"
                             android:src="@drawable/circle" />
 

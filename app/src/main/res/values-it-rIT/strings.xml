@@ -22,7 +22,7 @@
     <string name="group_and_credit">Credito: </string>
     <string name="group_debt">Debito: </string>
 
-    <!-- Strings related to the creation of a new group -->
+    <!-- Group creation -->
     <string name="group_name">Nome del Gruppo</string>
     <string name="group_members">Membri del gruppo</string>
     <string name="group_structure">Struttura del gruppo:</string>
@@ -33,7 +33,7 @@
     <string name="search_person">Cerca persona</string>
     <string name="create_new_group">Crea il gruppo</string>
 
-    <!-- Strings related to the creation of a new expense -->
+    <!-- Expense creation -->
     <string name="expense_name">Nome della Spesa</string>
     <string name="description">Descrizione</string>
     <string name="date">Data</string>
@@ -46,6 +46,9 @@
     <string name="select_contributors_description">Seleziona le persone che hanno già pagato la spesa:</string>
     <string name="select_excluded_description">Seleziona le persone escluse dalla spesa:</string>
     <string name="no_image">Nessuna immagine</string>
+    <string name="expense_name_suggestion">Camera d\'albergo</string>
+    <string name="expense_description_suggestion">Matrimoniale, due notti</string>
+    <string name="expense_cost_suggestion">17</string>
 
     <!-- Strings related to the creation of a new proposal -->
     <string name="proposal_name">Nome della Proposta</string>
@@ -113,6 +116,7 @@
     <string name="modify_debt_value">Modifica il valore del debito</string>
     <string name="cannot_modify_non_creditor">Non puoi modificare il valore di un debito se non ne sei il creditore</string>
     <string name="view_topic">Visualizza la discussione</string>
+
 
     <!-- Proposal details -->
     <string name="confirmProposalVoteAccept">Sicuro di voler accettare la proposta?</string>
