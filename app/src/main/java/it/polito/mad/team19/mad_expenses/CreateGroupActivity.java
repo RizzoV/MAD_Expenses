@@ -390,7 +390,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         final String formattedDate = df.format(c.getTime());
 
-        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userID).child(groupId).child("notifiche");
+        DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userID).child("gruppi").child(groupId).child("notifiche");
         myNotRef.setValue(notificationId);
 
         final Map<String, Notifications> notification = new HashMap<String, Notifications>();
