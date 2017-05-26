@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="it.polito.mad.team19.mad_expenses.ProposalDetailsActivityDetailsActivity">
+
+    <item
+        android:id="@+id/deleteProposal"
+        android:icon="@drawable/ic_delete"
+        app:showAsAction="ifRoom"
+        android:title="@string/delete_proposal"
+        />
+
+</menu>

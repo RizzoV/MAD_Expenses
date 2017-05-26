@@ -126,6 +126,9 @@
     <string name="waitingFor">Waiting for:</string>
     <string name="transformInExpense">Transform in expense</string>
     <string name="loading_image">Loading image&#8230;</string>
+    <string name="modify_proposal">Edit the proposal</string>
+    <string name="delete_proposal">Delete the proposal</string>
+    <string name="confirm_proposal_deletion">Are you sure you want to delete the proposal?</string>
 
 
     <string name="allreadyMembers">You are already in this group!</string>
