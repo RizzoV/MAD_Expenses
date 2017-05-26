@@ -393,7 +393,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 return true;
             }
             case R.id.modifyExpense: {
-                Log.d("ModifyExpense", "starting modify activity");
 
                 final Bitmap[] fileBitmap = new Bitmap[1];
                 final byte[][] datas = new byte[1][1];

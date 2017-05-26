@@ -126,6 +126,9 @@
     <string name="waitingFor">In attesa di:</string>
     <string name="transformInExpense">Trasforma in spesa</string>
     <string name="loading_image">Caricamento immagine&#8230;</string>
+    <string name="modify_proposal">Modifica la proposta</string>
+    <string name="delete_proposal">Cancella la proposta</string>
+    <string name="confirm_proposal_deletion">Sei sicuro di voler cancellare la proposta?</string>
 
 
 

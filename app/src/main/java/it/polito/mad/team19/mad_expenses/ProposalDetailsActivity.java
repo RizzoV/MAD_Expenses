@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +51,8 @@ public class ProposalDetailsActivity extends AppCompatActivity {
     private ImageView proposal_img;
     private TextView set_photo_tv;
     private String imgUrl;
+
+    private AlertDialog alertDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -512,6 +517,70 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        String proposalAuthorId = getIntent().getStringExtra("ProposalAuthorId");
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if (proposalAuthorId.equals(mAuth.getCurrentUser().getUid()))
+            // Inflate the menu; this adds items to the action bar if it is present.
+            getMenuInflater().inflate(R.menu.menu_proposal_details, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        final String groupId = getIntent().getStringExtra("groupId");
+        final String proposalId = getIntent().getStringExtra("ProposalId");
+
+        switch (id) {
+            case R.id.deleteProposal: {
+                //Dialog con istruzioni normali SENZA fragment
+
+                alertDialog = new AlertDialog.Builder(this)
+                        .setMessage(R.string.confirm_proposal_deletion)
+                        .setPositiveButton(getString(R.string.yes), null)
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .create();
+
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(final DialogInterface dialog) {
+                        Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                        buttonPositive.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                FirebaseDatabase.getInstance().getReference("gruppi").child(groupId).child("proposals").child(proposalId).removeValue();
+                                finish();
+                            }
+                        });
+
+                        Button buttonNegative = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                        buttonNegative.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.cancel();
+                            }
+                        });
+
+                    }
+                });
+                alertDialog.show();
+
+                return true;
+            }
+
+            default:
+                Log.e("ExpenseDetailsActivity", "Not finding a corresponding case to the menu item selected (" + id + ")");
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
