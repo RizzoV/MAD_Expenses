@@ -249,8 +249,9 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     protected void onPause() {
         super.onPause();
 
-        if(alertDialog.isShowing())
-            alertDialog.dismiss();
+        if(alertDialog != null)
+            if(alertDialog.isShowing())
+                alertDialog.dismiss();
 
         if (netChange != null) {
             netChange.closeSnack();

@@ -59,14 +59,17 @@ public class ProposalDetailsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if(alertDialog.isShowing())
-            alertDialog.dismiss();
+        if(alertDialog != null)
+            if(alertDialog.isShowing())
+                alertDialog.dismiss();
 
-        if(alertDialog2.isShowing())
-            alertDialog.dismiss();
+        if(alertDialog2 != null)
+            if(alertDialog2.isShowing())
+                alertDialog.dismiss();
 
-        if(alertDialog1.isShowing())
-            alertDialog.dismiss();
+        if(alertDialog1 != null)
+            if(alertDialog1.isShowing())
+                alertDialog.dismiss();
     }
 
     private AlertDialog alertDialog2 = null;
