@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -91,12 +92,15 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     Intent notIntent;
     NotificationService notificationService;
     boolean serviceIsRunning = false;
+    SwipeRefreshLayout swipeGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         notIntent = new Intent(this,NotificationService.class);
+
+        swipeGroup = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshGroup);
 
         if(!serviceIsRunning)
         {
@@ -241,6 +245,14 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         uName = "User";
                     else if (uName.trim().isEmpty())
                         uName = "User";
+
+                    swipeGroup = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshGroup);
+                    swipeGroup.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                        @Override
+                        public void onRefresh() {
+                            updateList(uid);
+                        }
+                    });
 
                     if (firstTimeCheck) {
                         checkInvitations();
@@ -632,6 +644,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     debug_tv.setVisibility(View.VISIBLE);
                     debug_tv.setText(R.string.youre_not_part_of_any_group);
                 }
+
+                swipeGroup.setRefreshing(false);
+
             }
 
             @Override
