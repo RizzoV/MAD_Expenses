@@ -66,10 +66,12 @@ public class NotificationsAdapter extends BaseAdapter {
 
         LinearLayout ll = (LinearLayout)convertView.findViewById(R.id.not_container);
         TextView text=(TextView)convertView.findViewById(R.id.notification_text);
+        TextView uname = (TextView) convertView.findViewById(R.id.uname); 
         TextView date=(TextView)convertView.findViewById(R.id.notification_date);
-
+        
         final DataSnapshot notification=notitifcationsList.get(notitifcationsList.size()-1-position);
 
+        uname.setText(notification.child("uname").getValue().toString());
 
         if(notification.getKey().equals(myNot))
             newNot=true;
@@ -82,7 +84,7 @@ public class NotificationsAdapter extends BaseAdapter {
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddExpenseActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddExpenseText));
+            text.setText(context.getResources().getString(R.string.notififcationAddExpenseText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -103,7 +105,7 @@ public class NotificationsAdapter extends BaseAdapter {
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationModifiedExpenseActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationModifiedExpenseText));
+            text.setText(context.getResources().getString(R.string.notififcationModifiedExpenseText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -124,13 +126,13 @@ public class NotificationsAdapter extends BaseAdapter {
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationDenyPayedDebtActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationDenyPayedDebtText));
+            text.setText(context.getResources().getString(R.string.notififcationDenyPayedDebtText));
 
         }
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddExpenseFromProposalActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddExpenseFromProposalText));
+            text.setText(context.getResources().getString(R.string.notififcationAddExpenseFromProposalText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -151,7 +153,7 @@ public class NotificationsAdapter extends BaseAdapter {
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationChangedExpenseBalancectivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationChangedExpenseBalanceText));
+            text.setText(context.getResources().getString(R.string.notififcationChangedExpenseBalanceText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -172,7 +174,7 @@ public class NotificationsAdapter extends BaseAdapter {
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddProposalActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddProposalText));
+            text.setText(context.getResources().getString(R.string.notififcationAddProposalText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -191,12 +193,12 @@ public class NotificationsAdapter extends BaseAdapter {
         }
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddGroupActivity))) {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddGroupText));
+            text.setText(context.getResources().getString(R.string.notififcationAddGroupText));
 
         }
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddMembersToGroupActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAddMembersToGroupText));
+            text.setText(context.getResources().getString(R.string.notififcationAddMembersToGroupText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -216,7 +218,7 @@ public class NotificationsAdapter extends BaseAdapter {
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationRemoveMembersToGroupActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationRemoveMembersToGroupText));
+            text.setText(context.getResources().getString(R.string.notififcationRemoveMembersToGroupText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -236,7 +238,7 @@ public class NotificationsAdapter extends BaseAdapter {
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAcceptedProposalActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationAcceptedProposalText));
+            text.setText(context.getResources().getString(R.string.notififcationAcceptedProposalText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -256,7 +258,7 @@ public class NotificationsAdapter extends BaseAdapter {
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationDenyProposalActivity)))
         {
-            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationDenyProposalText));
+            text.setText(context.getResources().getString(R.string.notififcationDenyProposalText));
 
             ll.setOnClickListener(new View.OnClickListener() {
                 @Override

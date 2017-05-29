@@ -166,7 +166,7 @@
     <string name="notififcationAddMembersToGroupActivity">GroupInfoActivityJoined</string>
     <string name="notififcationAddMembersToGroupText"> è stato aggiunto.</string>
     <string name="notififcationRemoveMembersToGroupActivity">GroupInfoActivityLeft</string>
-    <string name="notififcationRemoveMembersToGroupText"> ha abbadonato il gruppo.</string>
+    <string name="notififcationRemoveMembersToGroupText"> ha abbandonato il gruppo.</string>
     <string name="notififcationAcceptedProposalActivity">ProposalDetailsActivityAccepted</string>
     <string name="notififcationAcceptedProposalText"> ha accettato la proposta.</string>
     <string name="notififcationDenyProposalActivity">ProposalDetailsActivityDenied</string>
