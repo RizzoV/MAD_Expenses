@@ -408,11 +408,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         HashMap<String, Object> notification = new HashMap<>();
         if(getIntent().getStringExtra("CreateExpenseFromProposal")!=null)
             notification.put("activity", getString(R.string.notififcationAddExpenseFromProposalActivity));
-        else
-            if(getIntent().getStringExtra("ModifyIntent") != null)
+        else {
+            if (getIntent().getStringExtra("ModifyIntent") != null) {
                 notification.put("activity", getString(R.string.notififcationModifiedExpenseActivity));
-            else
+            }
+            else {
                 notification.put("activity", getString(R.string.notififcationAddExpenseActivity));
+            }
+        }
 
         notification.put("data", formattedDate);
         notification.put("id", idExpense);
