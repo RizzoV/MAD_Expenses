@@ -176,8 +176,6 @@ public class NotificationService extends IntentService{
                                                                                 if (not.child("activity").getValue().toString().equals(mContext.getResources().getString(R.string.notififcationModifiedExpenseActivity)))
                                                                                     text = uname + " " + mContext.getResources().getString(R.string.notififcationModifiedExpenseText);
 
-
-
                                                                                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
                                                                                 mBuilder.setVibrate(new long[]{500, 500});
                                                                                 mBuilder.setLights(Color.GREEN, 3000, 3000);

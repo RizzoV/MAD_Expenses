@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -54,7 +55,22 @@ public class ExpensesListFragment extends Fragment {
     private int times = 0;
     private boolean free = true;
 
+    private SwipeRefreshLayout expenseSwipe;
+
     private static final int EXPENSE_DETAILS = 5;
+
+    TextView noExpenses_tv;
+    String groupId;
+    String myUid;
+    TextView creditTextView;
+    TextView debitTextView;
+    TextView totalTextView;
+    ExpensesRecyclerAdapter expensesListAdapter;
+    ProgressBar pBar;
+    LinearLayout cards;
+    LinearLayout containerExpenses;
+    FloatingActionButton fab;
+    ArrayList<Expense> expenses;
 
     public ExpensesListFragment() {
         totalAmount = (float) 0;
@@ -81,17 +97,28 @@ public class ExpensesListFragment extends Fragment {
         //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
         //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
-        final ProgressBar pBar = (ProgressBar) rootView.findViewById(R.id.pBar);
+        pBar = (ProgressBar) rootView.findViewById(R.id.pBar);
 
-        final ArrayList<Expense> expenses = new ArrayList<>();
+        expenses = new ArrayList<>();
 
         final RecyclerView expensesListRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-        final ExpensesRecyclerAdapter expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses,getActivity().getIntent().getStringExtra("groupId") );
+        expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses,getActivity().getIntent().getStringExtra("groupId") );
         expensesListRecyclerView.setAdapter(expensesListAdapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
         mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
         expensesListRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+
+        containerExpenses = (LinearLayout) rootView.findViewById(R.id.frag_expenses_upper_ll);
+
+        expenseSwipe = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshExpense);
+        expenseSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshList();
+            }
+        });
+
 
         expensesListAdapter.SetOnItemClickListener(new ExpensesRecyclerAdapter.OnItemClickListener() {
             @Override
@@ -140,8 +167,8 @@ public class ExpensesListFragment extends Fragment {
             }
         });
 
-        final LinearLayout cards = (LinearLayout) rootView.findViewById(R.id.cards);
-        final FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        cards = (LinearLayout) rootView.findViewById(R.id.cards);
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         final int[] previous = {0};
         final boolean[] set = {false};
 
@@ -182,8 +209,21 @@ public class ExpensesListFragment extends Fragment {
             }
         });
 
+        noExpenses_tv = (TextView) rootView.findViewById(R.id.noexpenses_tv);
+        groupId = getActivity().getIntent().getStringExtra("groupId");
+        myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
+        debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
+        totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_total_amount_tv);
 
-        final TextView noExpenses_tv = (TextView) rootView.findViewById(R.id.noexpenses_tv);
+
+        refreshList();
+
+        return rootView;
+    }
+
+    public void refreshList()
+    {
 
             /* VALE
              * Calcola statistiche su credito, debito e totale.
@@ -192,8 +232,7 @@ public class ExpensesListFragment extends Fragment {
              * personale senza riscaricare tutto
              */
 
-        final String groupId = getActivity().getIntent().getStringExtra("groupId");
-        final String myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        containerExpenses.setVisibility(View.INVISIBLE);
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
@@ -207,9 +246,7 @@ public class ExpensesListFragment extends Fragment {
                 balancesMap.clear();
 
 
-                TextView creditTextView = (TextView) rootView.findViewById(R.id.expenses_credit_card_tv);
-                TextView debitTextView = (TextView) rootView.findViewById(R.id.expenses_debit_card_tv);
-                TextView totalTextView = (TextView) rootView.findViewById(R.id.expenses_summary_total_amount_tv);
+
 
 
                 if (dataSnapshot.hasChildren() && free) {
@@ -296,6 +333,10 @@ public class ExpensesListFragment extends Fragment {
                     noExpenses_tv.setVisibility(View.VISIBLE);
                 }
 
+                expenseSwipe.setRefreshing(false);
+                containerExpenses.setVisibility(View.VISIBLE);
+
+
                 ((GroupActivity) mActivity).passBalancesArray(balancesMap.values());
             }
 
@@ -304,8 +345,6 @@ public class ExpensesListFragment extends Fragment {
                 Log.e("ExpensesFragment", "Could not retrieve the list of expenses");
             }
         });
-
-        return rootView;
     }
 
     @Override
