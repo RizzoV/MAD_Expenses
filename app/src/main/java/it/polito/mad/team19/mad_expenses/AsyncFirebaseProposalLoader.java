@@ -44,11 +44,12 @@ public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
     private String nameEditText;
     private String descriptionEditText;
     private String costEditText;
+    private String currencyCode;
 
     private Context mContext;
 
     public AsyncFirebaseProposalLoader(String proposalId, String groupId, String usrId, String mCurrentPhotoPath, String mCurrentPhotoName,
-                                       String nameEditText, String descriptionEditText, String costEditText, Context mContext) {
+                                       String nameEditText, String descriptionEditText, String costEditText, String currencyCode, Context mContext) {
         this.proposalId = proposalId;
         this.groupId = groupId;
         this.usrId = usrId;
@@ -58,6 +59,7 @@ public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
         this.descriptionEditText = descriptionEditText;
         this.costEditText = costEditText;
         this.mContext = mContext;
+        this.currencyCode = currencyCode;
     }
 
     @Override
@@ -93,7 +95,7 @@ public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
                     groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Float.valueOf(costEditText.replace(",", ".")), uri.toString()));
+                            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Float.valueOf(costEditText.replace(",", ".")), currencyCode, uri.toString()));
 
                             // Vale: Aggiungi waitingFor
                             final ArrayList<FirebaseGroupMember> groupMembers = new ArrayList<>();
@@ -132,7 +134,7 @@ public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
             });
         } else {
             Log.d("DebugCaricamentoPropost", "NoImage");
-            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Float.valueOf(costEditText.replace(",","."))));
+            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Float.valueOf(costEditText.replace(",",".")), currencyCode));
 
             // Vale: Aggiungi waitingFor
             final ArrayList<FirebaseGroupMember> groupMembers = new ArrayList<>();

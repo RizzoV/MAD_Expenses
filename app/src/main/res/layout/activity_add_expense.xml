@@ -142,7 +142,6 @@
                                 android:paddingStart="@dimen/activity_horizontal_margin"
                                 android:textAlignment="textEnd"/>
 
-                                <!-- android:onClick="clear" -->
                         </LinearLayout>
 
                         <LinearLayout

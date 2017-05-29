@@ -14,19 +14,21 @@ public class FirebaseProposal
     private Float cost;
     private String imageUrl;
     private String author;
+    private String currencyCode;
 
     public FirebaseProposal () {}
 
-    public FirebaseProposal(String name, String description, String author, Float cost) {
-        this(name, description, author, cost, null);
+    public FirebaseProposal(String name, String description, String author, Float cost, String currencyCode) {
+        this(name, description, author, cost, currencyCode, null);
     }
 
-    public FirebaseProposal(String name, String description, String author, Float cost, String image) {
+    public FirebaseProposal(String name, String description, String author, Float cost, String currencyCode, String image) {
         this.name = name;
         this.description = description;
         this.cost = cost;
         this.author = author;
         this.imageUrl = image;
+        this.currencyCode = currencyCode;
     }
 
     public String getName() {
@@ -65,4 +67,15 @@ public class FirebaseProposal
         this.imageUrl = image;
     }
 
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
 }

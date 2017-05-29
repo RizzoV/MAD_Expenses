@@ -13,15 +13,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
@@ -44,7 +41,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
     private String nameEditText;
     private String descriptionEditText;
     private String costEditText;
-    private String currency;
+    private String currencyCode;
 
     private ArrayList<FirebaseGroupMember> excludedList;
     private ArrayList<FirebaseGroupMember> contributorsList;
@@ -68,7 +65,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
         this.excludedList = excludedList;
         this.contributorsList = contributorsList;
         this.mContext = mContext;
-        this.currency = currency;
+        this.currencyCode = currency;
     }
 
     @Override
@@ -105,7 +102,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
                         @Override
                         public void onSuccess(Uri uri) {
 
-                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Float.valueOf(costEditText.replace(",", ".")), currency, uri.toString()));
+                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Float.valueOf(costEditText.replace(",", ".")), currencyCode, uri.toString()));
 
                             for (FirebaseGroupMember member : excludedList) {
                                 newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
@@ -135,7 +132,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
             });
         } else {
             Log.d("DebugCaricamentoSpesa", "NoImage");
-            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Float.valueOf(costEditText.replace(",", ".")), currency));
+            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Float.valueOf(costEditText.replace(",", ".")), currencyCode));
             for (FirebaseGroupMember member : excludedList) {
                 newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
                 newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());

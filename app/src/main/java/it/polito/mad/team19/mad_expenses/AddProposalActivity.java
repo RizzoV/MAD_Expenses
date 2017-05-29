@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -43,11 +44,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Set;
 
+import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 
@@ -75,11 +80,14 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
     private EditText nameEditText;
     private EditText descriptionEditText;
     private EditText costEditText;
+    private AutoCompleteTextView currencyAutoCompleteTV;
 
     private String proposalId;
 
     private NetworkChangeReceiver netChange;
     private IntentFilter filter;
+
+    private ArrayList<String> currenciesList = new ArrayList<>();
 
     static final String COST_REGEX = "[0-9]+[.,]{0,1}[0-9]{0,2}";
 
@@ -100,15 +108,54 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         TextView name = (TextView) findViewById(R.id.new_proposal_name_tv);
         TextView description = (TextView) findViewById(R.id.new_proposal_description_tv);
         TextView price = (TextView) findViewById(R.id.new_proposal_price_tv);
+        TextView currency_tv = (TextView) findViewById(R.id.new_proposal_currency);
 
         name.setText(name.getText() + ":");
         description.setText(description.getText() + ":");
         price.setText(price.getText() + ":");
+        currency_tv.setText(currency_tv.getText() + ":");
 
         groupId = getIntent().getStringExtra("groupId");
         usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         setTitle(R.string.create_new_proposal);
+
+        // Vale: AutoCompleteTextView adapter
+        currencyAutoCompleteTV = (AutoCompleteTextView) findViewById(R.id.new_proposal_currency_actv);
+        // Genera lista di valute
+        Set<Currency> currencies = Currency.getAvailableCurrencies();
+        for (Currency currency : currencies) {
+            try {
+                String listItem;
+                if(!currency.getCurrencyCode().equals(currency.getSymbol()))
+                    listItem = currency.getCurrencyCode() + "\t " + currency.getSymbol();
+                else
+                    listItem = currency.getCurrencyCode();
+                currenciesList.add(listItem);
+            } catch (Exception e) {
+                Log.e("AddProposalActivity", "Error in the currencies management: " + e.getMessage());
+            }
+        }
+        CurrenciesAdapter currenciesAdapter = new CurrenciesAdapter(this, currenciesList);
+        currencyAutoCompleteTV.setAdapter(currenciesAdapter);
+
+        // Vale: AutoCompleteTextView default value
+        String localeCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
+        String foundCurrencyString = "";
+        for(String s : currenciesList) {
+            if(s.contains(localeCurrencyCode))
+                foundCurrencyString = s;
+        }
+        currencyAutoCompleteTV.setText(foundCurrencyString);
+
+        // Vale: onFocus the text disappears
+        currencyAutoCompleteTV.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus)
+                    currencyAutoCompleteTV.setText("");
+            }
+        });
 
         // Set listeners on Done and Image buttons
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -157,6 +204,18 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                     invalidFields = true;
                 }
 
+                //Vale: currency AutoCompleteTextView validation
+                String currencyString = currencyAutoCompleteTV.getText().toString();
+                boolean found = false;
+                for (String s : currenciesList) {
+                    if(s.equals(currencyString))
+                        found = true;
+                }
+                if(!found) {
+                    currencyAutoCompleteTV.setError(getString(R.string.invalid_currency_string));
+                    invalidFields = true;
+                }
+
                 if (!invalidFields) {
                     mAuth = FirebaseAuth.getInstance();
                     mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -194,7 +253,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         proposalId = myRef.push().getKey();
 
         AsyncFirebaseProposalLoader async = new AsyncFirebaseProposalLoader(proposalId, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
-                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), this);
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split("\t ")[0], this);
 
         async.execute();
     }

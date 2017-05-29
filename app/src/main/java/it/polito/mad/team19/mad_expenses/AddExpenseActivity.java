@@ -181,7 +181,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus)
-                    clear(v);
+                    currencyAutoCompleteTV.setText("");
             }
         });
 
@@ -250,9 +250,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }
 
-    public void clear(View v) {
-        currencyAutoCompleteTV.setText("");
-    }
 
     //Jured: aggiunto codice che scatta una foto, la salva su file e poi la carica
     //su firebase in modo totalmente ignorante, sempre alla stessa locazione e per ora senza compressione;
@@ -446,7 +443,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         idExpense = uuid;
 
         AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
-                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split(" ")[0],
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split("\t ")[0],
                 isModifyActivity, oldExpenseId, excludedList, contributorsList, this);
 
         async.execute();
