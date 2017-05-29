@@ -7,7 +7,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "it.polito.mad.team19.mad_expenses"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 25
         multiDexEnabled = true
         versionCode 20
@@ -55,19 +55,6 @@ dependencies {
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     testCompile 'junit:junit:4.12'
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 apply plugin: 'com.google.gms.google-services'

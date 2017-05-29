@@ -75,7 +75,6 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
         TextView debtorName = (TextView) convertView.findViewById(R.id.debtor_name);
         TextView amount = (TextView) convertView.findViewById(R.id.debt_amount);
 
-
         ExpenseDetail ed = detailsList.get(position);
 
         creditorName.setText(ed.getCreditor());

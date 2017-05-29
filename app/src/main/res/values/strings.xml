@@ -40,6 +40,9 @@
     <string name="expense_name_suggestion"><i>e.g: Hotel room</i></string>
     <string name="expense_description_suggestion"><i>e.g: Double room, two nights</i></string>
     <string name="expense_cost_suggestion"><i>e.g: 23</i></string>
+    <string name="currency">Currency</string>
+    <string name="expense_currency_suggestion"><i>e.g: US$</i></string>
+    <string name="invalid_currency_string">Currency not valid</string>
 
     <!-- Strings related to the creation of a new proposal -->
     <string name="proposal_name">Proposal name</string>

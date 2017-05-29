@@ -15,21 +15,22 @@ public class FirebaseExpense
     private String name;
     private String description;
     private Float cost;
+    private String currency;
     private String image;
     private String isModified;
 
     public FirebaseExpense () {}
 
-    public FirebaseExpense(String author, String name, String description, Float cost)
+    public FirebaseExpense(String author, String name, String description, Float cost, String currency)
     {
-        this(author, name, description, cost, null, null);
+        this(author, name, description, cost, currency, null, null);
     }
 
-    public FirebaseExpense(String author, String name, String description, Float cost, String image) {
-        this(author, name, description, cost, image, null);
+    public FirebaseExpense(String author, String name, String description, Float cost, String currency, String image) {
+        this(author, name, description, cost, currency, image, null);
     }
 
-    public FirebaseExpense(String author, String name, String description, Float cost, String image, String isModified)
+    public FirebaseExpense(String author, String name, String description, Float cost, String currency, String image, String isModified)
     {
         this.author = author;
         this.name = name;
@@ -38,6 +39,7 @@ public class FirebaseExpense
         this.image = image;
         //this.key = null;
         this.isModified = isModified;
+        this.currency = currency;
     }
 
     public String getAuthor() {
@@ -86,5 +88,9 @@ public class FirebaseExpense
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getCurrency() {
+        return currency;
     }
 }
