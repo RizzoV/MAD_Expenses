@@ -78,6 +78,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private CardView viewTopic_cv;
 
     private AlertDialog alertDialog = null;
+    AlertDialog alertDialog1 = null;
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
@@ -204,14 +205,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                     final EditText debtEditText = (EditText) dialogView.findViewById(R.id.debt_edit_text);
                                     debtEditText.setText(((ExpenseDetail) edAdapter.getItem(position)).getAmount());
 
-                                    AlertDialog alertDialog = new AlertDialog.Builder(ExpenseDetailsActivity.this)
+                                    alertDialog1 = new AlertDialog.Builder(ExpenseDetailsActivity.this)
                                             .setView(dialogView)
                                             .setTitle(R.string.modify_debt_value)
                                             .setPositiveButton(getString(R.string.edit), null)
                                             .setNegativeButton(getString(R.string.cancel), null)
                                             .create();
 
-                                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                                    alertDialog1.setOnShowListener(new DialogInterface.OnShowListener() {
                                         @Override
                                         public void onShow(final DialogInterface dialog) {
                                             Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
@@ -302,8 +303,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                         }
                                     });
                                     // Apertura automatica della tastiera
-                                    alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                                    alertDialog.show();
+                                    alertDialog1.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                                    alertDialog1.show();
 
                                 } else {
                                     Snackbar.make(findViewById(android.R.id.content), R.string.cannot_modify_non_creditor, Snackbar.LENGTH_LONG).show();
@@ -497,7 +498,12 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         super.onPause();
 
         if (alertDialog != null)
-            alertDialog.dismiss();
+            if(alertDialog.isShowing())
+                 alertDialog.dismiss();
+
+        if (alertDialog1 != null)
+            if(alertDialog1.isShowing())
+                alertDialog1.dismiss();
 
         if (netChange != null) {
             netChange.closeSnack();
