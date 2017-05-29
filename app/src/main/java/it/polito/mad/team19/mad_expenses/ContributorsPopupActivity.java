@@ -36,7 +36,7 @@ public class ContributorsPopupActivity extends Activity {
     private ListView contributors_lv;
 
     final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
-    final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors);
+    final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors, false);
 
     ArrayList<FirebaseGroupMember> selectedMembers = new ArrayList<>();
 

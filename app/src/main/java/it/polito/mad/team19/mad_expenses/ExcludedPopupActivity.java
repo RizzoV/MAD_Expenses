@@ -68,7 +68,7 @@ public class ExcludedPopupActivity extends Activity {
 
         contributors_lv = (ListView) findViewById(R.id.contributors_lv);
         final ArrayList<FirebaseGroupMember> contributors = new ArrayList<FirebaseGroupMember>();
-        final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors);
+        final GroupMembersAdapter groupMembersAdapter = new GroupMembersAdapter(this, contributors, true);
         contributors_lv.setAdapter(groupMembersAdapter);
 
         contributors_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {

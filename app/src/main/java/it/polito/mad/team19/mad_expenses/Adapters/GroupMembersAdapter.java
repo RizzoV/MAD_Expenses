@@ -28,14 +28,16 @@ import it.polito.mad.team19.mad_expenses.R;
 public class GroupMembersAdapter extends BaseAdapter {
     ArrayList<FirebaseGroupMember> membersList;
     Activity context;
+    boolean isExcludedLayout;
 
     static class ImgHolder {
         ImageView img;
     }
 
-    public GroupMembersAdapter(Context context, ArrayList<FirebaseGroupMember> membersList) {
+    public GroupMembersAdapter(Context context, ArrayList<FirebaseGroupMember> membersList, boolean isExcludedLayout) {
         this.membersList = membersList;
         this.context = (Activity) context;
+        this.isExcludedLayout = isExcludedLayout;
     }
 
     @Override
@@ -60,7 +62,11 @@ public class GroupMembersAdapter extends BaseAdapter {
         final ImgHolder viewHolder;
 
         if (convertView == null) {
-            convertView = context.getLayoutInflater().inflate(R.layout.group_members_popup_list_row, parent, false);
+            if(isExcludedLayout)
+                convertView = context.getLayoutInflater().inflate(R.layout.group_members_excluded, parent, false);
+            else
+                convertView = context.getLayoutInflater().inflate(R.layout.group_members_popup_list_row, parent, false);
+
             viewHolder = new ImgHolder();
             viewHolder.img = (ImageView) convertView.findViewById(R.id.user_img_contacts_list);
             convertView.setTag(viewHolder);

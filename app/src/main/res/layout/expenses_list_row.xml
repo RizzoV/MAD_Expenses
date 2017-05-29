@@ -98,14 +98,7 @@
                     android:layout_height="wrap_content">
 
 
-                    <ImageView
-                        android:id="@+id/state"
-                        android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_state_ok"
-                        android:layout_gravity="center"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        />
+
 
                         <Button
                             android:id="@+id/topic_button"
