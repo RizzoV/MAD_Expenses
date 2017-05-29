@@ -458,6 +458,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     protected void onPause() {
         super.onPause();
 
+        if(alertDialog.isShowing())
+            alertDialog.dismiss();
+
         if (netChange != null) {
             netChange.closeSnack();
             unregisterReceiver(netChange);

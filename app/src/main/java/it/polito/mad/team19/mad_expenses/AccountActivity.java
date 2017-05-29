@@ -50,6 +50,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     NetworkChangeReceiver netChange;
     IntentFilter filter;
+    AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +162,7 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
 
         new_string.setText(old_string);
 
-        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+        alertDialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
                 .setTitle(title)
                 .setPositiveButton(getString(R.string.edit), null)
@@ -247,6 +248,9 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     @Override
     protected void onPause() {
         super.onPause();
+
+        if(alertDialog.isShowing())
+            alertDialog.dismiss();
 
         if (netChange != null) {
             netChange.closeSnack();

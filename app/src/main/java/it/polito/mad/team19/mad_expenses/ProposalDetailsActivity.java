@@ -53,6 +53,23 @@ public class ProposalDetailsActivity extends AppCompatActivity {
     private String imgUrl;
 
     private AlertDialog alertDialog = null;
+    private AlertDialog alertDialog1 = null;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if(alertDialog.isShowing())
+            alertDialog.dismiss();
+
+        if(alertDialog2.isShowing())
+            alertDialog.dismiss();
+
+        if(alertDialog1.isShowing())
+            alertDialog.dismiss();
+    }
+
+    private AlertDialog alertDialog2 = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,13 +157,13 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog alertDialog = new AlertDialog.Builder(ProposalDetailsActivity.this)
+                alertDialog1 = new AlertDialog.Builder(ProposalDetailsActivity.this)
                         .setTitle(R.string.confirmProposalVoteAccept)
                         .setPositiveButton(getString(R.string.yes), null)
                         .setNegativeButton(getString(R.string.no), null)
                         .create();
 
-                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                alertDialog1.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(final DialogInterface dialog) {
                         Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
@@ -241,7 +258,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         });
                     }
                 });
-                alertDialog.show();
+                alertDialog1.show();
 
             }
         });
@@ -249,13 +266,13 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         deny.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog alertDialog = new AlertDialog.Builder(ProposalDetailsActivity.this)
+                alertDialog2 = new AlertDialog.Builder(ProposalDetailsActivity.this)
                         .setTitle(R.string.confirmProposalVoteDeny)
                         .setPositiveButton(getString(R.string.yes), null)
                         .setNegativeButton(getString(R.string.no), null)
                         .create();
 
-                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                alertDialog2.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(final DialogInterface dialog) {
                         Button buttonPositive = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
@@ -348,7 +365,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         });
                     }
                 });
-                alertDialog.show();
+                alertDialog2.show();
             }
         });
 

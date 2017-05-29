@@ -65,6 +65,7 @@ public class MeActivity extends AppCompatActivity {
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
+    AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,7 +202,7 @@ public class MeActivity extends AppCompatActivity {
                 final String otherId = balance.getId();
 
                 if(balance.getAmount() > 0 ) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(MeActivity.this)
+                    alertDialog = new AlertDialog.Builder(MeActivity.this)
                             .setTitle(R.string.confirmDebtExtinctionTitle)
                             .setMessage(R.string.confirmDebtExtinction)
                             .setPositiveButton(getString(R.string.yes), null)
@@ -378,6 +379,9 @@ public class MeActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        if(alertDialog.isShowing())
+            alertDialog.dismiss();
 
         if (netChange != null) {
             netChange.closeSnack();
