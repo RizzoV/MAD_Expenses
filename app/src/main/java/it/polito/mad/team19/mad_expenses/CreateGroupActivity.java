@@ -387,7 +387,7 @@ public class CreateGroupActivity extends AppCompatActivity {
             username="User";
 
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy-HH-mm");
         final String formattedDate = df.format(c.getTime());
 
         DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userID).child("gruppi").child(groupId).child("notifiche");

@@ -520,7 +520,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             username = "User";
 
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy-HH-mm");
         final String formattedDate = df.format(c.getTime());
 
         HashMap<String, Object> notification = new HashMap<>();

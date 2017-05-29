@@ -243,7 +243,7 @@ public class MeActivity extends AppCompatActivity {
                                                 username = "User";
 
                                             Calendar c = Calendar.getInstance();
-                                            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                                            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy-HH-mm", Locale.getDefault());
                                             final String formattedDate = df.format(c.getTime());
 
 

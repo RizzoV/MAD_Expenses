@@ -68,6 +68,7 @@ public class NotificationsAdapter extends BaseAdapter {
         TextView text=(TextView)convertView.findViewById(R.id.notification_text);
         TextView uname = (TextView) convertView.findViewById(R.id.uname); 
         TextView date=(TextView)convertView.findViewById(R.id.notification_date);
+        TextView time = (TextView) convertView.findViewById(R.id.notification_time);
         
         final DataSnapshot notification=notitifcationsList.get(notitifcationsList.size()-1-position);
 
@@ -81,6 +82,15 @@ public class NotificationsAdapter extends BaseAdapter {
 
         String[] notDate = notification.child("data").getValue().toString().split("-");
         date.setText(notDate[0] + " " + getStringMonth(Integer.parseInt(notDate[1])));
+
+        if(notDate.length<5)
+            time.setVisibility(View.GONE);
+        else {
+            time.setVisibility(View.VISIBLE);
+            time.setText(notDate[3]+":"+notDate[4]);
+        }
+
+
 
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationAddExpenseActivity)))
         {

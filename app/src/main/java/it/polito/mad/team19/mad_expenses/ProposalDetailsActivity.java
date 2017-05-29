@@ -226,7 +226,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                     username = "User";
 
                                 Calendar c = Calendar.getInstance();
-                                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy-HH-mm", Locale.getDefault());
                                 final String formattedDate = df.format(c.getTime());
 
                                 HashMap<String, Object> notification = new HashMap<>();
@@ -335,7 +335,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                                     username = "User";
 
                                 Calendar c = Calendar.getInstance();
-                                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy-HH-mm", Locale.getDefault());
                                 final String formattedDate = df.format(c.getTime());
 
                                 HashMap<String, Object> notification = new HashMap<>();
