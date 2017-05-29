@@ -176,6 +176,8 @@
     <string name="notififcationChangedExpenseBalanceText"> change the expense debt.</string>
     <string name="notififcationTopicNewMessageActivity">TopicActivityNewMessage</string>
     <string name="notififcationTopicNewMessageText"> sent a new message.</string>
+    <string name="notififcationModifiedExpenseActivity">ModifiedExpense</string>
+    <string name="notififcationModifiedExpenseText"> modified an expense.</string>
 
 
     <!-- Months -->

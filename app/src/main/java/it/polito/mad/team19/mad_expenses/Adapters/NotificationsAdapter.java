@@ -101,6 +101,27 @@ public class NotificationsAdapter extends BaseAdapter {
             });
         }
 
+        if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationModifiedExpenseActivity)))
+        {
+            text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationModifiedExpenseText));
+
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ExpenseDetailsActivity.class);
+                    intent.putExtra("ExpenseName",notification.child("ExpenseName").getValue().toString());
+                    intent.putExtra("ExpenseDesc",notification.child("ExpenseDesc").getValue().toString());
+                    intent.putExtra("ExpenseAuthorId",notification.child("ExpenseAuthorId").getValue().toString());
+                    if(notification.child("ExpenseImgUrl").getValue()!=null)
+                        intent.putExtra("ExpenseImgUrl",notification.child("ExpenseImgUrl").getValue().toString());
+                    intent.putExtra("ExpenseCost",notification.child("ExpenseCost").getValue().toString());
+                    intent.putExtra("ExpenseId",notification.child("id").getValue().toString());
+                    intent.putExtra("groupId",notification.child("groupId").getValue().toString());
+                    context.startActivity(intent);
+                }
+            });
+        }
+
         if(notification.child("activity").getValue().toString().equals(context.getResources().getString(R.string.notififcationDenyPayedDebtActivity)))
         {
             text.setText(notification.child("uname").getValue().toString() + " " + context.getResources().getString(R.string.notififcationDenyPayedDebtText));
