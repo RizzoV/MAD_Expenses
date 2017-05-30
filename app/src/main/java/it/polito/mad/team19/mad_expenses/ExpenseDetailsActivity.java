@@ -44,6 +44,7 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
@@ -121,7 +122,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_name.setText(name);
         expense_desc.setText(desc);
         //TODO: gestire currency diverse dall'Euro
-        expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
+        //expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
         expense_author.setText("loading...");
 
         // Click listener on the topic card view
@@ -163,12 +164,39 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         });
 
         final ArrayList<ExpenseDetail> expenseDetailsList = new ArrayList<>();
+
         final ExpenseDetailsAdapter edAdapter = new ExpenseDetailsAdapter(this, expenseDetailsList);
 
         DatabaseReference expenseRef = firebase.getReference("gruppi").child(groupId).child("expenses").child(expenseId);
         expenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot expense) {
+
+                String expenseCurrencyCode = expense.child("currency").getValue(String.class);
+                final String[] userCurrencyCode = new String[1];
+
+                //TODO: rimuovere debugging e salvare userCurrencyCode in db SQL locale
+                if(userCurrencyCode[0] == null)
+                    userCurrencyCode[0] = "GBP";
+                if(expenseCurrencyCode == null)
+                    expenseCurrencyCode = "EUR";
+
+                Float exchangeRate = 1f;
+                try {
+                    exchangeRate = new AsyncCurrencyConverter(expenseCurrencyCode, userCurrencyCode[0]).execute().get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                // Perché il convertitore di Yahoo non supporta proprio tutte le valute (tipo USN->GBP mi da N/A come risultato)
+                if(exchangeRate != null)
+                    edAdapter.setExchangeRate(exchangeRate);
+                else {
+                    exchangeRate = 1f;
+                    userCurrencyCode[0] = expenseCurrencyCode;
+                }
+                expense_cost.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
+
                 if (expense.child("debtors").hasChildren()) {
                     for (DataSnapshot contributor : expense.child("contributors").getChildren()) {
                         String contributor_img = null;
@@ -181,7 +209,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                             if (debtor.child("immagine").exists())
                                 debtor_img = debtor.child("immagine").getValue().toString();
 
-                            expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img));
+                            expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, expenseCurrencyCode, userCurrencyCode[0]));
                             edAdapter.notifyDataSetChanged();
                         }
                         contributorsList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));
@@ -228,11 +256,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                                 child("debtors").child(expenseDebtorId).child("riepilogo").child(expenseContributorId).child("amount");
                                                         DatabaseReference creditAmountRef = firebase.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).
                                                                 child("contributors").child(expenseContributorId).child("riepilogo").child(expenseDebtorId).child("amount");
-                                                    /* DatabaseReference creditAmount = firebase.getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                                     *      .child("gruppi").child(groupId).child("credito");
-                                                     * DatabaseReference debtAmount = firebase.getReference().child("utenti").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                                     *       .child("gruppi").child(groupId).child("debito");
-                                                     */
 
                                                         String chosenAmount = debtEditText.getText().toString().trim().replace(",", ".");
                                                         debtAmountRef.setValue("-" + chosenAmount);
@@ -251,7 +274,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                         Calendar c = Calendar.getInstance();
                                                         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy-HH-mm", Locale.getDefault());
                                                         final String formattedDate = df.format(c.getTime());
-
 
                                                         HashMap<String, Object> notification = new HashMap<>();
 
@@ -354,7 +376,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         if (expenseAuthorId.equals(mAuth.getCurrentUser().getUid()))
             // Inflate the menu; this adds items to the action bar if it is present.
             getMenuInflater().inflate(R.menu.menu_expense_details, finalMenu);
-
 
         return true;
     }

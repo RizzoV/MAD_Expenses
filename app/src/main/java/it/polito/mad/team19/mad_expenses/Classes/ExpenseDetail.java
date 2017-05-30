@@ -13,8 +13,10 @@ public class ExpenseDetail {
     private String amount;
     private String creditorImage;
     private String debtorImage;
+    private String expenseCurrencyCode;
+    private String userCurrencyCode;
 
-    public ExpenseDetail(String creditor, String debtor, String creditorId, String debtorId, String amount, String creditorImage, String debtorImage) {
+    public ExpenseDetail(String creditor, String debtor, String creditorId, String debtorId, String amount, String creditorImage, String debtorImage, String expenseCurrencyCode, String userCurrencyCode) {
         this.creditorName = creditor;
         this.debtorName = debtor;
         this.amount = amount;
@@ -22,6 +24,8 @@ public class ExpenseDetail {
         this.debtorImage = debtorImage;
         this.debtorId = debtorId;
         this.creditorId = creditorId;
+        this.expenseCurrencyCode = expenseCurrencyCode;
+        this.userCurrencyCode = userCurrencyCode;
     }
 
     public String getCreditorId() {
@@ -72,5 +76,43 @@ public class ExpenseDetail {
         this.debtorImage = debitorImage;
     }
 
+    public String getCreditorName() {
+        return creditorName;
+    }
 
+    public void setCreditorName(String creditorName) {
+        this.creditorName = creditorName;
+    }
+
+    public String getDebtorName() {
+        return debtorName;
+    }
+
+    public void setDebtorName(String debtorName) {
+        this.debtorName = debtorName;
+    }
+
+    public void setCreditorId(String creditorId) {
+        this.creditorId = creditorId;
+    }
+
+    public void setDebtorId(String debtorId) {
+        this.debtorId = debtorId;
+    }
+
+    public String getExpenseCurrencyCode() {
+        return expenseCurrencyCode;
+    }
+
+    public void setExpenseCurrencyCode(String expenseCurrencyCode) {
+        this.expenseCurrencyCode = expenseCurrencyCode;
+    }
+
+    public String getUserCurrencyCode() {
+        return userCurrencyCode;
+    }
+
+    public void setUserCurrencyCode(String userCurrencyCode) {
+        this.userCurrencyCode = userCurrencyCode;
+    }
 }

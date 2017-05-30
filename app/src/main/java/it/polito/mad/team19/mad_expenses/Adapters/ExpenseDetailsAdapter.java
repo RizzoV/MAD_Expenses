@@ -16,12 +16,18 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Locale;
 
+import it.polito.mad.team19.mad_expenses.AsyncCurrencyConverter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.R;
+import yahoofinance.YahooFinance;
+import yahoofinance.quotes.fx.FxQuote;
 
 /**
  * Created by Valentino on 29/04/2017.
@@ -31,6 +37,7 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
     private ArrayList<ExpenseDetail> detailsList = new ArrayList<>();
     private Activity context;
+    private Float exchangeRate;
 
     static class ImgHolder {
         ImageView debtor_img;
@@ -40,6 +47,14 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
     public ExpenseDetailsAdapter(Context context, ArrayList<ExpenseDetail> detailsList) {
         this.detailsList = detailsList;
         this.context = (Activity) context;
+    }
+
+    public Float getExchangeRate() {
+        return exchangeRate;
+    }
+
+    public void setExchangeRate(Float exchangeRate) {
+        this.exchangeRate = exchangeRate;
     }
 
     @Override
@@ -79,7 +94,18 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
         creditorName.setText(ed.getCreditor());
         debtorName.setText(ed.getDebtor());
-        amount.setText(ed.getAmount() + " " + Currency.getInstance("EUR").getSymbol());
+
+        Float convertedAmount;
+        String currencyString;
+        if(ed.getExpenseCurrencyCode().equals(ed.getUserCurrencyCode()))
+            convertedAmount = Float.valueOf(ed.getAmount().replace(",", "."));
+        else
+            convertedAmount = Float.valueOf(ed.getAmount().replace(",",".")) * exchangeRate;
+
+        currencyString = Currency.getInstance(ed.getUserCurrencyCode()).getSymbol();
+
+        String finalDebtString = String.format(Locale.getDefault(), "%.2f", convertedAmount).concat(" " + currencyString);
+        amount.setText(finalDebtString);
 
         if (Float.valueOf(ed.getAmount().replace(",", ".")) == 0)
             amount.setBackground(ContextCompat.getDrawable(context, R.drawable.rounded_corners_green));
