@@ -119,6 +119,7 @@
     <string name="modify_debt_value">Modifica il valore del debito</string>
     <string name="cannot_modify_non_creditor">Non puoi modificare il valore di un debito se non ne sei il creditore</string>
     <string name="view_topic">Visualizza la discussione</string>
+    <string name="loading_text">Caricamento&#8230;</string>
 
 
     <!-- Proposal details -->
