@@ -76,6 +76,7 @@
     <string name="changeemail">Edit Account Email</string>
     <string name="edit">Edit</string>
     <string name="cancel">Cancel</string>
+    <string name="currencies_spinner_prompt">Select the default currency to use when displaying costs</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

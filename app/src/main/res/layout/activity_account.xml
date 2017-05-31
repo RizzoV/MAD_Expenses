@@ -35,72 +35,101 @@
             android:layout_marginLeft="@dimen/smaller_horizontal_margin"
             android:layout_marginRight="@dimen/smaller_horizontal_margin">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/username_header"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="@string/username"
-                    android:textColor="@color/colorPrimary" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/displayed_name_tv"
+                    <TextView
+                        android:id="@+id/username_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingTop="10dp"
+                        android:text="@string/username"
+                        android:textColor="@color/colorPrimary" />
+
+                    <TextView
+                        android:id="@+id/displayed_name_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/username_header"
+                        android:layout_gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:paddingTop="10dp"
+                        android:text="User"
+                        android:textColor="@color/primaryText"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:id="@+id/edit_user_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@id/displayed_name_tv"
+                        android:layout_gravity="right"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="15dp"
+                        android:src="@drawable/ic_edit" />
+                </RelativeLayout>
+
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/username_header"
-                    android:layout_gravity="center_vertical"
-                    android:padding="10dp"
-                    android:text="User"
-                    android:textColor="@color/primaryText"
-                    android:textSize="20sp" />
+                    android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/edit_user_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@id/displayed_name_tv"
-                    android:layout_below="@id/username_header"
-                    android:layout_gravity="right"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_edit" />
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/other_infos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingTop="10dp"
+                        android:text="Email"
+                        android:textColor="@color/colorPrimary" />
+
+                    <TextView
+                        android:id="@+id/email_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/other_infos"
+                        android:layout_gravity="center_vertical"
+                        android:padding="10dp"
+                        android:text="Email"
+                        android:textColor="@color/primaryText"
+                        android:textSize="20sp" />
+                </RelativeLayout>
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
+            android:layout_margin="@dimen/smaller_vertical_margin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/smaller_horizontal_margin"
-            android:layout_marginRight="@dimen/smaller_horizontal_margin"
-            android:layout_marginTop="10dp">
-
-            <RelativeLayout
+            android:layout_height="wrap_content">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/other_infos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="Email"
-                    android:textColor="@color/colorPrimary" />
+            <TextView
+                android:id="@+id/currency_setting_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/currency"
+                android:textColor="@color/colorPrimary" />
 
-                <TextView
-                    android:id="@+id/email_tv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/other_infos"
-                    android:layout_gravity="center_vertical"
-                    android:padding="10dp"
-                    android:text="Email"
-                    android:textColor="@color/primaryText"
-                    android:textSize="20sp" />
-            </RelativeLayout>
+            <Spinner
+                android:layout_marginTop="10dp"
+                android:id="@+id/currencies_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"/>
 
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <RelativeLayout

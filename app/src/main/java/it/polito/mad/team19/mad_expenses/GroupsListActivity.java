@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -53,7 +54,9 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupsAdapter;
@@ -113,6 +116,17 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 myFirebaseDatabase = FirebaseDatabase.getInstance();
             }
         }
+
+        // Vale: impostazione iniziale currencies
+        SharedPreferences currencyPreference = getSharedPreferences("currencySetting", MODE_PRIVATE);
+        if(currencyPreference.getString("currency", "nothing").equals("nothing")) {
+            Log.d("Currency preference", "There was nothing, now I'll set: " + Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+            SharedPreferences.Editor editor = currencyPreference.edit();
+            editor.putString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+            editor.apply();
+        }
+        Log.d("Currency preference", currencyPreference.getString("currency", "nothing"));
+
 
         FirebaseApp.initializeApp(getApplicationContext());
         setContentView(R.layout.activity_groups_list);

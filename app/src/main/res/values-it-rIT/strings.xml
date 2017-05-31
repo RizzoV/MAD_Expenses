@@ -63,6 +63,7 @@
     <string name="debits_and_credits">Debiti e crediti</string>
     <string name="mandatory_field">Campo Obbligatorio!</string>
     <string name="invalid_cost_field">Campo Invalido!</string>
+    <string name="currencies_spinner_prompt">Seleziona la valuta di default per visualizzare le spese</string>
 
     <!-- Authentication -->
     <string name="welcome">Benvenuto in Mad Expenses!</string>
