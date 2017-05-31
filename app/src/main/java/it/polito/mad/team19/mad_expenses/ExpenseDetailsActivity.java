@@ -299,8 +299,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                         DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi").child(groupId).child("notifiche");
                                                         myNotRef.setValue(notificationId);
 
-
-                                                        ((ExpenseDetail) edAdapter.getItem(position)).setAmount(chosenAmount);
+                                                        ((ExpenseDetail) edAdapter.getItem(position)).setAmount(chosenAmountConverted);
                                                         edAdapter.notifyDataSetChanged();
 
                                                         ((TextView) itemView.findViewById(R.id.debt_amount)).setText(
