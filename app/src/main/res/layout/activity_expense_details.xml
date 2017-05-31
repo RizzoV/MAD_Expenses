@@ -126,7 +126,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/activity_horizontal_margin"
-                            android:text="300€"
+                            android:text="@string/loading_text"
                             android:textColor="@color/primaryText"
                             android:textSize="20sp" />
 

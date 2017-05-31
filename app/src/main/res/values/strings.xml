@@ -119,6 +119,7 @@
     <string name="cannot_modify_non_creditor">You cannot modify the value of a debt if you are not the creditor</string>
     <string name="no_image">No image</string>
     <string name="view_topic">View related topic</string>
+    <string name="loading_text">Loading&#8230;</string>
 
     <!-- Proposal details -->
     <string name="confirmProposalVoteAccept">Are you sure you want to accept the proposal?</string>
