@@ -1,6 +1,7 @@
 package it.polito.mad.team19.mad_expenses.Classes;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -188,10 +189,10 @@ public class NotificationService extends IntentService{
                                                                                 mBuilder.setContentText(text);
                                                                                 mBuilder.setAutoCancel(true);
 
+                                                                                mBuilder.setPriority(Notification.PRIORITY_HIGH);
                                                                                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
                                                                                 stackBuilder.addParentStack(GroupsListActivity.class);
                                                                                 Intent intent = new Intent(mContext, GroupsListActivity.class);
-                                                                                ;
 
                                                                                 String activity = not.child("activity").getValue().toString();
 
