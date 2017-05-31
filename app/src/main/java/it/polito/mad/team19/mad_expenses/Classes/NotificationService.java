@@ -8,18 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.icu.text.LocaleDisplayNames;
-import android.icu.text.StringPrepParseException;
-import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,15 +24,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOError;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import it.polito.mad.team19.mad_expenses.AccountActivity;
 import it.polito.mad.team19.mad_expenses.ExpenseDetailsActivity;
 import it.polito.mad.team19.mad_expenses.GroupActivity;
 import it.polito.mad.team19.mad_expenses.GroupInfoActivity;
 import it.polito.mad.team19.mad_expenses.GroupsListActivity;
-import it.polito.mad.team19.mad_expenses.MeActivity;
 import it.polito.mad.team19.mad_expenses.ProposalDetailsActivity;
 import it.polito.mad.team19.mad_expenses.R;
 

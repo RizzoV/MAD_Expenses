@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/activitiesBackgroundColor"
     android:orientation="vertical"
-    tools:context="it.polito.mad.team19.mad_expenses.AccountActivity">
+    tools:context="it.polito.mad.team19.mad_expenses.SettingsActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -105,29 +105,39 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
-            android:layout_margin="@dimen/smaller_vertical_margin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/smaller_vertical_margin">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/currency_setting_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="10dp"
-                android:paddingTop="10dp"
-                android:text="@string/currency"
-                android:textColor="@color/colorPrimary" />
+                <TextView
+                    android:id="@+id/currency_setting_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/currency"
+                    android:textColor="@color/colorPrimary" />
 
-            <Spinner
-                android:layout_marginTop="10dp"
-                android:id="@+id/currencies_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"/>
+                <TextView
+                    android:id="@+id/currency_setting_description_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/currencies_spinner_prompt"
+                    android:textColor="@color/grey" />
+
+                <Spinner
+                    android:id="@+id/currencies_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

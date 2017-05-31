@@ -2,21 +2,18 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -24,12 +21,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -42,7 +37,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,19 +44,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOError;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Group;
 import it.polito.mad.team19.mad_expenses.Classes.NotificationService;
-import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 
 import static com.github.mikephil.charting.charts.Chart.LOG_TAG;
 
@@ -343,7 +334,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 }
 
 
-                Intent intent = new Intent(GroupsListActivity.this, AccountActivity.class);
+                Intent intent = new Intent(GroupsListActivity.this, SettingsActivity.class);
                 startActivityForResult(intent,ACCOUNT);
                 return true;
 

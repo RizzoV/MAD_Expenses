@@ -6,7 +6,7 @@
     <item
         android:id="@+id/account"
         app:showAsAction="never"
-        android:title="Account"
+        android:title="@string/settings"
         />
 
 

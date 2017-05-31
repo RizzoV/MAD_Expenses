@@ -8,12 +8,10 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +45,7 @@ import java.util.Set;
 import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
-public class AccountActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class SettingsActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
 
     private static final String VALID_EMAIL_REGEX = "^(.+)@(.+)$";
@@ -69,8 +67,8 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account);
-        setTitle(getString(R.string.account));
+        setContentView(R.layout.activity_settings);
+        setTitle(getString(R.string.settings));
 
         filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -329,6 +327,6 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("AccountActivity", "Could not connect");
+        Log.e("SettingsActivity", "Could not connect");
     }
 }

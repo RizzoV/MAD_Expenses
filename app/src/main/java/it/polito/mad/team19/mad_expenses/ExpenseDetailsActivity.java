@@ -87,6 +87,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
     private boolean zoomOut = false;
 
+    private Float exchangeRate = 1f;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,7 +173,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot expense) {
 
-                String expenseCurrencyCode = expense.child("currency").getValue(String.class);
+                String expenseCurrencyCode = expense.child("currencyCode").getValue(String.class);
                 final String[] userCurrencyCode = new String[1];
 
                 userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
@@ -180,7 +182,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 if(expenseCurrencyCode == null)
                     expenseCurrencyCode = "EUR";
 
-                Float exchangeRate = 1f;
+
                 try {
                     exchangeRate = new AsyncCurrencyConverter(expenseCurrencyCode, userCurrencyCode[0]).execute().get();
                 } catch (InterruptedException | ExecutionException e) {
@@ -230,7 +232,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                 if (expenseContributorId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                     View dialogView = getLayoutInflater().inflate(R.layout.dialogboxlayout_edit_debit, null);
                                     final EditText debtEditText = (EditText) dialogView.findViewById(R.id.debt_edit_text);
-                                    debtEditText.setText(((ExpenseDetail) edAdapter.getItem(position)).getAmount());
+                                    debtEditText.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(((ExpenseDetail) edAdapter.getItem(position)).getAmount().replace(",", ".")) * exchangeRate));
 
                                     alertDialog1 = new AlertDialog.Builder(ExpenseDetailsActivity.this)
                                             .setView(dialogView)
@@ -256,9 +258,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                         DatabaseReference creditAmountRef = firebase.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).
                                                                 child("contributors").child(expenseContributorId).child("riepilogo").child(expenseDebtorId).child("amount");
 
-                                                        String chosenAmount = debtEditText.getText().toString().trim().replace(",", ".");
-                                                        debtAmountRef.setValue("-" + chosenAmount);
-                                                        creditAmountRef.setValue(chosenAmount);
+
+                                                        String chosenAmount = String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtEditText.getText().toString().trim().replace(",", ".")));
+                                                        String chosenAmountConverted = String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtEditText.getText().toString().trim().replace(",", "."))/exchangeRate).replace(",", ".");
+                                                        debtAmountRef.setValue("-" + chosenAmountConverted);
+                                                        creditAmountRef.setValue(chosenAmountConverted);
 
                                                         FirebaseAuth mAuth = FirebaseAuth.getInstance();
                                                         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
@@ -296,13 +300,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                         myNotRef.setValue(notificationId);
 
 
-                                                        ((ExpenseDetail) edAdapter.getItem(position)).setAmount(String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)));
+                                                        ((ExpenseDetail) edAdapter.getItem(position)).setAmount(chosenAmount);
                                                         edAdapter.notifyDataSetChanged();
 
                                                         ((TextView) itemView.findViewById(R.id.debt_amount)).setText(
-                                                                String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                                                                String.format(chosenAmount + " " + Currency.getInstance(getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode())).getSymbol()));
 
-                                                        if (Float.valueOf(chosenAmount) > 0)
+                                                        if (Float.valueOf(chosenAmount.replace(",", ".")) > 0)
                                                             itemView.findViewById(R.id.debt_amount).setBackground(ContextCompat.getDrawable(ExpenseDetailsActivity.this, R.drawable.rounded_corners_red));
                                                         else
                                                             itemView.findViewById(R.id.debt_amount).setBackground(ContextCompat.getDrawable(ExpenseDetailsActivity.this, R.drawable.rounded_corners_green));

@@ -137,7 +137,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                     showExpenseImage(imgUrl);
                 }
 
-                String proposalCurrencyCode = proposal.child("currency").getValue(String.class);
+                String proposalCurrencyCode = proposal.child("currencyCode").getValue(String.class);
                 final String[] userCurrencyCode = new String[1];
 
                 userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());

@@ -63,7 +63,7 @@
     <string name="debits_and_credits">Debiti e crediti</string>
     <string name="mandatory_field">Campo Obbligatorio!</string>
     <string name="invalid_cost_field">Campo Invalido!</string>
-    <string name="currencies_spinner_prompt">Seleziona la valuta di default per visualizzare le spese</string>
+    <string name="currencies_spinner_prompt">Seleziona la valuta di default con cui visualizzare i prezzi</string>
 
     <!-- Authentication -->
     <string name="welcome">Benvenuto in Mad Expenses!</string>
@@ -85,13 +85,14 @@
 
 
     <!-- Personal Profile -->
-    <string name="account">Profilo Personale</string>
+    <string name="settings">Impostazioni</string>
     <string name="sign_out">Disconnettiti</string>
     <string name="username">Nome utente</string>
     <string name="changename">Modifica Nome Visualizzato</string>
     <string name="changeemail">Modifica Email Account</string>
     <string name="edit">Modifica</string>
     <string name="cancel">Annulla</string>
+    <string name="currency_setting_description">Seleziona la valuta con cui visualizzare i costi:</string>
 
     <!--- Invitation intent -->
     <string name="invitation_title">Aggiungi amici</string>
