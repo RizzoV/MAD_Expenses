@@ -36,6 +36,7 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.Notifications;
@@ -125,17 +126,39 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         final String userImgUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
 
         desc_tv.setText(desc);
-        cost_tv.setText(cost + " " + Currency.getInstance(Locale.ITALY).getSymbol());
         name_tv.setText(name);
 
         database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                imgUrl = dataSnapshot.child("imageUrl").getValue(String.class);
+            public void onDataChange(DataSnapshot proposal) {
+                imgUrl = proposal.child("imageUrl").getValue(String.class);
                 if (imgUrl != null) {
                     set_photo_tv.setText(R.string.loading_image);
                     showExpenseImage(imgUrl);
                 }
+
+                String proposalCurrencyCode = proposal.child("currency").getValue(String.class);
+                final String[] userCurrencyCode = new String[1];
+
+                userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+
+                // Solo per evitare crash con spese vecchie
+                if(proposalCurrencyCode == null)
+                    proposalCurrencyCode = "EUR";
+
+                Float exchangeRate = 1f;
+                try {
+                    exchangeRate = new AsyncCurrencyConverter(proposalCurrencyCode, userCurrencyCode[0]).execute().get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                // Perché il convertitore di Yahoo non supporta proprio tutte le valute (tipo USN->GBP mi da N/A come risultato)
+                if(exchangeRate == null)
+                    exchangeRate = 1f;
+                cost_tv.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
+
+
             }
 
             @Override

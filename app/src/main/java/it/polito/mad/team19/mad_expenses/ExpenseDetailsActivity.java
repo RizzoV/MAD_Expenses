@@ -3,6 +3,7 @@ package it.polito.mad.team19.mad_expenses;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -121,8 +122,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
         expense_name.setText(name);
         expense_desc.setText(desc);
-        //TODO: gestire currency diverse dall'Euro
-        //expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
         expense_author.setText("loading...");
 
         // Click listener on the topic card view
@@ -175,9 +174,9 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 String expenseCurrencyCode = expense.child("currency").getValue(String.class);
                 final String[] userCurrencyCode = new String[1];
 
-                //TODO: rimuovere debugging e salvare userCurrencyCode in db SQL locale
-                if(userCurrencyCode[0] == null)
-                    userCurrencyCode[0] = "GBP";
+                userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+
+                // Solo per evitare crash con spese vecchie
                 if(expenseCurrencyCode == null)
                     expenseCurrencyCode = "EUR";
 
