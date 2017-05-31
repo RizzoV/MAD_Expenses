@@ -71,7 +71,8 @@ public class HistoryPopupActivity extends AppCompatActivity {
 
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference historyRef = database.getReference("storico").child(groupId).child("spese").child(expenseId).child("membri");
+        DatabaseReference historyRef = database.getReference("storico").child(groupId).child("spese").child(expenseId);
+        Log.d("DebugHistoryList"," gruppo " + groupId + " spesa " + expenseId);
 
         mAuth = FirebaseAuth.getInstance();
         uid = mAuth.getCurrentUser().getUid();
@@ -82,6 +83,16 @@ public class HistoryPopupActivity extends AppCompatActivity {
         historyRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                FirebaseExpense firebaseHistory = dataSnapshot.getValue(FirebaseExpense.class);
+                firebaseHistory.setKey(dataSnapshot.getKey());
+
+                expensesHistory.add(firebaseHistory);
+                Log.d("DebugHistoryList","spesa trovata: " + firebaseHistory.getKey());
+
+                //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
+                expensesHistoryAdapter.notifyDataSetChanged();
+
                 int nHistory = 0;
                 for (DataSnapshot expense : dataSnapshot.getChildren()) {
 
@@ -89,6 +100,7 @@ public class HistoryPopupActivity extends AppCompatActivity {
                     firebaseExpense.setKey(expense.getKey());
 
                     expensesHistory.add(firebaseExpense);
+                    Log.d("DebugHistoryList","spesa trovata: " + firebaseExpense.getKey());
 
                     //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                     expensesHistoryAdapter.notifyDataSetChanged();

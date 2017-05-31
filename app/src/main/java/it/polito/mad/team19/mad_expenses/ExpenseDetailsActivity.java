@@ -76,6 +76,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private ImageButton set_photo_button;
     private TextView set_photo_text_view;
     private CardView viewTopic_cv;
+    private CardView viewHistory_cv;
 
     private AlertDialog alertDialog = null;
     AlertDialog alertDialog1 = null;
@@ -116,7 +117,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_details_listview = (LinearLayout) findViewById(R.id.debtors_and_debts_listview);
         set_photo_button = (ImageButton) findViewById(R.id.add_image_btn);
         set_photo_text_view = (TextView) findViewById(R.id.add_expense_photo_tv);
+
+        //card
         viewTopic_cv = (CardView) findViewById(R.id.expense_topic_cw);
+        viewHistory_cv = (CardView) findViewById(R.id.expense_history_cw);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
@@ -131,6 +135,16 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 Intent i = new Intent(ExpenseDetailsActivity.this, TopicActivity.class);
                 i.putExtra("topicType", "expenses");
                 i.putExtra("topicName", name);
+                i.putExtra("groupId", groupId);
+                i.putExtra("expenseId", expenseId);
+                startActivity(i);
+            }
+        });
+
+        viewHistory_cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ExpenseDetailsActivity.this, HistoryPopupActivity.class);
                 i.putExtra("groupId", groupId);
                 i.putExtra("expenseId", expenseId);
                 startActivity(i);

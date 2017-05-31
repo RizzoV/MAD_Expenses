@@ -113,7 +113,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private String oldGroupId;
     private String oldExpenseId;
     private String oldExpenseVersionId;
-    private byte[] oldExpenseImageBitmap;
+    private String expenseHistoryId;
+    private String historyId;
+    byte[] oldExpenseImageBitmap;
 
     private CircularFillableLoaders imageLoader;
 
@@ -442,9 +444,12 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         String uuid = myRef.push().getKey();
         idExpense = uuid;
 
+        Log.d("DebugHistory", "id storico: " + expenseHistoryId);
         AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split("\t ")[0],
                 isModifyActivity, oldExpenseId, excludedList, contributorsList, this);
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(),
+                isModifyActivity, /*oldExpenseId*/ expenseHistoryId, excludedList, contributorsList,this);
 
         async.execute();
     }
@@ -507,7 +512,35 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         //Jured: gestione della modifica
         if (isModifyActivity && (getIntent().getStringExtra("butDoNotTrack") == null)) {
-            moveFirebaseExpenseNode();
+
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
+            final DatabaseReference oldExpenseRef = myRef.child(oldExpenseId);
+//          final DatabaseReference newExpenseHistoryRef = database.getReference("storico")
+//                .child(groupId).child("spese").child(oldExpenseId);
+
+            oldExpenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChild("oldVersionId")) {
+                        historyId = dataSnapshot.child("oldVersionId").getValue().toString();
+                        Log.d("DebugHistory", "campo old version trovato: " + historyId);
+                        moveFirebaseExpenseNode(historyId);
+                    }
+                    else {
+                        historyId = oldExpenseId;
+                        Log.d("DebugHistory", "campo old version NON trovato: " + historyId);
+                        moveFirebaseExpenseNode(oldExpenseId);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("AddExpenseActivity", "Could not retrieve the expense from Firebase");
+                }
+            });
+
         }
         // Vale: e della trasformazione di una proposta in spesa
         else if (getIntent().getStringExtra("butDoNotTrack") != null) {
@@ -711,6 +744,24 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             oldExpenseId = getIntent().getStringExtra("ExpenseId");
             oldExpenseImageBitmap = getIntent().getByteArrayExtra("ExpenseImage");
 
+            //TODO Jured: gestire questa assegnazione asincrona
+            DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference("gruppi").child(oldGroupId)
+                    .child("expenses").child(oldExpenseId);
+            historyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChild("oldVersionId"))
+                        expenseHistoryId = dataSnapshot.child("oldVersionId").getValue().toString();
+                    else
+                        expenseHistoryId = null;
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
             if (oldExpenseImageBitmap != null) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(oldExpenseImageBitmap, 0, oldExpenseImageBitmap.length);
                 imageView = (ImageView) findViewById(R.id.new_expense_imageView);
@@ -752,12 +803,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }
 
-    private void moveFirebaseExpenseNode() {
+    private void moveFirebaseExpenseNode(String historyId) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         final DatabaseReference oldExpenseRef = myRef.child(oldExpenseId);
+
         final DatabaseReference newExpenseHistoryRef = database.getReference("storico")
-                .child(groupId).child("spese").child(oldExpenseId);
+                .child(groupId).child("spese").child(historyId).child(oldExpenseId);
+
 
         oldExpenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -788,6 +841,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Log.e("AddExpenseActivity", "Could not retrieve the expense from Firebase");
             }
         });
+
     }
 
     @Override
