@@ -45,8 +45,6 @@ public class AsyncFirebaseBalanceLoader extends AsyncTask<Void, Integer, Long> {
         this.contributors,
         this.excluded);
 
-
-
         return null;
     }
 

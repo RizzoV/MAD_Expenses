@@ -64,6 +64,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private TextView expense_cost;
     private TextView expense_author;
     private ImageView expense_img;
+    private TextView expense_date;
     private LinearLayout expense_details_listview;
     private String expenseAuthor;
     //private String currentPersonalBalance;
@@ -124,10 +125,12 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         set_photo_button = (ImageButton) findViewById(R.id.add_image_btn);
         set_photo_text_view = (TextView) findViewById(R.id.add_expense_photo_tv);
         viewTopic_cv = (CardView) findViewById(R.id.expense_topic_cw);
+        expense_date = (TextView) findViewById(R.id.expense_date);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
         expense_author.setText("loading...");
+        //TODO: expense_date.setText(FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child());
 
         // Click listener on the topic card view
         viewTopic_cv.setOnClickListener(new View.OnClickListener() {
@@ -211,12 +214,15 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 if(expenseCurrencyCode == null)
                     expenseCurrencyCode = "EUR";
 
-
-                try {
-                    exchangeRate = new AsyncCurrencyConverter(expenseCurrencyCode, userCurrencyCode[0]).execute().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
+                if(!expenseCurrencyCode.equals(userCurrencyCode[0])) {
+                    try {
+                        exchangeRate = new AsyncCurrencyConverter(expenseCurrencyCode, userCurrencyCode[0]).execute().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
                 }
+                else
+                    exchangeRate = 1f;
 
                 // Perché il convertitore di Yahoo non supporta proprio tutte le valute (tipo USN->GBP mi da N/A come risultato)
                 if(exchangeRate != null)
@@ -457,8 +463,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 return true;
             }
             case R.id.modifyExpense: {
+
                 final Bitmap[] fileBitmap = new Bitmap[1];
                 final byte[][] datas = new byte[1][1];
+
+                /*
+                Vale: a che serve sto spezzone?
+
                 Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(expense_img) {
                     @Override
                     protected void setResource(Bitmap resource) {
@@ -469,12 +480,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                         datas[0] = baos.toByteArray();
                     }
                 });
+                */
 
                 Intent changeExpenseIntent = new Intent(this, AddExpenseActivity.class);
                 changeExpenseIntent.putExtra("ExpenseName", name);
                 changeExpenseIntent.putExtra("ExpenseImgUrl", imgUrl);
                 changeExpenseIntent.putExtra("ExpenseDesc", desc);
-                changeExpenseIntent.putExtra("ExpenseCost", cost);
+                changeExpenseIntent.putExtra("ExpenseCost", String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate));
                 changeExpenseIntent.putExtra("ExpenseAuthorId", expenseAuthor);
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);
