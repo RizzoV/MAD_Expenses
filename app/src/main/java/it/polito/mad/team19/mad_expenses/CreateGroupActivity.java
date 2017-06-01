@@ -89,7 +89,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
-        getSupportActionBar().setTitle("Crea un nuovo gruppo");
+        getSupportActionBar().setTitle(getString(R.string.groupCreate));
 
         filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
