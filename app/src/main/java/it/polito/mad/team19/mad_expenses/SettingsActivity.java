@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Currency;
 import java.util.Locale;
@@ -116,12 +117,13 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             }
         }
 
-        currenciesList.sort(new Comparator<String>() {
+        Collections.sort(currenciesList, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 return o1.compareTo(o2);
             }
         });
+
 
         CurrenciesAdapter currenciesAdapter = new CurrenciesAdapter(this, currenciesList);
         currenciesSpinner.setAdapter(currenciesAdapter);
