@@ -269,7 +269,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         if (requestCode == REQUEST_TAKE_PHOTO) {
             if (mCurrentPhotoPath != null) {
                 Log.d("DebugTakePhoto2", mCurrentPhotoPath);
-                setImageView(mCurrentPhotoPath);
+                setImageViewGlide(mCurrentPhotoPath);
             }
         }
 
@@ -284,7 +284,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
                 Log.d("DebugGalleryImage2", mCurrentPhotoPath);
-                setImageView(mCurrentPhotoPath);
+                setImageViewGlide(mCurrentPhotoPath);
             }
         }
 
@@ -605,6 +605,17 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         imageView.setImageDrawable(circularBitmapDrawable);
     }
 
+    private void setImageViewGlide(String mCurrentPhotoPath) {
+        Glide.with(this).load(new File(mCurrentPhotoPath)).asBitmap().centerCrop().into(new BitmapImageViewTarget(imageView) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                circularBitmapDrawable.setCircular(true);
+                imageView.setImageDrawable(circularBitmapDrawable);
+            }
+        });
+    }
+
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -790,7 +801,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             costEditText.setText(oldCost);
 
             try {
-                Glide.with(this).load(oldImgUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.circle).into(new BitmapImageViewTarget(imageView) {
+                Glide.with(this).load(oldImgUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.ic_circle_camera).into(new BitmapImageViewTarget(imageView) {
                     @Override
                     protected void setResource(Bitmap resource) {
                         RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);

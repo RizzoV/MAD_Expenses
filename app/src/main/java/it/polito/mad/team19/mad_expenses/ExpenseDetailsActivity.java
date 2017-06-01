@@ -62,6 +62,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private TextView expense_cost;
     private TextView expense_author;
     private ImageView expense_img;
+    private TextView expense_date;
     private LinearLayout expense_details_listview;
     private String expenseAuthor;
     //private String currentPersonalBalance;
@@ -121,10 +122,12 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         set_photo_button = (ImageButton) findViewById(R.id.add_image_btn);
         set_photo_text_view = (TextView) findViewById(R.id.add_expense_photo_tv);
         viewTopic_cv = (CardView) findViewById(R.id.expense_topic_cw);
+        expense_date = (TextView) findViewById(R.id.expense_date);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
         expense_author.setText("loading...");
+        //TODO: expense_date.setText(FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child());
 
         // Click listener on the topic card view
         viewTopic_cv.setOnClickListener(new View.OnClickListener() {
