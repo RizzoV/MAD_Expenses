@@ -449,7 +449,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split("\t ")[0],
-                isModifyActivity, oldExpenseId, excludedList, contributorsList, this);
+                isModifyActivity, oldExpenseId, excludedList, contributorsList, oldImgUrl, this);
 
         async.execute();
     }

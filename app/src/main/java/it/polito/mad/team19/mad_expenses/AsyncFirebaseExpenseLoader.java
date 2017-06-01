@@ -48,10 +48,11 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
 
     private Boolean isModifyActivity;
     private String oldExpenseId;
+    private String oldImageUrl = null;
     private Context mContext;
 
     public AsyncFirebaseExpenseLoader(String idExpense, String groupId, String usrId, String mCurrentPhotoPath, String mCurrentPhotoName, String nameEditText, String descriptionEditText, String costEditText
-    , String currency, Boolean isModifyActivity, String oldExpenseId, ArrayList<FirebaseGroupMember> excludedList, ArrayList<FirebaseGroupMember> contributorsList, Context mContext) {
+    , String currency, Boolean isModifyActivity, String oldExpenseId, ArrayList<FirebaseGroupMember> excludedList, ArrayList<FirebaseGroupMember> contributorsList, String oldImgUrl, Context mContext) {
         this.idExpense = idExpense;
         Log.e("ID EXPENSE", this.idExpense + "");
         this.groupId = groupId;
@@ -67,6 +68,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
         this.contributorsList = contributorsList;
         this.mContext = mContext;
         this.currencyCode = currency;
+        this.oldImageUrl = oldImgUrl;
     }
 
     @Override
@@ -146,6 +148,8 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
             Log.d("DebugIsModifyFlag", isModifyActivity.toString());
             if (isModifyActivity) {
                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
+                if(oldImageUrl != null)
+                    newExpenseRef.child("image").setValue(oldImageUrl);
             }
 
             ((AddExpenseActivity)mContext).finishTasks(nameEditText,descriptionEditText,null,usrId,costEditText, groupId,idExpense);
