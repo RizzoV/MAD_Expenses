@@ -148,10 +148,12 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                     proposalCurrencyCode = "EUR";
 
                 Float exchangeRate = 1f;
-                try {
-                    exchangeRate = new AsyncCurrencyConverter(proposalCurrencyCode, userCurrencyCode[0]).execute().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
+                if(!proposalCurrencyCode.equals(userCurrencyCode[0])) {
+                    try {
+                        exchangeRate = new AsyncCurrencyConverter(proposalCurrencyCode, userCurrencyCode[0]).execute().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 // Perché il convertitore di Yahoo non supporta proprio tutte le valute (tipo USN->GBP mi da N/A come risultato)

@@ -185,12 +185,15 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 if(expenseCurrencyCode == null)
                     expenseCurrencyCode = "EUR";
 
-
-                try {
-                    exchangeRate = new AsyncCurrencyConverter(expenseCurrencyCode, userCurrencyCode[0]).execute().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
+                if(!expenseCurrencyCode.equals(userCurrencyCode[0])) {
+                    try {
+                        exchangeRate = new AsyncCurrencyConverter(expenseCurrencyCode, userCurrencyCode[0]).execute().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
                 }
+                else
+                    exchangeRate = 1f;
 
                 // Perché il convertitore di Yahoo non supporta proprio tutte le valute (tipo USN->GBP mi da N/A come risultato)
                 if(exchangeRate != null)
@@ -431,8 +434,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 return true;
             }
             case R.id.modifyExpense: {
+
                 final Bitmap[] fileBitmap = new Bitmap[1];
                 final byte[][] datas = new byte[1][1];
+
+                /*
+                Vale: a che serve sto spezzone?
+
                 Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(expense_img) {
                     @Override
                     protected void setResource(Bitmap resource) {
@@ -443,6 +451,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                         datas[0] = baos.toByteArray();
                     }
                 });
+                */
 
                 Intent changeExpenseIntent = new Intent(this, AddExpenseActivity.class);
                 changeExpenseIntent.putExtra("ExpenseName", name);
