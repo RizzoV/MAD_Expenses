@@ -326,7 +326,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         else
             contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid()));
 
-        Log.d("Contributors", contributorsList.get(0).getName());
+        //Log.d("Contributors", contributorsList.get(0).getName());
 
         contributorsButton.setOnClickListener(new Button.OnClickListener() {
             @Override

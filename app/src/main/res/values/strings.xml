@@ -158,6 +158,9 @@
     <!-- Chat -->
     <string name="typeMessage">Type message</string>
 
+    <string name="groupName">Group Name</string>
+    <string name="groupCreate">Create a group</string>
+
     <!-- Notifications -->
     <string name="notififcationAddExpenseActivity">ExpenseDetailsActivity</string>
     <string name="notififcationAddExpenseText"> added a new expense.</string>

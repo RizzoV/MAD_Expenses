@@ -186,6 +186,10 @@
     <string name="notififcationModifiedExpenseActivity">ModifiedExpense</string>
     <string name="notififcationModifiedExpenseText"> ha modificato una spesa.</string>
 
+    <string name="groupName">Nome del gruppo</string>
+    <string name="groupCreate">Crea un nuovo gruppo</string>
+
+
 
     <!-- Months -->
     <string name="january">Gen</string>
