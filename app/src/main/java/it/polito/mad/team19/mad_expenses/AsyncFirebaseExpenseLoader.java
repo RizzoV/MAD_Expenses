@@ -53,6 +53,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
     public AsyncFirebaseExpenseLoader(String idExpense, String groupId, String usrId, String mCurrentPhotoPath, String mCurrentPhotoName, String nameEditText, String descriptionEditText, String costEditText
     , String currency, Boolean isModifyActivity, String oldExpenseId, ArrayList<FirebaseGroupMember> excludedList, ArrayList<FirebaseGroupMember> contributorsList, Context mContext) {
         this.idExpense = idExpense;
+        Log.e("ID EXPENSE", this.idExpense + "");
         this.groupId = groupId;
         this.usrId = usrId;
         this.mCurrentPhotoPath = mCurrentPhotoPath;

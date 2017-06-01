@@ -52,6 +52,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
     private ImageView proposal_img;
     private TextView set_photo_tv;
     private String imgUrl;
+    private String proposalCurrencyCode;
 
     private AlertDialog alertDialog = null;
     private AlertDialog alertDialog1 = null;
@@ -137,7 +138,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                     showExpenseImage(imgUrl);
                 }
 
-                String proposalCurrencyCode = proposal.child("currencyCode").getValue(String.class);
+                proposalCurrencyCode = proposal.child("currencyCode").getValue(String.class);
                 final String[] userCurrencyCode = new String[1];
 
                 userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
@@ -545,7 +546,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         i.putExtra("butDoNotTrack", "true");
                         i.putExtra("contributorsList", contributors);
                         i.putExtra("excludedList", excluded);
-                        Log.e("GOING TO", "START");
+                        i.putExtra("ExpenseCurrency", proposalCurrencyCode);
                         startActivity(i);
 
                         // Delete the proposal
