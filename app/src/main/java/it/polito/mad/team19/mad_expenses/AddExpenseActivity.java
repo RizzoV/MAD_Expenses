@@ -171,13 +171,18 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         currencyAutoCompleteTV.setAdapter(currenciesAdapter);
 
         // Vale: AutoCompleteTextView default value
+        /*
         String localeCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
         String foundCurrencyString = "";
         for(String s : currenciesList) {
             if(s.contains(localeCurrencyCode))
                 foundCurrencyString = s;
         }
-        currencyAutoCompleteTV.setText(foundCurrencyString);
+        */
+
+        // Vale: the deafult value is set to the one selected by the user in SettingsActivity. Otherwise, if it's not found, it's set to the locale value
+        String defaultCurrency = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        currencyAutoCompleteTV.setText(defaultCurrency);
 
         // Vale: onFocus the text disappears
         currencyAutoCompleteTV.setOnFocusChangeListener(new View.OnFocusChangeListener() {

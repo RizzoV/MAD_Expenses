@@ -445,7 +445,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 changeExpenseIntent.putExtra("ExpenseName", name);
                 changeExpenseIntent.putExtra("ExpenseImgUrl", imgUrl);
                 changeExpenseIntent.putExtra("ExpenseDesc", desc);
-                changeExpenseIntent.putExtra("ExpenseCost", cost);
+                changeExpenseIntent.putExtra("ExpenseCost", String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate));
                 changeExpenseIntent.putExtra("ExpenseAuthorId", expenseAuthor);
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);
