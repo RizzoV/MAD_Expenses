@@ -17,8 +17,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,9 +26,6 @@ import java.util.HashMap;
 import it.polito.mad.team19.mad_expenses.Adapters.TopicAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Classes.Topic;
-
-import static it.polito.mad.team19.mad_expenses.R.id.chains;
-import static it.polito.mad.team19.mad_expenses.R.id.msg;
 
 public class TopicActivity extends AppCompatActivity {
 

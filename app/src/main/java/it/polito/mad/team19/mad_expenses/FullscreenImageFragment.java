@@ -12,7 +12,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.ByteArrayOutputStream;
 

@@ -22,8 +22,6 @@ import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.R;
-import yahoofinance.YahooFinance;
-import yahoofinance.quotes.fx.FxQuote;
 
 /**
  * Created by Valentino on 29/04/2017.

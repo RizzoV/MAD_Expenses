@@ -2,11 +2,9 @@ package it.polito.mad.team19.mad_expenses.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -15,7 +13,8 @@ import java.util.ArrayList;
 import it.polito.mad.team19.mad_expenses.Classes.Topic;
 import it.polito.mad.team19.mad_expenses.R;
 
-import static android.widget.RelativeLayout.*;
+import static android.widget.RelativeLayout.ALIGN_PARENT_LEFT;
+import static android.widget.RelativeLayout.ALIGN_PARENT_RIGHT;
 
 /**
  * Created by ikkoyeah on 12/05/17.

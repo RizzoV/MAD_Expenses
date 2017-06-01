@@ -1,14 +1,8 @@
 package it.polito.mad.team19.mad_expenses.NotActivities;
 
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import it.polito.mad.team19.mad_expenses.Classes.BalanceCalculator;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
