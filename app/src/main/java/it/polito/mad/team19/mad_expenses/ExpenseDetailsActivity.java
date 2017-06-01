@@ -1,5 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,6 +86,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
+    Dialog nagDialog;
 
     private boolean zoomOut = false;
 
@@ -140,14 +143,40 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         });
 
         // Click listener on the image
-        expense_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
+        if(imgUrl!=null)
+        {
 
+            nagDialog = new Dialog(ExpenseDetailsActivity.this, R.style.full_screen_dialog);
+            nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            nagDialog.setCancelable(false);
+            nagDialog.setContentView(R.layout.expense_image_preview);
+            Button btnClose = (Button) nagDialog.findViewById(R.id.btnIvClose);
+            ImageView ivPreview = (ImageView) nagDialog.findViewById(R.id.iv_preview_image);
 
+            Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(ivPreview) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                  ivPreview.setImageBitmap(resource);
+                }
+            });
+
+            btnClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+
+                    nagDialog.dismiss();
+                }
+            });
+
+            expense_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    nagDialog.show();
+                }
+            });
+        }
         final FirebaseDatabase firebase = FirebaseDatabase.getInstance();
 
         DatabaseReference dbAuthorNameRef = firebase.getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
@@ -519,6 +548,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        if(nagDialog!=null)
+            if(nagDialog.isShowing())
+                nagDialog.dismiss();
 
         if (alertDialog != null)
             if(alertDialog.isShowing())
