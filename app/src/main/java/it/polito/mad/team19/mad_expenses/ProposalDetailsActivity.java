@@ -3,12 +3,11 @@ package it.polito.mad.team19.mad_expenses;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Menu;
@@ -28,17 +27,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
-import it.polito.mad.team19.mad_expenses.Classes.Notifications;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
 
 public class ProposalDetailsActivity extends AppCompatActivity {
 
@@ -51,6 +49,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
     private ImageView proposal_img;
     private TextView set_photo_tv;
     private String imgUrl;
+    private String proposalCurrencyCode;
 
     private AlertDialog alertDialog = null;
     private AlertDialog alertDialog1 = null;
@@ -125,17 +124,39 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         final String userImgUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
 
         desc_tv.setText(desc);
-        cost_tv.setText(cost + " " + Currency.getInstance(Locale.ITALY).getSymbol());
         name_tv.setText(name);
 
         database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                imgUrl = dataSnapshot.child("imageUrl").getValue(String.class);
+            public void onDataChange(DataSnapshot proposal) {
+                imgUrl = proposal.child("imageUrl").getValue(String.class);
                 if (imgUrl != null) {
                     set_photo_tv.setText(R.string.loading_image);
                     showExpenseImage(imgUrl);
                 }
+
+                final String[] userCurrencyCode = new String[1];
+
+                userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+
+                // Solo per evitare crash
+                if(proposalCurrencyCode == null)
+                    proposalCurrencyCode = "EUR";
+
+                Float exchangeRate = 1f;
+                if(!"EUR".equals(userCurrencyCode[0])) {
+                    try {
+                        exchangeRate = new AsyncCurrencyConverter(ProposalDetailsActivity.this, userCurrencyCode[0]).execute().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // Per evitare crash
+                if(exchangeRate == null)
+                    exchangeRate = 1f;
+                cost_tv.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
+
             }
 
             @Override
@@ -522,7 +543,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         i.putExtra("butDoNotTrack", "true");
                         i.putExtra("contributorsList", contributors);
                         i.putExtra("excludedList", excluded);
-                        Log.e("GOING TO", "START");
+                        i.putExtra("ExpenseCurrency", proposalCurrencyCode);
                         startActivity(i);
 
                         // Delete the proposal

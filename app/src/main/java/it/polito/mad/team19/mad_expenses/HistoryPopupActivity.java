@@ -1,11 +1,9 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -20,14 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseHistoryAdapter;
-import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersAdapter;
-import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
 public class HistoryPopupActivity extends AppCompatActivity {

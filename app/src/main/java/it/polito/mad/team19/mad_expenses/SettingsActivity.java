@@ -2,12 +2,12 @@ package it.polito.mad.team19.mad_expenses;
 
 import android.content.DialogInterface;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
@@ -15,9 +15,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -34,9 +36,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
-import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Currency;
+import java.util.Locale;
+import java.util.Set;
 
-public class AccountActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
+import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.NotActivities.CurrenciesListGetter;
+
+public class SettingsActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
 
     private static final String VALID_EMAIL_REGEX = "^(.+)@(.+)$";
@@ -51,12 +62,15 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
     NetworkChangeReceiver netChange;
     IntentFilter filter;
     AlertDialog alertDialog;
+    Spinner currenciesSpinner;
+
+    private ArrayList<String> currenciesList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account);
-        setTitle(getString(R.string.account));
+        setContentView(R.layout.activity_settings);
+        setTitle(getString(R.string.settings));
 
         filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -68,8 +82,59 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
         signOut = (Button) findViewById(R.id.btn_signout);
         pswd_reset = (Button) findViewById(R.id.reset_passwd);
         edit_name = (ImageView) findViewById(R.id.edit_user_name);
+        currenciesSpinner = (Spinner) findViewById(R.id.currencies_spinner);
 
-        //TODO: permettere di modificare anche l'immagine
+        SharedPreferences currencyPreference = getSharedPreferences("currencySetting", MODE_PRIVATE);
+
+        // Vale: listener spinner
+        currenciesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SharedPreferences.Editor editor = currencyPreference.edit();
+                editor.putString("currency", ((String)parent.getItemAtPosition(position)).split("\t ")[0]);
+                editor.apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.d("Spinner Currencies", "Nothing selected, do nothing");
+            }
+        });
+
+        // Vale: Populate the currencies spienner
+        // Genera lista di valute
+        Set<Currency> currencies = (new CurrenciesListGetter(this)).getAvailableCurrencies();
+        for (Currency currency : currencies) {
+            try {
+                String listItem;
+                if(!currency.getCurrencyCode().equals(currency.getDisplayName()))
+                    listItem = currency.getCurrencyCode() + "\t " + currency.getDisplayName();
+                else
+                    listItem = currency.getCurrencyCode();
+                currenciesList.add(listItem);
+            } catch (Exception e) {
+                Log.e("AddExpenseActivity", "Error in the currencies management: " + e.getMessage());
+            }
+        }
+
+        Collections.sort(currenciesList, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+
+
+        CurrenciesAdapter currenciesAdapter = new CurrenciesAdapter(this, currenciesList);
+        currenciesSpinner.setAdapter(currenciesAdapter);
+        currenciesSpinner.setPrompt(getString(R.string.currencies_spinner_prompt));
+
+        // Vale: default spinner
+        if(currencyPreference.getString("currency", "").equals(""))
+            currenciesSpinner.setSelection(currenciesAdapter.searchInCurrenciesCodes(Currency.getInstance(Locale.getDefault()).getCurrencyCode()));
+        else
+            currenciesSpinner.setSelection(currenciesAdapter.searchInCurrenciesCodes(currencyPreference.getString("currency", "")));
+
 
         if (mAuth.getCurrentUser().getProviders().contains("firebase")) {
             pswd_reset.setVisibility(View.VISIBLE);
@@ -265,6 +330,6 @@ public class AccountActivity extends AppCompatActivity implements GoogleApiClien
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("AccountActivity", "Could not connect");
+        Log.e("SettingsActivity", "Could not connect");
     }
 }

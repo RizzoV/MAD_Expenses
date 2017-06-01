@@ -63,11 +63,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncFirebaseBalanceLoader;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncFirebaseExpenseLoader;
+import it.polito.mad.team19.mad_expenses.NotActivities.CurrenciesListGetter;
 
 /**
  * Created by Bolz on 03/04/2017.
@@ -96,7 +101,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private AutoCompleteTextView currencyAutoCompleteTV;
     private float expenseTotal;
     private String idExpense;
-    private ProgressDialog barProgressDialog;
+    private ProgressDialog barProgressDialog = null;
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
 
@@ -115,11 +120,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private String oldExpenseVersionId;
     private String expenseHistoryId;
     private String historyId;
+    private String newId;
     byte[] oldExpenseImageBitmap;
+    private String currencyCode;
 
     private CircularFillableLoaders imageLoader;
 
     private ArrayList<String> currenciesList = new ArrayList<>();
+    private CurrenciesAdapter currenciesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,11 +161,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         // Vale: AutoCompleteTextView adapter
         currencyAutoCompleteTV = (AutoCompleteTextView) findViewById(R.id.new_expense_currency_actv);
         // Genera lista di valute
-        Set<Currency> currencies = Currency.getAvailableCurrencies();
+        Set<Currency> currencies = (new CurrenciesListGetter(this)).getAvailableCurrencies();
         for (Currency currency : currencies) {
             try {
                 String listItem;
-                if(!currency.getCurrencyCode().equals(currency.getSymbol()))
+                if (!currency.getCurrencyCode().equals(currency.getSymbol()))
                     listItem = currency.getCurrencyCode() + "\t " + currency.getSymbol();
                 else
                     listItem = currency.getCurrencyCode();
@@ -166,23 +174,19 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Log.e("AddExpenseActivity", "Error in the currencies management: " + e.getMessage());
             }
         }
-        CurrenciesAdapter currenciesAdapter = new CurrenciesAdapter(this, currenciesList);
+        currenciesAdapter = new CurrenciesAdapter(this, currenciesList);
         currencyAutoCompleteTV.setAdapter(currenciesAdapter);
 
         // Vale: AutoCompleteTextView default value
-        String localeCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        String foundCurrencyString = "";
-        for(String s : currenciesList) {
-            if(s.contains(localeCurrencyCode))
-                foundCurrencyString = s;
-        }
-        currencyAutoCompleteTV.setText(foundCurrencyString);
+        // the default value is set to the one selected by the user in SettingsActivity. Otherwise, if it's not found, it's set to the locale value
+        String defaultCurrency = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        currencyAutoCompleteTV.setText((String) currenciesAdapter.getItem(currenciesAdapter.searchInCurrenciesCodes(defaultCurrency)));
 
         // Vale: onFocus the text disappears
         currencyAutoCompleteTV.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus)
+                if (hasFocus)
                     currencyAutoCompleteTV.setText("");
             }
         });
@@ -270,7 +274,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         if (requestCode == REQUEST_TAKE_PHOTO) {
             if (mCurrentPhotoPath != null) {
                 Log.d("DebugTakePhoto2", mCurrentPhotoPath);
-                setImageView(mCurrentPhotoPath);
+                setImageViewGlide(mCurrentPhotoPath);
             }
         }
 
@@ -285,7 +289,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
                 Log.d("DebugGalleryImage2", mCurrentPhotoPath);
-                setImageView(mCurrentPhotoPath);
+                setImageViewGlide(mCurrentPhotoPath);
             }
         }
 
@@ -325,7 +329,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         else
             contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid()));
 
-        Log.d("Contributors", contributorsList.get(0).getName());
+        //Log.d("Contributors", contributorsList.get(0).getName());
 
         contributorsButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -402,10 +406,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 String currencyString = currencyAutoCompleteTV.getText().toString();
                 boolean found = false;
                 for (String s : currenciesList) {
-                    if(s.equals(currencyString))
+                    if (s.equals(currencyString))
                         found = true;
                 }
-                if(!found) {
+                if (!found) {
                     currencyAutoCompleteTV.setError(getString(R.string.invalid_currency_string));
                     invalidFields = true;
                 }
@@ -428,6 +432,15 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                     expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
 
+                    if(!currencyAutoCompleteTV.getText().toString().contains("EUR")) {
+                        try {
+                            Float exchangeRate = (new AsyncCurrencyConverter(AddExpenseActivity.this, currencyAutoCompleteTV.getText().toString().split("\t ")[0])).execute().get();
+                            expenseTotal /= exchangeRate;
+                        } catch (ExecutionException | InterruptedException e) {
+                            Log.e("AddExpenseActivity", e.getMessage());
+                        }
+                    }
+
                     uploadInfos();
                 } else {
                     // In modo da poter riscrivere qualcosa nel campo
@@ -438,18 +451,31 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     private void uploadInfos() {
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         String uuid = myRef.push().getKey();
-        idExpense = uuid;
+        newId = uuid;
+        Float exchangeRate = 1f;
+
+        if (isModifyActivity && (getIntent().getStringExtra("butDoNotTrack") == null))
+            idExpense = oldExpenseId;
+        else
+            idExpense = newId;
+
+        if(!currencyAutoCompleteTV.getText().toString().split("\t ")[0].contains("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(this, currencyAutoCompleteTV.getText().toString().split("\t ")[0])).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
+
+        String finalCostString = String.format(String.format(Locale.getDefault(), "%.2f", Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate)).replace(",", ".");
 
         Log.d("DebugHistory", "id storico: " + expenseHistoryId);
         AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
-                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split("\t ")[0],
-                isModifyActivity, oldExpenseId, excludedList, contributorsList, this);
-                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(),
-                isModifyActivity, /*oldExpenseId*/ expenseHistoryId, excludedList, contributorsList,this);
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR",
+                isModifyActivity, oldExpenseId, excludedList, contributorsList, oldImgUrl, this);
 
         async.execute();
     }
@@ -476,8 +502,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         else {
             if (getIntent().getStringExtra("ModifyIntent") != null) {
                 notification.put("activity", getString(R.string.notififcationModifiedExpenseActivity));
-            }
-            else {
+            } else {
                 notification.put("activity", getString(R.string.notififcationAddExpenseActivity));
             }
         }
@@ -512,6 +537,34 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         //Jured: gestione della modifica
         if (isModifyActivity && (getIntent().getStringExtra("butDoNotTrack") == null)) {
+
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
+            final DatabaseReference oldExpenseRef = myRef.child(oldExpenseId);
+//          final DatabaseReference newExpenseHistoryRef = database.getReference("storico")
+//                .child(groupId).child("spese").child(oldExpenseId);
+
+            oldExpenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChild("oldVersionId")) {
+                        historyId = dataSnapshot.child("oldVersionId").getValue().toString();
+                        Log.d("DebugHistory", "campo old version trovato: " + historyId);
+                        moveFirebaseExpenseNode(historyId);
+                    } else {
+                        historyId = oldExpenseId;
+                        Log.d("DebugHistory", "campo old version NON trovato: " + historyId);
+                        moveFirebaseExpenseNode(oldExpenseId);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("AddExpenseActivity", "Could not retrieve the expense from Firebase");
+                }
+            });
+
 
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
@@ -605,6 +658,17 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), fileBitmap);
         circularBitmapDrawable.setCircular(true);
         imageView.setImageDrawable(circularBitmapDrawable);
+    }
+
+    private void setImageViewGlide(String mCurrentPhotoPath) {
+        Glide.with(this).load(new File(mCurrentPhotoPath)).asBitmap().error(R.drawable.ic_circle_camera).centerCrop().into(new BitmapImageViewTarget(imageView) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                circularBitmapDrawable.setCircular(true);
+                imageView.setImageDrawable(circularBitmapDrawable);
+            }
+        });
     }
 
 
@@ -743,6 +807,30 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             oldGroupId = getIntent().getStringExtra("groupId");
             oldExpenseId = getIntent().getStringExtra("ExpenseId");
             oldExpenseImageBitmap = getIntent().getByteArrayExtra("ExpenseImage");
+            currencyCode = getIntent().getStringExtra("ExpenseCurrency");
+            if (currencyCode == null)
+                currencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+            currencyAutoCompleteTV.setText((String) currenciesAdapter.getItem(currenciesAdapter.searchInCurrenciesCodes(currencyCode)));
+
+            //TODO Jured: gestire questa assegnazione asincrona
+            /*
+            DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference("gruppi").child(oldGroupId)
+                    .child("expenses").child(oldExpenseId);
+            historyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChild("oldVersionId"))
+                        expenseHistoryId = dataSnapshot.child("oldVersionId").getValue().toString();
+                    else
+                        expenseHistoryId = null;
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            */
 
             //TODO Jured: gestire questa assegnazione asincrona
             DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference("gruppi").child(oldGroupId)
@@ -771,7 +859,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             }
 
-
             if (!getIntent().getParcelableArrayListExtra("contributorsList").isEmpty()) {
                 contributorsList = getIntent().getParcelableArrayListExtra("contributorsList");
             }
@@ -787,7 +874,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             costEditText.setText(oldCost);
 
             try {
-                Glide.with(this).load(oldImgUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.circle).into(new BitmapImageViewTarget(imageView) {
+                Glide.with(this).load(oldImgUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.ic_circle_camera).into(new BitmapImageViewTarget(imageView) {
                     @Override
                     protected void setResource(Bitmap resource) {
                         RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
@@ -803,13 +890,13 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
     }
 
-    private void moveFirebaseExpenseNode(String historyId) {
+    private void moveFirebaseExpenseNode(final String historyId) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         final DatabaseReference oldExpenseRef = myRef.child(oldExpenseId);
 
         final DatabaseReference newExpenseHistoryRef = database.getReference("storico")
-                .child(groupId).child("spese").child(historyId).child(oldExpenseId);
+                .child(groupId).child("spese").child(historyId).child(newId);
 
 
         oldExpenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -824,7 +911,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         } else {
                             Log.d("moveNode()", "Success");
                             //delete old node
-                            oldExpenseRef.removeValue();
+                            DatabaseReference newExpenseHistoryRef = FirebaseDatabase.getInstance().getReference("gruppi")
+                                    .child(groupId).child("expenses").child(idExpense).child("oldVersionId");
+                            newExpenseHistoryRef.setValue(historyId);
+                            //oldExpenseRef.removeValue();
                             oldExpenseVersionId = oldExpenseId;
                         }
                         barProgressDialog.dismiss();
@@ -918,6 +1008,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             netChange = null;
             Log.d("Receiver", "unregister on pause");
         }
+
+        if (barProgressDialog != null)
+            if (barProgressDialog.isShowing())
+                barProgressDialog.dismiss();
     }
 }
 // other 'case' lines to check for other

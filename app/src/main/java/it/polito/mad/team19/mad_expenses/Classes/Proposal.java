@@ -1,7 +1,5 @@
 package it.polito.mad.team19.mad_expenses.Classes;
 
-import android.media.Image;
-
 import java.util.Currency;
 
 /**

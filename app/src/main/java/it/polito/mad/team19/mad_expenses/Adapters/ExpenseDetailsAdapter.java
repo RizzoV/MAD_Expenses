@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -16,18 +15,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.firebase.database.FirebaseDatabase;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
 
-import it.polito.mad.team19.mad_expenses.AsyncCurrencyConverter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.R;
-import yahoofinance.YahooFinance;
-import yahoofinance.quotes.fx.FxQuote;
 
 /**
  * Created by Valentino on 29/04/2017.

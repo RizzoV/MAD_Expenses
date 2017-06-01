@@ -1,10 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -27,22 +23,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.ActionMenuItemView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +38,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ActionItemTarget;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.appinvite.AppInviteInvitation;
@@ -67,21 +54,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.Locale;
 
-import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.NotificationsAdapter;
-import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
-import it.polito.mad.team19.mad_expenses.Classes.Expense;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
-import it.polito.mad.team19.mad_expenses.Classes.Notifications;
-import it.polito.mad.team19.mad_expenses.Classes.Proposal;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncFirebaseBalanceLoader;
 
 enum TabsList {
     EXPENSES,

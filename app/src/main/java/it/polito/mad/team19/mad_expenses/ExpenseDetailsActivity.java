@@ -1,5 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,6 +52,7 @@ import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
 
 //TODO Jured: aggiungi click sulla tab History
 
@@ -61,6 +64,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     private TextView expense_cost;
     private TextView expense_author;
     private ImageView expense_img;
+    private TextView expense_date;
     private LinearLayout expense_details_listview;
     private String expenseAuthor;
     //private String currentPersonalBalance;
@@ -84,8 +88,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
+    Dialog nagDialog;
 
     private boolean zoomOut = false;
+
+    private Float exchangeRate = 1f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,12 +129,12 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         //card
         viewTopic_cv = (CardView) findViewById(R.id.expense_topic_cw);
         viewHistory_cv = (CardView) findViewById(R.id.expense_history_cw);
+        expense_date = (TextView) findViewById(R.id.expense_date);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
-        //TODO: gestire currency diverse dall'Euro
-        //expense_cost.setText(cost + " " + Currency.getInstance("EUR").getSymbol());
         expense_author.setText("loading...");
+        //TODO: expense_date.setText(FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child());
 
         // Click listener on the topic card view
         viewTopic_cv.setOnClickListener(new View.OnClickListener() {
@@ -153,14 +160,40 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         });
 
         // Click listener on the image
-        expense_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
+        if(imgUrl!=null)
+        {
 
+            nagDialog = new Dialog(ExpenseDetailsActivity.this, R.style.full_screen_dialog);
+            nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            nagDialog.setCancelable(false);
+            nagDialog.setContentView(R.layout.expense_image_preview);
+            Button btnClose = (Button) nagDialog.findViewById(R.id.btnIvClose);
+            ImageView ivPreview = (ImageView) nagDialog.findViewById(R.id.iv_preview_image);
 
+            Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(ivPreview) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                  ivPreview.setImageBitmap(resource);
+                }
+            });
+
+            btnClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+
+                    nagDialog.dismiss();
+                }
+            });
+
+            expense_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    nagDialog.show();
+                }
+            });
+        }
         final FirebaseDatabase firebase = FirebaseDatabase.getInstance();
 
         DatabaseReference dbAuthorNameRef = firebase.getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
@@ -186,28 +219,26 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot expense) {
 
-                String expenseCurrencyCode = expense.child("currency").getValue(String.class);
                 final String[] userCurrencyCode = new String[1];
 
-                //TODO: rimuovere debugging e salvare userCurrencyCode in db SQL locale
-                if(userCurrencyCode[0] == null)
-                    userCurrencyCode[0] = "GBP";
-                if(expenseCurrencyCode == null)
-                    expenseCurrencyCode = "EUR";
+                userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
-                Float exchangeRate = 1f;
-                try {
-                    exchangeRate = new AsyncCurrencyConverter(expenseCurrencyCode, userCurrencyCode[0]).execute().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
+                if(!"EUR".equals(userCurrencyCode[0])) {
+                    try {
+                        exchangeRate = new AsyncCurrencyConverter(ExpenseDetailsActivity.this, userCurrencyCode[0]).execute().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
                 }
+                else
+                    exchangeRate = 1f;
 
-                // Perché il convertitore di Yahoo non supporta proprio tutte le valute (tipo USN->GBP mi da N/A come risultato)
+                // per evitare crash
                 if(exchangeRate != null)
                     edAdapter.setExchangeRate(exchangeRate);
                 else {
                     exchangeRate = 1f;
-                    userCurrencyCode[0] = expenseCurrencyCode;
+                    userCurrencyCode[0] = "EUR";
                 }
                 expense_cost.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
 
@@ -223,7 +254,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                             if (debtor.child("immagine").exists())
                                 debtor_img = debtor.child("immagine").getValue().toString();
 
-                            expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, expenseCurrencyCode, userCurrencyCode[0]));
+                            expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, "EUR", userCurrencyCode[0]));
                             edAdapter.notifyDataSetChanged();
                         }
                         contributorsList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));
@@ -245,7 +276,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                 if (expenseContributorId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                     View dialogView = getLayoutInflater().inflate(R.layout.dialogboxlayout_edit_debit, null);
                                     final EditText debtEditText = (EditText) dialogView.findViewById(R.id.debt_edit_text);
-                                    debtEditText.setText(((ExpenseDetail) edAdapter.getItem(position)).getAmount());
+                                    debtEditText.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(((ExpenseDetail) edAdapter.getItem(position)).getAmount().replace(",", ".")) * exchangeRate));
 
                                     alertDialog1 = new AlertDialog.Builder(ExpenseDetailsActivity.this)
                                             .setView(dialogView)
@@ -271,9 +302,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                         DatabaseReference creditAmountRef = firebase.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).
                                                                 child("contributors").child(expenseContributorId).child("riepilogo").child(expenseDebtorId).child("amount");
 
-                                                        String chosenAmount = debtEditText.getText().toString().trim().replace(",", ".");
-                                                        debtAmountRef.setValue("-" + chosenAmount);
-                                                        creditAmountRef.setValue(chosenAmount);
+
+                                                        String chosenAmount = String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtEditText.getText().toString().trim().replace(",", ".")));
+                                                        String chosenAmountConverted = String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtEditText.getText().toString().trim().replace(",", "."))/exchangeRate).replace(",", ".");
+                                                        debtAmountRef.setValue("-" + chosenAmountConverted);
+                                                        creditAmountRef.setValue(chosenAmountConverted);
 
                                                         FirebaseAuth mAuth = FirebaseAuth.getInstance();
                                                         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
@@ -310,14 +343,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                                                         DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi").child(groupId).child("notifiche");
                                                         myNotRef.setValue(notificationId);
 
-
-                                                        ((ExpenseDetail) edAdapter.getItem(position)).setAmount(String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)));
+                                                        ((ExpenseDetail) edAdapter.getItem(position)).setAmount(chosenAmountConverted);
                                                         edAdapter.notifyDataSetChanged();
 
                                                         ((TextView) itemView.findViewById(R.id.debt_amount)).setText(
-                                                                String.format(Locale.getDefault(), "%.2f", Float.valueOf(chosenAmount)) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                                                                String.format(chosenAmount + " " + Currency.getInstance(getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode())).getSymbol()));
 
-                                                        if (Float.valueOf(chosenAmount) > 0)
+                                                        if (Float.valueOf(chosenAmount.replace(",", ".")) > 0)
                                                             itemView.findViewById(R.id.debt_amount).setBackground(ContextCompat.getDrawable(ExpenseDetailsActivity.this, R.drawable.rounded_corners_red));
                                                         else
                                                             itemView.findViewById(R.id.debt_amount).setBackground(ContextCompat.getDrawable(ExpenseDetailsActivity.this, R.drawable.rounded_corners_green));
@@ -440,8 +472,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 return true;
             }
             case R.id.modifyExpense: {
+
                 final Bitmap[] fileBitmap = new Bitmap[1];
                 final byte[][] datas = new byte[1][1];
+
+                /*
+                Vale: a che serve sto spezzone?
+
                 Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(expense_img) {
                     @Override
                     protected void setResource(Bitmap resource) {
@@ -452,12 +489,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                         datas[0] = baos.toByteArray();
                     }
                 });
+                */
 
                 Intent changeExpenseIntent = new Intent(this, AddExpenseActivity.class);
                 changeExpenseIntent.putExtra("ExpenseName", name);
                 changeExpenseIntent.putExtra("ExpenseImgUrl", imgUrl);
                 changeExpenseIntent.putExtra("ExpenseDesc", desc);
-                changeExpenseIntent.putExtra("ExpenseCost", cost);
+                changeExpenseIntent.putExtra("ExpenseCost", String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate));
                 changeExpenseIntent.putExtra("ExpenseAuthorId", expenseAuthor);
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);
@@ -531,6 +569,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        if(nagDialog!=null)
+            if(nagDialog.isShowing())
+                nagDialog.dismiss();
 
         if (alertDialog != null)
             if(alertDialog.isShowing())

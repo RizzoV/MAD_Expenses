@@ -54,13 +54,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupMembersRecyclerAdapter;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
-import it.polito.mad.team19.mad_expenses.Classes.Notifications;
 import it.polito.mad.team19.mad_expenses.Dialogs.DeleteMemberDialog;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
 import it.polito.mad.team19.mad_expenses.Dialogs.ModifyGroupNameOrImageDialog;

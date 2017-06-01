@@ -79,13 +79,16 @@ public class ExcludedPopupActivity extends Activity {
                 if (!selectedMember.isChecked()) {
                     selectedMember.check(true);
                     selectedMembers.add(selectedMember);
+                    view.setAlpha(0.5f);
                 } else {
                     selectedMember.check(false);
-                    for(FirebaseGroupMember fbgm : selectedMembers)
-                        if(fbgm.getUid().equals(selectedMember.getUid())) {
+                    for(FirebaseGroupMember fbgm : selectedMembers) {
+                        if (fbgm.getUid().equals(selectedMember.getUid())) {
                             selectedMembers.remove(fbgm);
                             break;
                         }
+                    }
+                    view.setAlpha(1f);
                 }
                 groupMembersAdapter.notifyDataSetChanged();
             }

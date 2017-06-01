@@ -26,10 +26,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,17 +52,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncFirebaseProposalLoader;
+import it.polito.mad.team19.mad_expenses.NotActivities.CurrenciesListGetter;
 
 /**
  * Created by Valentino on 04/04/2017.
  */
 
-public class AddProposalActivity extends AppCompatActivity implements GalleryOrCameraDialog.NoticeDialogListener
-{
+public class AddProposalActivity extends AppCompatActivity implements GalleryOrCameraDialog.NoticeDialogListener {
 
     private static final int STORAGE_REQUEST = 666;
     private ImageView imageView;
@@ -123,11 +127,11 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         // Vale: AutoCompleteTextView adapter
         currencyAutoCompleteTV = (AutoCompleteTextView) findViewById(R.id.new_proposal_currency_actv);
         // Genera lista di valute
-        Set<Currency> currencies = Currency.getAvailableCurrencies();
+        Set<Currency> currencies = (new CurrenciesListGetter(this)).getAvailableCurrencies();
         for (Currency currency : currencies) {
             try {
                 String listItem;
-                if(!currency.getCurrencyCode().equals(currency.getSymbol()))
+                if (!currency.getCurrencyCode().equals(currency.getSymbol()))
                     listItem = currency.getCurrencyCode() + "\t " + currency.getSymbol();
                 else
                     listItem = currency.getCurrencyCode();
@@ -140,19 +144,14 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         currencyAutoCompleteTV.setAdapter(currenciesAdapter);
 
         // Vale: AutoCompleteTextView default value
-        String localeCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        String foundCurrencyString = "";
-        for(String s : currenciesList) {
-            if(s.contains(localeCurrencyCode))
-                foundCurrencyString = s;
-        }
-        currencyAutoCompleteTV.setText(foundCurrencyString);
+        String preferredCurrencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        currencyAutoCompleteTV.setText((String) currenciesAdapter.getItem(currenciesAdapter.searchInCurrenciesCodes(preferredCurrencyCode)));
 
         // Vale: onFocus the text disappears
         currencyAutoCompleteTV.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus)
+                if (hasFocus)
                     currencyAutoCompleteTV.setText("");
             }
         });
@@ -168,8 +167,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                 addListenerOnDoneButton();
                 addListenerOnImageButton();
             }
-        }
-        else{
+        } else {
             addListenerOnDoneButton();
             addListenerOnImageButton();
         }
@@ -208,10 +206,10 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                 String currencyString = currencyAutoCompleteTV.getText().toString();
                 boolean found = false;
                 for (String s : currenciesList) {
-                    if(s.equals(currencyString))
+                    if (s.equals(currencyString))
                         found = true;
                 }
-                if(!found) {
+                if (!found) {
                     currencyAutoCompleteTV.setError(getString(R.string.invalid_currency_string));
                     invalidFields = true;
                 }
@@ -251,9 +249,20 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("proposals");
         proposalId = myRef.push().getKey();
+        Float exchangeRate = 1f;
+
+        if(!currencyAutoCompleteTV.getText().toString().split("\t ")[0].contains("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(this, currencyAutoCompleteTV.getText().toString().split("\t ")[0])).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
+
+        String finalCostString = String.format(String.format(Locale.getDefault(), "%.2f", Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate)).replace(",", ".");
 
         AsyncFirebaseProposalLoader async = new AsyncFirebaseProposalLoader(proposalId, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
-                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split("\t ")[0], this);
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR", this);
 
         async.execute();
     }
@@ -307,15 +316,13 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
     }
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
         //mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
-    protected void onStop()
-    {
+    protected void onStop() {
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
@@ -342,7 +349,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         if (requestCode == REQUEST_TAKE_PHOTO) {
             if (mCurrentPhotoPath != null) {
                 Log.d("DebugTakePhoto2", mCurrentPhotoPath);
-                setImageView(mCurrentPhotoPath);
+                setImageViewGlide(mCurrentPhotoPath);
             }
         }
 
@@ -357,7 +364,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                 cursor.moveToFirst();
                 mCurrentPhotoPath = cursor.getString(column_index);
                 Log.d("DebugGalleryImage2", mCurrentPhotoPath);
-                setImageView(mCurrentPhotoPath);
+                setImageViewGlide(mCurrentPhotoPath);
             }
         }
     }
@@ -367,6 +374,17 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), fileBitmap);
         circularBitmapDrawable.setCircular(true);
         imageView.setImageDrawable(circularBitmapDrawable);
+    }
+
+    private void setImageViewGlide(String mCurrentPhotoPath) {
+        Glide.with(this).load(new File(mCurrentPhotoPath)).asBitmap().centerCrop().into(new BitmapImageViewTarget(imageView) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                circularBitmapDrawable.setCircular(true);
+                imageView.setImageDrawable(circularBitmapDrawable);
+            }
+        });
     }
 
     private Bitmap shrinkBitmap(String file, int width, int height) {
@@ -391,7 +409,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         return bitmap;
     }
 
-    private void uploadImageToFirebase(String filePath){
+    private void uploadImageToFirebase(String filePath) {
 
         groupImagesRef = storageRef.child("images").child(groupId);
 
@@ -402,7 +420,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         fileBitmap.compress(Bitmap.CompressFormat.JPEG, 7, baos);
         byte[] datas = baos.toByteArray();
-        mCurrentPhotoName= imageToUpload.getName();
+        mCurrentPhotoName = imageToUpload.getName();
         UploadTask uploadTask = groupImagesRef.child(mCurrentPhotoName).putBytes(datas);
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -490,7 +508,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
     public void onDialogGalleryClick(DialogFragment dialog) {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto , REQUEST_GALLERY_IMAGE);
+        startActivityForResult(pickPhoto, REQUEST_GALLERY_IMAGE);
     }
 
     @Override

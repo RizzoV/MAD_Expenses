@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,8 +18,6 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
-import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
-import it.polito.mad.team19.mad_expenses.HistoryPopupActivity;
 import it.polito.mad.team19.mad_expenses.R;
 
 /**

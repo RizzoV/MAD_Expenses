@@ -69,13 +69,14 @@
     <string name="sign_up">Sign up</string>
 
     <!-- Personal Profile -->
-    <string name="account">Personal Profile</string>
+    <string name="settings">Settings</string>
     <string name="sign_out">Sign out</string>
     <string name="username">Username</string>
     <string name="changename">Edit Displayed Name</string>
     <string name="changeemail">Edit Account Email</string>
     <string name="edit">Edit</string>
     <string name="cancel">Cancel</string>
+    <string name="currencies_spinner_prompt">Select the default currency to use when displaying costs</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -156,6 +157,9 @@
 
     <!-- Chat -->
     <string name="typeMessage">Type message</string>
+
+    <string name="groupName">Group Name</string>
+    <string name="groupCreate">Create a group</string>
 
     <!-- Notifications -->
     <string name="notififcationAddExpenseActivity">ExpenseDetailsActivity</string>

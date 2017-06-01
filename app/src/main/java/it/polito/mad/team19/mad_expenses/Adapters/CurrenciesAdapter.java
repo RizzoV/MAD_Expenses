@@ -71,6 +71,15 @@ public class CurrenciesAdapter extends BaseAdapter implements Filterable {
         return convertView;
     }
 
+    public int searchInCurrenciesCodes(String currencyCode) {
+        for(int i = 0; i < originalCurrenciesList.size(); i++) {
+            String[] fields = originalCurrenciesList.get(i).split("\t ");
+            if(fields[0].equals(currencyCode))
+                return i;
+        }
+        return -1;
+    }
+
     @Override
     public Filter getFilter() {
         return mFilter;
