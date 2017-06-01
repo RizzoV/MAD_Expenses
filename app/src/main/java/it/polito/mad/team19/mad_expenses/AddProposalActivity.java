@@ -140,13 +140,8 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         currencyAutoCompleteTV.setAdapter(currenciesAdapter);
 
         // Vale: AutoCompleteTextView default value
-        String localeCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        String foundCurrencyString = "";
-        for(String s : currenciesList) {
-            if(s.contains(localeCurrencyCode))
-                foundCurrencyString = s;
-        }
-        currencyAutoCompleteTV.setText(foundCurrencyString);
+        String preferredCurrencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        currencyAutoCompleteTV.setText((String) currenciesAdapter.getItem(currenciesAdapter.searchInCurrenciesCodes(preferredCurrencyCode)));
 
         // Vale: onFocus the text disappears
         currencyAutoCompleteTV.setOnFocusChangeListener(new View.OnFocusChangeListener() {
