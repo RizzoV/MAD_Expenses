@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -26,9 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -40,7 +37,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,6 +49,7 @@ import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
 
 //TODO Jured: aggiungi click sulla tab History
 
@@ -205,18 +202,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot expense) {
 
-                String expenseCurrencyCode = expense.child("currencyCode").getValue(String.class);
                 final String[] userCurrencyCode = new String[1];
 
                 userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
-                // Solo per evitare crash con spese vecchie
-                if(expenseCurrencyCode == null)
-                    expenseCurrencyCode = "EUR";
-
-                if(!expenseCurrencyCode.equals(userCurrencyCode[0])) {
+                if(!"EUR".equals(userCurrencyCode[0])) {
                     try {
-                        exchangeRate = new AsyncCurrencyConverter(expenseCurrencyCode, userCurrencyCode[0]).execute().get();
+                        exchangeRate = new AsyncCurrencyConverter(ExpenseDetailsActivity.this, userCurrencyCode[0]).execute().get();
                     } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
@@ -224,12 +216,12 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 else
                     exchangeRate = 1f;
 
-                // Perché il convertitore di Yahoo non supporta proprio tutte le valute (tipo USN->GBP mi da N/A come risultato)
+                // per evitare crash
                 if(exchangeRate != null)
                     edAdapter.setExchangeRate(exchangeRate);
                 else {
                     exchangeRate = 1f;
-                    userCurrencyCode[0] = expenseCurrencyCode;
+                    userCurrencyCode[0] = "EUR";
                 }
                 expense_cost.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
 
@@ -245,7 +237,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                             if (debtor.child("immagine").exists())
                                 debtor_img = debtor.child("immagine").getValue().toString();
 
-                            expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, expenseCurrencyCode, userCurrencyCode[0]));
+                            expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, "EUR", userCurrencyCode[0]));
                             edAdapter.notifyDataSetChanged();
                         }
                         contributorsList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));

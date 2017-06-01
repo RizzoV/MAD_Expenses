@@ -1,4 +1,4 @@
-package it.polito.mad.team19.mad_expenses;
+package it.polito.mad.team19.mad_expenses.NotActivities;
 
 import android.os.AsyncTask;
 import android.provider.ContactsContract;

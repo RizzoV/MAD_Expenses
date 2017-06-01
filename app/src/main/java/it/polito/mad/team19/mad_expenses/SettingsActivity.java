@@ -44,6 +44,7 @@ import java.util.Set;
 
 import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.NotActivities.CurrenciesListGetter;
 
 public class SettingsActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -101,7 +102,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
         // Vale: Populate the currencies spienner
         // Genera lista di valute
-        Set<Currency> currencies = Currency.getAvailableCurrencies();
+        Set<Currency> currencies = (new CurrenciesListGetter(this)).getAvailableCurrencies();
         for (Currency currency : currencies) {
             try {
                 String listItem;

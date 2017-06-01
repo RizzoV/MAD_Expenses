@@ -26,7 +26,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,10 +52,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncFirebaseProposalLoader;
+import it.polito.mad.team19.mad_expenses.NotActivities.CurrenciesListGetter;
 
 /**
  * Created by Valentino on 04/04/2017.
@@ -124,7 +127,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         // Vale: AutoCompleteTextView adapter
         currencyAutoCompleteTV = (AutoCompleteTextView) findViewById(R.id.new_proposal_currency_actv);
         // Genera lista di valute
-        Set<Currency> currencies = Currency.getAvailableCurrencies();
+        Set<Currency> currencies = (new CurrenciesListGetter(this)).getAvailableCurrencies();
         for (Currency currency : currencies) {
             try {
                 String listItem;
@@ -246,9 +249,20 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("proposals");
         proposalId = myRef.push().getKey();
+        Float exchangeRate = 1f;
+
+        if(!currencyAutoCompleteTV.getText().toString().split("\t ")[0].contains("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(this, currencyAutoCompleteTV.getText().toString().split("\t ")[0])).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
+
+        String finalCostString = String.format(String.format(Locale.getDefault(), "%.2f", Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate)).replace(",", ".");
 
         AsyncFirebaseProposalLoader async = new AsyncFirebaseProposalLoader(proposalId, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
-                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split("\t ")[0], this);
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR", this);
 
         async.execute();
     }

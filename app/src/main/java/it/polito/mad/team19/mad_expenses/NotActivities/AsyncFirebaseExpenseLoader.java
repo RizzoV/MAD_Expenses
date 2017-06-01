@@ -1,4 +1,4 @@
-package it.polito.mad.team19.mad_expenses;
+package it.polito.mad.team19.mad_expenses.NotActivities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 
+import it.polito.mad.team19.mad_expenses.AddExpenseActivity;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 

@@ -29,7 +29,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -56,18 +55,21 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.Dialogs.GalleryOrCameraDialog;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncFirebaseBalanceLoader;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncFirebaseExpenseLoader;
+import it.polito.mad.team19.mad_expenses.NotActivities.CurrenciesListGetter;
 
 /**
  * Created by Bolz on 03/04/2017.
@@ -156,7 +158,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         // Vale: AutoCompleteTextView adapter
         currencyAutoCompleteTV = (AutoCompleteTextView) findViewById(R.id.new_expense_currency_actv);
         // Genera lista di valute
-        Set<Currency> currencies = Currency.getAvailableCurrencies();
+        Set<Currency> currencies = (new CurrenciesListGetter(this)).getAvailableCurrencies();
         for (Currency currency : currencies) {
             try {
                 String listItem;
@@ -427,6 +429,15 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
                     expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
 
+                    if(!currencyAutoCompleteTV.getText().toString().contains("EUR")) {
+                        try {
+                            Float exchangeRate = (new AsyncCurrencyConverter(AddExpenseActivity.this, currencyAutoCompleteTV.getText().toString().split("\t ")[0])).execute().get();
+                            expenseTotal /= exchangeRate;
+                        } catch (ExecutionException | InterruptedException e) {
+                            Log.e("AddExpenseActivity", e.getMessage());
+                        }
+                    }
+
                     uploadInfos();
                 } else {
                     // In modo da poter riscrivere qualcosa nel campo
@@ -441,14 +452,25 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         String uuid = myRef.push().getKey();
         newId = uuid;
+        Float exchangeRate = 1f;
 
         if (isModifyActivity && (getIntent().getStringExtra("butDoNotTrack") == null))
             idExpense = oldExpenseId;
         else
             idExpense = newId;
 
+        if(!currencyAutoCompleteTV.getText().toString().split("\t ")[0].contains("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(this, currencyAutoCompleteTV.getText().toString().split("\t ")[0])).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
+
+        String finalCostString = String.format(String.format(Locale.getDefault(), "%.2f", Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate)).replace(",", ".");
+
         AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
-                nameEditText.getText().toString(), descriptionEditText.getText().toString(), costEditText.getText().toString(), currencyAutoCompleteTV.getText().toString().split("\t ")[0],
+                nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR",
                 isModifyActivity, oldExpenseId, excludedList, contributorsList, oldImgUrl, this);
 
         async.execute();
