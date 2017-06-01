@@ -12,12 +12,12 @@ import java.util.Currency;
 public class Me implements Parcelable {
 
     private String name;
-    private Float amount;
+    private Double amount;
     private Currency currency;
     private String ImgUrl;
     private String id;
 
-    public Me(String id, String name, Float amount, Currency currency, String ImgUrl) {
+    public Me(String id, String name, Double amount, Currency currency, String ImgUrl) {
         this.id = id;
         this.name = name;
         this.amount = amount;
@@ -50,15 +50,15 @@ public class Me implements Parcelable {
         this.name = name;
     }
 
-    public Float getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Float cost) {
+    public void setAmount(Double cost) {
         this.amount = cost;
     }
 
-    public void addPartialAmount(Float amount) {
+    public void addPartialAmount(Double amount) {
         this.amount += amount;
     }
 
@@ -77,14 +77,14 @@ public class Me implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
         dest.writeString(name);
-        dest.writeFloat(amount);
+        dest.writeDouble(amount);
         dest.writeString(currency.getCurrencyCode());
         dest.writeString(ImgUrl);
     }
 
     public static final Parcelable.Creator<Me> CREATOR = new Parcelable.Creator<Me>() {
         public Me createFromParcel(Parcel in) {
-            return new Me(in.readString(), in.readString(), in.readFloat(), Currency.getInstance(in.readString()),in.readString());
+            return new Me(in.readString(), in.readString(), in.readDouble(), Currency.getInstance(in.readString()),in.readString());
         }
 
         @Override

@@ -12,18 +12,18 @@ public class Expense {
 
     private String name;
     private String descritpion;
-    private Float cost;
+    private Double cost;
     private Currency currency;
     private Image image;
     private String imagelink;
     private String author;
     private String firebaseId;
 
-    public Expense(String name, Float cost, String description, String imagelink, String author, String firebaseId) {
+    public Expense(String name, Double cost, String description, String imagelink, String author, String firebaseId) {
        this(name,  cost,  null,  description,  imagelink, author, firebaseId);
     }
 
-    public Expense(String name, Float cost, Currency currency, String description, String imagelink, String author, String firebaseId) {
+    public Expense(String name, Double cost, Currency currency, String description, String imagelink, String author, String firebaseId) {
         this.name = name;
         this.cost = cost;
         this.currency = currency;
@@ -45,11 +45,11 @@ public class Expense {
         this.name = name;
     }
 
-    public Float getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(Float cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 

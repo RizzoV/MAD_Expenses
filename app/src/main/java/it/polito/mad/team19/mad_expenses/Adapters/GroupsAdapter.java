@@ -89,8 +89,8 @@ public class GroupsAdapter extends BaseAdapter {
         viewHolder.name.setText(group.getName());
 
         /* Manage personal balance in group */
-        Float creditAmount = group.getCredit();
-        Float debtAmount = group.getDebt();
+        Double creditAmount = group.getCredit();
+        Double debtAmount = group.getDebt();
 
         if (creditAmount == 0 && debtAmount == 0) {
             viewHolder.balance.setText(R.string.no_credit_and_debt);

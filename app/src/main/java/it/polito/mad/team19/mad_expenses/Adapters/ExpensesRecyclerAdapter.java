@@ -33,12 +33,14 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
     private OnItemClickListener mItemClickListener;
     private OnItemLongClickListener mItemLongClickListener;
     private String groupId;
+    private Double exchangeRate;
 
     public ExpensesRecyclerAdapter(Context context, ArrayList<Expense> expenses, String groupId) {
         this.expenses = expenses;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(this.context);
         this.groupId = groupId;
+        this.exchangeRate = exchangeRate;
     }
 
     @Override

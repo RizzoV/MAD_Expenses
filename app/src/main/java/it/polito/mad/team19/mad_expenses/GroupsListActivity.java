@@ -571,8 +571,8 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         Log.d("Invite", child.toString());
 
                         final String groupName = child.child("nome").getValue().toString();
-                        final Float credito = Float.parseFloat(child.child("credito").getValue().toString());
-                        final Float debito = Float.parseFloat(child.child("debito").getValue().toString());
+                        final Double credito = Double.parseDouble(child.child("credito").getValue().toString());
+                        final Double debito = Double.parseDouble(child.child("debito").getValue().toString());
                         final String groupId = child.getKey();
                         final String immagine;
 

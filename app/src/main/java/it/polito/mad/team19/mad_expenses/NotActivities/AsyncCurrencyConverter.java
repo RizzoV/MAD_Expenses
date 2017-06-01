@@ -14,7 +14,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Float> {
+public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
 
     private String toCurrency;
     private Context context;
@@ -28,7 +28,7 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Float> {
 
 
     @Override
-    protected Float doInBackground(Void... vo) {
+    protected Double doInBackground(Void... vo) {
 
         FileOutputStream fos;
         FileInputStream fis;
@@ -37,7 +37,7 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Float> {
         String[] filesList;
         Boolean found = false;
         String jsonString;
-        Float exchangeRate = -1f;
+        Double exchangeRate = -1d;
 
         filesList = context.fileList();
 
@@ -79,7 +79,7 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Float> {
 
             // Ricava il valore della conversione
             if(json.getJSONObject("rates").getString(toCurrency) != null)
-                exchangeRate = Float.valueOf(json.getJSONObject("rates").getString(toCurrency));
+                exchangeRate = Double.parseDouble(json.getJSONObject("rates").getString(toCurrency));
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();

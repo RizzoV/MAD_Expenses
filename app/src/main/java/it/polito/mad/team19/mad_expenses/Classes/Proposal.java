@@ -10,13 +10,13 @@ public class Proposal {
 
     private String name;
     private String description;
-    private Float extimatedCost;
+    private Double extimatedCost;
     private String imageUrl;
     private Currency currency;
     private String firebaseId;
     private String author;
 
-    public Proposal(String name, String description, String author, Float extimatedCost, String imageUrl, Currency currency, String firebaseId) {
+    public Proposal(String name, String description, String author, Double extimatedCost, String imageUrl, Currency currency, String firebaseId) {
         this.name = name;
         this.description = description;
         this.author = author;
@@ -50,7 +50,7 @@ public class Proposal {
         return description;
     }
 
-    public Float getExtimatedCost() {
+    public Double getExtimatedCost() {
         return extimatedCost;
     }
 

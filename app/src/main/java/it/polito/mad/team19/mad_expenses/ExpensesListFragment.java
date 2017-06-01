@@ -46,9 +46,9 @@ public class ExpensesListFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private Float totalAmount;
-    private Float debtAmount;
-    private Float creditAmount;
+    private Double totalAmount;
+    private Double debtAmount;
+    private Double creditAmount;
     private Activity mActivity;
 
     private HashMap<String, Me> balancesMap = new HashMap<>();
@@ -73,9 +73,9 @@ public class ExpensesListFragment extends Fragment {
     ArrayList<Expense> expenses;
 
     public ExpensesListFragment() {
-        totalAmount = (float) 0;
-        debtAmount = (float) 0;
-        creditAmount = (float) 0;
+        totalAmount = (double) 0;
+        debtAmount = (double) 0;
+        creditAmount = (double) 0;
     }
 
     /**
@@ -129,7 +129,7 @@ public class ExpensesListFragment extends Fragment {
                 intent.putExtra("ExpenseName", clicked.getName());
                 intent.putExtra("ExpenseImgUrl", clicked.getImagelink());
                 intent.putExtra("ExpenseDesc", clicked.getDescritpion());
-                intent.putExtra("ExpenseCost", String.format(Locale.getDefault(), "%.2f", clicked.getCost()));
+                intent.putExtra("ExpenseCost", String.valueOf( clicked.getCost()));
                 intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                 intent.putExtra("ExpenseId", clicked.getFirebaseId());
@@ -239,9 +239,9 @@ public class ExpensesListFragment extends Fragment {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                totalAmount = (float) 0;
-                creditAmount = (float) 0;
-                debtAmount = (float) 0;
+                totalAmount = (double) 0;
+                creditAmount = (double) 0;
+                debtAmount = (double) 0;
                 expenses.clear();
                 balancesMap.clear();
 
@@ -271,15 +271,15 @@ public class ExpensesListFragment extends Fragment {
 
                                 if (balancesMap.containsKey(expenseBalance.getKey())) {
                                     if (expenseBalance.child("amount").exists())
-                                        balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                        balancesMap.get(expenseBalance.getKey()).addPartialAmount(Double.parseDouble(expenseBalance.child("amount").getValue().toString()));
                                 } else {
                                     if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
                                         Me newDebtor;
 
                                         if (expenseBalance.child("immagine").exists())
-                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
+                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
                                         else
-                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
+                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
 
                                         balancesMap.put(expenseBalance.getKey(), newDebtor);
                                     }
@@ -292,14 +292,14 @@ public class ExpensesListFragment extends Fragment {
                                 for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
                                     if (balancesMap.containsKey(expenseBalance.getKey())) {
                                         if (expenseBalance.child("amount").exists())
-                                            balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                            balancesMap.get(expenseBalance.getKey()).addPartialAmount(Double.parseDouble(expenseBalance.child("amount").getValue().toString()));
                                     } else {
                                         if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
                                             Me newDebtor;
                                             if (expenseBalance.child("immagine").exists())
-                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
+                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
                                             else
-                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
+                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
                                             balancesMap.put(expenseBalance.getKey(), newDebtor);
 
                                         }
@@ -311,7 +311,7 @@ public class ExpensesListFragment extends Fragment {
 
 
                     for (Me me : balancesMap.values()) {
-                        float currentAmount = me.getAmount();
+                        double currentAmount = me.getAmount();
                         if (currentAmount > 0)
                             creditAmount += currentAmount;
                         else

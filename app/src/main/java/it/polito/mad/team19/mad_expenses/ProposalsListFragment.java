@@ -102,7 +102,7 @@ public class ProposalsListFragment extends Fragment {
                 intent.putExtra("ProposalName", clicked.getName());
                 intent.putExtra("ProposalImgUrl", clicked.getImageUrl());
                 intent.putExtra("ProposalDesc", clicked.getDescription());
-                intent.putExtra("ProposalCost", String.format(Locale.getDefault(), "%.2f", clicked.getExtimatedCost()));
+                intent.putExtra("ProposalCost", String.valueOf(clicked.getExtimatedCost()));
                 intent.putExtra("ProposalAuthorId", clicked.getAuthor());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                 intent.putExtra("ProposalId", clicked.getFirebaseId());

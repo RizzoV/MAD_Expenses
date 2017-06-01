@@ -143,7 +143,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                 if(proposalCurrencyCode == null)
                     proposalCurrencyCode = "EUR";
 
-                Float exchangeRate = 1f;
+                Double exchangeRate = 1d;
                 if(!"EUR".equals(userCurrencyCode[0])) {
                     try {
                         exchangeRate = new AsyncCurrencyConverter(ProposalDetailsActivity.this, userCurrencyCode[0]).execute().get();
@@ -154,7 +154,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
                 // Per evitare crash
                 if(exchangeRate == null)
-                    exchangeRate = 1f;
+                    exchangeRate = 1d;
                 cost_tv.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
 
             }

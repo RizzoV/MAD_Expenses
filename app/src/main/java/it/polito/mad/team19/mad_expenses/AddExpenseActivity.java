@@ -96,7 +96,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private EditText costEditText;
     public EditText dateEditText;
     private AutoCompleteTextView currencyAutoCompleteTV;
-    private float expenseTotal;
+    private double expenseTotal;
     private String idExpense;
     private ProgressDialog barProgressDialog = null;
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
@@ -427,11 +427,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         }
                     };
 
-                    expenseTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
+                    expenseTotal = Double.parseDouble(costEditText.getText().toString().replace(",", "."));
 
                     if(!currencyAutoCompleteTV.getText().toString().contains("EUR")) {
                         try {
-                            Float exchangeRate = (new AsyncCurrencyConverter(AddExpenseActivity.this, currencyAutoCompleteTV.getText().toString().split("\t ")[0])).execute().get();
+                            Double exchangeRate = (new AsyncCurrencyConverter(AddExpenseActivity.this, currencyAutoCompleteTV.getText().toString().split("\t ")[0])).execute().get();
                             expenseTotal /= exchangeRate;
                         } catch (ExecutionException | InterruptedException e) {
                             Log.e("AddExpenseActivity", e.getMessage());
@@ -452,7 +452,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
         String uuid = myRef.push().getKey();
         newId = uuid;
-        Float exchangeRate = 1f;
+        Double exchangeRate = 1d;
 
         if (isModifyActivity && (getIntent().getStringExtra("butDoNotTrack") == null))
             idExpense = oldExpenseId;
@@ -467,7 +467,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             }
         }
 
-        String finalCostString = String.format(String.format(Locale.getDefault(), "%.2f", Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate)).replace(",", ".");
+        String finalCostString = String.format(String.valueOf(Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate)).replace(",", ".");
 
         AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR",
@@ -820,7 +820,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             nameEditText.setText(oldName);
             descriptionEditText.setText(oldDesc);
-            costEditText.setText(oldCost);
+            costEditText.setText(String.format(Locale.getDefault(), "%.2f", Float.parseFloat(oldCost)));
 
             try {
                 Glide.with(this).load(oldImgUrl).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().error(R.drawable.ic_circle_camera).into(new BitmapImageViewTarget(imageView) {
