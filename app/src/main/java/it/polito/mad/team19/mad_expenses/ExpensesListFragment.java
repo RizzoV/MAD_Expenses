@@ -30,11 +30,15 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Valentino on 22/05/2017.
@@ -102,7 +106,17 @@ public class ExpensesListFragment extends Fragment {
         expenses = new ArrayList<>();
 
         final RecyclerView expensesListRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-        expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses,getActivity().getIntent().getStringExtra("groupId") );
+
+        // Vale: gestione valute
+        String customCurrencyCode = getActivity().getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        // Ottiene il tasso di scambio
+        Double exchangeRate = 1d;
+        try {
+            exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e("AddExpenseActivity", e.getMessage());
+        }
+        expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses, getActivity().getIntent().getStringExtra("groupId"), Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
         expensesListRecyclerView.setAdapter(expensesListAdapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
@@ -129,7 +143,7 @@ public class ExpensesListFragment extends Fragment {
                 intent.putExtra("ExpenseName", clicked.getName());
                 intent.putExtra("ExpenseImgUrl", clicked.getImagelink());
                 intent.putExtra("ExpenseDesc", clicked.getDescritpion());
-                intent.putExtra("ExpenseCost", String.valueOf( clicked.getCost()));
+                intent.putExtra("ExpenseCost", String.valueOf(clicked.getCost()));
                 intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                 intent.putExtra("ExpenseId", clicked.getFirebaseId());
@@ -222,8 +236,7 @@ public class ExpensesListFragment extends Fragment {
         return rootView;
     }
 
-    public void refreshList()
-    {
+    public void refreshList() {
 
             /* VALE
              * Calcola statistiche su credito, debito e totale.
@@ -244,9 +257,6 @@ public class ExpensesListFragment extends Fragment {
                 debtAmount = (double) 0;
                 expenses.clear();
                 balancesMap.clear();
-
-
-
 
 
                 if (dataSnapshot.hasChildren() && free) {

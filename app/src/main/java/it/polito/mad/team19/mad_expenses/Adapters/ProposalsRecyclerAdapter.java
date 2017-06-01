@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
 import it.polito.mad.team19.mad_expenses.R;
@@ -30,16 +31,20 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
     private LayoutInflater mInflater;
 
     private String groupId;
+    private Double exchangeRate;
+    private String currencySymbol;
 
     //LUDO: aggiunto metodo onItemClickListener
     private ExpensesRecyclerAdapter.OnItemClickListener mItemClickListener;
     private ExpensesRecyclerAdapter.OnItemLongClickListener mItemLongClickListener;
 
-    public ProposalsRecyclerAdapter(Context context, ArrayList<Proposal> proposals, String groupId) {
+    public ProposalsRecyclerAdapter(Context context, ArrayList<Proposal> proposals, String groupId, String currencySymbol, Double exchangeRate) {
         this.proposals = proposals;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(context);
         this.groupId = groupId;
+        this.currencySymbol = currencySymbol;
+        this.exchangeRate = exchangeRate;
     }
 
     @Override
@@ -71,8 +76,6 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
         int position;
         Proposal current;
         View itemView;
-
-
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -109,12 +112,10 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
         public void setData (Proposal current, int position) {
             this.current = current;
             this.name.setText(current.getName());
-            this.amount.setText(current.getCurrency().getSymbol().toString() + " " + String.format("%.2f", current.getExtimatedCost()));
+            this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getExtimatedCost() * exchangeRate) + " " + currencySymbol);
             this.description.setText(current.getDescription());
             this.image.setImageResource(R.mipmap.ic_proposals);
             this.position = position;
-
-
         }
     }
 
