@@ -34,9 +34,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/smaller_vertical_margin"
-                android:layout_weight="0.7"
+                android:layout_weight="0.4"
                 android:ellipsize="end"
-                android:gravity="center_vertical"
+                android:gravity="bottom"
                 android:maxEms="1"
                 android:maxLines="1"
                 android:text="bolz"
@@ -48,6 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/smaller_vertical_margin"
+                android:layout_marginTop="3dp"
                 android:layout_weight="0.7"
                 android:ellipsize="end"
                 android:maxEms="1"
@@ -75,7 +76,7 @@
                     android:id="@+id/proposal_cost_amount_tv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.3"
+                    android:layout_weight="0.5"
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxEms="1"
@@ -91,8 +92,9 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="15dp"
                     android:gravity="center"
+                    android:layout_weight="0.8"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
 
 
