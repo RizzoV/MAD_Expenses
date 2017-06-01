@@ -606,7 +606,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     }
 
     private void setImageViewGlide(String mCurrentPhotoPath) {
-        Glide.with(this).load(new File(mCurrentPhotoPath)).asBitmap().centerCrop().into(new BitmapImageViewTarget(imageView) {
+        Glide.with(this).load(new File(mCurrentPhotoPath)).asBitmap().error(R.drawable.ic_circle_camera).centerCrop().into(new BitmapImageViewTarget(imageView) {
             @Override
             protected void setResource(Bitmap resource) {
                 RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
