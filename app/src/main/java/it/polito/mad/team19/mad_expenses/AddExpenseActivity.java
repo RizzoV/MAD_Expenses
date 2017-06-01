@@ -774,9 +774,10 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             oldGroupId = getIntent().getStringExtra("groupId");
             oldExpenseId = getIntent().getStringExtra("ExpenseId");
             oldExpenseImageBitmap = getIntent().getByteArrayExtra("ExpenseImage");
-            currencyCode = getIntent().getStringExtra("ExpenseCurrency");
-            if (currencyCode == null)
-                currencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+
+            currencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+
+
             currencyAutoCompleteTV.setText((String) currenciesAdapter.getItem(currenciesAdapter.searchInCurrenciesCodes(currencyCode)));
 
             //TODO Jured: gestire questa assegnazione asincrona
