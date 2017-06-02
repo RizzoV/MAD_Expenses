@@ -19,4 +19,10 @@
         <item>Modify group name</item>
         <item>Modify group image</item>
     </string-array>
+
+    <string-array name="graphView">
+        <item>Day</item>
+        <item>Month</item>
+        <item>Year</item>
+    </string-array>
 </resources>

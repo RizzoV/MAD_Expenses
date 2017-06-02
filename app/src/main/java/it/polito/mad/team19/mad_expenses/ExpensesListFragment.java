@@ -26,7 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
@@ -322,6 +324,15 @@ public class ExpensesListFragment extends Fragment {
                     creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
                     debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
                     totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+/*
+
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    String formattedDate[] = df.format(c.getTime()).split("-");
+
+                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("credito").setValue(creditAmount);
+                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("debito").setValue(debtAmount);
+*/
 
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);

@@ -3,7 +3,6 @@ package it.polito.mad.team19.mad_expenses;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -19,19 +18,24 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -61,11 +65,15 @@ public class MeActivity extends AppCompatActivity {
     ArrayList<Me> otherMembersList = new ArrayList<>();
     ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<>();
 
+    LineChart chart;
+
     ImageView my_thumb;
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
     AlertDialog alertDialog;
+
+    Spinner chartViewSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +93,7 @@ public class MeActivity extends AppCompatActivity {
         groupId = getIntent().getStringExtra("groupId");
 
         my_thumb = (ImageView) findViewById(R.id.me_activity_thumb);
+        chartViewSpinner = (Spinner) findViewById(R.id.chartViewSpinner);
 
         credito_tv = (TextView) findViewById(R.id.credito_tv);
         debito_tv = (TextView) findViewById(R.id.debito_tv);
@@ -300,43 +309,321 @@ public class MeActivity extends AppCompatActivity {
         for (int i = 0; i < otherMembersList.size(); i++)
             Log.d("meBalance", otherMembersList.get(i).getName() + " " + otherMembersList.get(i).getAmount().toString());
 
-        //Ludo: grafico a torta
-        PieChart pieChart = (PieChart) findViewById(R.id.chart);
+        //Ludo grafico storico
 
-        List<PieEntry> entries = new ArrayList<>();
+        chart = (LineChart) findViewById(R.id.chart);
 
-        if (debito != 0)
-            entries.add(new PieEntry(-debito, "Debito"));
-        if (credito != 0)
-            entries.add(new PieEntry(credito, "Credito"));
 
-        Legend legend = pieChart.getLegend();
-        legend.setEnabled(false);
+        //Ludo: hashmap da popolare per i grafici
 
-        pieChart.setDescription(null);
+        HashMap<Integer,Float> daysCredit = new HashMap<>();
+        HashMap<Integer,Float> monthsCredit = new HashMap<>();
+        HashMap<Integer,Float> yearsCredit = new HashMap<>();
+        HashMap<Integer,Float> daysDebit = new HashMap<>();
+        HashMap<Integer,Float> monthsDebit = new HashMap<>();
+        HashMap<Integer,Float> yearsDebit = new HashMap<>();
 
-        PieDataSet set = new PieDataSet(entries, "Debito/Credito");
+        daysCredit.put(1,500f);
+        daysCredit.put(10,100f);
+        daysCredit.put(19,300f);
+        daysCredit.put(30,200f);
 
-        if (debito != 0 && credito != 0)
-            set.setColors(new int[]{ R.color.redMaterial, R.color.textGreen }, getApplicationContext());
-        else {
-            if (debito != 0)
-                set.setColors(new int[]{R.color.redMaterial}, getApplicationContext());
-            if (credito != 0)
-                set.setColors(new int[]{R.color.textGreen}, getApplicationContext());
-        }
+        daysDebit.put(10,100f);
+        daysDebit.put(12,10f);
+        daysDebit.put(15,200f);
+        daysDebit.put(90,400f);
 
-        set.setValueTextSize(18);
-        set.setValueTextColor(Color.WHITE);
-        PieData data = new PieData(set);
-        pieChart.setData(data);
-        pieChart.invalidate(); // refresh
+        monthsCredit.put(4,200f);
+        monthsCredit.put(6,200f);
+        monthsCredit.put(8,200f);
+        monthsCredit.put(12,200f);
+
+        monthsDebit.put(3,300f);
+        monthsDebit.put(4,0f);
+        monthsDebit.put(12,300f);
+
+
+        int currentMonth = 6;
+        int startingYear = 2016;
+        int endingYear = 2017;
+
+        yearsCredit.put(2017,100f);
+        yearsDebit.put(2017,50f);
+
+        //Ludo: il primo grafico che viene visulizzaro quando si pare l'acitivty
+        setChartDayView(daysCredit,daysDebit,currentMonth);
+
+
+        chartViewSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch(position){
+                    case 0:
+                        setChartDayView(daysCredit,daysDebit,currentMonth);
+                        break;
+                    case 1:
+                        setChartMonthView(monthsCredit,monthsDebit);
+                        break;
+                    case 2:
+                        setChartYearView(yearsCredit,yearsDebit,startingYear,endingYear);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         if (debito < 0)
             debito = -debito;
         debito_tv.setText(String.format(Locale.getDefault(), "%.2f", debito) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
 
         credito_tv.setText(String.format(Locale.getDefault(), "%.2f", credito) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+    }
+
+    private void setChartYearView(HashMap<Integer, Float> yearsCredit, HashMap<Integer, Float> yearsDebit, int startingYear, int endingYear)
+    {
+        chart.setData(null);
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+
+
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        chart.setDescription(null);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(4);
+        xAxis.setDrawGridLines(true);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setLabelRotationAngle(270);
+        xAxis.setAvoidFirstLastClipping(true);
+
+        xAxis.setAxisMinimum(startingYear);
+        xAxis.setAxisMaximum(endingYear);
+
+        List<Entry> entries = new ArrayList<Entry>();
+        List<Entry> entries2 = new ArrayList<Entry>();
+
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return ((int) value)+"";
+            }
+        });
+
+        float currentCredit = 0;
+        float currentDebit = 0;
+
+
+
+        for(int i=startingYear;i<endingYear+1;i++)
+        {
+
+            if(yearsCredit.containsKey(i))
+                currentCredit = yearsCredit.get(i);
+            if(yearsDebit.containsKey(i))
+                currentDebit =  yearsDebit.get(i);
+
+            entries.add(new Entry(i,currentCredit));
+            entries2.add(new Entry(i,currentDebit));
+        }
+
+        LineDataSet creditoSet = new LineDataSet(entries, getResources().getString(R.string.credit));
+        creditoSet.setColor(getResources().getColor(R.color.colorPrimary));
+        creditoSet.setDrawCircles(false);
+        creditoSet.setDrawValues(false);
+        creditoSet.setLineWidth(2);
+        LineDataSet debitoSet = new LineDataSet(entries2,getResources().getString(R.string.debit));
+        debitoSet.setDrawCircles(false);
+        debitoSet.setDrawValues(false);
+        debitoSet.setLineWidth(2);
+        debitoSet.setColor(getResources().getColor(R.color.redMaterial));
+
+        LineData Data = new LineData(creditoSet,debitoSet);
+        chart.setData(Data);
+        chart.invalidate();
+    }
+
+    private void setChartMonthView(HashMap<Integer, Float> monthsCredit, HashMap<Integer, Float> monthsDebit)
+    {
+        chart.setData(null);
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        chart.setDescription(null);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(11);
+        xAxis.setDrawGridLines(true);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setLabelRotationAngle(270);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                switch((int)value)
+                {
+                    case 1:
+                        return getResources().getString(R.string.january);
+                    case 2:
+                        return getResources().getString(R.string.february);
+                    case 3:
+                        return getResources().getString(R.string.march);
+                    case 4:
+                        return getResources().getString(R.string.april);
+                    case 5:
+                        return getResources().getString(R.string.may);
+                    case 6:
+                        return getResources().getString(R.string.june);
+                    case 7:
+                        return getResources().getString(R.string.july);
+                    case 8:
+                        return getResources().getString(R.string.august);
+                    case 9:
+                        return getResources().getString(R.string.september);
+                    case 10:
+                        return getResources().getString(R.string.october);
+                    case 11:
+                        return getResources().getString(R.string.november);
+                    case 12:
+                        return getResources().getString(R.string.december);
+
+                    default:
+                        return value+"";
+
+                }
+            }
+        });
+
+        xAxis.setAxisMinimum(1);
+        xAxis.setAxisMaximum(12);
+
+        List<Entry> entries = new ArrayList<Entry>();
+        List<Entry> entries2 = new ArrayList<Entry>();
+
+        float currentCredit = 0;
+        float currentDebit = 0;
+
+        for(int i=1;i<13;i++)
+        {
+
+            if(monthsCredit.containsKey(i))
+                currentCredit = monthsCredit.get(i);
+            if(monthsDebit.containsKey(i))
+                currentDebit =  monthsDebit.get(i);
+
+            entries.add(new Entry(i,currentCredit));
+            entries2.add(new Entry(i,currentDebit));
+        }
+
+        LineDataSet creditoSet = new LineDataSet(entries, getResources().getString(R.string.credit));
+        creditoSet.setColor(getResources().getColor(R.color.colorPrimary));
+        creditoSet.setDrawCircles(false);
+        creditoSet.setDrawValues(false);
+        creditoSet.setLineWidth(2);
+        LineDataSet debitoSet = new LineDataSet(entries2,getResources().getString(R.string.debit));
+        debitoSet.setDrawCircles(false);
+        debitoSet.setDrawValues(false);
+        debitoSet.setLineWidth(2);
+        debitoSet.setColor(getResources().getColor(R.color.redMaterial));
+
+        LineData Data = new LineData(creditoSet,debitoSet);
+        chart.setData(Data);
+        chart.invalidate();
+    }
+
+    private void setChartDayView(HashMap<Integer, Float> daysCredit, HashMap<Integer, Float> daysDebit, int currentMonth)
+    {
+        int monthDays = 31;
+
+        if(currentMonth==11 || currentMonth==4 || currentMonth==9 || currentMonth==6)
+            monthDays = 30;
+
+        if(currentMonth==2)
+            monthDays=28;
+
+
+        chart.setData(null);
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        chart.setDescription(null);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(monthDays);
+        xAxis.setDrawGridLines(true);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setLabelRotationAngle(270);
+        xAxis.setAvoidFirstLastClipping(true);
+
+        xAxis.setAxisMinimum(1);
+        xAxis.setAxisMaximum(monthDays);
+
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return ((int) value)+"";
+            }
+        });
+
+        List<Entry> entries = new ArrayList<Entry>();
+        List<Entry> entries2 = new ArrayList<Entry>();
+
+        float currentCredit = 0;
+        float currentDebit = 0;
+
+        for(int i=1;i<monthDays+1;i++)
+        {
+
+            if(daysCredit.containsKey(i))
+                currentCredit = daysCredit.get(i);
+            if(daysDebit.containsKey(i))
+                currentDebit =  daysDebit.get(i);
+
+            entries.add(new Entry(i,currentCredit));
+            entries2.add(new Entry(i,currentDebit));
+        }
+
+        LineDataSet creditoSet = new LineDataSet(entries, getResources().getString(R.string.credit));
+        creditoSet.setColor(getResources().getColor(R.color.colorPrimary));
+        creditoSet.setDrawCircles(false);
+        creditoSet.setDrawValues(false);
+        creditoSet.setLineWidth(2);
+        LineDataSet debitoSet = new LineDataSet(entries2,getResources().getString(R.string.debit));
+        debitoSet.setDrawCircles(false);
+        debitoSet.setDrawValues(false);
+        debitoSet.setLineWidth(2);
+        debitoSet.setColor(getResources().getColor(R.color.redMaterial));
+
+        LineData Data = new LineData(creditoSet,debitoSet);
+        chart.setData(Data);
+        chart.invalidate();
+
+
     }
 
 

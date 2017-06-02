@@ -19,4 +19,9 @@
         <item>Modifica nome del gruppo</item>
         <item>Modifica immagine del gruppo</item>
     </string-array>
+    <string-array name="graphView">
+        <item>Giorno</item>
+        <item>Mese</item>
+        <item>Anno</item>
+    </string-array>
 </resources>
