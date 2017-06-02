@@ -344,6 +344,7 @@ public class MeActivity extends AppCompatActivity {
 
 
         int currentMonth = 6;
+        int currentDay = 10;
         int startingYear = 2016;
         int endingYear = 2017;
 
@@ -351,7 +352,7 @@ public class MeActivity extends AppCompatActivity {
         yearsDebit.put(2017,50f);
 
         //Ludo: il primo grafico che viene visulizzaro quando si pare l'acitivty
-        setChartDayView(daysCredit,daysDebit,currentMonth);
+        setChartDayView(daysCredit,daysDebit,currentMonth,currentDay);
 
 
         chartViewSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -359,10 +360,10 @@ public class MeActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch(position){
                     case 0:
-                        setChartDayView(daysCredit,daysDebit,currentMonth);
+                        setChartDayView(daysCredit,daysDebit,currentMonth,currentDay);
                         break;
                     case 1:
-                        setChartMonthView(monthsCredit,monthsDebit);
+                        setChartMonthView(monthsCredit,monthsDebit,currentMonth);
                         break;
                     case 2:
                         setChartYearView(yearsCredit,yearsDebit,startingYear,endingYear);
@@ -453,7 +454,7 @@ public class MeActivity extends AppCompatActivity {
         chart.invalidate();
     }
 
-    private void setChartMonthView(HashMap<Integer, Float> monthsCredit, HashMap<Integer, Float> monthsDebit)
+    private void setChartMonthView(HashMap<Integer, Float> monthsCredit, HashMap<Integer, Float> monthsDebit, int currentMonth)
     {
         chart.setData(null);
         chart.notifyDataSetChanged();
@@ -520,7 +521,7 @@ public class MeActivity extends AppCompatActivity {
         float currentCredit = 0;
         float currentDebit = 0;
 
-        for(int i=1;i<13;i++)
+        for(int i=1;i<currentMonth+1;i++)
         {
 
             if(monthsCredit.containsKey(i))
@@ -548,7 +549,7 @@ public class MeActivity extends AppCompatActivity {
         chart.invalidate();
     }
 
-    private void setChartDayView(HashMap<Integer, Float> daysCredit, HashMap<Integer, Float> daysDebit, int currentMonth)
+    private void setChartDayView(HashMap<Integer, Float> daysCredit, HashMap<Integer, Float> daysDebit, int currentMonth, int currentDay)
     {
         int monthDays = 31;
 
@@ -596,7 +597,7 @@ public class MeActivity extends AppCompatActivity {
         float currentCredit = 0;
         float currentDebit = 0;
 
-        for(int i=1;i<monthDays+1;i++)
+        for(int i=1;i<currentDay+1;i++)
         {
 
             if(daysCredit.containsKey(i))
