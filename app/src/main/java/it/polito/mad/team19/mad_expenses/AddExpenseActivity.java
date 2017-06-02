@@ -471,13 +471,13 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
         AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR",
-                isModifyActivity, oldExpenseId, excludedList, contributorsList, oldImgUrl, this);
+                isModifyActivity, oldExpenseId, excludedList, contributorsList, oldImgUrl,dateEditText.getText().toString(), this);
 
         async.execute();
     }
 
 
-    public void finishTasks(String expenseName, String expenseDesc, String expenseImgUrl, String expenseAuthorId, String cost, final String groupId, final String idExpense) {
+    public void finishTasks(String expenseName, String expenseDesc, String expenseImgUrl, String expenseAuthorId, String cost, final String groupId, final String idExpense, String date) {
 
         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
         final String notificationId = notificationRef.push().getKey();
@@ -511,6 +511,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             notification.put("ExpenseImgUrl", expenseImgUrl);
         notification.put("ExpenseAuthorId", expenseAuthorId);
         notification.put("ExpenseCost", cost);
+        notification.put("ExpenseDate", date);
         notification.put("uid", usrId);
         notification.put("groupId", groupId);
         notification.put("uname", username);

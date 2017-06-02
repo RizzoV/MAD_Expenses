@@ -149,6 +149,7 @@ public class ExpensesListFragment extends Fragment {
                 intent.putExtra("ExpenseDesc", clicked.getDescritpion());
                 intent.putExtra("ExpenseCost", String.valueOf(clicked.getCost()));
                 intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
+                intent.putExtra("ExpenseDate", clicked.getDate());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                 intent.putExtra("ExpenseId", clicked.getFirebaseId());
                 intent.putExtra("currentPersonalBalance", String.valueOf(creditAmount - debtAmount));
@@ -270,7 +271,7 @@ public class ExpensesListFragment extends Fragment {
 
                         FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
                         firebaseExpense.setKey(expense.getKey());
-                        expenses.add(0, new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey()));
+                        expenses.add(0, new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey(), firebaseExpense.getDate()));
 
                         //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                         expensesListAdapter.notifyDataSetChanged();

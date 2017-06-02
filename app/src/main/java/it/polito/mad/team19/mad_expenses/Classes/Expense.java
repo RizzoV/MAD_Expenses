@@ -18,12 +18,13 @@ public class Expense {
     private String imagelink;
     private String author;
     private String firebaseId;
+    private String date;
 
-    public Expense(String name, Double cost, String description, String imagelink, String author, String firebaseId) {
-       this(name,  cost,  null,  description,  imagelink, author, firebaseId);
+    public Expense(String name, Double cost, String description, String imagelink, String author, String firebaseId, String date) {
+       this(name,  cost,  null,  description,  imagelink, author, firebaseId, date);
     }
 
-    public Expense(String name, Double cost, Currency currency, String description, String imagelink, String author, String firebaseId) {
+    public Expense(String name, Double cost, Currency currency, String description, String imagelink, String author, String firebaseId, String date) {
         this.name = name;
         this.cost = cost;
         this.currency = currency;
@@ -31,10 +32,15 @@ public class Expense {
         this.imagelink = imagelink;
         this.author = author;
         this.firebaseId = firebaseId;
+        this.date = date;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     public String getImagelink() {
