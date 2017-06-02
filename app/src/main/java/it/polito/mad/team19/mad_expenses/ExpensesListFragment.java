@@ -111,7 +111,7 @@ public class ExpensesListFragment extends Fragment {
 
         // Vale: gestione valute
         String customCurrencyCode = getActivity().getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-        // Ottiene il tasso di scambio
+        // Ottieni il tasso di scambio
         Double exchangeRate = 1d;
         if(!customCurrencyCode.equals("EUR")) {
             try {
@@ -275,7 +275,6 @@ public class ExpensesListFragment extends Fragment {
                         //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                         expensesListAdapter.notifyDataSetChanged();
 
-                        //TODO generalizzare l'utilizzo della valuta
                         totalAmount += firebaseExpense.getCost();
 
                         DataSnapshot meRef = expense.child("contributors").child(myUid);
@@ -334,7 +333,7 @@ public class ExpensesListFragment extends Fragment {
 
                     // Vale: gestione valute
                     String customCurrencyCode = mActivity.getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-                    // Ottiene il tasso di scambio
+                    // Ottieni il tasso di scambio
                     Double exchangeRate = 1d;
                     if(!customCurrencyCode.equals("EUR")) {
                         try {

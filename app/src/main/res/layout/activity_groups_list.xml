@@ -11,8 +11,8 @@
         tools:context="it.polito.mad.team19.mad_expenses.GroupsListActivity">
 
         <ProgressBar
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:id="@+id/loading_pbar"/>

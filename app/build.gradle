@@ -13,6 +13,7 @@ android {
         versionCode 20
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
         // Required to use Java 8.
         jackOptions {
             enabled true
@@ -58,6 +59,7 @@ dependencies {
     compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.7'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
+    compile 'com.github.chrisbanes:PhotoView:1.2.6'
     testCompile 'junit:junit:4.12'
 }
 

@@ -170,7 +170,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
         // Vale: gestione valute
         String customCurrencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-        // Ottiene il tasso di scambio
+        // Ottieni il tasso di scambio
         Double exchangeRate = 1d;
         if (!customCurrencyCode.equals("EUR")) {
             try {
@@ -223,7 +223,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
         // Vale: gestione valute
         String customCurrencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-        // Ottiene il tasso di scambio
+        // Ottieni il tasso di scambio
         Double exchangeRate = 1d;
         if(!customCurrencyCode.equals("EUR")) {
             try {
