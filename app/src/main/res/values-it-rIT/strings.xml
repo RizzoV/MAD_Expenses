@@ -15,6 +15,9 @@
     <string name="total">Totale</string>
     <string name="title_activity_login">Sign in</string>
 
+    <string name="chartviewSpinnerPrompt">Scegli la vista</string>
+
+
     <!-- Group list activity -->
     <string name="no_group_found">Nessun gruppo trovato!</string>
     <string name="youre_not_part_of_any_group">Non fai parte di nessun gruppo! :(</string>
@@ -156,7 +159,6 @@
     <string name="confirmDebtExtinctionTitle">Conferma estinzione credito</string> <!-- ??????? -->
     <string name="confirmDebtExtinction">Vuoi estinguere questo credito?</string>
     <string name="cannotExtinguish">Impossibile estinguere un debito</string>
-
     <string name="allreadyMembers">Fai già parte di questo gruppo!</string>
 
 

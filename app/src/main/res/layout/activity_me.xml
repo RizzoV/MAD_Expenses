@@ -35,6 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:layout_marginBottom="5dp"
                     android:padding="@dimen/smaller_horizontal_margin">
 
                     <LinearLayout
@@ -130,12 +131,57 @@
 
                 </LinearLayout>
 
-                <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/chart"
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:id="@+id/summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="@string/summary" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/layout"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    android:layout_below="@+id/details"
-                    android:layout_centerHorizontal="true" />
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/chartviewSpinnerPrompt"
+                        android:textColor="@color/primaryText"
+                        android:textSize="18sp"
+                        />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/graphView"
+                        android:id="@+id/chartViewSpinner">
+                    </Spinner>
+
+                </LinearLayout>
+
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chart"
+                    android:layout_below="@+id/layout"
+                    android:layout_width="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_height="250dp" />
             </RelativeLayout>
 
         </android.support.v7.widget.CardView>
@@ -144,6 +190,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/card">
+
 
             <TextView
                 android:id="@+id/debits_and_credits_tv"
