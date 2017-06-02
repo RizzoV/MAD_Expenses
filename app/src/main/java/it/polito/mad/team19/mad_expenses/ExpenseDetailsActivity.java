@@ -50,6 +50,8 @@ import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 //TODO Jured: aggiungi click sulla tab History
 
@@ -143,10 +145,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         });
 
         // Click listener on the image
-
         if (imgUrl != null) {
-
-            nagDialog = new Dialog(ExpenseDetailsActivity.this, R.style.full_screen_dialog);
+            nagDialog = new Dialog(ExpenseDetailsActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
             nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             nagDialog.setCancelable(true);
             nagDialog.setContentView(R.layout.expense_image_preview);
@@ -163,7 +163,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             btnClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View arg0) {
-
                     nagDialog.dismiss();
                 }
             });
@@ -171,13 +170,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             expense_img.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     nagDialog.show();
                 }
             });
         }
-        final FirebaseDatabase firebase = FirebaseDatabase.getInstance();
 
+
+        final FirebaseDatabase firebase = FirebaseDatabase.getInstance();
         DatabaseReference dbAuthorNameRef = firebase.getReference("gruppi").child(groupId).child("membri").child(authorId).child("nome").getRef();
         dbAuthorNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

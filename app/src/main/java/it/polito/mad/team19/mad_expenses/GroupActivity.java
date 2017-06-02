@@ -137,7 +137,6 @@ public class GroupActivity extends AppCompatActivity {
         final ImageView logo = (ImageView) findViewById(R.id.toolbarLogo);
 
         // Manage group image
-
         Glide.with(this).load(groupImageUrl).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(logo) {
             @Override
             protected void setResource(Bitmap resource) {
