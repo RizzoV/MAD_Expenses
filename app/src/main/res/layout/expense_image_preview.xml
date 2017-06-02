@@ -4,7 +4,7 @@
     android:background="#212121"
     android:layout_height="match_parent">
 
-    <ImageView
+    <uk.co.senab.photoview.PhotoView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/iv_preview_image"/>

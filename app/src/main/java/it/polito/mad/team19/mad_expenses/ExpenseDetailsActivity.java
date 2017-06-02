@@ -151,7 +151,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             nagDialog.setCancelable(true);
             nagDialog.setContentView(R.layout.expense_image_preview);
             Button btnClose = (Button) nagDialog.findViewById(R.id.btnIvClose);
-            ImageView ivPreview = (ImageView) nagDialog.findViewById(R.id.iv_preview_image);
+            PhotoView ivPreview = (PhotoView) nagDialog.findViewById(R.id.iv_preview_image);
 
             Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(ivPreview) {
                 @Override
