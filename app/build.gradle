@@ -13,6 +13,7 @@ android {
         versionCode 20
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
         // Required to use Java 8.
         jackOptions {
             enabled true

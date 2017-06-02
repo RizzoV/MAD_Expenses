@@ -52,7 +52,6 @@ public class NotificationService extends IntentService{
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
 
-
     public NotificationService()
     {
         super("NotificationService");
@@ -171,7 +170,7 @@ public class NotificationService extends IntentService{
 
                                                                                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
                                                                                 mBuilder.setVibrate(new long[]{500, 500});
-                                                                                mBuilder.setLights(Color.GREEN, 3000, 3000);
+                                                                                mBuilder.setLights(Color.GREEN, 2000, 2000);
                                                                                 //Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                                                                 Uri alarmSound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notitification);
                                                                                 mBuilder.setSound(alarmSound);

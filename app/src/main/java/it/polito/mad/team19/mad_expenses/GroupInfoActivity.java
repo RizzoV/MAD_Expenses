@@ -69,7 +69,6 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     private static final int REQUEST_GALLERY_IMAGE = 23;
     private static final int REQUEST_TAKE_PHOTO = 17;
 
-
     ImageView image;
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbar;
@@ -201,6 +200,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                     adapter.notifyDataSetChanged();
                 }
 
+                findViewById(R.id.pBar_groupInfo).setVisibility(View.GONE);
                 setListenerLeaveGroup(groupId);
             }
             @Override

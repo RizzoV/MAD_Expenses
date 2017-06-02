@@ -18,6 +18,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Classes.Me;
 import it.polito.mad.team19.mad_expenses.R;
@@ -32,11 +34,15 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
     private Activity context;
     private LayoutInflater mInflater;
     private OnItemClickListener mItemClickListener;
+    private String currencySymbol;
+    private Double exchangeRate;
 
-    public MeRecyclerAdapter(Context context, ArrayList<Me> me) {
+    public MeRecyclerAdapter(Context context, ArrayList<Me> me, String currencySymbol, Double exchangeRate) {
         this.me = me;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(context);
+        this.exchangeRate = exchangeRate;
+        this.currencySymbol = currencySymbol;
     }
 
     @Override
@@ -81,7 +87,7 @@ public class MeRecyclerAdapter extends RecyclerView.Adapter<MeRecyclerAdapter.My
 
         public void setData(Me current, int position) {
             this.name.setText(current.getName());
-            this.amount.setText(String.format("%.2f", current.getAmount()) + " " + current.getCurrency().getSymbol().toString());
+            this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getAmount() * exchangeRate) + " " + currencySymbol);
             if (current.getAmount() > 0)
                 amount.setTextColor(ContextCompat.getColor(context, R.color.textGreen));
             else if (current.getAmount() < 0)
