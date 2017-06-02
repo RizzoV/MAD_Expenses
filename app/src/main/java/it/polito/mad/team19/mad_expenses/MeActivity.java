@@ -50,11 +50,13 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.MeRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
 
 public class MeActivity extends AppCompatActivity {
 
@@ -74,6 +76,10 @@ public class MeActivity extends AppCompatActivity {
     AlertDialog alertDialog;
 
     Spinner chartViewSpinner;
+
+    String customCurrencyCode;
+    Double exchangeRate = 1d;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +144,19 @@ public class MeActivity extends AppCompatActivity {
         me_username_tv.setText(uname);
 
         getMembers();
+
+
+        // Vale: gestione valute
+        customCurrencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        // Ottieni il tasso di scambio
+        if (!customCurrencyCode.equals("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(this, customCurrencyCode)).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
+
     }
 
     private void getMembers() {
@@ -168,15 +187,15 @@ public class MeActivity extends AppCompatActivity {
     private void getBalance() {
 
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.fromto_rv);
-        final MeRecyclerAdapter adapter = new MeRecyclerAdapter(this, otherMembersList);
+        final MeRecyclerAdapter adapter = new MeRecyclerAdapter(this, otherMembersList, Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
         mRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(this);
         mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLinearLayoutManagerVertical);
 
-        float debito = 0;
-        float credito = 0;
+        double debito = 0d;
+        double credito = 0d;
 
         /* VALE
          * Prendi le informazioni dal Bundle passato tramite l'intent
@@ -313,7 +332,6 @@ public class MeActivity extends AppCompatActivity {
 
         chart = (LineChart) findViewById(R.id.chart);
 
-
         //Ludo: hashmap da popolare per i grafici
 
         HashMap<Integer,Float> daysCredit = new HashMap<>();
@@ -378,9 +396,9 @@ public class MeActivity extends AppCompatActivity {
 
         if (debito < 0)
             debito = -debito;
-        debito_tv.setText(String.format(Locale.getDefault(), "%.2f", debito) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+        debito_tv.setText(String.format(Locale.getDefault(), "%.2f", debito * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
 
-        credito_tv.setText(String.format(Locale.getDefault(), "%.2f", credito) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+        credito_tv.setText(String.format(Locale.getDefault(), "%.2f", credito * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
     }
 
     private void setChartYearView(HashMap<Integer, Float> yearsCredit, HashMap<Integer, Float> yearsDebit, int startingYear, int endingYear)

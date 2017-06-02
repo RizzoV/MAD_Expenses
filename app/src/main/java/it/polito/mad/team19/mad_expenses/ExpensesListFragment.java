@@ -111,7 +111,7 @@ public class ExpensesListFragment extends Fragment {
 
         // Vale: gestione valute
         String customCurrencyCode = getActivity().getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-        // Ottiene il tasso di scambio
+        // Ottieni il tasso di scambio
         Double exchangeRate = 1d;
         if(!customCurrencyCode.equals("EUR")) {
             try {
@@ -333,7 +333,7 @@ public class ExpensesListFragment extends Fragment {
 
                     // Vale: gestione valute
                     String customCurrencyCode = mActivity.getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-                    // Ottiene il tasso di scambio
+                    // Ottieni il tasso di scambio
                     Double exchangeRate = 1d;
                     if(!customCurrencyCode.equals("EUR")) {
                         try {
