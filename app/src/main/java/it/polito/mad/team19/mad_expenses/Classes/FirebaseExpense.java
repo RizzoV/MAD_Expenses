@@ -14,23 +14,23 @@ public class FirebaseExpense
     private String key;
     private String name;
     private String description;
-    private Float cost;
+    private Double cost;
     private String currencyCode;
     private String image;
     private String isModified;
 
     public FirebaseExpense () {}
 
-    public FirebaseExpense(String author, String name, String description, Float cost, String currencyCode)
+    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode)
     {
         this(author, name, description, cost, currencyCode, null, null);
     }
 
-    public FirebaseExpense(String author, String name, String description, Float cost, String currencyCode, String image) {
+    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image) {
         this(author, name, description, cost, currencyCode, image, null);
     }
 
-    public FirebaseExpense(String author, String name, String description, Float cost, String currencyCode, String image, String isModified)
+    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image, String isModified)
     {
         this.author = author;
         this.name = name;
@@ -74,11 +74,11 @@ public class FirebaseExpense
         this.description = description;
     }
 
-    public Float getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(Float cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 

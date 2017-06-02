@@ -532,7 +532,7 @@ public class GroupActivity extends AppCompatActivity {
             ArrayList<FirebaseGroupMember> contributors = data.getParcelableArrayListExtra("contributors");
             ArrayList<FirebaseGroupMember> excluded = data.getParcelableArrayListExtra("excluded");
 
-            calculateBalances(data.getStringExtra("expenseId"), Float.parseFloat(data.getStringExtra("expenseTotal")), data.getStringExtra("expenseUId"),
+            calculateBalances(data.getStringExtra("expenseId"), Double.parseDouble(data.getStringExtra("expenseTotal")), data.getStringExtra("expenseUId"),
                     data.getStringExtra("expenseUserName"), contributors, excluded);
         }
 
@@ -552,7 +552,7 @@ public class GroupActivity extends AppCompatActivity {
         }
     }
 
-    private void calculateBalances (final String expenseId, final float expenseTotal, final String expenseUuid, final String expenseUserName,
+    private void calculateBalances (final String expenseId, final double expenseTotal, final String expenseUuid, final String expenseUserName,
                                    final ArrayList<FirebaseGroupMember> contributors, final ArrayList<FirebaseGroupMember> excluded) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference groupMembersRef = database.getReference("gruppi").child(groupId).child("membri");

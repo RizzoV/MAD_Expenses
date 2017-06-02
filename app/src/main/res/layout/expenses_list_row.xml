@@ -4,11 +4,10 @@
     android:id="@+id/expense_cv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardElevation="2dp"
-    android:layout_marginStart="@dimen/smaller_horizontal_margin"
     android:layout_marginEnd="@dimen/smaller_horizontal_margin"
+    android:layout_marginStart="@dimen/smaller_horizontal_margin"
     android:layout_marginTop="@dimen/smaller_vertical_margin"
-    >
+    app:cardElevation="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,16 +26,16 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_weight="0.7"
-            android:orientation="vertical"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/expense_name_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/smaller_vertical_margin"
-                android:layout_weight="0.5"
+                android:layout_weight="0.4"
                 android:ellipsize="end"
                 android:gravity="bottom"
                 android:maxEms="1"
@@ -65,7 +64,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.23"
+            android:layout_weight="0.3"
             android:orientation="vertical">
 
             <LinearLayout
@@ -78,35 +77,34 @@
                     android:id="@+id/expense_cost_amount_tv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.4"
+                    android:layout_weight="0.5"
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxEms="1"
                     android:maxLines="1"
                     android:text="€ 9999,21"
+                    android:layout_marginEnd="@dimen/smaller_horizontal_margin"
                     android:textAlignment="center"
                     android:textColor="@color/redMaterial"
-                    android:textSize="@dimen/titles_size" />
+                    android:textSize="18sp" />
 
                 <LinearLayout
-                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="15dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_marginBottom="15dp"
                     android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_weight="0.8"
+                    android:orientation="horizontal">
 
-
-
-
-                        <Button
-                            android:id="@+id/topic_button"
-                            android:layout_gravity="center"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:background="@drawable/ic_topic"
-                            android:clickable="true"/>
+                    <Button
+                        android:id="@+id/topic_button"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_topic"
+                        android:clickable="true" />
 
                 </LinearLayout>
             </LinearLayout>

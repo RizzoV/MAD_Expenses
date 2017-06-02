@@ -106,7 +106,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
                         @Override
                         public void onSuccess(Uri uri) {
 
-                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Float.valueOf(costEditText.replace(",", ".")), currencyCode, uri.toString()));
+                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Double.parseDouble(costEditText.replace(",", ".")), currencyCode, uri.toString()));
 
                             for (FirebaseGroupMember member : excludedList) {
                                 newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
@@ -136,7 +136,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
             });
         } else {
             Log.d("DebugCaricamentoSpesa", "NoImage");
-            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Float.valueOf(costEditText.replace(",", ".")), currencyCode));
+            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Double.parseDouble(costEditText.replace(",", ".")), currencyCode));
             for (FirebaseGroupMember member : excludedList) {
                 newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
                 newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());

@@ -26,15 +26,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Expense;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Valentino on 22/05/2017.
@@ -46,9 +52,9 @@ public class ExpensesListFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private Float totalAmount;
-    private Float debtAmount;
-    private Float creditAmount;
+    private Double totalAmount;
+    private Double debtAmount;
+    private Double creditAmount;
     private Activity mActivity;
 
     private HashMap<String, Me> balancesMap = new HashMap<>();
@@ -73,9 +79,9 @@ public class ExpensesListFragment extends Fragment {
     ArrayList<Expense> expenses;
 
     public ExpensesListFragment() {
-        totalAmount = (float) 0;
-        debtAmount = (float) 0;
-        creditAmount = (float) 0;
+        totalAmount = (double) 0;
+        debtAmount = (double) 0;
+        creditAmount = (double) 0;
     }
 
     /**
@@ -102,7 +108,19 @@ public class ExpensesListFragment extends Fragment {
         expenses = new ArrayList<>();
 
         final RecyclerView expensesListRecyclerView = (RecyclerView) rootView.findViewById(R.id.expenses_lv);
-        expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses,getActivity().getIntent().getStringExtra("groupId") );
+
+        // Vale: gestione valute
+        String customCurrencyCode = getActivity().getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        // Ottiene il tasso di scambio
+        Double exchangeRate = 1d;
+        if(!customCurrencyCode.equals("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
+        expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses, getActivity().getIntent().getStringExtra("groupId"), Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
         expensesListRecyclerView.setAdapter(expensesListAdapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
@@ -129,7 +147,7 @@ public class ExpensesListFragment extends Fragment {
                 intent.putExtra("ExpenseName", clicked.getName());
                 intent.putExtra("ExpenseImgUrl", clicked.getImagelink());
                 intent.putExtra("ExpenseDesc", clicked.getDescritpion());
-                intent.putExtra("ExpenseCost", String.format(Locale.getDefault(), "%.2f", clicked.getCost()));
+                intent.putExtra("ExpenseCost", String.valueOf(clicked.getCost()));
                 intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                 intent.putExtra("ExpenseId", clicked.getFirebaseId());
@@ -222,8 +240,7 @@ public class ExpensesListFragment extends Fragment {
         return rootView;
     }
 
-    public void refreshList()
-    {
+    public void refreshList() {
 
             /* VALE
              * Calcola statistiche su credito, debito e totale.
@@ -239,14 +256,11 @@ public class ExpensesListFragment extends Fragment {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                totalAmount = (float) 0;
-                creditAmount = (float) 0;
-                debtAmount = (float) 0;
+                totalAmount = (double) 0;
+                creditAmount = (double) 0;
+                debtAmount = (double) 0;
                 expenses.clear();
                 balancesMap.clear();
-
-
-
 
 
                 if (dataSnapshot.hasChildren() && free) {
@@ -271,15 +285,15 @@ public class ExpensesListFragment extends Fragment {
 
                                 if (balancesMap.containsKey(expenseBalance.getKey())) {
                                     if (expenseBalance.child("amount").exists())
-                                        balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                        balancesMap.get(expenseBalance.getKey()).addPartialAmount(Double.parseDouble(expenseBalance.child("amount").getValue().toString()));
                                 } else {
                                     if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
                                         Me newDebtor;
 
                                         if (expenseBalance.child("immagine").exists())
-                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
+                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
                                         else
-                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
+                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
 
                                         balancesMap.put(expenseBalance.getKey(), newDebtor);
                                     }
@@ -292,14 +306,14 @@ public class ExpensesListFragment extends Fragment {
                                 for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
                                     if (balancesMap.containsKey(expenseBalance.getKey())) {
                                         if (expenseBalance.child("amount").exists())
-                                            balancesMap.get(expenseBalance.getKey()).addPartialAmount(Float.parseFloat(expenseBalance.child("amount").getValue().toString()));
+                                            balancesMap.get(expenseBalance.getKey()).addPartialAmount(Double.parseDouble(expenseBalance.child("amount").getValue().toString()));
                                     } else {
                                         if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
                                             Me newDebtor;
                                             if (expenseBalance.child("immagine").exists())
-                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
+                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
                                             else
-                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Float.parseFloat(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
+                                                newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
                                             balancesMap.put(expenseBalance.getKey(), newDebtor);
 
                                         }
@@ -311,17 +325,29 @@ public class ExpensesListFragment extends Fragment {
 
 
                     for (Me me : balancesMap.values()) {
-                        float currentAmount = me.getAmount();
+                        double currentAmount = me.getAmount();
                         if (currentAmount > 0)
                             creditAmount += currentAmount;
                         else
                             debtAmount += currentAmount;
                     }
 
+                    // Vale: gestione valute
+                    String customCurrencyCode = mActivity.getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+                    // Ottiene il tasso di scambio
+                    Double exchangeRate = 1d;
+                    if(!customCurrencyCode.equals("EUR")) {
+                        try {
+                            exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+                        } catch (ExecutionException | InterruptedException e) {
+                            Log.e("AddExpenseActivity", e.getMessage());
+                        }
+                    }
+
                     debtAmount = Math.abs(debtAmount);
-                    creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
-                    debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
-                    totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                    creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+                    debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+                    totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
 
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);

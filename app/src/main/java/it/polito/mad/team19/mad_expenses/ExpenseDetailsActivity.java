@@ -92,7 +92,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
     private boolean zoomOut = false;
 
-    private Float exchangeRate = 1f;
+    private Double exchangeRate = 1d;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -231,13 +231,13 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                     }
                 }
                 else
-                    exchangeRate = 1f;
+                    exchangeRate = 1d;
 
                 // per evitare crash
                 if(exchangeRate != null)
                     edAdapter.setExchangeRate(exchangeRate);
                 else {
-                    exchangeRate = 1f;
+                    exchangeRate = 1d;
                     userCurrencyCode[0] = "EUR";
                 }
                 expense_cost.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
@@ -254,7 +254,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                             if (debtor.child("immagine").exists())
                                 debtor_img = debtor.child("immagine").getValue().toString();
 
-                            expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, "EUR", userCurrencyCode[0]));
+                            expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.valueOf(Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, "EUR", userCurrencyCode[0]));
                             edAdapter.notifyDataSetChanged();
                         }
                         contributorsList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));
@@ -304,7 +304,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
 
                                                         String chosenAmount = String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtEditText.getText().toString().trim().replace(",", ".")));
-                                                        String chosenAmountConverted = String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtEditText.getText().toString().trim().replace(",", "."))/exchangeRate).replace(",", ".");
+                                                        String chosenAmountConverted = String.valueOf(Float.valueOf(debtEditText.getText().toString().trim().replace(",", "."))/exchangeRate).replace(",", ".");
                                                         debtAmountRef.setValue("-" + chosenAmountConverted);
                                                         creditAmountRef.setValue(chosenAmountConverted);
 
@@ -495,7 +495,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 changeExpenseIntent.putExtra("ExpenseName", name);
                 changeExpenseIntent.putExtra("ExpenseImgUrl", imgUrl);
                 changeExpenseIntent.putExtra("ExpenseDesc", desc);
-                changeExpenseIntent.putExtra("ExpenseCost", String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate));
+                changeExpenseIntent.putExtra("ExpenseCost", String.valueOf( Float.valueOf(cost.replace(",", ".")) * exchangeRate));
                 changeExpenseIntent.putExtra("ExpenseAuthorId", expenseAuthor);
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);

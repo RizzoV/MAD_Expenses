@@ -49,10 +49,11 @@ public class ProposalDetailsActivity extends AppCompatActivity {
     private ImageView proposal_img;
     private TextView set_photo_tv;
     private String imgUrl;
-    private String proposalCurrencyCode;
 
     private AlertDialog alertDialog = null;
     private AlertDialog alertDialog1 = null;
+
+    private Double exchangeRate = 1d;
 
     @Override
     protected void onPause() {
@@ -84,6 +85,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         final String name;
         final String cost;
         String authorId;
+
 
         final TextView author_tv;
         TextView cost_tv;
@@ -139,11 +141,6 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
                 userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
-                // Solo per evitare crash
-                if(proposalCurrencyCode == null)
-                    proposalCurrencyCode = "EUR";
-
-                Float exchangeRate = 1f;
                 if(!"EUR".equals(userCurrencyCode[0])) {
                     try {
                         exchangeRate = new AsyncCurrencyConverter(ProposalDetailsActivity.this, userCurrencyCode[0]).execute().get();
@@ -154,7 +151,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
                 // Per evitare crash
                 if(exchangeRate == null)
-                    exchangeRate = 1f;
+                    exchangeRate = 1d;
                 cost_tv.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
 
             }
@@ -535,7 +532,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         i.putExtra("ExpenseDesc", desc);
                         i.putExtra("ExpenseImgUrl", imgUrl);
                         i.putExtra("ExpenseAuthorId", userId);
-                        i.putExtra("ExpenseCost", cost);
+                        i.putExtra("ExpenseCost", String.valueOf(Double.parseDouble(cost) * exchangeRate));
                         i.putExtra("groupId", groupId);
                         i.putExtra("ExpenseId,", "fake");
                         i.putExtra("ModifyIntent", "true");
@@ -543,7 +540,6 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         i.putExtra("butDoNotTrack", "true");
                         i.putExtra("contributorsList", contributors);
                         i.putExtra("excludedList", excluded);
-                        i.putExtra("ExpenseCurrency", proposalCurrencyCode);
                         startActivity(i);
 
                         // Delete the proposal
