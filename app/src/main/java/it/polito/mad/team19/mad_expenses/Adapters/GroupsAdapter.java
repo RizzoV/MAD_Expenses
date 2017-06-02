@@ -33,8 +33,10 @@ import it.polito.mad.team19.mad_expenses.R;
 
 public class GroupsAdapter extends BaseAdapter {
 
-    ArrayList<Group> groupList;
-    Activity context;
+    private ArrayList<Group> groupList;
+    private Activity context;
+    private Double exchangeRate;
+    private String currencySymbol;
 
     static class ImgHolder {
         TextView name;
@@ -44,9 +46,11 @@ public class GroupsAdapter extends BaseAdapter {
         ImageView image;
     }
 
-    public GroupsAdapter(Context context, ArrayList<Group> groupList) {
+    public GroupsAdapter(Context context, ArrayList<Group> groupList, String currencySymbol, Double exchangeRate) {
         this.groupList = groupList;
         this.context = (Activity) context;
+        this.currencySymbol = currencySymbol;
+        this.exchangeRate = exchangeRate;
     }
 
     @Override
@@ -61,7 +65,6 @@ public class GroupsAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-
         return 0;
     }
 
@@ -95,8 +98,8 @@ public class GroupsAdapter extends BaseAdapter {
         if (creditAmount == 0 && debtAmount == 0) {
             viewHolder.balance.setText(R.string.no_credit_and_debt);
         } else {
-            String debtText = String.format(Locale.getDefault(), "%.2f", debtAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol();
-            String creditText = String.format(Locale.getDefault(), "%.2f", creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol();
+            String debtText = String.format(Locale.getDefault(), "%.2f", debtAmount * exchangeRate) + " " + currencySymbol;
+            String creditText = String.format(Locale.getDefault(), "%.2f", creditAmount * exchangeRate) + " " + currencySymbol;
             String text_1 = context.getResources().getString(R.string.group_and_credit);
             String text_2 = context.getResources().getString(R.string.group_debt);
             String text_final = text_1 + " " + creditText + " - " + text_2 + " " +  debtText;
@@ -144,6 +147,12 @@ public class GroupsAdapter extends BaseAdapter {
         }
 
         return convertView;
+    }
+
+    public void checkCurrencyChanged(String currencySymbol, Double exchangeRate) {
+        this.currencySymbol = currencySymbol;
+        this.exchangeRate = exchangeRate;
+        this.notifyDataSetChanged();
     }
 
 }

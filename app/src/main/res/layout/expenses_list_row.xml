@@ -83,9 +83,10 @@
                     android:maxEms="1"
                     android:maxLines="1"
                     android:text="€ 9999,21"
+                    android:layout_marginEnd="@dimen/smaller_horizontal_margin"
                     android:textAlignment="center"
                     android:textColor="@color/redMaterial"
-                    android:textSize="@dimen/titles_size" />
+                    android:textSize="18sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

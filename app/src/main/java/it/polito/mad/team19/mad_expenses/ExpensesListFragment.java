@@ -111,10 +111,12 @@ public class ExpensesListFragment extends Fragment {
         String customCurrencyCode = getActivity().getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
         // Ottiene il tasso di scambio
         Double exchangeRate = 1d;
-        try {
-            exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e("AddExpenseActivity", e.getMessage());
+        if(!customCurrencyCode.equals("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
         }
         expensesListAdapter = new ExpensesRecyclerAdapter(getActivity(), expenses, getActivity().getIntent().getStringExtra("groupId"), Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
         expensesListRecyclerView.setAdapter(expensesListAdapter);
@@ -328,10 +330,22 @@ public class ExpensesListFragment extends Fragment {
                             debtAmount += currentAmount;
                     }
 
+                    // Vale: gestione valute
+                    String customCurrencyCode = mActivity.getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+                    // Ottiene il tasso di scambio
+                    Double exchangeRate = 1d;
+                    if(!customCurrencyCode.equals("EUR")) {
+                        try {
+                            exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+                        } catch (ExecutionException | InterruptedException e) {
+                            Log.e("AddExpenseActivity", e.getMessage());
+                        }
+                    }
+
                     debtAmount = Math.abs(debtAmount);
-                    creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
-                    debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
-                    totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
+                    creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+                    debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+                    totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
 
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);

@@ -1,5 +1,7 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -47,6 +49,8 @@ public class ProposalsListFragment extends Fragment {
     private Proposal clicked;
     private ProposalsRecyclerAdapter adapter;
 
+    private Context mActivity;
+
     public ProposalsListFragment() {
     }
 
@@ -92,13 +96,15 @@ public class ProposalsListFragment extends Fragment {
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.proposals_rv);
 
         // Vale: gestione valute
-        String customCurrencyCode = getActivity().getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        String customCurrencyCode = mActivity.getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
         // Ottiene il tasso di scambio
         Double exchangeRate = 1d;
-        try {
-            exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e("AddExpenseActivity", e.getMessage());
+        if(!customCurrencyCode.equals("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
         }
         adapter = new ProposalsRecyclerAdapter(getActivity(), proposals, getActivity().getIntent().getStringExtra("groupId"), Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
         mRecyclerView.setAdapter(adapter);
@@ -179,5 +185,12 @@ public class ProposalsListFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        mActivity = (Activity) context;
     }
 }

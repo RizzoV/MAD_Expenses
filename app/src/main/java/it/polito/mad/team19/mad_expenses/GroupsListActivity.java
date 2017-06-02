@@ -50,10 +50,12 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.GroupsAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.Group;
 import it.polito.mad.team19.mad_expenses.Classes.NotificationService;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
 
 import static com.github.mikephil.charting.charts.Chart.LOG_TAG;
 
@@ -66,42 +68,41 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     private static final int GROUP_ACTIVITY = 999;
     private static final int ACCOUNT = 9;
     private static FirebaseDatabase myFirebaseDatabase;
-    ListView groupListView;
-    ArrayList<Group> groups = new ArrayList<>();
+    private ListView groupListView;
+    private ArrayList<Group> groups = new ArrayList<>();
     protected FirebaseAuth.AuthStateListener mAuthStateListener;
     protected FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
-    String uid;
-    String uName;
-    ProgressBar progressBar;
-    TextView debug_tv;
-    RelativeLayout debug_ll;
-    boolean firstTimeCheck = true;
-    GoogleApiClient mGoogleApiClient;
-    GroupsAdapter ga;
-    Snackbar sb;
-    IntentFilter filter;
+    private String uid;
+    private String uName;
+    private ProgressBar progressBar;
+    private TextView debug_tv;
+    private RelativeLayout debug_ll;
+    private boolean firstTimeCheck = true;
+    private GoogleApiClient mGoogleApiClient;
+    private GroupsAdapter groupsAdapter;
+    private Snackbar sb;
+    private IntentFilter filter;
     private BroadcastReceiver connectionReceiver = null;
-    HashMap<String,Integer> listenerNot = new HashMap<>();
-    Intent notIntent;
-    NotificationService notificationService;
+    private HashMap<String, Integer> listenerNot = new HashMap<>();
+    private Intent notIntent;
+    private NotificationService notificationService;
     boolean serviceIsRunning = false;
-    SwipeRefreshLayout swipeGroup;
+    private SwipeRefreshLayout swipeGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        notIntent = new Intent(this,NotificationService.class);
+        notIntent = new Intent(this, NotificationService.class);
 
         swipeGroup = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshGroup);
 
-        if(!serviceIsRunning)
-        {
+        if (!serviceIsRunning) {
             serviceIsRunning = true;
             startService(notIntent);
 
-            if(myFirebaseDatabase == null) {
+            if (myFirebaseDatabase == null) {
 
                 //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
                 myFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -110,7 +111,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
         // Vale: impostazione iniziale currencies
         SharedPreferences currencyPreference = getSharedPreferences("currencySetting", MODE_PRIVATE);
-        if(currencyPreference.getString("currency", "nothing").equals("nothing")) {
+        if (currencyPreference.getString("currency", "nothing").equals("nothing")) {
             Log.d("Currency preference", "There was nothing, now I'll set: " + Currency.getInstance(Locale.getDefault()).getCurrencyCode());
             SharedPreferences.Editor editor = currencyPreference.edit();
             editor.putString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
@@ -128,7 +129,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     private void addAllViewListener() {
         filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        Log.d("Receiver","register start");
+        Log.d("Receiver", "register start");
         registerConnectionReceiver(filter);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -151,16 +152,15 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(connectionReceiver!=null) {
+                if (connectionReceiver != null) {
                     closeSnack();
                     try {
                         unregisterReceiver(connectionReceiver);
                         connectionReceiver = null;
-                    }catch (Exception e)
-                    {
-                        Log.d("ExceptionRx",e.toString());
+                    } catch (Exception e) {
+                        Log.d("ExceptionRx", e.toString());
                     }
-                    Log.d("Receiver","unregister fab");
+                    Log.d("Receiver", "unregister fab");
                 }
 
                 Intent i = new Intent(GroupsListActivity.this, CreateGroupActivity.class);
@@ -168,25 +168,35 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
             }
         });
 
+        // Vale: gestione valute
+        String customCurrencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        // Ottiene il tasso di scambio
+        Double exchangeRate = 1d;
+        if (!customCurrencyCode.equals("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(this, customCurrencyCode)).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
 
         groupListView = (ListView) findViewById(R.id.groups_lv);
-        ga = new GroupsAdapter(GroupsListActivity.this, groups);
-        groupListView.setAdapter(ga);
+        groupsAdapter = new GroupsAdapter(GroupsListActivity.this, groups, Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
+        groupListView.setAdapter(groupsAdapter);
 
         groupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if(connectionReceiver!=null) {
+                if (connectionReceiver != null) {
                     closeSnack();
                     try {
                         unregisterReceiver(connectionReceiver);
                         connectionReceiver = null;
-                    }catch (Exception e)
-                    {
-                        Log.d("ExceptionRx",e.toString());
+                    } catch (Exception e) {
+                        Log.d("ExceptionRx", e.toString());
                     }
-                    Log.d("Receiver","unregister group");
+                    Log.d("Receiver", "unregister group");
                 }
 
                 Intent intent = new Intent(GroupsListActivity.this, GroupActivity.class);
@@ -196,7 +206,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 intent.putExtra("groupImage", ((Group) parent.getItemAtPosition(position)).getImage());
                 intent.putExtra("groupMyCredit", ((Group) parent.getItemAtPosition(position)).getCredit().toString());
                 intent.putExtra("groupMyDebt", ((Group) parent.getItemAtPosition(position)).getDebt().toString());
-                startActivityForResult(intent,GROUP_ACTIVITY);
+                startActivityForResult(intent, GROUP_ACTIVITY);
             }
         });
     }
@@ -205,33 +215,45 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
     protected void onResume() {
         super.onResume();
         //updateList(uid);
-        if(connectionReceiver==null) {
+        if (connectionReceiver == null) {
             registerConnectionReceiver(filter);
             Log.d("Receiver", "register on resum");
         }
         mAuth.addAuthStateListener(mAuthStateListener);
+
+        // Vale: gestione valute
+        String customCurrencyCode = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        // Ottiene il tasso di scambio
+        Double exchangeRate = 1d;
+        if(!customCurrencyCode.equals("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(this, customCurrencyCode)).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
+
+        groupsAdapter.checkCurrencyChanged(Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        if(connectionReceiver!=null) {
+        if (connectionReceiver != null) {
             closeSnack();
             try {
                 unregisterReceiver(connectionReceiver);
                 connectionReceiver = null;
-            }catch (Exception e)
-            {
-                Log.d("ExceptionRx",e.toString());
+            } catch (Exception e) {
+                Log.d("ExceptionRx", e.toString());
             }
-            Log.d("Receiver","unregister on pause");
+            Log.d("Receiver", "unregister on pause");
         }
 
-        if(mAuth!=null)
+        if (mAuth != null)
             mAuth.removeAuthStateListener(mAuthStateListener);
     }
-
 
 
     private void userLogVerification() {
@@ -266,34 +288,32 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 } else {
                     // User is signed out
 
-                    if(connectionReceiver!=null) {
+                    if (connectionReceiver != null) {
                         closeSnack();
                         try {
                             unregisterReceiver(connectionReceiver);
                             connectionReceiver = null;
-                        }catch (Exception e)
-                        {
-                            Log.d("ExceptionRx",e.toString());
+                        } catch (Exception e) {
+                            Log.d("ExceptionRx", e.toString());
                         }
-                        Log.d("Receiver","unregister muauth");
+                        Log.d("Receiver", "unregister muauth");
                     }
 
 
                     //groups.clear();
-                    //ga.notifyDataSetChanged();
+                    //groupsAdapter.notifyDataSetChanged();
                     Log.d(TAG, "onAuthStateChanged:signed_outGroup");
                     firstTimeCheck = true;
 
-                    if(connectionReceiver!=null) {
+                    if (connectionReceiver != null) {
                         closeSnack();
                         try {
                             unregisterReceiver(connectionReceiver);
                             connectionReceiver = null;
-                        }catch (Exception e)
-                        {
-                            Log.d("ExceptionRx",e.toString());
+                        } catch (Exception e) {
+                            Log.d("ExceptionRx", e.toString());
                         }
-                        Log.d("Receiver","unregister account");
+                        Log.d("Receiver", "unregister account");
                     }
 
                     Intent intent = new Intent(GroupsListActivity.this, GoogleSignInActivity.class);
@@ -321,21 +341,20 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         switch (item.getItemId()) {
             case R.id.account:
 
-                if(connectionReceiver!=null) {
+                if (connectionReceiver != null) {
                     closeSnack();
                     try {
                         unregisterReceiver(connectionReceiver);
                         connectionReceiver = null;
-                    }catch (Exception e)
-                    {
-                        Log.d("ExceptionRx",e.toString());
+                    } catch (Exception e) {
+                        Log.d("ExceptionRx", e.toString());
                     }
-                    Log.d("Receiver","unregister account");
+                    Log.d("Receiver", "unregister account");
                 }
 
 
                 Intent intent = new Intent(GroupsListActivity.this, SettingsActivity.class);
-                startActivityForResult(intent,ACCOUNT);
+                startActivityForResult(intent, ACCOUNT);
                 return true;
 
             default:
@@ -349,9 +368,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         switch (requestCode) {
             case REQUEST_GROUP_CREATION: {
 
-                if(connectionReceiver==null) {
+                if (connectionReceiver == null) {
                     registerConnectionReceiver(filter);
-                    Log.d("Receiver","register group create");
+                    Log.d("Receiver", "register group create");
                 }
                 if (resultCode == 1)
                     progressBar.setVisibility(View.VISIBLE);
@@ -362,19 +381,18 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 break;
             }
 
-            case ACCOUNT:
-            {
-                if(connectionReceiver==null) {
+            case ACCOUNT: {
+                if (connectionReceiver == null) {
                     registerConnectionReceiver(filter);
-                    Log.d("Receiver","register account");
+                    Log.d("Receiver", "register account");
                 }
                 break;
             }
             case LOGIN_CHECK: {
 
-                if(connectionReceiver==null) {
+                if (connectionReceiver == null) {
                     registerConnectionReceiver(filter);
-                    Log.d("Receiver","register");
+                    Log.d("Receiver", "register");
                 }
 
                 if (resultCode == 0)
@@ -390,16 +408,15 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                 }
                 break;
             }
-            case GROUP_ACTIVITY:
-                {
-                    if(connectionReceiver==null) {
-                        registerConnectionReceiver(filter);
-                        Log.d("Receiver","register group acitivty");
-                    }
+            case GROUP_ACTIVITY: {
+                if (connectionReceiver == null) {
+                    registerConnectionReceiver(filter);
+                    Log.d("Receiver", "register group acitivty");
+                }
 
-                    //TODO Jured: controllare se update list va bene qui
-                    updateList(uid);
-                if(resultCode==99) {
+                //TODO Jured: controllare se update list va bene qui
+                updateList(uid);
+                if (resultCode == 99) {
                     //updateList(uid);
                 }
                 break;
@@ -428,8 +445,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                             String results[] = deepLink.split("/");
                             deepLinkName = results[0];
 
-                            if (deepLinkName.equals("addPersonToGroup"))
-                            {
+                            if (deepLinkName.equals("addPersonToGroup")) {
                                 groupIdName = results[1];
                                 lastNotKey = results[2];
 
@@ -437,16 +453,13 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                 hasGroupYetRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.child("nome").getValue()!=null)
-                                        {
+                                        if (dataSnapshot.child("nome").getValue() != null) {
                                             Snackbar.make(findViewById(android.R.id.content), getString(R.string.allreadyMembers), Snackbar.LENGTH_SHORT)
                                                     .show();
                                             updateList(uid);
-                                        }
-                                        else
-                                        {
-                                                Log.d("Invitations", "add person to group with id: " + groupIdName);
-                                                addGroupToUser(uid, groupIdName, lastNotKey);
+                                        } else {
+                                            Log.d("Invitations", "add person to group with id: " + groupIdName);
+                                            addGroupToUser(uid, groupIdName, lastNotKey);
 
                                         }
                                     }
@@ -481,7 +494,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("tipo").setValue(0);
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uName);
 
-                    if(mAuth.getCurrentUser().getPhotoUrl()!=null)
+                    if (mAuth.getCurrentUser().getPhotoUrl() != null)
                         addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("immagine").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
 
 
@@ -500,7 +513,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     if (snapshot.child("immagine").getValue() != null)
                         groupImage = snapshot.child("immagine").getValue().toString();
 
-                    setNotification(groupIdName,snapshot.child("nome").getValue().toString(), groupImage);
+                    setNotification(groupIdName, snapshot.child("nome").getValue().toString(), groupImage);
 
                     updateList(uid);
                 }
@@ -513,8 +526,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         });
     }
 
-    public void setNotification(String groupId, String groupName, String groupImage)
-    {
+    public void setNotification(String groupId, String groupName, String groupImage) {
         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
         final String notificationId = notificationRef.push().getKey();
 
@@ -535,7 +547,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         notification.put("data", formattedDate);
         notification.put("id", groupId);
         notification.put("GroupName", groupName);
-        if(groupImage!=null)
+        if (groupImage != null)
             notification.put("GroupImage", groupImage);
         notification.put("uid", userID);
         notification.put("uname", username);
@@ -545,14 +557,14 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         DatabaseReference myNotRef = FirebaseDatabase.getInstance().getReference().child("utenti").child(userID).child("gruppi").child(groupId).child("notifiche");
         myNotRef.setValue(notificationId);
     }
-    void updateList(String userid)
-    {
+
+    void updateList(String userid) {
         progressBar.setVisibility(View.VISIBLE);
         mAuth = FirebaseAuth.getInstance();
         final String uid = mAuth.getCurrentUser().getUid();
         groups.clear();
-        ga.notifyDataSetInvalidated();
-        ga.notifyDataSetChanged();
+        groupsAdapter.notifyDataSetInvalidated();
+        groupsAdapter.notifyDataSetChanged();
         Log.d("updateList", "updateing");
 
 
@@ -566,8 +578,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     debug_tv.setVisibility(View.GONE);
                     debug_ll.setVisibility(View.GONE);
                     groupListView.setVisibility(View.VISIBLE);
-                    for (final DataSnapshot child : snapshot.getChildren())
-                    {
+                    for (final DataSnapshot child : snapshot.getChildren()) {
                         Log.d("Invite", child.toString());
 
                         final String groupName = child.child("nome").getValue().toString();
@@ -576,7 +587,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         final String groupId = child.getKey();
                         final String immagine;
 
-                        if(child.child("immagine").getValue()!=null)
+                        if (child.child("immagine").getValue() != null)
                             immagine = child.child("immagine").getValue().toString();
                         else
                             immagine = null;
@@ -590,26 +601,23 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         ValueEventListener getGroupAndNotifcations = new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                try
-                                {
+                                try {
                                     int notNum = (int) dataSnapshot.getChildrenCount();
 
-                                    if (immagine!=null)
-                                        groups.add(0, new Group(groupName,credito, debito, notNum-1,immagine,groupId));
+                                    if (immagine != null)
+                                        groups.add(0, new Group(groupName, credito, debito, notNum - 1, immagine, groupId));
                                     else
-                                        groups.add(0, new Group(groupName,credito, debito, notNum-1,null,groupId));
+                                        groups.add(0, new Group(groupName, credito, debito, notNum - 1, null, groupId));
 
-                                    if(listenerNot.get(groupId)==null)
-                                    {
+                                    if (listenerNot.get(groupId) == null) {
                                         DatabaseReference notAddRed = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
                                         notAddRed.addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                                if(listenerNot.get(groupId)==null)
+                                                if (listenerNot.get(groupId) == null)
                                                     listenerNot.put(groupId, (int) dataSnapshot.getChildrenCount());
-                                                else
-                                                    if(listenerNot.get(groupId)<dataSnapshot.getChildrenCount())
-                                                        updateList(uid);
+                                                else if (listenerNot.get(groupId) < dataSnapshot.getChildrenCount())
+                                                    updateList(uid);
                                             }
 
                                             @Override
@@ -620,11 +628,10 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                                         //aggiungo il listener per aggiungerle mentre cambiano
 
                                     }
-                                    Log.d("Group",groups.toString());
-                                    ga.notifyDataSetChanged();
-                                }catch (IOError e)
-                                {
-                                    Log.e("ErrorUpdateList",e.toString());
+                                    Log.d("Group", groups.toString());
+                                    groupsAdapter.notifyDataSetChanged();
+                                } catch (IOError e) {
+                                    Log.e("ErrorUpdateList", e.toString());
                                 }
                             }
 
@@ -635,7 +642,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                         };
 
                         //inizia dall'ultima notifica che ho letto
-                        if(mynot!=null && !mynot.equals(0))
+                        if (mynot != null && !mynot.equals(0))
                             notificationRef.orderByKey().startAt(mynot).addListenerForSingleValueEvent(getGroupAndNotifcations);
                         else
                             notificationRef.addListenerForSingleValueEvent(getGroupAndNotifcations);
@@ -663,7 +670,7 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
     //Jured: prova showcase senza gruppi
     private void showcaseHint() {
-        final ShowcaseView showcaseView =new ShowcaseView.Builder(this)
+        final ShowcaseView showcaseView = new ShowcaseView.Builder(this)
                 .setTarget(new ViewTarget((FloatingActionButton) findViewById(R.id.groups_list_fab)))
                 .setStyle(R.style.CustomShowcaseMaterial)
                 .withMaterialShowcase()
@@ -679,80 +686,77 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
         Log.e("GroupsListActivity", "Error in the connection:\n" + connectionResult.getErrorMessage());
     }
 
-    void registerConnectionReceiver(IntentFilter filter)
-    {
+    void registerConnectionReceiver(IntentFilter filter) {
         connectionReceiver =
-        new BroadcastReceiver()
-        {
-            boolean before = true;
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                isNetworkAvailable(context);
-            }
+                new BroadcastReceiver() {
+                    boolean before = true;
 
-            public boolean isNetworkAvailable(Context context) {
-                ConnectivityManager connectivity = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        isNetworkAvailable(context);
+                    }
 
-                if (connectivity != null) {
-                    NetworkInfo[] info = connectivity.getAllNetworkInfo();
-                    if (info != null) {
-                        for (int i = 0; i < info.length; i++) {
-                            if (info[i].getState() == NetworkInfo.State.CONNECTED)
-                            {
-                                if(before==false) {
-                                   updateList(uid);
+                    public boolean isNetworkAvailable(Context context) {
+                        ConnectivityManager connectivity = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                        if (connectivity != null) {
+                            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+                            if (info != null) {
+                                for (int i = 0; i < info.length; i++) {
+                                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                                        if (before == false) {
+                                            updateList(uid);
+                                        }
+
+                                        if (sb != null)
+                                            sb.dismiss();
+                                        before = true;
+                                        Log.e(LOG_TAG, "Now you are connected to Internet!");
+                                        return true;
+                                    }
                                 }
-
-                                if (sb!=null)
-                                    sb.dismiss();
-                                before = true;
-                                Log.e(LOG_TAG, "Now you are connected to Internet!");
-                                return true;
                             }
                         }
+                        if (sb == null)
+                            showSnackBar(context);
+                        else
+                            sb.show();
+
+                        before = false;
+                        Log.e(LOG_TAG, "Now you are discconnected to Internet!");
+                        return false;
                     }
-                }
-                if (sb==null)
-                    showSnackBar(context);
-                else
-                    sb.show();
-
-                before=false;
-                Log.e(LOG_TAG, "Now you are discconnected to Internet!");
-                return false;
-            }
 
 
-            public void showSnackBar(final Context mContext)
-            {
+                    public void showSnackBar(final Context mContext) {
 
-                    Snackbar.make(findViewById(android.R.id.content), mContext.getString(R.string.noConnectionSnack), Snackbar.LENGTH_INDEFINITE)
-                            .setAction(mContext.getString(R.string.openSettings), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(Settings.ACTION_SETTINGS);
-                                    mContext.startActivity(intent);
-                                }
-                            })
-                            .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                                @Override
-                                public void onShown(Snackbar transientBottomBar) {
-                                    super.onShown(transientBottomBar);
-                                    sb = transientBottomBar;
-                                }
-                            })
-                            .show();
+                        Snackbar.make(findViewById(android.R.id.content), mContext.getString(R.string.noConnectionSnack), Snackbar.LENGTH_INDEFINITE).setAction(mContext.getString(R.string.openSettings), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                                mContext.startActivity(intent);
+                            }
+                        })
+                                .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                                    @Override
+                                    public void onShown(Snackbar transientBottomBar) {
+                                        super.onShown(transientBottomBar);
+                                        sb = transientBottomBar;
+                                    }
+                                })
+                                .show();
 
 
-            }
+                    }
 
-        };
-        registerReceiver(connectionReceiver,filter);
+                };
+        registerReceiver(connectionReceiver, filter);
     }
 
-    public void closeSnack()
-    {
-        if(sb!=null)
+    public void closeSnack() {
+        if (sb != null)
             sb.dismiss();
     }
+
+
 }
