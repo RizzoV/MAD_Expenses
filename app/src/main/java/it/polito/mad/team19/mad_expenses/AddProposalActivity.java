@@ -233,7 +233,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
                     };
 
 
-                    Float proposalTotal = Float.parseFloat(costEditText.getText().toString().replace(",", "."));
+                    Double proposalTotal = Double.parseDouble(costEditText.getText().toString().replace(",", "."));
 
                     uploadInfos();
 
@@ -249,7 +249,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("proposals");
         proposalId = myRef.push().getKey();
-        Float exchangeRate = 1f;
+        Double exchangeRate = 1d;
 
         if(!currencyAutoCompleteTV.getText().toString().split("\t ")[0].contains("EUR")) {
             try {
@@ -259,7 +259,7 @@ public class AddProposalActivity extends AppCompatActivity implements GalleryOrC
             }
         }
 
-        String finalCostString = String.format(String.format(Locale.getDefault(), "%.2f", Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate)).replace(",", ".");
+        String finalCostString = String.valueOf(Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate).replace(",", ".");
 
         AsyncFirebaseProposalLoader async = new AsyncFirebaseProposalLoader(proposalId, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR", this);

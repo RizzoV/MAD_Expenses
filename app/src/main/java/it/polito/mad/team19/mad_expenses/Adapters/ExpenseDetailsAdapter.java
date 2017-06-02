@@ -31,7 +31,7 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
 
     private ArrayList<ExpenseDetail> detailsList = new ArrayList<>();
     private Activity context;
-    private Float exchangeRate;
+    private Double exchangeRate;
 
     static class ImgHolder {
         ImageView debtor_img;
@@ -43,11 +43,11 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
         this.context = (Activity) context;
     }
 
-    public Float getExchangeRate() {
+    public Double getExchangeRate() {
         return exchangeRate;
     }
 
-    public void setExchangeRate(Float exchangeRate) {
+    public void setExchangeRate(Double exchangeRate) {
         this.exchangeRate = exchangeRate;
     }
 
@@ -89,10 +89,10 @@ public class ExpenseDetailsAdapter extends BaseAdapter {
         creditorName.setText(ed.getCreditor());
         debtorName.setText(ed.getDebtor());
 
-        Float convertedAmount;
+        Double convertedAmount;
         String currencyString;
         if(ed.getExpenseCurrencyCode().equals(ed.getUserCurrencyCode()))
-            convertedAmount = Float.valueOf(ed.getAmount().replace(",", "."));
+            convertedAmount = Double.parseDouble(ed.getAmount().replace(",", "."));
         else
             convertedAmount = Float.valueOf(ed.getAmount().replace(",",".")) * exchangeRate;
 

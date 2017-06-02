@@ -12,20 +12,20 @@ public class Group
 
     private String name;
     private Bitmap icon;
-    private Float credit;
-    private Float debt;
+    private Double credit;
+    private Double debt;
     private Integer notifyCnt;
     private  String thumbPath;
     private  String groupId;
     //HashMap<String,GroupComponent> components;
 
-    public Group(String name, Float credit, Float debt, Integer notifyCnt, String groupId)
+    public Group(String name, Double credit, Double debt, Integer notifyCnt, String groupId)
     {
         this(name, credit, debt, notifyCnt, null, groupId);
     }
 
 
-    public Group(String name, Float credit, Float debt, Integer notifyCnt, String thumb, String groupId)
+    public Group(String name, Double credit, Double debt, Integer notifyCnt, String thumb, String groupId)
     {
         this.name = name;
         this.credit = credit;
@@ -53,11 +53,11 @@ public class Group
         this.icon = icon;
     }
 
-    public Float getCredit() {
+    public Double getCredit() {
         return credit;
     }
 
-    public Float getDebt() {
+    public Double getDebt() {
         return debt;
     }
 
@@ -66,7 +66,7 @@ public class Group
     public String getImage() {return thumbPath;}
 
 
-    public void setBalance(Float balance) {
+    public void setBalance(Double balance) {
         this.credit = balance;
     }
 

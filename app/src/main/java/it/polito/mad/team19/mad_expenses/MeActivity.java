@@ -274,7 +274,7 @@ public class MeActivity extends AppCompatActivity {
                                              * Per visualizzare subito il valore aggiornato senza aspettare Firebase
                                              */
                                             subtractCredit(balance.getAmount());
-                                            balance.setAmount((float) 0);
+                                            balance.setAmount((double) 0);
                                             adapter.notifyDataSetChanged();
                                         }
 
@@ -680,7 +680,7 @@ public class MeActivity extends AppCompatActivity {
 
     }
 
-    public void subtractCredit(Float amount) {
+    public void subtractCredit(Double amount) {
         String fields[] = credito_tv.getText().toString().split(" ");
         credito_tv.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(fields[0].replace(",", ".")) - amount) + " " + Currency.getInstance(Locale.ITALY).getSymbol());
     }

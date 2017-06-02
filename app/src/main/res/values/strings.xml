@@ -9,7 +9,7 @@
     <string name="tab_proposals">Proposals</string>
     <string name="personal_balance">Personal balance</string>
     <string name="credit">Credit</string>
-    <string name="debit">Debit</string>
+    <string name="debit">Debt</string>
     <string name="summary">Summary</string>
     <string name="total">Total</string>
     <string name="title_activity_login">Sign in</string>

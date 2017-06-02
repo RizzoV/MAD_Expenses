@@ -26,19 +26,24 @@ import it.polito.mad.team19.mad_expenses.TopicActivity;
 
 public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecyclerAdapter.MyViewHolder>{
 
-    ArrayList<Expense> expenses;
-    Activity context;
+    private ArrayList<Expense> expenses;
+    private Activity context;
     private LayoutInflater mInflater;
     //LUDO: aggiunto metodo onItemClickListener
     private OnItemClickListener mItemClickListener;
     private OnItemLongClickListener mItemLongClickListener;
     private String groupId;
+    private Double exchangeRate;
+    private String currencySymbol;
 
-    public ExpensesRecyclerAdapter(Context context, ArrayList<Expense> expenses, String groupId) {
+    public ExpensesRecyclerAdapter(Context context, ArrayList<Expense> expenses, String groupId, String currencySymbol, Double exchangeRate) {
         this.expenses = expenses;
         this.context = (Activity) context;
         this.mInflater = LayoutInflater.from(this.context);
         this.groupId = groupId;
+        this.exchangeRate = exchangeRate;
+        this.currencySymbol = currencySymbol;
+        this.exchangeRate = exchangeRate;
     }
 
     @Override
@@ -96,7 +101,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
 
         private void setData(final Expense current, int position) {
             this.name.setText(current.getName());
-            this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost()) + " " + Currency.getInstance("EUR").getSymbol());
+            this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost() * exchangeRate) + " " + currencySymbol);
             this.image.setImageResource(R.drawable.expenses_icon);
             this.position = position;
             this.current = current;

@@ -96,7 +96,7 @@ public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
                     groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Float.valueOf(costEditText.replace(",", ".")), currencyCode, uri.toString()));
+                            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Double.parseDouble(costEditText.replace(",", ".")), currencyCode, uri.toString()));
 
                             // Vale: Aggiungi waitingFor
                             final ArrayList<FirebaseGroupMember> groupMembers = new ArrayList<>();
@@ -135,7 +135,7 @@ public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
             });
         } else {
             Log.d("DebugCaricamentoPropost", "NoImage");
-            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Float.valueOf(costEditText.replace(",",".")), currencyCode));
+            newProposalRef.setValue(new FirebaseProposal(nameEditText, descriptionEditText, usrId, Double.parseDouble(costEditText.replace(",",".")), currencyCode));
 
             // Vale: Aggiungi waitingFor
             final ArrayList<FirebaseGroupMember> groupMembers = new ArrayList<>();

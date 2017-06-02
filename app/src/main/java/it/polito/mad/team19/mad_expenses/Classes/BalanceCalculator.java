@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public class BalanceCalculator {
 
-    public static void calculate(String groupId, String idExpense, ArrayList<FirebaseGroupMember> groupMembersList, float expenseTotal, ArrayList<FirebaseGroupMember> contributors, ArrayList<FirebaseGroupMember> excluded) {
+    public static void calculate(String groupId, String idExpense, ArrayList<FirebaseGroupMember> groupMembersList, double expenseTotal, ArrayList<FirebaseGroupMember> contributors, ArrayList<FirebaseGroupMember> excluded) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         for (FirebaseGroupMember groupMember : groupMembersList) {
@@ -37,7 +37,7 @@ public class BalanceCalculator {
             for (FirebaseGroupMember contributor : contributors) {
                 DatabaseReference debtorRef = database.getReference("gruppi").child(groupId).child("expenses").child(idExpense)
                         .child("debtors").child(groupMember.getUid());
-                debtorRef.child("riepilogo").child(contributor.getUid()).child("amount").setValue(String.format(Locale.getDefault(), "%.2f",
+                debtorRef.child("riepilogo").child(contributor.getUid()).child("amount").setValue(String.valueOf(
                         -(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
                 debtorRef.child("nome").setValue(groupMember.getName());
 
@@ -51,7 +51,7 @@ public class BalanceCalculator {
 
                 debtorRef.child("riepilogo").child(contributor.getUid()).child("nome").setValue(contributor.getName());
 
-                creditorRef.child("riepilogo").child(groupMember.getUid()).child("amount").setValue(String.format(Locale.getDefault(), "%.2f",
+                creditorRef.child("riepilogo").child(groupMember.getUid()).child("amount").setValue(String.valueOf(
                         +(expenseTotal / contributors.size() / (groupMembersList.size() - excluded.size()))).replace(",", "."));
                 creditorRef.child("nome").setValue(contributor.getName());
                 creditorRef.child("riepilogo").child(groupMember.getUid()).child("nome").setValue(groupMember.getName());

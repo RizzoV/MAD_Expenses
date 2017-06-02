@@ -1,5 +1,7 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,11 +23,15 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpensesRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.ProposalsRecyclerAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseProposal;
 import it.polito.mad.team19.mad_expenses.Classes.Proposal;
+import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Valentino on 22/05/2017.
@@ -42,6 +48,8 @@ public class ProposalsListFragment extends Fragment {
     private ArrayList<Proposal> proposals = new ArrayList<Proposal>();
     private Proposal clicked;
     private ProposalsRecyclerAdapter adapter;
+
+    private Context mActivity;
 
     public ProposalsListFragment() {
     }
@@ -86,7 +94,19 @@ public class ProposalsListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_proposals, container, false);
 
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.proposals_rv);
-        adapter = new ProposalsRecyclerAdapter(getActivity(), proposals, getActivity().getIntent().getStringExtra("groupId"));
+
+        // Vale: gestione valute
+        String customCurrencyCode = mActivity.getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        // Ottiene il tasso di scambio
+        Double exchangeRate = 1d;
+        if(!customCurrencyCode.equals("EUR")) {
+            try {
+                exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("AddExpenseActivity", e.getMessage());
+            }
+        }
+        adapter = new ProposalsRecyclerAdapter(getActivity(), proposals, getActivity().getIntent().getStringExtra("groupId"), Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
         mRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(getActivity());
@@ -102,7 +122,7 @@ public class ProposalsListFragment extends Fragment {
                 intent.putExtra("ProposalName", clicked.getName());
                 intent.putExtra("ProposalImgUrl", clicked.getImageUrl());
                 intent.putExtra("ProposalDesc", clicked.getDescription());
-                intent.putExtra("ProposalCost", String.format(Locale.getDefault(), "%.2f", clicked.getExtimatedCost()));
+                intent.putExtra("ProposalCost", String.valueOf(clicked.getExtimatedCost()));
                 intent.putExtra("ProposalAuthorId", clicked.getAuthor());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                 intent.putExtra("ProposalId", clicked.getFirebaseId());
@@ -165,5 +185,12 @@ public class ProposalsListFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        mActivity = (Activity) context;
     }
 }

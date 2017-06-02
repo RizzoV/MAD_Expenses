@@ -16,11 +16,11 @@ public class AsyncFirebaseBalanceLoader extends AsyncTask<Void, Integer, Long> {
     String groupId;
     String idExpense;
     ArrayList<FirebaseGroupMember> groupMembersList;
-    float expenseTotal;
+    double expenseTotal;
     ArrayList<FirebaseGroupMember> contributors;
     ArrayList<FirebaseGroupMember> excluded;
 
-    public AsyncFirebaseBalanceLoader(String groupId, String idExpense, ArrayList<FirebaseGroupMember> groupMembersList, float expenseTotal, ArrayList<FirebaseGroupMember> contributors, ArrayList<FirebaseGroupMember> excluded) {
+    public AsyncFirebaseBalanceLoader(String groupId, String idExpense, ArrayList<FirebaseGroupMember> groupMembersList, double expenseTotal, ArrayList<FirebaseGroupMember> contributors, ArrayList<FirebaseGroupMember> excluded) {
         this.groupId = groupId;
         this.idExpense = idExpense;
         this.groupMembersList = groupMembersList;

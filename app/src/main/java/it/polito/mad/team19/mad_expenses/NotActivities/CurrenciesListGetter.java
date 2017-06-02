@@ -44,7 +44,7 @@ public class CurrenciesListGetter {
         }
 
         if(!found) {
-            // Se il file delle conversioni non c'è, fai una conversione fittizia per crearlo
+            // Se il file delle conversioni non c'è, esegui una conversione fittizia per crearlo
             try {
                 (new AsyncCurrencyConverter(context, "USD")).execute().get();
             } catch (InterruptedException e) {
