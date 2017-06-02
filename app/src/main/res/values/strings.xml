@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">MAD Expenses</string>
     <string name="title_activity_main">MAD Expenses</string>
     <string name="title_activity_group">GroupActivity</string>

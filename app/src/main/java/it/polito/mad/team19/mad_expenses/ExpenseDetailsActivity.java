@@ -181,8 +181,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         dbAuthorNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                expenseAuthor = dataSnapshot.getValue().toString();
-                expense_author.setText(expenseAuthor);
+                if(dataSnapshot.getValue() != null) {
+                    expenseAuthor = dataSnapshot.getValue().toString();
+                    expense_author.setText(expenseAuthor);
+                }
             }
 
             @Override
