@@ -273,7 +273,6 @@ public class ExpensesListFragment extends Fragment {
                         //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                         expensesListAdapter.notifyDataSetChanged();
 
-                        //TODO generalizzare l'utilizzo della valuta
                         totalAmount += firebaseExpense.getCost();
 
                         DataSnapshot meRef = expense.child("contributors").child(myUid);

@@ -144,12 +144,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
         // Click listener on the image
 
-        if(imgUrl!=null)
-        {
+        if (imgUrl != null) {
 
             nagDialog = new Dialog(ExpenseDetailsActivity.this, R.style.full_screen_dialog);
             nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            nagDialog.setCancelable(false);
+            nagDialog.setCancelable(true);
             nagDialog.setContentView(R.layout.expense_image_preview);
             Button btnClose = (Button) nagDialog.findViewById(R.id.btnIvClose);
             ImageView ivPreview = (ImageView) nagDialog.findViewById(R.id.iv_preview_image);
@@ -157,7 +156,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(ivPreview) {
                 @Override
                 protected void setResource(Bitmap resource) {
-                  ivPreview.setImageBitmap(resource);
+                    ivPreview.setImageBitmap(resource);
                 }
             });
 
@@ -206,18 +205,17 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
                 userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
-                if(!"EUR".equals(userCurrencyCode[0])) {
+                if (!"EUR".equals(userCurrencyCode[0])) {
                     try {
                         exchangeRate = new AsyncCurrencyConverter(ExpenseDetailsActivity.this, userCurrencyCode[0]).execute().get();
                     } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
-                }
-                else
+                } else
                     exchangeRate = 1d;
 
                 // per evitare crash
-                if(exchangeRate != null)
+                if (exchangeRate != null)
                     edAdapter.setExchangeRate(exchangeRate);
                 else {
                     exchangeRate = 1d;
@@ -287,7 +285,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
 
                                                         String chosenAmount = String.format(Locale.getDefault(), "%.2f", Float.valueOf(debtEditText.getText().toString().trim().replace(",", ".")));
-                                                        String chosenAmountConverted = String.valueOf(Float.valueOf(debtEditText.getText().toString().trim().replace(",", "."))/exchangeRate).replace(",", ".");
+                                                        String chosenAmountConverted = String.valueOf(Float.valueOf(debtEditText.getText().toString().trim().replace(",", ".")) / exchangeRate).replace(",", ".");
                                                         debtAmountRef.setValue("-" + chosenAmountConverted);
                                                         creditAmountRef.setValue(chosenAmountConverted);
 
@@ -478,7 +476,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 changeExpenseIntent.putExtra("ExpenseName", name);
                 changeExpenseIntent.putExtra("ExpenseImgUrl", imgUrl);
                 changeExpenseIntent.putExtra("ExpenseDesc", desc);
-                changeExpenseIntent.putExtra("ExpenseCost", String.valueOf( Float.valueOf(cost.replace(",", ".")) * exchangeRate));
+                changeExpenseIntent.putExtra("ExpenseCost", String.valueOf(Float.valueOf(cost.replace(",", ".")) * exchangeRate));
                 changeExpenseIntent.putExtra("ExpenseAuthorId", expenseAuthor);
                 changeExpenseIntent.putExtra("groupId", groupId);
                 changeExpenseIntent.putExtra("ExpenseId", expenseId);
@@ -553,16 +551,16 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if(nagDialog!=null)
-            if(nagDialog.isShowing())
+        if (nagDialog != null)
+            if (nagDialog.isShowing())
                 nagDialog.dismiss();
 
         if (alertDialog != null)
-            if(alertDialog.isShowing())
-                 alertDialog.dismiss();
+            if (alertDialog.isShowing())
+                alertDialog.dismiss();
 
         if (alertDialog1 != null)
-            if(alertDialog1.isShowing())
+            if (alertDialog1.isShowing())
                 alertDialog1.dismiss();
 
         if (netChange != null) {

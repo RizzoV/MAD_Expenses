@@ -5,9 +5,9 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/activitiesBackgroundColor"
     android:clipChildren="true"
     android:fillViewport="true"
-    android:background="@color/activitiesBackgroundColor"
     tools:context="it.polito.mad.team19.mad_expenses.MeActivity">
 
 
@@ -26,9 +26,9 @@
             android:layout_marginTop="@dimen/smaller_vertical_margin">
 
             <RelativeLayout
-                android:layout_marginTop="@dimen/smaller_vertical_margin"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/smaller_vertical_margin">
 
                 <LinearLayout
                     android:id="@+id/details"
@@ -44,18 +44,17 @@
                         android:orientation="horizontal">
 
                         <ImageView
+                            android:id="@+id/me_activity_thumb"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:id="@+id/me_activity_thumb"
                             android:layout_gravity="center"
                             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                            android:layout_marginRight="@dimen/activity_horizontal_margin"
-                             />
+                            android:layout_marginRight="@dimen/activity_horizontal_margin" />
 
                         <TextView
+                            android:id="@+id/me_username_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/me_username_tv"
                             android:layout_gravity="center"
                             android:layout_weight="0.6"
                             android:ellipsize="end"
@@ -91,9 +90,9 @@
                                 android:textColor="@color/primaryText" />
 
                             <TextView
+                                android:id="@+id/credito_tv"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/credito_tv"
                                 android:text="-"
                                 android:textAlignment="center"
                                 android:textAllCaps="true"
@@ -117,9 +116,9 @@
                                 android:textColor="@color/primaryText" />
 
                             <TextView
+                                android:id="@+id/debito_tv"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/debito_tv"
                                 android:text="-"
                                 android:textAlignment="center"
                                 android:textAllCaps="true"
@@ -131,14 +130,12 @@
 
                 </LinearLayout>
 
-
-
-                    <com.github.mikephil.charting.charts.PieChart
-                        android:id="@+id/chart"
-                        android:layout_below="@+id/details"
-                        android:layout_width="match_parent"
-                        android:layout_centerHorizontal="true"
-                        android:layout_height="250dp" />
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_below="@+id/details"
+                    android:layout_centerHorizontal="true" />
             </RelativeLayout>
 
         </android.support.v7.widget.CardView>
@@ -147,7 +144,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/card">
-
 
             <TextView
                 android:id="@+id/debits_and_credits_tv"
@@ -163,8 +159,8 @@
                 android:id="@+id/fromto_rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:layout_below="@+id/debits_and_credits_tv" />
+                android:layout_below="@+id/debits_and_credits_tv"
+                android:layout_marginBottom="@dimen/activity_vertical_margin" />
         </RelativeLayout>
     </LinearLayout>
 </ScrollView>
