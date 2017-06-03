@@ -1,4 +1,5 @@
 package it.polito.mad.team19.mad_expenses.NotActivities;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -9,6 +10,9 @@ import org.json.JSONObject;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -30,13 +34,9 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
     @Override
     protected Double doInBackground(Void... vo) {
 
-        FileOutputStream fos;
-        FileInputStream fis;
         JSONObject json;
-        JSONObject jsonIn;
         String[] filesList;
         Boolean found = false;
-        String jsonString;
         Double exchangeRate = -1d;
 
         filesList = context.fileList();
@@ -51,37 +51,44 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
 
         // Se il file non esiste, crealo
         if (!found) {
-            try {
-                fos = context.openFileOutput(currenciesFileName, Context.MODE_PRIVATE);
-                jsonIn = getJson("https://api.fixer.io/latest");
-                if(jsonIn == null) {
-                    Log.e("AsyncCurrencyConverter", "ERRORE: jsonIn è NULL!");
-                }
-                fos.write(jsonIn.toString().getBytes());
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            createCurrenciesJSONFile();
         }
 
-        // Leggi il valore della conversione
-        try {
-            // Leggi il contenuto del file
-            fis = context.openFileInput(currenciesFileName);
-            int size = fis.available();
-            byte[] buffer = new byte[size];
-            fis.read(buffer);
-            fis.close();
-            jsonString = new String(buffer, "UTF-8");
 
-            // Convertilo in un oggetto JSON
-            json = new JSONObject(jsonString);
+        try {
+            json = readJSONFile();
+            if(json == null) {
+                Log.e("AsyncCurrencyConverter", "The JSON file was null - 1");
+                return exchangeRate;
+            }
+
+            // Check data ultimo download
+            Date today = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String currentDate = sdf.format(today);
+            String jsonDate = json.getString("date");
+            if(!jsonDate.equals(currentDate)) {
+                /* Allora il file non è aggiornato
+                 * A sto punto la questione è questa: può essere che l'API mi dia in data X un file aggiornato
+                 * al giorno X-1, negli orari notturni in particolare, finchè non vengono aggiornate le valute.
+                 * Qualora dunque la data non fosse aggiornata, riscarica solo se la differenza è di 2 giorni almeno
+                 */
+                String[] jsonDateFields = jsonDate.split("-");
+                String[] currentDateFields = currentDate.split("-");
+                if(Integer.parseInt(currentDateFields[2]) - Integer.parseInt(jsonDateFields[2]) > 1) {
+                    createCurrenciesJSONFile();
+                    json = readJSONFile();
+                    if (json == null) {
+                        Log.e("AsyncCurrencyConverter", "The JSON file was null - 2");
+                        return exchangeRate;
+                    }
+                }
+            }
 
             // Ricava il valore della conversione
-            if(json.getJSONObject("rates").getString(toCurrency) != null)
+            if (json.getJSONObject("rates").getString(toCurrency) != null)
                 exchangeRate = Double.parseDouble(json.getJSONObject("rates").getString(toCurrency));
-
-        } catch (IOException | JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -96,12 +103,12 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
         try {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                        .url(url)
-                        .build();
+                    .url(url)
+                    .build();
 
             Response response = client.newCall(request).execute();
             result = response.body().string();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -109,10 +116,49 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
         // Convert string to jsonObject
         try {
             jsonObject = new JSONObject(result);
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             return null;
         }
 
         return jsonObject;
+    }
+
+    private void createCurrenciesJSONFile() {
+
+        FileOutputStream fos;
+        JSONObject jsonIn;
+        try {
+            fos = context.openFileOutput(currenciesFileName, Context.MODE_PRIVATE);
+            jsonIn = getJson("https://api.fixer.io/latest");
+            if (jsonIn == null) {
+                Log.e("AsyncCurrencyConverter", "ERRORE: jsonIn è NULL!");
+            }
+            fos.write(jsonIn.toString().getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JSONObject readJSONFile() {
+
+        FileInputStream fis;
+        String jsonString;
+        try {
+            // Leggi il contenuto del file
+            fis = context.openFileInput(currenciesFileName);
+            int size = fis.available();
+            byte[] buffer = new byte[size];
+            fis.read(buffer);
+            fis.close();
+            jsonString = new String(buffer, "UTF-8");
+
+            // Convertilo in un oggetto JSON
+            return new JSONObject(jsonString);
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }
