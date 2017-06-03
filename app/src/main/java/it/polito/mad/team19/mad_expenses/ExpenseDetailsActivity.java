@@ -153,22 +153,9 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         if (isHistoryActivity()) {
             viewHistory_cv.setVisibility(View.GONE);
             viewTopic_cv.setVisibility(View.GONE);
+
+            showExpenseImage(imgUrl);
         }
-
-        DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference("storico").child(groupId).child("spese")
-                .child(expenseId);
-        historyRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.hasChildren())
-                    viewHistory_cv.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
         // Click listener on the topic card view
         viewTopic_cv.setOnClickListener(new View.OnClickListener() {
@@ -269,29 +256,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot expense) {
 
-                    final String[] userCurrencyCode = new String[1];
-
-                    userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-
-                    if (!"EUR".equals(userCurrencyCode[0])) {
-                        try {
-                            exchangeRate = new AsyncCurrencyConverter(ExpenseDetailsActivity.this, userCurrencyCode[0]).execute().get();
-                        } catch (InterruptedException | ExecutionException e) {
-                            e.printStackTrace();
-                        }
-                    } else
-                        exchangeRate = 1d;
-
-                    // per evitare crash
-                    if (exchangeRate != null)
-                        edAdapter.setExchangeRate(exchangeRate);
-                    else {
-                        exchangeRate = 1d;
-                        userCurrencyCode[0] = "EUR";
-                    }
-                    expense_cost.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
-
-                    if (expense.child("debtors").hasChildren()) {
                         for (DataSnapshot contributor : expense.child("contributors").getChildren()) {
                             String contributor_img = null;
                             if (contributor.child("immagine").exists())
@@ -320,11 +284,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                         final HistoryMemberAdapter hmAdapter = new HistoryMemberAdapter(ExpenseDetailsActivity.this,historyContributorsMemberList,historyExcludedMemberList,historyDebtorMemberList);
                         history_lv.setAdapter(hmAdapter);
 
-                    } else {
-                        findViewById(R.id.balances_card).setVisibility(View.GONE);
-                    }
-
-
                 }
 
                 @Override
@@ -339,6 +298,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot expense) {
+
+                //Jured: mostra o nascondi history tab
+                if (!expense.hasChild("oldVersionId"))
+                    viewHistory_cv.setVisibility(View.GONE);
+
 
                 final String[] userCurrencyCode = new String[1];
 
