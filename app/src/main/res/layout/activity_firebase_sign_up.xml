@@ -58,7 +58,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:drawableLeft="@drawable/ic_user"
-                android:hint="Email"
+                android:hint="@string/email_et"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/icons" />
 
@@ -71,7 +71,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:drawableLeft="@drawable/ic_password"
-                android:hint="Password"
+                android:hint="@string/password_et"
                 android:inputType="textPassword"
                 android:textColor="@color/icons" />
 

@@ -6,7 +6,7 @@
         android:id="@+id/edit_group_name"
         android:icon="@drawable/ic_edit"
         app:showAsAction="always"
-        android:title="personal_profile"
+        android:title="@string/personal_profile"
         />
 
 </menu>

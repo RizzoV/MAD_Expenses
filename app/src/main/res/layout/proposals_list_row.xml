@@ -39,7 +39,7 @@
                 android:gravity="bottom"
                 android:maxEms="1"
                 android:maxLines="1"
-                android:text="bolz"
+                android:text="@string/expense_name"
                 android:textColor="@color/primaryText"
                 android:textSize="@dimen/titles_size" />
 
@@ -53,7 +53,7 @@
                 android:ellipsize="end"
                 android:maxEms="1"
                 android:maxLines="2"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis."
+                android:text="@string/lorem"
                 android:textColor="@color/grey"
                 android:textSize="@dimen/little_text_size" />
 
@@ -82,7 +82,7 @@
                     android:gravity="center"
                     android:maxEms="1"
                     android:maxLines="1"
-                    android:text="€ 9999,21"
+                    android:text="@string/cost_exp_details"
                     android:textAlignment="center"
                     android:textColor="@color/redMaterial"
                     android:textSize="18sp"

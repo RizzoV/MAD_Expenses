@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:textSize="@dimen/little_text_size"
-        android:text="Currency"
+        android:text="@string/currency"
         android:textColor="@color/primaryText"
         android:gravity="center_vertical"
         android:layout_alignParentRight="true"

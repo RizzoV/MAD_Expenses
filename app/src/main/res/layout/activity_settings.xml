@@ -61,7 +61,7 @@
                         android:layout_gravity="center_vertical"
                         android:paddingStart="10dp"
                         android:paddingTop="10dp"
-                        android:text="User"
+                        android:text="@string/username"
                         android:textColor="@color/primaryText"
                         android:textSize="20sp" />
 
@@ -87,7 +87,7 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:paddingTop="10dp"
-                        android:text="Email"
+                        android:text="@string/email_et"
                         android:textColor="@color/colorPrimary" />
 
                     <TextView
@@ -97,7 +97,7 @@
                         android:layout_below="@+id/other_infos"
                         android:layout_gravity="center_vertical"
                         android:padding="10dp"
-                        android:text="Email"
+                        android:text="@string/email_et"
                         android:textColor="@color/primaryText"
                         android:textSize="20sp" />
                 </RelativeLayout>
@@ -157,19 +157,6 @@
                 android:background="@drawable/buttons_background"
                 android:text="@string/sign_out"
                 android:textColor="#fff" />
-
-            <Button
-                android:id="@+id/reset_passwd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/btn_signout"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/buttons_background"
-                android:text="Reset password"
-                android:textColor="#fff"
-                android:visibility="gone" />
 
         </RelativeLayout>
 

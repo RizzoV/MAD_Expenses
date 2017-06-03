@@ -21,7 +21,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="14dp"
             android:paddingTop="5dp"
-            android:text="Bbbolz"
+            android:text="@string/username"
             android:textAlignment="viewEnd"
             android:textColor="#8bc34a"
             android:textSize="14sp" />
@@ -33,7 +33,7 @@
             android:layout_below="@+id/name_msg"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-            android:text="Bbbolz"
+            android:text="@string/lorem"
             android:textColor="@color/primaryText"
             android:textSize="16sp" />
 

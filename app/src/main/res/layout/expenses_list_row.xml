@@ -40,7 +40,6 @@
                 android:gravity="bottom"
                 android:maxEms="1"
                 android:maxLines="1"
-                android:text="bolz"
                 android:textColor="@color/primaryText"
                 android:textSize="@dimen/titles_size" />
 
@@ -54,7 +53,7 @@
                 android:ellipsize="end"
                 android:maxEms="1"
                 android:maxLines="2"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec luctus fermentum ipsum, non ullamcorper libero rutrum mattis."
+                android:text="@string/lorem"
                 android:textColor="@color/grey"
                 android:textSize="@dimen/little_text_size" />
 

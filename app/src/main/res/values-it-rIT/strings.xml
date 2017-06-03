@@ -217,4 +217,20 @@
     <string name="select_history_item">Seleziona un elemento dallo storico</string>
 
 
+
+    <string name="author">Autore:</string>
+    <string name="cost_exp_details">Prezzo:</string>
+    <string name="desc_exp_details">Descrizione:</string>
+    <string name="data_exp_details">Data:</string>
+    <string name="balance">Bilancio</string>
+    <string name="email_et">Email</string>
+    <string name="password_et">Password</string>
+    <string name="members">Membri</string>
+    <string name="leave_group">Lascia il gruppo</string>
+    <string name="view_discussion">Visualizza la discussione</string>
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper convallis diam, non porta sem feugiat et. Curabitur iaculis vestibulum arcu, non tincidunt tortor blandit a. Nam sit amet lacus vitae quam rutrum rutrum ac eget nulla. Vivamus ac leo eget lorem mattis euismod.</string>
+    <string name="personal_profile">Profilo personale</string>
+
+
+
 </resources>

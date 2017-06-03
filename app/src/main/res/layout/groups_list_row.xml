@@ -41,7 +41,7 @@
             android:maxEms="1"
             android:maxLines="1"
             android:ellipsize="end"
-            android:text="Gruppo con un nome particolarmente lungo"
+            android:text="@string/lorem"
             android:gravity="bottom"
             android:paddingBottom="2dp"
             />
@@ -119,7 +119,6 @@
             android:id="@+id/notification_cnt_tv"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
-            android:text="2"
             android:textStyle="bold"
             android:layout_centerInParent="true"
             android:gravity="center"

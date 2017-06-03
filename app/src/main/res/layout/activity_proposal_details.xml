@@ -34,7 +34,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginBottom="@dimen/smaller_vertical_margin"
                     android:layout_marginStart="@dimen/smaller_horizontal_margin"
-                    android:text="Pizza"
+                    android:text="@string/expense_name"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/big_titles_size" />
 
@@ -80,7 +80,7 @@
                             android:id="@+id/proposal_author_header"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Autore:"
+                            android:text="@string/author"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/normal_text_size" />
 
@@ -92,7 +92,7 @@
                             android:layout_marginStart="@dimen/activity_horizontal_margin"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:text="Bruno Liegi Bastonliegi"
+                            android:text="@string/username"
                             android:textColor="@color/primaryText"
                             android:textSize="@dimen/normal_text_size" />
 
@@ -101,7 +101,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/smaller_vertical_margin"
-                            android:text="Costo:"
+                            android:text="@string/cost_exp_details"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/normal_text_size" />
 
@@ -120,7 +120,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/smaller_vertical_margin"
-                            android:text="Descrizione:"
+                            android:text="@string/desc_exp_details"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/normal_text_size" />
 
@@ -130,7 +130,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="@dimen/activity_horizontal_margin"
-                            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                            android:text="@string/lorem"
                             android:textColor="@color/primaryText"
                             android:textSize="@dimen/normal_text_size" />
 
@@ -169,7 +169,7 @@
                         android:background="@android:color/transparent"
                         android:drawableEnd="@drawable/ic_state_ok"
                         android:gravity="center"
-                        android:text="Accetta"
+                        android:text="@string/accept"
                         android:textColor="@color/textGreen" />
 
                     <Button
@@ -182,7 +182,7 @@
                         android:background="@android:color/transparent"
                         android:drawableEnd="@drawable/ic_state_deny"
                         android:gravity="center"
-                        android:text="Rifiuta"
+                        android:text="@string/deny"
                         android:textColor="@color/redMaterial" />
                 </LinearLayout>
 
@@ -281,7 +281,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="Visualizza la discussione"
+                    android:text="@string/view_discussion"
                     android:textColor="@color/secondaryText"
                     android:textSize="20sp" />
             </LinearLayout>

@@ -25,7 +25,7 @@
             android:maxEms="1"
             android:layout_weight="1"
             android:maxLines="2"
-            android:text="Bruno Liegi Bastonliegi"
+            android:text="@string/username"
             android:textAlignment="center"
             android:textColor="@color/primaryText"
             android:textSize="@dimen/normal_text_size" />
@@ -96,7 +96,7 @@
             android:maxEms="1"
             android:layout_weight="1"
             android:maxLines="2"
-            android:text="Rupert Sciamenna"
+            android:text="@string/username"
             android:textAlignment="center"
             android:textColor="@color/primaryText"
             android:textSize="@dimen/normal_text_size" />

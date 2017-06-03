@@ -66,7 +66,7 @@
                                 android:ellipsize="end"
                                 android:maxEms="1"
                                 android:maxLines="1"
-                                android:text="Nome Utente"
+                                android:text="@string/username"
                                 android:textColor="@color/primaryText"
                                 android:textSize="@dimen/big_titles_size" />
 

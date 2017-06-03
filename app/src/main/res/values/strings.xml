@@ -213,4 +213,21 @@
     <string name="view_history">View history</string>
     <string name="select_history_item">Select item form history list</string>
 
+
+
+    <string name="author">Author:</string>
+    <string name="cost_exp_details">Price:</string>
+    <string name="desc_exp_details">Description:</string>
+    <string name="data_exp_details">Date:</string>
+    <string name="balance">Balance</string>
+    <string name="email_et">Email</string>
+    <string name="password_et">Password</string>
+    <string name="members">Members</string>
+    <string name="leave_group">Leave the group</string>
+    <string name="view_discussion">View discussion</string>
+    <string name="reset_password">Reset password</string>
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper convallis diam, non porta sem feugiat et. Curabitur iaculis vestibulum arcu, non tincidunt tortor blandit a. Nam sit amet lacus vitae quam rutrum rutrum ac eget nulla. Vivamus ac leo eget lorem mattis euismod.</string>
+    <string name="personal_profile">Personal profile</string>
+
+
 </resources>

@@ -44,7 +44,7 @@
         android:ellipsize="end"
         android:maxEms="1"
         android:maxLines="1"
-        android:text="Nome Utente"
+        android:text="@string/username"
         android:textSize="@dimen/titles_size"
         android:focusableInTouchMode="false"
         android:focusable="false"
