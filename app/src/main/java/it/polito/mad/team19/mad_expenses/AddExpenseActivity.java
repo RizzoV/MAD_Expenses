@@ -591,6 +591,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     if (barProgressDialog.isShowing())
                         barProgressDialog.dismiss();
 
+                    // Delete the proposal
+                    FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId).child("proposals").child(getIntent().getStringExtra("ProposalId")).removeValue();
+
                     finish();
                 }
 

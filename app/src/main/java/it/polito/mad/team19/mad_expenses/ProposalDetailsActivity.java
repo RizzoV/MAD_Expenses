@@ -552,10 +552,9 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                         i.putExtra("butDoNotTrack", "true");
                         i.putExtra("contributorsList", contributors);
                         i.putExtra("excludedList", excluded);
+                        i.putExtra("ProposalId", proposalId);
                         startActivity(i);
 
-                        // Delete the proposal
-                        database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).removeValue();
                         finish();
                     }
 
