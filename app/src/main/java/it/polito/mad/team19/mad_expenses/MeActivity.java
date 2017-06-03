@@ -238,8 +238,10 @@ public class MeActivity extends AppCompatActivity {
                             daysCredit.put(Integer.parseInt(day.getKey()),dayCredit);
                             daysDebit.put(Integer.parseInt(day.getKey()),dayDebit);
 
-                            monthCredit+=dayCredit;
-                            monthDebit+=dayDebit;
+                            if(monthCredit<dayCredit)
+                                monthCredit+=dayCredit-monthCredit;
+                            if(monthDebit<dayDebit)
+                                monthDebit+=dayDebit-monthDebit;
                         }
                         monthsCredit.put(Integer.parseInt(month.getKey()),monthCredit);
                         monthsDebit.put(Integer.parseInt(month.getKey()),monthDebit);
