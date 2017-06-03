@@ -101,6 +101,8 @@ public class NotificationsAdapter extends BaseAdapter {
                     intent.putExtra("ExpenseAuthorId",notification.child("ExpenseAuthorId").getValue().toString());
                     if(notification.child("ExpenseImgUrl").getValue()!=null)
                         intent.putExtra("ExpenseImgUrl",notification.child("ExpenseImgUrl").getValue().toString());
+                    if (notification.child("ExpenseDate").getValue() != null)
+                        intent.putExtra("ExpenseDate", notification.child("ExpenseDate").getValue().toString());
                     intent.putExtra("ExpenseCost",notification.child("ExpenseCost").getValue().toString());
                     intent.putExtra("ExpenseId",notification.child("id").getValue().toString());
                     intent.putExtra("groupId",notification.child("groupId").getValue().toString());
@@ -122,6 +124,8 @@ public class NotificationsAdapter extends BaseAdapter {
                     intent.putExtra("ExpenseAuthorId",notification.child("ExpenseAuthorId").getValue().toString());
                     if(notification.child("ExpenseImgUrl").getValue()!=null)
                         intent.putExtra("ExpenseImgUrl",notification.child("ExpenseImgUrl").getValue().toString());
+                    if (notification.child("ExpenseDate").getValue() != null)
+                        intent.putExtra("ExpenseDate", notification.child("ExpenseDate").getValue().toString());
                     intent.putExtra("ExpenseCost",notification.child("ExpenseCost").getValue().toString());
                     intent.putExtra("ExpenseId",notification.child("id").getValue().toString());
                     intent.putExtra("groupId",notification.child("groupId").getValue().toString());
@@ -149,6 +153,8 @@ public class NotificationsAdapter extends BaseAdapter {
                     intent.putExtra("ExpenseAuthorId",notification.child("ExpenseAuthorId").getValue().toString());
                     if(notification.child("ExpenseImgUrl").getValue()!=null)
                         intent.putExtra("ExpenseImgUrl",notification.child("ExpenseImgUrl").getValue().toString());
+                    if (notification.child("ExpenseDate").getValue() != null)
+                        intent.putExtra("ExpenseDate", notification.child("ExpenseDate").getValue().toString());
                     intent.putExtra("ExpenseCost",notification.child("ExpenseCost").getValue().toString());
                     intent.putExtra("ExpenseId",notification.child("id").getValue().toString());
                     intent.putExtra("groupId",notification.child("groupId").getValue().toString());
@@ -170,6 +176,8 @@ public class NotificationsAdapter extends BaseAdapter {
                     intent.putExtra("ExpenseAuthorId",notification.child("ExpenseAuthorId").getValue().toString());
                     if(notification.child("ExpenseImgUrl").getValue()!=null)
                         intent.putExtra("ExpenseImgUrl",notification.child("ExpenseImgUrl").getValue().toString());
+                    if (notification.child("ExpenseDate").getValue() != null)
+                        intent.putExtra("ExpenseDate", notification.child("ExpenseDate").getValue().toString());
                     intent.putExtra("ExpenseCost",notification.child("ExpenseCost").getValue().toString());
                     intent.putExtra("ExpenseId",notification.child("id").getValue().toString());
                     intent.putExtra("groupId",notification.child("groupId").getValue().toString());

@@ -51,9 +51,10 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
     private String oldExpenseId;
     private String oldImageUrl = null;
     private Context mContext;
+    private String date;
 
     public AsyncFirebaseExpenseLoader(String idExpense, String groupId, String usrId, String mCurrentPhotoPath, String mCurrentPhotoName, String nameEditText, String descriptionEditText, String costEditText
-    , String currency, Boolean isModifyActivity, String oldExpenseId, ArrayList<FirebaseGroupMember> excludedList, ArrayList<FirebaseGroupMember> contributorsList, String oldImgUrl, Context mContext) {
+    , String currency, Boolean isModifyActivity, String oldExpenseId, ArrayList<FirebaseGroupMember> excludedList, ArrayList<FirebaseGroupMember> contributorsList, String oldImgUrl,String date, Context mContext) {
         this.idExpense = idExpense;
         Log.e("ID EXPENSE", this.idExpense + "");
         this.groupId = groupId;
@@ -70,12 +71,15 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
         this.mContext = mContext;
         this.currencyCode = currency;
         this.oldImageUrl = oldImgUrl;
+        this.date = date;
     }
 
     @Override
     protected Void doInBackground(Void... params) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
+
+        Log.d("Data",date);
 
         final DatabaseReference newExpenseRef = myRef.child(idExpense);
 
@@ -106,7 +110,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
                         @Override
                         public void onSuccess(Uri uri) {
 
-                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Double.parseDouble(costEditText.replace(",", ".")), currencyCode, uri.toString()));
+                            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Double.parseDouble(costEditText.replace(",", ".")), currencyCode, uri.toString(),date));
 
                             for (FirebaseGroupMember member : excludedList) {
                                 newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
@@ -122,7 +126,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
                                 newExpenseRef.child("oldVersionId").setValue(oldExpenseId);
                             }
 
-                            ((AddExpenseActivity)mContext).finishTasks(nameEditText,descriptionEditText,uri.toString(),usrId,costEditText, groupId, idExpense);
+                            ((AddExpenseActivity)mContext).finishTasks(nameEditText,descriptionEditText,uri.toString(),usrId,costEditText, groupId, idExpense,date);
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -136,7 +140,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
             });
         } else {
             Log.d("DebugCaricamentoSpesa", "NoImage");
-            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Double.parseDouble(costEditText.replace(",", ".")), currencyCode));
+            newExpenseRef.setValue(new FirebaseExpense(usrId, nameEditText, descriptionEditText, Double.parseDouble(costEditText.replace(",", ".")), currencyCode,null,date));
             for (FirebaseGroupMember member : excludedList) {
                 newExpenseRef.child("excluded").child(member.getUid()).child("nome").setValue(member.getName());
                 newExpenseRef.child("excluded").child(member.getUid()).child("immagine").setValue(member.getImgUrl());
@@ -153,7 +157,7 @@ public class AsyncFirebaseExpenseLoader extends AsyncTask<Void,Void,Void> {
                     newExpenseRef.child("image").setValue(oldImageUrl);
             }
 
-            ((AddExpenseActivity)mContext).finishTasks(nameEditText,descriptionEditText,null,usrId,costEditText, groupId,idExpense);
+            ((AddExpenseActivity)mContext).finishTasks(nameEditText,descriptionEditText,null,usrId,costEditText, groupId,idExpense,date);
         }
         return null;
     }

@@ -88,6 +88,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     Dialog fullscreenImageDialog;
 
     private boolean zoomOut = false;
+    private String expenseDate;
 
     private Double exchangeRate = 1d;
 
@@ -112,6 +113,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         cost = getIntent().getStringExtra("ExpenseCost");
         groupId = getIntent().getStringExtra("groupId");
         expenseId = getIntent().getStringExtra("ExpenseId");
+
+        expenseDate = "NaN";
+
+        if(getIntent().getStringExtra("ExpenseDate")!=null)
+            expenseDate = getIntent().getStringExtra("ExpenseDate");
         //currentPersonalBalance = getIntent().getStringExtra("currentPersonalBalance");
 
         expense_name = (TextView) findViewById(R.id.expense_name);
@@ -128,6 +134,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_name.setText(name);
         expense_desc.setText(desc);
         expense_author.setText("loading...");
+        expense_date.setText(expenseDate);
         //TODO: expense_date.setText(FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child());
 
         // Click listener on the topic card view
