@@ -349,6 +349,14 @@ public class ExpensesListFragment extends Fragment {
                     debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
                     totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
 
+
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    String formattedDate[] = df.format(c.getTime()).split("-");
+
+                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("credito").setValue(creditAmount);
+                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("debito").setValue(debtAmount);
+
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);
 

@@ -174,12 +174,112 @@ public class MeActivity extends AppCompatActivity {
                         groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
                 }
 
+                getChart();
                 getBalance();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e("MeActivity", "Unable to get the group memebers");
+            }
+        });
+    }
+
+    private void getChart()
+    {
+        //Ludo grafico storico
+
+        chart = (LineChart) findViewById(R.id.chart);
+
+        //Ludo: hashmap da popolare per i grafici
+
+        HashMap<Integer,Float> daysCredit = new HashMap<>();
+        HashMap<Integer,Float> monthsCredit = new HashMap<>();
+        HashMap<Integer,Float> yearsCredit = new HashMap<>();
+        HashMap<Integer,Float> daysDebit = new HashMap<>();
+        HashMap<Integer,Float> monthsDebit = new HashMap<>();
+        HashMap<Integer,Float> yearsDebit = new HashMap<>();
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String formattedDate[] = df.format(c.getTime()).split("-");
+
+        int currentDay = Integer.parseInt(formattedDate[0]);
+        int currentMonth = Integer.parseInt(formattedDate[1]);
+        int currentYear = Integer.parseInt(formattedDate[2]);
+
+
+        FirebaseAuth mauth = FirebaseAuth.getInstance();
+        String uid = mauth.getCurrentUser().getUid();
+
+        DatabaseReference getBalance = FirebaseDatabase.getInstance().getReference().child("utenti").child(uid).child("gruppi").child(groupId).child("bilancio");
+        getBalance.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("Snap",dataSnapshot.toString());
+                boolean first = true;
+                int startingYear = 2017;
+                for(DataSnapshot year : dataSnapshot.getChildren())
+                {
+                    float yearCredit = 0;
+                    float yearDebit = 0;
+                    if(first) {
+                        startingYear = Integer.parseInt(year.getKey());
+                    }
+                    for(DataSnapshot month : year.getChildren())
+                    {
+                        float monthCredit = 0;
+                        float monthDebit =0;
+                        for(DataSnapshot day: month.getChildren())
+                        {
+                            float dayCredit = Float.parseFloat(day.child("credito").getValue().toString());
+                            float dayDebit = Float.parseFloat(day.child("debito").getValue().toString());
+
+                            daysCredit.put(Integer.parseInt(day.getKey()),dayCredit);
+                            daysDebit.put(Integer.parseInt(day.getKey()),dayDebit);
+
+                            monthCredit+=dayCredit;
+                            monthDebit+=dayDebit;
+                        }
+                        monthsCredit.put(Integer.parseInt(month.getKey()),monthCredit);
+                        daysDebit.put(Integer.parseInt(month.getKey()),monthDebit);
+
+                        yearCredit+=monthCredit;
+                        yearDebit+=monthDebit;
+                    }
+                    yearsCredit.put(Integer.parseInt(year.getKey()),yearCredit);
+                    yearsDebit.put(Integer.parseInt(year.getKey()),yearDebit);
+                }
+
+                //Ludo: il primo grafico che viene visulizzaro quando si pare l'acitivty
+                setChartDayView(daysCredit,daysDebit,currentMonth,currentDay);
+
+                int finalStartingYear = startingYear;
+                chartViewSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        switch(position){
+                            case 0:
+                                setChartDayView(daysCredit,daysDebit,currentMonth,currentDay);
+                                break;
+                            case 1:
+                                setChartMonthView(monthsCredit,monthsDebit,currentMonth);
+                                break;
+                            case 2:
+                                setChartYearView(yearsCredit,yearsDebit, finalStartingYear,currentYear);
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
@@ -328,72 +428,6 @@ public class MeActivity extends AppCompatActivity {
         for (int i = 0; i < otherMembersList.size(); i++)
             Log.d("meBalance", otherMembersList.get(i).getName() + " " + otherMembersList.get(i).getAmount().toString());
 
-        //Ludo grafico storico
-
-        chart = (LineChart) findViewById(R.id.chart);
-
-        //Ludo: hashmap da popolare per i grafici
-
-        HashMap<Integer,Float> daysCredit = new HashMap<>();
-        HashMap<Integer,Float> monthsCredit = new HashMap<>();
-        HashMap<Integer,Float> yearsCredit = new HashMap<>();
-        HashMap<Integer,Float> daysDebit = new HashMap<>();
-        HashMap<Integer,Float> monthsDebit = new HashMap<>();
-        HashMap<Integer,Float> yearsDebit = new HashMap<>();
-
-        daysCredit.put(1,500f);
-        daysCredit.put(10,100f);
-        daysCredit.put(19,300f);
-        daysCredit.put(30,200f);
-
-        daysDebit.put(10,100f);
-        daysDebit.put(12,10f);
-        daysDebit.put(15,200f);
-        daysDebit.put(90,400f);
-
-        monthsCredit.put(4,200f);
-        monthsCredit.put(6,200f);
-        monthsCredit.put(8,200f);
-        monthsCredit.put(12,200f);
-
-        monthsDebit.put(3,300f);
-        monthsDebit.put(4,0f);
-        monthsDebit.put(12,300f);
-
-
-        int currentMonth = 6;
-        int currentDay = 10;
-        int startingYear = 2016;
-        int endingYear = 2017;
-
-        yearsCredit.put(2017,100f);
-        yearsDebit.put(2017,50f);
-
-        //Ludo: il primo grafico che viene visulizzaro quando si pare l'acitivty
-        setChartDayView(daysCredit,daysDebit,currentMonth,currentDay);
-
-
-        chartViewSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch(position){
-                    case 0:
-                        setChartDayView(daysCredit,daysDebit,currentMonth,currentDay);
-                        break;
-                    case 1:
-                        setChartMonthView(monthsCredit,monthsDebit,currentMonth);
-                        break;
-                    case 2:
-                        setChartYearView(yearsCredit,yearsDebit,startingYear,endingYear);
-                        break;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         if (debito < 0)
             debito = -debito;
@@ -444,7 +478,7 @@ public class MeActivity extends AppCompatActivity {
 
 
 
-        for(int i=startingYear;i<endingYear+1;i++)
+        for(int i=startingYear-1;i<endingYear+1;i++)
         {
 
             if(yearsCredit.containsKey(i))
