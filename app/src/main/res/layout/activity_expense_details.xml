@@ -261,5 +261,12 @@
                     android:textSize="20sp" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
+
+        <include
+            android:id="@+id/include_contributors_and_excluded_list"
+            layout="@layout/contributors_and_excluded_list"
+            >
+        </include>
+
     </LinearLayout>
 </ScrollView>

@@ -1,5 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseHistoryAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
@@ -28,6 +30,8 @@ public class HistoryPopupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String uid;
     private ListView history_lv;
+    private String groupId;
+    private String expenseId;
 
     final ArrayList<FirebaseExpense> expensesHistory = new ArrayList<>();
     final ExpenseHistoryAdapter expensesHistoryAdapter = new ExpenseHistoryAdapter(this, expensesHistory);
@@ -52,8 +56,8 @@ public class HistoryPopupActivity extends AppCompatActivity {
 
 
         // Prendi la lista dei membri del gruppo
-        String groupId = getIntent().getExtras().getString("groupId");
-        String expenseId = getIntent().getExtras().getString("expenseId");
+        groupId = getIntent().getExtras().getString("groupId");
+        expenseId = getIntent().getExtras().getString("expenseId");
 
         // Non occupare tutto lo schermo
         DisplayMetrics dm = new DisplayMetrics();
@@ -79,9 +83,6 @@ public class HistoryPopupActivity extends AppCompatActivity {
 
                 FirebaseExpense firebaseHistory = dataSnapshot.getValue(FirebaseExpense.class);
                 firebaseHistory.setKey(dataSnapshot.getKey());
-
-                expensesHistory.add(firebaseHistory);
-                Log.d("DebugHistoryList","spesa trovata: " + firebaseHistory.getKey());
 
                 //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                 expensesHistoryAdapter.notifyDataSetChanged();
@@ -113,7 +114,21 @@ public class HistoryPopupActivity extends AppCompatActivity {
         history_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                FirebaseExpense clicked = expensesHistory.get(position);
+                final Intent intent = new Intent (HistoryPopupActivity.this, ExpenseDetailsActivity.class);
+                Log.d("Expenses", clicked.toString());
+                intent.putExtra("ExpenseName", clicked.getName());
+                intent.putExtra("ExpenseImgUrl", clicked.getImage());
+                intent.putExtra("ExpenseDesc", clicked.getDescription());
+                intent.putExtra("ExpenseCost", String.format(Locale.getDefault(), "%.2f", clicked.getCost()));
+                intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
+                intent.putExtra("groupId", getIntent().getStringExtra("groupId"));
+                intent.putExtra("ExpenseId", clicked.getKey());
+                intent.putExtra("isHistoryActivity", "true");
+                intent.putExtra("historyId", expenseId);
+                //intent.putExtra("currentPersonalBalance", String.valueOf(creditAmount - debtAmount));
+                //startActivityForResult(intent, EXPENSE_DETAILS);
+                startActivity(intent);
             }
         });
 

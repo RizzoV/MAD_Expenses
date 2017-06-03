@@ -101,6 +101,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private AutoCompleteTextView currencyAutoCompleteTV;
     private double expenseTotal;
     private String idExpense;
+    private String idExpenseTemp;
     private ProgressDialog barProgressDialog = null;
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
@@ -457,10 +458,14 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         newId = uuid;
         Double exchangeRate = 1d;
 
-        if (isModifyActivity && (getIntent().getStringExtra("butDoNotTrack") == null))
+        if (isModifyActivity && (getIntent().getStringExtra("butDoNotTrack") == null)) {
             idExpense = oldExpenseId;
+            idExpenseTemp = oldExpenseId + "a";
+        }
+
         else
             idExpense = newId;
+            idExpenseTemp = newId;
 
         if(!currencyAutoCompleteTV.getText().toString().split("\t ")[0].contains("EUR")) {
             try {
@@ -473,7 +478,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         String finalCostString = String.format(String.valueOf(Float.valueOf(costEditText.getText().toString().replace(",", ".")) / exchangeRate)).replace(",", ".");
 
         Log.d("DebugHistory", "id storico: " + expenseHistoryId);
-        AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpense, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
+        AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpenseTemp, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR",
                 isModifyActivity, oldExpenseId, excludedList, contributorsList, oldImgUrl,dateEditText.getText().toString(), this);
 
@@ -508,7 +513,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         }
 
         notification.put("data", formattedDate);
-        notification.put("id", idExpense);
+        notification.put("id", this.idExpense);
         notification.put("ExpenseName", expenseName);
         notification.put("ExpenseDesc", expenseDesc);
         if (expenseImgUrl != null)
@@ -526,7 +531,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         myNotRef.setValue(notificationId);
 
 
-        getIntent().putExtra("expenseId", idExpense);
+        getIntent().putExtra("expenseId", this.idExpense);
         getIntent().putExtra("expenseTotal", expenseTotal + "");
         getIntent().putExtra("expenseUId", mAuth.getCurrentUser().getUid());
         getIntent().putExtra("expenseUserName", mAuth.getCurrentUser().getDisplayName());
@@ -566,34 +571,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 }
             });
 
-
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
-            final DatabaseReference oldExpenseRef = myRef.child(oldExpenseId);
-//          final DatabaseReference newExpenseHistoryRef = database.getReference("storico")
-//                .child(groupId).child("spese").child(oldExpenseId);
-
-            oldExpenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild("oldVersionId")) {
-                        historyId = dataSnapshot.child("oldVersionId").getValue().toString();
-                        Log.d("DebugHistory", "campo old version trovato: " + historyId);
-                        moveFirebaseExpenseNode(historyId);
-                    }
-                    else {
-                        historyId = oldExpenseId;
-                        Log.d("DebugHistory", "campo old version NON trovato: " + historyId);
-                        moveFirebaseExpenseNode(oldExpenseId);
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e("AddExpenseActivity", "Could not retrieve the expense from Firebase");
-                }
-            });
 
         }
         // Vale: e della trasformazione di una proposta in spesa
@@ -834,23 +811,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             });
             */
 
-            //TODO Jured: gestire questa assegnazione asincrona
-            DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference("gruppi").child(oldGroupId)
-                    .child("expenses").child(oldExpenseId);
-            historyRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild("oldVersionId"))
-                        expenseHistoryId = dataSnapshot.child("oldVersionId").getValue().toString();
-                    else
-                        expenseHistoryId = null;
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
 
             if (oldExpenseImageBitmap != null) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(oldExpenseImageBitmap, 0, oldExpenseImageBitmap.length);
@@ -913,11 +873,30 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         } else {
                             Log.d("moveNode()", "Success");
                             //delete old node
-                            DatabaseReference newExpenseHistoryRef = FirebaseDatabase.getInstance().getReference("gruppi")
-                                    .child(groupId).child("expenses").child(idExpense).child("oldVersionId");
-                            newExpenseHistoryRef.setValue(historyId);
-                            //oldExpenseRef.removeValue();
-                            oldExpenseVersionId = oldExpenseId;
+                            DatabaseReference newTempExpenseRef = FirebaseDatabase.getInstance().getReference("gruppi")
+                                    .child(groupId).child("expenses").child(idExpenseTemp);
+                            Log.d("DebugHistory", "lettura da: " + idExpenseTemp);
+                            newTempExpenseRef.child("oldVersionId").setValue(historyId);
+                            oldExpenseRef.removeValue();
+
+                            newTempExpenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    DatabaseReference newExpenseRef = FirebaseDatabase.getInstance().getReference("gruppi")
+                                            .child(groupId).child("expenses").child(idExpense);
+                                    newExpenseRef.setValue(dataSnapshot.getValue());
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            newTempExpenseRef.child("contributors").removeValue();
+                            newTempExpenseRef.child("debtors").removeValue();
+                            newTempExpenseRef.removeValue();
+                            //oldExpenseVersionId = oldExpenseId;
                         }
                         barProgressDialog.dismiss();
                         setResult(RESULT_OK, getIntent());

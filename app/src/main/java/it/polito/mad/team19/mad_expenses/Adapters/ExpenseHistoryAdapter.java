@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -52,6 +53,8 @@ public class ExpenseHistoryAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        Log.d("DebugHistory", "debug elemento vuoto" + position + " " + historyList.size());
+
         final ExpenseHistoryAdapter.ImgHolder viewHolder;
 
         if (convertView == null) {
@@ -63,9 +66,6 @@ public class ExpenseHistoryAdapter extends BaseAdapter {
             viewHolder = (ExpenseHistoryAdapter.ImgHolder) convertView.getTag();
 
         TextView modifyData = (TextView) convertView.findViewById(R.id.history_item_tv);
-
-        //LUDO: per ceccare
-        //ImageView cb = (ImageView) convertView.findViewById(R.id.contributor_checkbox);
 
         if (historyList.get(position).getImage() != null)
             Glide.with(context).load(historyList.get(position).getImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.img) {

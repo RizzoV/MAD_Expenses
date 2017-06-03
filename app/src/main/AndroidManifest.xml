@@ -151,7 +151,10 @@
 
         <service android:name=".Classes.NotificationService" />
 
-        <activity android:name=".HistoryPopupActivity"></activity>
+        <activity android:name=".HistoryPopupActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopupTheme">
+        </activity>
     </application>
 
 </manifest>

@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,8 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Adapters.ExpenseDetailsAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.ExpenseHistoryAdapter;
+import it.polito.mad.team19.mad_expenses.Adapters.HistoryMemberAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.ExpenseDetail;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
@@ -134,15 +137,23 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         set_photo_text_view = (TextView) findViewById(R.id.add_expense_photo_tv);
 
         //card
+
         viewTopic_cv = (CardView) findViewById(R.id.expense_topic_cw);
         viewHistory_cv = (CardView) findViewById(R.id.expense_history_cw);
         expense_date = (TextView) findViewById(R.id.expense_date);
+        expense_date = (TextView) findViewById(R.id.expense_date);
+        viewHistory_cv = (CardView) findViewById(R.id.expense_history_cw);
 
         expense_name.setText(name);
         expense_desc.setText(desc);
         expense_author.setText("loading...");
         expense_date.setText(expenseDate);
         //TODO: expense_date.setText(FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child());
+
+        if (isHistoryActivity()) {
+            viewHistory_cv.setVisibility(View.GONE);
+            viewTopic_cv.setVisibility(View.GONE);
+        }
 
         // Click listener on the topic card view
         viewTopic_cv.setOnClickListener(new View.OnClickListener() {
@@ -217,9 +228,97 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             }
         });
 
+
         final ArrayList<ExpenseDetail> expenseDetailsList = new ArrayList<>();
 
+
+
         final ExpenseDetailsAdapter edAdapter = new ExpenseDetailsAdapter(this, expenseDetailsList);
+
+
+        if (isHistoryActivity()) {
+
+            final ArrayList<FirebaseGroupMember> historyContributorsMemberList = new ArrayList<>();
+            final ArrayList<FirebaseGroupMember> historyExcludedMemberList = new ArrayList<>();
+            final ArrayList<FirebaseGroupMember> historyDebtorMemberList = new ArrayList<>();
+
+
+            ListView history_lv = (ListView) findViewById(R.id.contributors_and_excluded_lv);
+            history_lv.setVisibility(View.VISIBLE);
+
+            String historyId = getIntent().getStringExtra("historyId");
+
+            DatabaseReference historyMemberRef = firebase.getReference("storico").child(groupId).child("spese")
+                    .child(historyId).child(expenseId);
+            historyMemberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot expense) {
+
+                    final String[] userCurrencyCode = new String[1];
+
+                    userCurrencyCode[0] = getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+
+                    if (!"EUR".equals(userCurrencyCode[0])) {
+                        try {
+                            exchangeRate = new AsyncCurrencyConverter(ExpenseDetailsActivity.this, userCurrencyCode[0]).execute().get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                    } else
+                        exchangeRate = 1d;
+
+                    // per evitare crash
+                    if (exchangeRate != null)
+                        edAdapter.setExchangeRate(exchangeRate);
+                    else {
+                        exchangeRate = 1d;
+                        userCurrencyCode[0] = "EUR";
+                    }
+                    expense_cost.setText(String.format(Locale.getDefault(), "%.2f", Float.valueOf(cost.replace(",", ".")) * exchangeRate) + " " + Currency.getInstance(userCurrencyCode[0]).getSymbol());
+
+                    if (expense.child("debtors").hasChildren()) {
+                        for (DataSnapshot contributor : expense.child("contributors").getChildren()) {
+                            String contributor_img = null;
+                            if (contributor.child("immagine").exists())
+                                contributor_img = contributor.child("immagine").getValue().toString();
+
+//                            for (DataSnapshot debtor : contributor.child("riepilogo").getChildren()) {
+//
+//                                String debtor_img = null;
+//                                if (debtor.child("immagine").exists())
+//                                    debtor_img = debtor.child("immagine").getValue().toString();
+//
+//                                expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.valueOf(Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, "EUR", userCurrencyCode[0]));
+//                                edAdapter.notifyDataSetChanged();
+//                            }
+                            historyContributorsMemberList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));
+                        }
+                        for (DataSnapshot currentExcluded : expense.child("excluded").getChildren()) {
+                            historyExcludedMemberList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey()));
+                            Log.e("EDA E in", currentExcluded.child("nome").getValue(String.class) + "-");
+                            Log.d("DebugHistory", "escluso trovato: " + currentExcluded.getKey());
+                        }
+                        for (DataSnapshot debtor : expense.child("debtors").getChildren()) {
+                            historyDebtorMemberList.add(new FirebaseGroupMember(debtor.child("nome").getValue(String.class), debtor.child("immagine").getValue(String.class), debtor.getKey()));
+                            Log.d("DebugHistory", "debitore trovato: " + debtor.getKey());
+                        }
+                        final HistoryMemberAdapter hmAdapter = new HistoryMemberAdapter(ExpenseDetailsActivity.this,historyContributorsMemberList,historyExcludedMemberList,historyDebtorMemberList);
+                        history_lv.setAdapter(hmAdapter);
+
+                    } else {
+                        findViewById(R.id.balances_card).setVisibility(View.GONE);
+                    }
+
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("ExpenseDetailsActivity", "Could not retrieve the list of debts");
+                }
+            });
+
+        }
 
         DatabaseReference expenseRef = firebase.getReference("gruppi").child(groupId).child("expenses").child(expenseId);
         expenseRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -399,6 +498,8 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             }
         });
 
+
+
         DatabaseReference expenseImageRef = expenseRef.child("image");
         expenseImageRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -418,6 +519,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Menu finalMenu = menu;
@@ -425,7 +527,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if (expenseAuthorId.equals(mAuth.getCurrentUser().getUid()))
+        if (expenseAuthorId.equals(mAuth.getCurrentUser().getUid()) && !isHistoryActivity())
             // Inflate the menu; this adds items to the action bar if it is present.
             getMenuInflater().inflate(R.menu.menu_expense_details, finalMenu);
 
@@ -595,5 +697,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             Log.d("Receiver", "unregister on pause");
         }
 
+    }
+
+    private boolean isHistoryActivity() {
+
+        return getIntent().hasExtra("isHistoryActivity");
     }
 }
