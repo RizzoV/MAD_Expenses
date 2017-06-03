@@ -155,6 +155,21 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             viewTopic_cv.setVisibility(View.GONE);
         }
 
+        DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference("storico").child(groupId).child("spese")
+                .child(expenseId);
+        historyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChildren())
+                    viewHistory_cv.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         // Click listener on the topic card view
         viewTopic_cv.setOnClickListener(new View.OnClickListener() {
             @Override
