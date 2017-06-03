@@ -226,10 +226,13 @@ public class MeActivity extends AppCompatActivity {
                     if(first) {
                         startingYear = Integer.parseInt(year.getKey());
                     }
+
+                    float monthCredit = 0;
+                    float monthDebit =0;
+
                     for(DataSnapshot month : year.getChildren())
                     {
-                        float monthCredit = 0;
-                        float monthDebit =0;
+
                         for(DataSnapshot day: month.getChildren())
                         {
                             float dayCredit = Float.parseFloat(day.child("credito").getValue().toString());
