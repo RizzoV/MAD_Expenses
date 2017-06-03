@@ -210,11 +210,11 @@
     <!-- Showcase hint text-->
     <string name="new_group_add_members">Hai creato un nuovo gruppo</string>
     <string name="add_new_members_hint">Inizia aggiungendo nuovi membri</string>
-    <string name="no_group">You don\'t have a group yet</string>
-    <string name="add_group_hint">Create a new group now</string>
-    <string name="invalid_email">Invalid email</string>
-    <string name="view_history">View history</string>
-    <string name="select_history_item">Select item form history list</string>
+    <string name="no_group">Non hai ancora un gruppo</string>
+    <string name="add_group_hint">Crea ora un nuovo gruppo</string>
+    <string name="invalid_email">Email invalida</string>
+    <string name="view_history">Visualizza storico</string>
+    <string name="select_history_item">Seleziona un elemento dallo storico</string>
 
 
 </resources>
