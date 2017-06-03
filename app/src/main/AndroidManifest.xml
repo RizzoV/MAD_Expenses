@@ -154,6 +154,10 @@
         <activity android:name=".HistoryPopupActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.PopupTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:screenOrientation="portrait"
+                android:value=".ExpenseDetailsActivity" />
         </activity>
     </application>
 

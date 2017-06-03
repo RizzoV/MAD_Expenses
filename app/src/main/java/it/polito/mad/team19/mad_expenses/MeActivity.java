@@ -11,6 +11,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -57,6 +58,8 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.Me;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+
+import static android.support.v7.recyclerview.R.attr.layoutManager;
 
 public class MeActivity extends AppCompatActivity {
 
@@ -294,6 +297,10 @@ public class MeActivity extends AppCompatActivity {
     private void getBalance() {
 
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.fromto_rv);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        mRecyclerView.addItemDecoration(dividerItemDecoration);
+
         final MeRecyclerAdapter adapter = new MeRecyclerAdapter(this, otherMembersList, Currency.getInstance(customCurrencyCode).getSymbol(), exchangeRate);
         mRecyclerView.setAdapter(adapter);
 
@@ -307,7 +314,6 @@ public class MeActivity extends AppCompatActivity {
         /* VALE
          * Prendi le informazioni dal Bundle passato tramite l'intent
          */
-
         ArrayList<Me> balancesArray = getIntent().getBundleExtra("balancesBundle").getParcelableArrayList("balancesArray");
 
         if (balancesArray == null) {

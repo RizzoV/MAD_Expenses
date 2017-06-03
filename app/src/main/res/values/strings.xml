@@ -137,7 +137,7 @@
     <string name="delete_proposal">Delete the proposal</string>
     <string name="confirm_proposal_deletion">Are you sure you want to delete the proposal?</string>
 
-    <string name="chartviewSpinnerPrompt">Choose the view</string>
+    <string name="chartviewSpinnerPrompt">Choose the view:</string>
 
     <string name="allreadyMembers">You are already in this group!</string>
 

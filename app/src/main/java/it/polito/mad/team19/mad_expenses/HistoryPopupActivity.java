@@ -1,5 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -25,7 +26,7 @@ import it.polito.mad.team19.mad_expenses.Adapters.ExpenseHistoryAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 
-public class HistoryPopupActivity extends AppCompatActivity {
+public class HistoryPopupActivity extends Activity {
 
     private FirebaseAuth mAuth;
     private String uid;
