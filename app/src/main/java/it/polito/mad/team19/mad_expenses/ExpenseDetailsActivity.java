@@ -54,7 +54,6 @@ import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
 import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
 import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 //TODO Jured: aggiungi click sulla tab History
 
@@ -90,9 +89,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
     NetworkChangeReceiver netChange;
     IntentFilter filter;
-    Dialog nagDialog;
+    Dialog fullscreenImageDialog;
 
     private boolean zoomOut = false;
+    private String expenseDate;
 
     private Double exchangeRate = 1d;
 
@@ -117,6 +117,11 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         cost = getIntent().getStringExtra("ExpenseCost");
         groupId = getIntent().getStringExtra("groupId");
         expenseId = getIntent().getStringExtra("ExpenseId");
+
+        expenseDate = "NaN";
+
+        if(getIntent().getStringExtra("ExpenseDate")!=null)
+            expenseDate = getIntent().getStringExtra("ExpenseDate");
         //currentPersonalBalance = getIntent().getStringExtra("currentPersonalBalance");
 
         expense_name = (TextView) findViewById(R.id.expense_name);
@@ -136,6 +141,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_name.setText(name);
         expense_desc.setText(desc);
         expense_author.setText("loading...");
+        expense_date.setText(expenseDate);
         //TODO: expense_date.setText(FirebaseDatabase.getInstance().getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child());
 
         // Click listener on the topic card view
@@ -163,31 +169,32 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
         // Click listener on the image
         if (imgUrl != null) {
-            nagDialog = new Dialog(ExpenseDetailsActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-            nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            nagDialog.setCancelable(true);
-            nagDialog.setContentView(R.layout.expense_image_preview);
-            Button btnClose = (Button) nagDialog.findViewById(R.id.btnIvClose);
-            PhotoView ivPreview = (PhotoView) nagDialog.findViewById(R.id.iv_preview_image);
+            fullscreenImageDialog = new Dialog(ExpenseDetailsActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+            fullscreenImageDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            fullscreenImageDialog.setCancelable(true);
+            fullscreenImageDialog.setContentView(R.layout.expense_image_fullscreen);
+            Button btnClose = (Button) fullscreenImageDialog.findViewById(R.id.btnIvClose);
+            PhotoView ivPreview = (PhotoView) fullscreenImageDialog.findViewById(R.id.iv_fullscreen_image);
 
             Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(ivPreview) {
                 @Override
                 protected void setResource(Bitmap resource) {
                     ivPreview.setImageBitmap(resource);
+                    fullscreenImageDialog.findViewById(R.id.fullscreen_loading_tv).setVisibility(View.GONE);
                 }
             });
 
             btnClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View arg0) {
-                    nagDialog.dismiss();
+                    fullscreenImageDialog.dismiss();
                 }
             });
 
             expense_img.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    nagDialog.show();
+                    fullscreenImageDialog.show();
                 }
             });
         }
@@ -198,8 +205,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         dbAuthorNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                expenseAuthor = dataSnapshot.getValue().toString();
-                expense_author.setText(expenseAuthor);
+                if(dataSnapshot.getValue() != null) {
+                    expenseAuthor = dataSnapshot.getValue().toString();
+                    expense_author.setText(expenseAuthor);
+                }
             }
 
             @Override
@@ -567,9 +576,9 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if (nagDialog != null)
-            if (nagDialog.isShowing())
-                nagDialog.dismiss();
+        if (fullscreenImageDialog != null)
+            if (fullscreenImageDialog.isShowing())
+                fullscreenImageDialog.dismiss();
 
         if (alertDialog != null)
             if (alertDialog.isShowing())

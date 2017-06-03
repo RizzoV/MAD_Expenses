@@ -1,5 +1,6 @@
 package it.polito.mad.team19.mad_expenses;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.NotActivities.AsyncCurrencyConverter;
+import uk.co.senab.photoview.PhotoView;
 
 public class ProposalDetailsActivity extends AppCompatActivity {
 
@@ -55,6 +58,8 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
     private Double exchangeRate = 1d;
 
+    private Dialog fullscreenImageDialog;
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -70,6 +75,10 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         if(alertDialog1 != null)
             if(alertDialog1.isShowing())
                 alertDialog.dismiss();
+
+        if (fullscreenImageDialog != null)
+            if (fullscreenImageDialog.isShowing())
+                fullscreenImageDialog.dismiss();
     }
 
     private AlertDialog alertDialog2 = null;
@@ -128,14 +137,17 @@ public class ProposalDetailsActivity extends AppCompatActivity {
         desc_tv.setText(desc);
         name_tv.setText(name);
 
+
+        imgUrl = getIntent().getStringExtra("ProposalImgUrl");
+        if (imgUrl != null) {
+            set_photo_tv.setText(R.string.loading_image);
+            showExpenseImage(imgUrl);
+        }
+
+
         database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot proposal) {
-                imgUrl = proposal.child("imageUrl").getValue(String.class);
-                if (imgUrl != null) {
-                    set_photo_tv.setText(R.string.loading_image);
-                    showExpenseImage(imgUrl);
-                }
 
                 final String[] userCurrencyCode = new String[1];
 
@@ -554,6 +566,39 @@ public class ProposalDetailsActivity extends AppCompatActivity {
                 });
             }
         });
+
+
+        // Click listener on the image
+        if (imgUrl != null) {
+            fullscreenImageDialog = new Dialog(ProposalDetailsActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+            fullscreenImageDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            fullscreenImageDialog.setCancelable(true);
+            fullscreenImageDialog.setContentView(R.layout.expense_image_fullscreen);
+            Button btnClose = (Button) fullscreenImageDialog.findViewById(R.id.btnIvClose);
+            PhotoView ivPreview = (PhotoView) fullscreenImageDialog.findViewById(R.id.iv_fullscreen_image);
+
+            Glide.with(this).load(imgUrl).asBitmap().error(R.drawable.circle).into(new BitmapImageViewTarget(ivPreview) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    ivPreview.setImageBitmap(resource);
+                    fullscreenImageDialog.findViewById(R.id.fullscreen_loading_tv).setVisibility(View.GONE);
+                }
+            });
+
+            btnClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    fullscreenImageDialog.dismiss();
+                }
+            });
+
+            proposal_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fullscreenImageDialog.show();
+                }
+            });
+        }
     }
 
     @Override

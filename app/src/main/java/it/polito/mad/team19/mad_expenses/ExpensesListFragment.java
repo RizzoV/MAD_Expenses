@@ -149,6 +149,7 @@ public class ExpensesListFragment extends Fragment {
                 intent.putExtra("ExpenseDesc", clicked.getDescritpion());
                 intent.putExtra("ExpenseCost", String.valueOf(clicked.getCost()));
                 intent.putExtra("ExpenseAuthorId", clicked.getAuthor());
+                intent.putExtra("ExpenseDate", clicked.getDate());
                 intent.putExtra("groupId", getActivity().getIntent().getStringExtra("groupId"));
                 intent.putExtra("ExpenseId", clicked.getFirebaseId());
                 intent.putExtra("currentPersonalBalance", String.valueOf(creditAmount - debtAmount));
@@ -270,7 +271,7 @@ public class ExpensesListFragment extends Fragment {
 
                         FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
                         firebaseExpense.setKey(expense.getKey());
-                        expenses.add(0, new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey()));
+                        expenses.add(0, new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey(), firebaseExpense.getDate()));
 
                         //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
                         expensesListAdapter.notifyDataSetChanged();
@@ -347,6 +348,14 @@ public class ExpensesListFragment extends Fragment {
                     creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
                     debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
                     totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+
+
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    String formattedDate[] = df.format(c.getTime()).split("-");
+
+                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("credito").setValue(creditAmount);
+                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("debito").setValue(debtAmount);
 
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
                     database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);

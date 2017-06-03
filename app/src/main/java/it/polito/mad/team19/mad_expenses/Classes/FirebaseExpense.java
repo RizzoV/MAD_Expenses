@@ -1,5 +1,7 @@
 package it.polito.mad.team19.mad_expenses.Classes;
 
+import android.util.Log;
+
 import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
@@ -17,20 +19,11 @@ public class FirebaseExpense
     private Double cost;
     private String currencyCode;
     private String image;
-    private String isModified;
+    private String date;
 
     public FirebaseExpense () {}
 
-    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode)
-    {
-        this(author, name, description, cost, currencyCode, null, null);
-    }
-
-    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image) {
-        this(author, name, description, cost, currencyCode, image, null);
-    }
-
-    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image, String isModified)
+    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image, String date)
     {
         this.author = author;
         this.name = name;
@@ -38,8 +31,8 @@ public class FirebaseExpense
         this.cost = cost;
         this.image = image;
         //this.key = null;
-        this.isModified = isModified;
         this.currencyCode = currencyCode;
+        this.date = date;
     }
 
     public String getAuthor() {
@@ -85,6 +78,10 @@ public class FirebaseExpense
     public String getImage() {
         return image;
     }
+
+    public String getDate() {return date;}
+
+    public void setDate(String date) {this.date = date;}
 
     public void setImage(String image) {
         this.image = image;

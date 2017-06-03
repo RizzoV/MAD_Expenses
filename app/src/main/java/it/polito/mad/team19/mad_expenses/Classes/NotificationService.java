@@ -218,6 +218,8 @@ public class NotificationService extends IntentService{
                                                                                     intent.putExtra("ExpenseAuthorId", not.child("ExpenseAuthorId").getValue().toString());
                                                                                     if (not.child("ExpenseImgUrl").getValue() != null)
                                                                                         intent.putExtra("ExpenseImgUrl", not.child("ExpenseImgUrl").getValue().toString());
+                                                                                    if (not.child("ExpenseDate").getValue() != null)
+                                                                                        intent.putExtra("ExpenseDate", not.child("ExpenseDate").getValue().toString());
                                                                                     intent.putExtra("ExpenseCost", not.child("ExpenseCost").getValue().toString());
                                                                                     intent.putExtra("ExpenseId", not.child("id").getValue().toString());
                                                                                     intent.putExtra("groupId", groupId);
@@ -230,6 +232,8 @@ public class NotificationService extends IntentService{
                                                                                     intent.putExtra("ExpenseAuthorId", not.child("ExpenseAuthorId").getValue().toString());
                                                                                     if (not.child("ExpenseImgUrl").getValue() != null)
                                                                                         intent.putExtra("ExpenseImgUrl", not.child("ExpenseImgUrl").getValue().toString());
+                                                                                    if (not.child("ExpenseDate").getValue() != null)
+                                                                                        intent.putExtra("ExpenseDate", not.child("ExpenseDate").getValue().toString());
                                                                                     intent.putExtra("ExpenseCost", not.child("ExpenseCost").getValue().toString());
                                                                                     intent.putExtra("ExpenseId", not.child("id").getValue().toString());
                                                                                     intent.putExtra("groupId", groupId);
@@ -242,6 +246,8 @@ public class NotificationService extends IntentService{
                                                                                     intent.putExtra("ExpenseAuthorId", not.child("ExpenseAuthorId").getValue().toString());
                                                                                     if (not.child("ExpenseImgUrl").getValue() != null)
                                                                                         intent.putExtra("ExpenseImgUrl", not.child("ExpenseImgUrl").getValue().toString());
+                                                                                    if (not.child("ExpenseDate").getValue() != null)
+                                                                                        intent.putExtra("ExpenseDate", not.child("ExpenseDate").getValue().toString());
                                                                                     intent.putExtra("ExpenseCost", not.child("ExpenseCost").getValue().toString());
                                                                                     intent.putExtra("ExpenseId", not.child("id").getValue().toString());
                                                                                     intent.putExtra("groupId", groupId);
@@ -254,6 +260,8 @@ public class NotificationService extends IntentService{
                                                                                     intent.putExtra("ExpenseAuthorId", not.child("ExpenseAuthorId").getValue().toString());
                                                                                     if (not.child("ExpenseImgUrl").getValue() != null)
                                                                                         intent.putExtra("ExpenseImgUrl", not.child("ExpenseImgUrl").getValue().toString());
+                                                                                    if (not.child("ExpenseDate").getValue() != null)
+                                                                                        intent.putExtra("ExpenseDate", not.child("ExpenseDate").getValue().toString());
                                                                                     intent.putExtra("ExpenseCost", not.child("ExpenseCost").getValue().toString());
                                                                                     intent.putExtra("ExpenseId", not.child("id").getValue().toString());
                                                                                     intent.putExtra("groupId", groupId);
