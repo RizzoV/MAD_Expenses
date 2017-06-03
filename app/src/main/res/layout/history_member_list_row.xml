@@ -39,15 +39,26 @@
         android:textColor="@color/primaryText"/>
 
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <ImageView
+            android:id="@+id/contributor_history_iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:visibility="invisible"
+            android:src="@drawable/ic_contributor_coins"
+            android:layout_gravity="center"
+            />
 
-    <ImageView
-        android:id="@+id/contributor_history_iv"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:visibility="invisible"
-
-        android:src="@drawable/ic_contributor_coins"
-        android:layout_gravity="center"
-        />
-
+        <ImageView
+            android:id="@+id/excluded_history_iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:visibility="invisible"
+            android:src="@drawable/ic_cross_2"
+            />
+    </RelativeLayout>
 </LinearLayout>

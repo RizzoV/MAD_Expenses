@@ -91,6 +91,8 @@ public class HistoryMemberAdapter extends BaseAdapter {
 
         //Jured: per segnare contributors
         ImageView cb = (ImageView) convertView.findViewById(R.id.contributor_history_iv);
+        //Jured: per segnare esclusi
+        ImageView ex = (ImageView) convertView.findViewById(R.id.excluded_history_iv);
 
         if (membersList.get(position).getImgUrl() != null) {
             Glide.with(context).load(membersList.get(position).getImgUrl()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.img) {
@@ -107,6 +109,7 @@ public class HistoryMemberAdapter extends BaseAdapter {
             Glide.clear(viewHolder.img);
             viewHolder.img.setImageResource(R.drawable.ic_user_noimg);
         }
+
         username.setText(membersList.get(position).getName());
 
         if (position < contributorsMembersList.size()) {
@@ -115,8 +118,8 @@ public class HistoryMemberAdapter extends BaseAdapter {
         }
         else if (position < contributorsMembersList.size() + excludedMembersList.size()) {
             Log.d("DebugHistory", "stikethrough " + position + " " + membersList.size() + membersList.get(position).getName());
-            username.setPaintFlags(username.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            username.setTextColor(Color.GRAY);
+            ex.setVisibility(View.VISIBLE);
+            convertView.setAlpha(new Float(0.5));
         }
 
         return convertView;
