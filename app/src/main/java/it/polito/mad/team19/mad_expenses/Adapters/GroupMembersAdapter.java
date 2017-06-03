@@ -19,6 +19,7 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import java.util.ArrayList;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
+import it.polito.mad.team19.mad_expenses.ExcludedPopupActivity;
 import it.polito.mad.team19.mad_expenses.R;
 
 /**
@@ -94,8 +95,12 @@ public class GroupMembersAdapter extends BaseAdapter {
         }
 
 
-        if (membersList.get(position).isChecked())
+        if (membersList.get(position).isChecked()) {
             cb.setVisibility(View.VISIBLE);
+            if (context instanceof ExcludedPopupActivity) {
+                convertView.setAlpha(0.5f);
+            }
+        }
         else
             cb.setVisibility(View.INVISIBLE);
 
