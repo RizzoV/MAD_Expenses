@@ -92,6 +92,7 @@ public class HistoryPopupActivity extends Activity {
                 for (DataSnapshot expense : dataSnapshot.getChildren()) {
 
                     FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
+                    firebaseExpense.setModTime(expense.child("modifyTime").getValue().toString());
                     firebaseExpense.setKey(expense.getKey());
 
                     expensesHistory.add(firebaseExpense);

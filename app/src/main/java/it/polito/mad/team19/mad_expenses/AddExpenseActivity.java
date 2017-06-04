@@ -53,6 +53,7 @@ import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -909,6 +910,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
 
                 });
+                newExpenseHistoryRef.child("modifyTime").setValue(System.currentTimeMillis());
             }
 
             @Override

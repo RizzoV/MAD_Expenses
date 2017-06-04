@@ -16,7 +16,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseExpense;
 import it.polito.mad.team19.mad_expenses.R;
@@ -66,6 +69,7 @@ public class ExpenseHistoryAdapter extends BaseAdapter {
             viewHolder = (ExpenseHistoryAdapter.ImgHolder) convertView.getTag();
 
         TextView modifyData = (TextView) convertView.findViewById(R.id.history_item_tv);
+        TextView modifyTime = (TextView) convertView.findViewById(R.id.history_modify_time_tv);
 
         if (historyList.get(position).getImage() != null)
             Glide.with(context).load(historyList.get(position).getImage()).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_user_noimg).centerCrop().error(R.drawable.ic_user_noimg).into(new BitmapImageViewTarget(viewHolder.img) {
@@ -82,8 +86,16 @@ public class ExpenseHistoryAdapter extends BaseAdapter {
             viewHolder.img.setImageResource(R.drawable.ic_user_noimg);
         }
 
-
+        Log.d("DebugHistory", "modifyTime: "+ historyList.get(position).getModTime());
         modifyData.setText(historyList.get(position).getName());
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat format1 = new SimpleDateFormat(context.getResources().getString(R.string.date_time_format));
+        c.setTimeInMillis(Long.parseLong(historyList.get(position).getModTime()));
+        modifyTime.setText(context.getResources().getString(R.string.modify_on) + c.toString());
+
+        //Jured: se provo a settare la data nel campo principale lo fa tranquillamente
+        //modifyData.setText(format1.format(c.getTime()));
         return convertView;
     }
 
