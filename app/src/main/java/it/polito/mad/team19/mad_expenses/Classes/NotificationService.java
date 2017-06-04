@@ -174,7 +174,7 @@ public class NotificationService extends IntentService{
                                                                                 //Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                                                                 Uri alarmSound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notitification);
                                                                                 mBuilder.setSound(alarmSound);
-                                                                                mBuilder.setSmallIcon(R.drawable.ic_not_piggy);
+                                                                                mBuilder.setSmallIcon(R.drawable.ic_notification_money);
                                                                                 mBuilder.setContentTitle(groupName);
                                                                                 mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round));
                                                                                 mBuilder.setContentText(text);
