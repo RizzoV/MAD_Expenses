@@ -820,26 +820,6 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
             currencyAutoCompleteTV.setText((String) currenciesAdapter.getItem(currenciesAdapter.searchInCurrenciesCodes(currencyCode)));
 
-            //TODO Jured: gestire questa assegnazione asincrona
-            /*
-            DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference("gruppi").child(oldGroupId)
-                    .child("expenses").child(oldExpenseId);
-            historyRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild("oldVersionId"))
-                        expenseHistoryId = dataSnapshot.child("oldVersionId").getValue().toString();
-                    else
-                        expenseHistoryId = null;
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-            */
-
 
             if (oldExpenseImageBitmap != null) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(oldExpenseImageBitmap, 0, oldExpenseImageBitmap.length);
