@@ -17,6 +17,14 @@
 
     <string name="chartviewSpinnerPrompt">Scegli la vista:</string>
 
+    <string name="category">Categoria: </string>
+    <string name="transport">mezzi</string>
+    <string name="rent">affitto</string>
+    <string name="food">cibo</string>
+    <string name="drink">bere</string>
+    <string name="shopping">spesa</string>
+    <string name="other">altro</string>
+
 
     <!-- Group list activity -->
     <string name="no_group_found">Nessun gruppo trovato!</string>

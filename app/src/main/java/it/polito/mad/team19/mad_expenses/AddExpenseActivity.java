@@ -29,12 +29,14 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -66,6 +68,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import it.polito.mad.team19.mad_expenses.Adapters.CategoryAdapter;
 import it.polito.mad.team19.mad_expenses.Adapters.CurrenciesAdapter;
 import it.polito.mad.team19.mad_expenses.Classes.FirebaseGroupMember;
 import it.polito.mad.team19.mad_expenses.Classes.NetworkChangeReceiver;
@@ -104,7 +107,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private double expenseTotal;
     private String idExpense;
     private String idExpenseTemp;
-    private String category = "other";
+    private String category;
     private ProgressDialog barProgressDialog = null;
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
@@ -117,6 +120,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private String oldName;
     private String oldDesc;
     private String oldImgUrl;
+    private Spinner categories;
     private String oldAuthorId;
     private String oldCost;
     private String oldGroupId;
@@ -158,6 +162,31 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
+        categories = (Spinner) findViewById(R.id.category);
+
+        ArrayList<String> list_categories = new ArrayList<>();
+        list_categories.add("transport");
+        list_categories.add("house");
+        list_categories.add("food");
+        list_categories.add("drink");
+        list_categories.add("shopping");
+        list_categories.add("other");
+
+        CategoryAdapter categoryAdapter = new CategoryAdapter(this,list_categories);
+        categories.setAdapter(categoryAdapter);
+
+        categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                category = list_categories.get(position);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         dateEditText = (EditText) findViewById(R.id.new_expense_data_et);
         dateEditText.setInputType(InputType.TYPE_NULL);
         dateEditText.setFocusable(false);
@@ -285,10 +314,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             }
         }
 
-        if(requestCode== IMAGE_CATEGORY)
+      /*  if(requestCode== IMAGE_CATEGORY)
         {
-            category = data.getStringExtra("ExpenseThumb");
-        }
+            if(data.getStringExtra("ExpenseThumb")!=null)
+                category = data.getStringExtra("ExpenseThumb");
+        }*/
 
         if (requestCode == REQUEST_GALLERY_IMAGE) {
             if (data != null) {
@@ -498,7 +528,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
     // TODO: 01/06/2017 choose the category, how to put in the image of the expense? To do in the Recycler
     private void addListenerOnCategoryButton() {
-        Button categoryButton = (Button) findViewById(R.id.expense_category);
+       /* Button categoryButton = (Button) findViewById(R.id.expense_category);
 
         categoryButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -508,7 +538,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 i.putExtra("expenseId", idExpense);
                 startActivityForResult(i,IMAGE_CATEGORY);
             }
-        });
+        });*/
     }
 
     public void finishTasks(String expenseName, String expenseDesc, String expenseImgUrl, String expenseAuthorId, String cost, final String groupId, final String idExpense, String date) {
