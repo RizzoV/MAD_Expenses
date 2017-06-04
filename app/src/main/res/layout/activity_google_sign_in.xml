@@ -46,7 +46,7 @@
                 android:id="@+id/logo"
                 android:layout_width="250dp"
                 android:layout_height="250dp"
-                android:src="@drawable/login"
+                android:src="@drawable/login2"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"/>
 
