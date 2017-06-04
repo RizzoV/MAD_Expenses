@@ -88,13 +88,15 @@ public class ContributorsPopupActivity extends Activity {
                 int nMembers = 0;
                 for (DataSnapshot child : dataSnapshot.getChildren())
                 {
-                    String img = null;
+                    if(child.child("deleted").getValue() == null) {
+                        String img = null;
 
-                    if(child.child("immagine").exists())
-                        img = child.child("immagine").getValue().toString();
+                        if (child.child("immagine").exists())
+                            img = child.child("immagine").getValue().toString();
 
-                    contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), img, child.getKey()));
-                    nMembers++;
+                        contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), img, child.getKey()));
+                        nMembers++;
+                    }
                 }
                 if (nMembers == 0)
                     Log.d("Contributors", "no other members in the group!");

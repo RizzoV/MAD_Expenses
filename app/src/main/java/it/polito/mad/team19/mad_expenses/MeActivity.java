@@ -170,11 +170,13 @@ public class MeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Log.d("MembriSnap", dataSnapshot.getValue().toString());
-                    if (child.child("immagine").hasChildren())
-                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
-                    else
-                        groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                    if (child.child("deleted").getValue() == null) {
+                        Log.d("MembriSnap", dataSnapshot.getValue().toString());
+                        if (child.child("immagine").hasChildren())
+                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
+                        else
+                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                    }
                 }
 
                 getChart();

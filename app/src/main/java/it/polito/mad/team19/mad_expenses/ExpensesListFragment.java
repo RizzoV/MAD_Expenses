@@ -253,7 +253,7 @@ public class ExpensesListFragment extends Fragment {
         containerExpenses.setVisibility(View.INVISIBLE);
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -263,115 +263,115 @@ public class ExpensesListFragment extends Fragment {
                 expenses.clear();
                 balancesMap.clear();
 
+                if(!dataSnapshot.child("membri").child(myUid).child("deleted").exists()) {
+                    if (dataSnapshot.child("expenses").hasChildren() && free) {
+                        noExpenses_tv.setVisibility(View.GONE);
 
-                if (dataSnapshot.hasChildren() && free) {
-                    noExpenses_tv.setVisibility(View.GONE);
+                        for (DataSnapshot expense : dataSnapshot.child("expenses").getChildren()) {
 
-                    for (DataSnapshot expense : dataSnapshot.getChildren()) {
+                            FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
+                            firebaseExpense.setKey(expense.getKey());
+                            expenses.add(0, new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey(), firebaseExpense.getDate()));
 
-                        FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
-                        firebaseExpense.setKey(expense.getKey());
-                        expenses.add(0, new Expense(firebaseExpense.getName(), firebaseExpense.getCost(), Currency.getInstance(Locale.ITALY), firebaseExpense.getDescription(), firebaseExpense.getImage(), firebaseExpense.getAuthor(), expense.getKey(), firebaseExpense.getDate()));
+                            //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
+                            expensesListAdapter.notifyDataSetChanged();
 
-                        //Ludo: ogni volta che si aggiungono elementi alla lista bisogna segnalarlo all'adpater
-                        expensesListAdapter.notifyDataSetChanged();
+                            totalAmount += firebaseExpense.getCost();
 
-                        totalAmount += firebaseExpense.getCost();
-
-                        DataSnapshot meRef = expense.child("contributors").child(myUid);
-                        if (meRef.exists()) {
-                            // Sono un contributor
-                            for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
-
-                                if (balancesMap.containsKey(expenseBalance.getKey())) {
-                                    if (expenseBalance.child("amount").exists())
-                                        balancesMap.get(expenseBalance.getKey()).addPartialAmount(Double.parseDouble(expenseBalance.child("amount").getValue().toString()));
-                                } else {
-                                    if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
-                                        Me newDebtor;
-
-                                        if (expenseBalance.child("immagine").exists())
-                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
-                                        else
-                                            newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
-
-                                        balancesMap.put(expenseBalance.getKey(), newDebtor);
-                                    }
-                                }
-                            }
-                        } else {
-                            meRef = expense.child("debtors").child(myUid);
+                            DataSnapshot meRef = expense.child("contributors").child(myUid);
                             if (meRef.exists()) {
-                                // Sono un debtor
+                                // Sono un contributor
                                 for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
+
                                     if (balancesMap.containsKey(expenseBalance.getKey())) {
                                         if (expenseBalance.child("amount").exists())
                                             balancesMap.get(expenseBalance.getKey()).addPartialAmount(Double.parseDouble(expenseBalance.child("amount").getValue().toString()));
                                     } else {
                                         if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
                                             Me newDebtor;
+
                                             if (expenseBalance.child("immagine").exists())
                                                 newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
                                             else
                                                 newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
-                                            balancesMap.put(expenseBalance.getKey(), newDebtor);
 
+                                            balancesMap.put(expenseBalance.getKey(), newDebtor);
+                                        }
+                                    }
+                                }
+                            } else {
+                                meRef = expense.child("debtors").child(myUid);
+                                if (meRef.exists()) {
+                                    // Sono un debtor
+                                    for (DataSnapshot expenseBalance : meRef.child("riepilogo").getChildren()) {
+                                        if (balancesMap.containsKey(expenseBalance.getKey())) {
+                                            if (expenseBalance.child("amount").exists())
+                                                balancesMap.get(expenseBalance.getKey()).addPartialAmount(Double.parseDouble(expenseBalance.child("amount").getValue().toString()));
+                                        } else {
+                                            if (expenseBalance.child("amount").exists() && expenseBalance.child("nome").exists()) {
+                                                Me newDebtor;
+                                                if (expenseBalance.child("immagine").exists())
+                                                    newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), expenseBalance.child("immagine").getValue().toString());
+                                                else
+                                                    newDebtor = new Me(expenseBalance.getKey(), expenseBalance.child("nome").getValue().toString(), Double.parseDouble(expenseBalance.child("amount").getValue().toString()), Currency.getInstance("EUR"), null);
+                                                balancesMap.put(expenseBalance.getKey(), newDebtor);
+
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
 
-                    for (Me me : balancesMap.values()) {
-                        double currentAmount = me.getAmount();
-                        if (currentAmount > 0)
-                            creditAmount += currentAmount;
-                        else
-                            debtAmount += currentAmount;
-                    }
-
-                    // Vale: gestione valute
-                    String customCurrencyCode = mActivity.getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-                    // Ottieni il tasso di scambio
-                    Double exchangeRate = 1d;
-                    if(!customCurrencyCode.equals("EUR")) {
-                        try {
-                            exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
-                        } catch (ExecutionException | InterruptedException e) {
-                            Log.e("AddExpenseActivity", e.getMessage());
+                        for (Me me : balancesMap.values()) {
+                            double currentAmount = me.getAmount();
+                            if (currentAmount > 0)
+                                creditAmount += currentAmount;
+                            else
+                                debtAmount += currentAmount;
                         }
+
+                        // Vale: gestione valute
+                        String customCurrencyCode = mActivity.getSharedPreferences("currencySetting", MODE_PRIVATE).getString("currency", Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+                        // Ottieni il tasso di scambio
+                        Double exchangeRate = 1d;
+                        if (!customCurrencyCode.equals("EUR")) {
+                            try {
+                                exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+                            } catch (ExecutionException | InterruptedException e) {
+                                Log.e("AddExpenseActivity", e.getMessage());
+                            }
+                        }
+
+                        debtAmount = Math.abs(debtAmount);
+                        creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+                        debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+                        totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+
+                        Calendar c = Calendar.getInstance();
+                        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                        String formattedDate[] = df.format(c.getTime()).split("-");
+
+
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("credito").setValue(creditAmount);
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("debito").setValue(debtAmount);
+
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);
+
+                        pBar.setVisibility(View.GONE);
+
+                    } else {
+                        pBar.setVisibility(View.GONE);
+                        noExpenses_tv.setVisibility(View.VISIBLE);
                     }
 
-                    debtAmount = Math.abs(debtAmount);
-                    creditTextView.setText(String.format(Locale.getDefault(), "%.2f", creditAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
-                    debitTextView.setText(String.format(Locale.getDefault(), "%.2f", debtAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
-                    totalTextView.setText(String.format(Locale.getDefault(), "%.2f", totalAmount * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
+                    expenseSwipe.setRefreshing(false);
+                    containerExpenses.setVisibility(View.VISIBLE);
 
-
-                    Calendar c = Calendar.getInstance();
-                    SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    String formattedDate[] = df.format(c.getTime()).split("-");
-
-                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("credito").setValue(creditAmount);
-                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("debito").setValue(debtAmount);
-
-                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
-                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);
-
-                    pBar.setVisibility(View.GONE);
-
-                } else {
-                    pBar.setVisibility(View.GONE);
-                    noExpenses_tv.setVisibility(View.VISIBLE);
+                    ((GroupActivity) mActivity).passBalancesArray(balancesMap.values());
                 }
-
-                expenseSwipe.setRefreshing(false);
-                containerExpenses.setVisibility(View.VISIBLE);
-
-
-                ((GroupActivity) mActivity).passBalancesArray(balancesMap.values());
             }
 
             @Override

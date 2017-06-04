@@ -494,6 +494,19 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("tipo").setValue(0);
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uName);
 
+                    addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.child("deleted").exists())
+                                dataSnapshot.child("deleted").getRef().removeValue();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e("GroupListAcivity", "Could not check if the 'deleted' flag is set or not");
+                        }
+                    });
+
                     if (mAuth.getCurrentUser().getPhotoUrl() != null)
                         addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("immagine").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
 

@@ -133,7 +133,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         expense_img = (ImageView) findViewById(R.id.expense_photo);
         expense_author = (TextView) findViewById(R.id.expense_author_value);
         expense_details_listview = (LinearLayout) findViewById(R.id.debtors_and_debts_listview);
-        set_photo_button = (ImageButton) findViewById(R.id.add_image_btn);
         set_photo_text_view = (TextView) findViewById(R.id.add_expense_photo_tv);
 
         //card
@@ -274,7 +273,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                         }
                         for (DataSnapshot currentExcluded : expense.child("excluded").getChildren()) {
                             historyExcludedMemberList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey()));
-                            Log.e("EDA E in", currentExcluded.child("nome").getValue(String.class) + "-");
                             Log.d("DebugHistory", "escluso trovato: " + currentExcluded.getKey());
                         }
                         for (DataSnapshot debtor : expense.child("debtors").getChildren()) {
@@ -345,7 +343,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                     }
                     for (DataSnapshot currentExcluded : expense.child("excluded").getChildren()) {
                         excludedList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey()));
-                        Log.e("EDA E in", currentExcluded.child("nome").getValue(String.class) + "-");
                     }
 
                     // Vale: dialog per la modifica dell'importo dovuto

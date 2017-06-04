@@ -1,76 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="true"
-    android:fillViewport="true"
+    android:background="@color/activitiesBackgroundColor"
     tools:context="it.polito.mad.team19.mad_expenses.CreateGroupActivity">
 
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView android:id="@+id/create_group_card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/activity_horizontal_margin"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        tools:context="it.polito.mad.team19.mad_expenses.CreateGroupActivity"
+        android:layout_marginStart="@dimen/smaller_horizontal_margin"
+        android:layout_marginEnd="@dimen/smaller_horizontal_margin">
 
-    <RelativeLayout
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/group_img"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/circle" />
-
-        <ImageView
-            android:id="@+id/group_people_img"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:src="@drawable/ic_group"
-            android:layout_centerInParent="true"/>
-
-        <ImageButton
-            android:id="@+id/add_image_btn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignBottom="@id/group_img"
-            android:layout_alignRight="@+id/group_img"
-            android:background="@mipmap/ic_add_img" />
-    </RelativeLayout>
-
-        <TextView
-            android:layout_below="@+id/image"
-            android:layout_marginTop="80dp"
-            android:textSize="16sp"
-            android:id="@+id/placeholder"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/group_name"
-            android:textColor="@color/colorPrimary"/>
+            android:orientation="vertical">
 
-        <EditText
-            android:layout_below="@id/placeholder"
-            android:id="@+id/new_group_name"
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/group_name"
-            android:inputType="textCapSentences"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin" />
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp">
+
+            <RelativeLayout
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/group_img"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/circle" />
+
+                <ImageView
+                    android:id="@+id/group_people_img"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/camera_white_padded" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="clip_vertical"
+                android:gravity="center_vertical"
+                android:layout_marginStart="@dimen/smaller_horizontal_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin">
+
+                <EditText
+                    android:layout_marginStart="@dimen/smaller_horizontal_margin"
+                    android:id="@+id/new_group_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/group_name"
+                    android:inputType="textCapSentences"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/group_creation"
+                android:textSize="@dimen/little_text_size"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="35dp"
+                android:layout_marginTop="@dimen/smaller_vertical_margin"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_group_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/new_group_name"
+        app:layout_anchorGravity="bottom|right"
+        app:layout_anchor="@id/create_group_card"
+        android:layout_centerInParent="true"
+        android:background="@drawable/buttons_background"
+        android:text="@string/create_new_group"
+        android:textColor="@color/icons"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_check" />
 
     <RelativeLayout
         android:id="@+id/groupType"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:visibility="gone">
 
         <!-- <LinearLayout
             android:id="@+id/type_hint"
@@ -135,19 +170,4 @@
             android:textSize="@dimen/little_text_size" />
 
     </RelativeLayout>
-
-    <Button
-        android:id="@+id/add_group_submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:layout_centerInParent="true"
-        android:background="@drawable/buttons_background"
-        android:text="@string/create_new_group"
-        android:layout_below="@+id/new_group_name"
-        android:textColor="@color/icons"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"/>
-    </RelativeLayout>
-</ScrollView>
+</android.support.design.widget.CoordinatorLayout>

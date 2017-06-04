@@ -94,6 +94,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     IntentFilter filter;
     String imageUrl;
     String groupName;
+    GroupMembersRecyclerAdapter adapter;
 
 
     @Override
@@ -116,7 +117,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         groupName = getIntent().getStringExtra("groupName");
         groupId = getIntent().getStringExtra("groupId");
 
-       Log.d("DebugGroupInfo",groupName);
+        Log.d("DebugGroupInfo", groupName);
 
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.group_info_ctb);
         collapsingToolbar.setTitle(groupName);
@@ -135,12 +136,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                     image.setImageDrawable(new BitmapDrawable(getResources(), resource));
                 }
             });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e("GroupInfoActivity", "Exception:\n" + e.toString());
         }
-
-
 
 
         //LUDO: membri
@@ -155,8 +153,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         isUserAdminRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("DebugDeleteMember",dataSnapshot.getValue().toString());
-                if(Integer.valueOf(dataSnapshot.getValue().toString()).compareTo(1) == 0) {
+                Log.d("DebugDeleteMember", dataSnapshot.getValue().toString());
+                if (Integer.valueOf(dataSnapshot.getValue().toString()).compareTo(1) == 0) {
                     isUsrAdmin = true;
                 } else
                     isUsrAdmin = false;
@@ -170,7 +168,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
         members_lv = (RecyclerView) findViewById(R.id.members_lv);
         contributors = new ArrayList<>();
-        final GroupMembersRecyclerAdapter adapter = new GroupMembersRecyclerAdapter(this,contributors);
+        adapter = new GroupMembersRecyclerAdapter(this, contributors);
         members_lv.setAdapter(adapter);
 
         LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(this);
@@ -183,26 +181,27 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int nMembers = 0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    if (child.child("deleted").getValue() == null) {
+                        if (child.child("immagine").exists())
+                            contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
+                        else
+                            contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
 
-                    if(child.child("immagine").exists())
-                        contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),child.child("immagine").getValue().toString(),child.getKey()));
-                    else
-                        contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(),null,child.getKey()));
-
-                    nMembers++;
+                        nMembers++;
+                    }
                 }
 
-                if(nMembers==0)
-                    Log.d("Contributors","no other members in the group!");
-                else
-                {
-                    Log.d("no",contributors.toString());
+                if (nMembers == 0)
+                    Log.d("Contributors", "no other members in the group!");
+                else {
+                    Log.d("no", contributors.toString());
                     adapter.notifyDataSetChanged();
                 }
 
                 findViewById(R.id.pBar_groupInfo).setVisibility(View.GONE);
                 setListenerLeaveGroup(groupId);
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -213,15 +212,15 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
 
             @Override
             public boolean onItemLongClick(View v, int position) {
-                if(isUsrAdmin) {
+                if (isUsrAdmin) {
                     DialogFragment newFragment = new DeleteMemberDialog();
                     Bundle selectedUid = new Bundle();
 
-                    selectedUid.putString("currentUid",uid);
-                    selectedUid.putString("selectedUid",contributors.get(position).getUid());
-                    selectedUid.putString("selectedUsername",contributors.get(position).getName());
-                    selectedUid.putString("groupId",groupId);
-                    selectedUid.putString("nextAdminId",getNextAdmin(uid,contributors));
+                    selectedUid.putString("currentUid", uid);
+                    selectedUid.putString("selectedUid", contributors.get(position).getUid());
+                    selectedUid.putString("selectedUsername", contributors.get(position).getName());
+                    selectedUid.putString("groupId", groupId);
+                    selectedUid.putString("nextAdminId", getNextAdmin(uid, contributors));
                     selectedUid.putString("usersLeft", String.valueOf(contributors.size()));
                     newFragment.setArguments(selectedUid);
                     newFragment.show(getSupportFragmentManager(), "DeleteDialog");
@@ -260,14 +259,13 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     }
 
 
-    public void setNotification(final String groupId, final String userID, String username)
-    {
+    public void setNotification(final String groupId, final String userID, String username) {
         final DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference().child("notifications").child(groupId);
         final String notificationId = notificationRef.push().getKey();
 
 
-        if(username==null)
-            username="User";
+        if (username == null)
+            username = "User";
 
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy-HH-mm");
@@ -292,8 +290,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     }
 
 
-    private void setListenerLeaveGroup(final String groupId)
-    {
+    private void setListenerLeaveGroup(final String groupId) {
         leaveGroup_cw.setVisibility(View.VISIBLE);
 
         leaveGroup_cw.setOnClickListener(new View.OnClickListener() {
@@ -301,12 +298,12 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
             public void onClick(View v) {
 
                 String username = mAuth.getCurrentUser().getDisplayName();
-                if(username==null)
+                if (username == null)
                     username = "user";
 
                 final String userID = mAuth.getCurrentUser().getUid();
 
-                setNotification(groupId,userID,username);
+                setNotification(groupId, userID, username);
 
                 alertDialog = new AlertDialog.Builder(GroupInfoActivity.this)
                         .setTitle(R.string.confirmLeaveGroupTitle)
@@ -322,7 +319,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                         buttonPositive.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                leaveGroup(uid,groupId,getNextAdmin(uid,contributors));
+                                leaveGroup(uid, groupId, getNextAdmin(uid, contributors));
                             }
                         });
 
@@ -340,47 +337,50 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         });
     }
 
-    private String getNextAdmin(String myUid,ArrayList<FirebaseGroupMember> contributors)
-    {
+    private String getNextAdmin(String myUid, ArrayList<FirebaseGroupMember> contributors) {
         boolean found = false;
         int index = 0;
 
-        for(int i=0; i<contributors.size() && !found;i++)
-        {
-            if(!contributors.get(i).getUid().equals(myUid)) {
+        for (int i = 0; i < contributors.size() && !found; i++) {
+            if (!contributors.get(i).getUid().equals(myUid)) {
                 found = true;
                 index = i;
             }
         }
 
-        if(found)
+        if (found)
             return contributors.get(index).getUid();
         else
             return null;
     }
 
-    private void leaveGroup(String userToDelete,String groupId, String nexAdminId)
-    {
+    private void leaveGroup(String userToDelete, String groupId, String nexAdminId) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference userToDeleteRef = database.getReference().child("gruppi").child(groupId)
                 .child("membri").child(userToDelete);
-        userToDeleteRef.removeValue();
+        userToDeleteRef.child("deleted").setValue(1);
         userToDeleteRef = database.getReference().child("utenti").child(userToDelete)
                 .child("gruppi").child(groupId);
         userToDeleteRef.removeValue();
 
+        // Vale: aggiorna subito la lista
+        for(FirebaseGroupMember member : contributors) {
+            if(member.getUid().equals(userToDelete))
+                contributors.remove(member);
+        }
+        adapter.notifyDataSetChanged();
+
         //se mi autoelimino aggiorno l'admin
-        if(userToDelete.compareTo(uid.toString())==0) {
-            if(nexAdminId!=null)
-            database.getReference().child("gruppi").child(groupId)
-                    .child("membri").child(nexAdminId).child("tipo").setValue("1");
-            else
-            {
+        if (userToDelete.compareTo(uid.toString()) == 0) {
+            if (nexAdminId != null)
+                database.getReference().child("gruppi").child(groupId)
+                        .child("membri").child(nexAdminId).child("tipo").setValue("1");
+            else {
                 DatabaseReference groupToDeleteRef = database.getReference().child("gruppi").child(groupId);
                 groupToDeleteRef.removeValue();
             }
             //TODO Jured: se esco dal gruppo devo tornare alla groupListActivity
-            Log.d("DebugGroupQuitted","GROUP_QUITTED result set");
+            Log.d("DebugGroupQuitted", "GROUP_QUITTED result set");
             setResult(GROUP_QUITTED);
             finish();
             //Intent intent = new Intent(dialog.getActivity(), GroupActivity.class);
@@ -393,30 +393,30 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     //TODO aggiungere la possibilità di eliminarsi dal gruppo con restrizioni in caso di debiti attivi
     @Override
     public void onDialogDeleteMemberClick(DialogFragment dialog) {
-        Log.d("DebugDialogClick","eliminare membro: " + dialog.getArguments().getString("selectedUid") + "  " + dialog.getArguments().getString("groupId"));
+        Log.d("DebugDialogClick", "eliminare membro: " + dialog.getArguments().getString("selectedUid") + "  " + dialog.getArguments().getString("groupId"));
         String userToDelete = dialog.getArguments().getString("selectedUid");
         String usernameToDelete = dialog.getArguments().getString("selectedUsername");
         String groupId = dialog.getArguments().getString("groupId");
         String nexAdminId = dialog.getArguments().getString("nextAdminId");
-        setNotification(groupId,userToDelete,usernameToDelete);
+        setNotification(groupId, userToDelete, usernameToDelete);
 
 
         //rimuovo i due riferimenti tra gruppo e membro
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference userToDeleteRef = database.getReference().child("gruppi").child(groupId)
                 .child("membri").child(userToDelete);
-        userToDeleteRef.removeValue();
+        userToDeleteRef.child("deleted").setValue(1);
         userToDeleteRef = database.getReference().child("utenti").child(userToDelete)
                 .child("gruppi").child(groupId);
         userToDeleteRef.removeValue();
 
         //se mi autoelimino aggiorno l'admin
-        if(userToDelete.compareTo(uid.toString())==0) {
-            if(nexAdminId!=null)
+        if (userToDelete.compareTo(uid.toString()) == 0) {
+            if (nexAdminId != null)
                 database.getReference().child("gruppi").child(groupId)
                         .child("membri").child(nexAdminId).child("tipo").setValue("1");
             //TODO Jured: se esco dal gruppo devo tornare alla groupListActivity
-            Log.d("DebugGroupQuitted","GROUP_QUITTED result set");
+            Log.d("DebugGroupQuitted", "GROUP_QUITTED result set");
             setResult(GROUP_QUITTED);
             dialog.getActivity().finish();
             //Intent intent = new Intent(dialog.getActivity(), GroupActivity.class);
@@ -455,8 +455,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     protected void onPause() {
         super.onPause();
 
-        if(alertDialog != null)
-            if(alertDialog.isShowing())
+        if (alertDialog != null)
+            if (alertDialog.isShowing())
                 alertDialog.dismiss();
 
         if (netChange != null) {
@@ -511,9 +511,11 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                             userGroupNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                        database.getReference().child("utenti").child(data.getKey()).child("gruppi")
-                                                .child(groupId).child("nome").setValue(new_string.getText().toString());
+                                    if (dataSnapshot.child("deleted").getValue() == null) {
+                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                            database.getReference().child("utenti").child(data.getKey()).child("gruppi")
+                                                    .child(groupId).child("nome").setValue(new_string.getText().toString());
+                                        }
                                     }
                                 }
 
@@ -524,8 +526,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                             });
                             collapsingToolbar.setTitle(new_string.getText().toString());
                             Intent intent = new Intent();
-                            intent.putExtra("newGroupName",new_string.getText().toString());
-                            setResult(RESULT_OK,intent);
+                            intent.putExtra("newGroupName", new_string.getText().toString());
+                            setResult(RESULT_OK, intent);
                             dialog.dismiss();
 
                         }
@@ -636,7 +638,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                     // mCurrentPhotoFirebaseUri = taskSnapshot.getDownloadUrl();
-                    Log.d("DebugCaricamentoImg", "caricamento immagine" + groupId +storageRef.getPath());
+                    Log.d("DebugCaricamentoImg", "caricamento immagine" + groupId + storageRef.getPath());
                     groupImagesRef.child(mCurrentPhotoName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
@@ -648,9 +650,11 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot data : dataSnapshot.getChildren()) {
-                                        FirebaseDatabase.getInstance().getReference()
-                                                .child("utenti").child(data.getKey()).child("gruppi").child(groupId)
-                                                .child("immagine").setValue(imageUriTemp.toString());
+                                        if (data.child("deleted").getValue() == null) {
+                                            FirebaseDatabase.getInstance().getReference()
+                                                    .child("utenti").child(data.getKey()).child("gruppi").child(groupId)
+                                                    .child("immagine").setValue(imageUriTemp.toString());
+                                        }
                                     }
                                 }
 

@@ -581,7 +581,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     ArrayList<FirebaseGroupMember> groupMembersList = new ArrayList<>();
                     if (dataSnapshot.hasChildren()) {
                         for (DataSnapshot groupMember : dataSnapshot.getChildren()) {
-                            groupMembersList.add(new FirebaseGroupMember(groupMember.child("nome").getValue(String.class), groupMember.child("immagine").getValue(String.class), groupMember.getKey()));
+                            if(groupMember.child("deleted").getValue() == null)
+                                groupMembersList.add(new FirebaseGroupMember(groupMember.child("nome").getValue(String.class), groupMember.child("immagine").getValue(String.class), groupMember.getKey()));
                         }
                     }
 

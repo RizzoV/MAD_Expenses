@@ -23,6 +23,7 @@
     <string name="distributed_description">In a distributed group all of its members can insert or dispute expenses, create, accept or refuse proposals, and open topics</string>
     <string name="search_person">Search person</string>
     <string name="create_new_group">Create the group</string>
+    <string name="group_creation">Insert the group name and, optionally, an image.</string>
 
     <!-- Expense creation -->
     <string name="expense_name">Expense name</string>

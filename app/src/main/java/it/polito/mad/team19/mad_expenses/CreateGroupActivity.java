@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -59,7 +60,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     private static final int STORAGE_REQUEST = 666;
     CheckBox distributed;
     CheckBox centralized;
-    Button add_group;
+    FloatingActionButton add_group;
     EditText group_name;
     Snackbar bar;
     Bitmap currentGroupBitmap;
@@ -79,6 +80,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     NetworkChangeReceiver netChange;
     IntentFilter filter;
 
+    ImageView imageView;
 
     CircularFillableLoaders imageLoader;
 
@@ -103,8 +105,9 @@ public class CreateGroupActivity extends AppCompatActivity {
 
         distributed = (CheckBox) findViewById(R.id.distributed_checkbox);
         centralized = (CheckBox) findViewById(R.id.centralized_checkbox);
-        add_group = (Button) findViewById(R.id.add_group_submit);
+        add_group = (FloatingActionButton) findViewById(R.id.add_group_submit);
         group_name = (EditText) findViewById(R.id.new_group_name);
+        imageView = (ImageView) findViewById(R.id.group_img);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -203,9 +206,8 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void addListenerOnImageButton() {
-        imageButton = (ImageButton) findViewById(R.id.add_image_btn);
 
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -247,7 +249,6 @@ public class CreateGroupActivity extends AppCompatActivity {
         }
 
         if (requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK) {
-            ImageView imageView = (ImageView) findViewById(R.id.group_img);
             try {
                 currentGroupBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputUri);
                 imageView.setImageBitmap(getCircleBitmap(currentGroupBitmap));

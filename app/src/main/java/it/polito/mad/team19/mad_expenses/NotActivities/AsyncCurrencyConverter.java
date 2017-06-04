@@ -56,6 +56,12 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
 
 
         try {
+            // Se il file esiste ma ha dimensione 0, riscaricalo
+            FileInputStream fis = context.openFileInput(currenciesFileName);
+            if(fis.available() == 0) {
+                createCurrenciesJSONFile();
+            }
+
             json = readJSONFile();
             if(json == null) {
                 Log.e("AsyncCurrencyConverter", "The JSON file was null - 1");
@@ -71,11 +77,11 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
                 /* Allora il file non è aggiornato
                  * A sto punto la questione è questa: può essere che l'API mi dia in data X un file aggiornato
                  * al giorno X-1, negli orari notturni in particolare, finchè non vengono aggiornate le valute.
-                 * Qualora dunque la data non fosse aggiornata, riscarica solo se la differenza è di 2 giorni almeno
+                 * Qualora dunque la data non fosse aggiornata, riscarica solo se la differenza è di 3 giorni almeno
                  */
                 String[] jsonDateFields = jsonDate.split("-");
                 String[] currentDateFields = currentDate.split("-");
-                if(Integer.parseInt(currentDateFields[2]) - Integer.parseInt(jsonDateFields[2]) > 1) {
+                if(Integer.parseInt(currentDateFields[2]) - Integer.parseInt(jsonDateFields[2]) > 3) {
                     createCurrenciesJSONFile();
                     json = readJSONFile();
                     if (json == null) {
@@ -88,7 +94,7 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
             // Ricava il valore della conversione
             if (json.getJSONObject("rates").getString(toCurrency) != null)
                 exchangeRate = Double.parseDouble(json.getJSONObject("rates").getString(toCurrency));
-        } catch (JSONException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
 

@@ -35,8 +35,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/proposal_name"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/titles_size"
-                    android:textStyle="" />
+                    android:textSize="@dimen/titles_size" />
 
                 <EditText
                     android:id="@+id/new_proposal_name_et"

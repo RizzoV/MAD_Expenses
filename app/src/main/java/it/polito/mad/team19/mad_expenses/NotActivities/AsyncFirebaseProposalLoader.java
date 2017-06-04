@@ -107,7 +107,8 @@ public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if(dataSnapshot.hasChildren()) {
                                         for(DataSnapshot member : dataSnapshot.getChildren()) {
-                                            groupMembers.add(new FirebaseGroupMember(member.child("nome").getValue(String.class), member.child("immagine").getValue(String.class), member.getKey()));
+                                            if(member.child("deleted").getValue() == null)
+                                                groupMembers.add(new FirebaseGroupMember(member.child("nome").getValue(String.class), member.child("immagine").getValue(String.class), member.getKey()));
                                         }
 
                                         for(FirebaseGroupMember fbgm : groupMembers) {
@@ -146,7 +147,8 @@ public class AsyncFirebaseProposalLoader extends AsyncTask<Void,Void,Void> {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.hasChildren()) {
                         for(DataSnapshot member : dataSnapshot.getChildren()) {
-                            groupMembers.add(new FirebaseGroupMember(member.child("nome").getValue(String.class), member.child("immagine").getValue(String.class), member.getKey()));
+                            if(member.child("deleted").getValue() == null)
+                                groupMembers.add(new FirebaseGroupMember(member.child("nome").getValue(String.class), member.child("immagine").getValue(String.class), member.getKey()));
                         }
 
                         for(FirebaseGroupMember fbgm : groupMembers) {
