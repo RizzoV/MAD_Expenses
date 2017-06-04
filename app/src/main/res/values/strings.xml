@@ -43,6 +43,8 @@
     <string name="currency">Currency</string>
     <string name="expense_currency_suggestion"><i>e.g: US$</i></string>
     <string name="invalid_currency_string">Currency not valid</string>
+    <string name="category">Category</string>
+    <string name="select_category_description">Select the category of the expense:</string>
 
     <!-- Strings related to the creation of a new proposal -->
     <string name="proposal_name">Proposal name</string>

@@ -20,11 +20,22 @@ public class FirebaseExpense
     private String currencyCode;
     private String image;
     private String date;
+    private String isModified;
+    private String category;
     private String modTime;
 
     public FirebaseExpense () {}
 
-    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image, String date)
+    /*public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image, String date, String category)
+    {
+        this(author, name, description, cost, currencyCode, null, null, category);
+    }
+
+    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image, String category) {
+        this(author, name, description, cost, currencyCode, image, null, category);
+    }*/
+
+    public FirebaseExpense(String author, String name, String description, Double cost, String currencyCode, String image, String date, String category)
     {
         this.author = author;
         this.name = name;
@@ -33,6 +44,7 @@ public class FirebaseExpense
         this.image = image;
         //this.key = null;
         this.currencyCode = currencyCode;
+        this.category = category;
         this.date = date;
     }
 
@@ -99,4 +111,6 @@ public class FirebaseExpense
     public String getCurrencyCode() {
         return currencyCode;
     }
+
+    public String getCategory() { return category; }
 }

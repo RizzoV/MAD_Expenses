@@ -84,10 +84,10 @@ public class TopicActivity extends AppCompatActivity {
             newMessageRef = database.getReference().child("gruppi").child(groupId).child("expenses").child(expenseId).child("topic").child("messages");
         }
         else
-            {
+        {
             proposalId = getIntent().getStringExtra("proposalId");
             newMessageRef = database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("topic").child("messages");
-            }
+        }
         usrId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         newMessageRef.addValueEventListener(new ValueEventListener() {

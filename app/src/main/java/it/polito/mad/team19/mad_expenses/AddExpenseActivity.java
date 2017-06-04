@@ -103,6 +103,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private double expenseTotal;
     private String idExpense;
     private String idExpenseTemp;
+    private String category;
     private ProgressDialog barProgressDialog = null;
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
@@ -245,6 +246,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 // only done for the expenses
                 addListenerOnContributorsButton();
                 addListenerOnExcludedButton();
+                addListenerOnCategoryButton();
                 checkCallToModify();
             }
         } else {
@@ -254,6 +256,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
             // only done for the expenses
             addListenerOnContributorsButton();
             addListenerOnExcludedButton();
+            addListenerOnCategoryButton();
             checkCallToModify();
         }
     }
@@ -481,11 +484,25 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         Log.d("DebugHistory", "id storico: " + expenseHistoryId);
         AsyncFirebaseExpenseLoader async = new AsyncFirebaseExpenseLoader(idExpenseTemp, groupId, usrId, mCurrentPhotoPath, mCurrentPhotoName,
                 nameEditText.getText().toString(), descriptionEditText.getText().toString(), finalCostString, "EUR",
-                isModifyActivity, oldExpenseId, excludedList, contributorsList, oldImgUrl,dateEditText.getText().toString(), this);
+                isModifyActivity, oldExpenseId, excludedList, contributorsList, oldImgUrl, dateEditText.getText().toString(), this, category);
 
         async.execute();
     }
 
+    // TODO: 01/06/2017 choose the category, how to put in the image of the expense? To do in the Recycler
+    private void addListenerOnCategoryButton() {
+        Button categoryButton = (Button) findViewById(R.id.expense_category);
+
+        categoryButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(AddExpenseActivity.this, CategoryPopupActivity.class);
+                i.putExtra("groupId", groupId);
+                i.putExtra("expenseId", idExpense);
+                startActivity(i);
+            }
+        });
+    }
 
     public void finishTasks(String expenseName, String expenseDesc, String expenseImgUrl, String expenseAuthorId, String cost, final String groupId, final String idExpense, String date) {
 

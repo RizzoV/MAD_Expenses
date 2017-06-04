@@ -54,15 +54,34 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/new_expense_imageView"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                        android:layout_marginTop="@dimen/activity_vertical_margin"
-                        android:layout_marginStart="@dimen/smaller_horizontal_margin"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_circle_camera" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/new_expense_imageView"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                            android:layout_marginStart="@dimen/smaller_horizontal_margin"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_circle_camera" />
+
+                        <Button
+                            android:id="@+id/expense_category"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="@dimen/smaller_vertical_margin"
+                            android:layout_marginEnd="@dimen/smaller_horizontal_margin"
+                            android:layout_marginTop="@dimen/smaller_vertical_margin"
+                            android:background="@drawable/buttons_background"
+                            android:text="@string/category"
+                            android:textColor="#FFFFFF" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"

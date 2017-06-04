@@ -101,6 +101,25 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
 
         private void setData(final Expense current, int position) {
             this.name.setText(current.getName());
+            this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost()) + " " + Currency.getInstance("EUR").getSymbol());
+            //this.image.setImageResource(R.drawable.expenses_icon);
+
+            //prendere da Firebase la categoria
+            if (current.getCategory() == null)
+                this.image.setImageResource(R.drawable.expenses_icon);
+            else if ( current.getCategory().equals("transport"))
+                this.image.setImageResource(R.mipmap.ic_transport);
+            else if ( current.getCategory().equals("house"))
+                this.image.setImageResource(R.mipmap.ic_house);
+            else if ( current.getCategory().equals("food"))
+                this.image.setImageResource(R.mipmap.ic_food);
+            else if ( current.getCategory().equals("drink"))
+                this.image.setImageResource(R.mipmap.ic_drink);
+            else if ( current.getCategory().equals("shopping"))
+                this.image.setImageResource(R.mipmap.ic_shopping);
+            else if ( current.getCategory().equals("other"))
+                this.image.setImageResource(R.mipmap.ic_other);
+
             this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost() * exchangeRate) + " " + currencySymbol);
             this.image.setImageResource(R.drawable.expenses_icon);
             this.position = position;

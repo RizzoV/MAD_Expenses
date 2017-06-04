@@ -18,13 +18,14 @@ public class Expense {
     private String imagelink;
     private String author;
     private String firebaseId;
+    private String category;
     private String date;
 
-    public Expense(String name, Double cost, String description, String imagelink, String author, String firebaseId, String date) {
-       this(name,  cost,  null,  description,  imagelink, author, firebaseId, date);
+    public Expense(String name, Double cost, String description, String imagelink, String author, String firebaseId, String date, String category) {
+       this(name,  cost,  null,  description,  imagelink, author, firebaseId, date, category);
     }
 
-    public Expense(String name, Double cost, Currency currency, String description, String imagelink, String author, String firebaseId, String date) {
+    public Expense(String name, Double cost, Currency currency, String description, String imagelink, String author, String firebaseId, String date, String category) {
         this.name = name;
         this.cost = cost;
         this.currency = currency;
@@ -32,6 +33,7 @@ public class Expense {
         this.imagelink = imagelink;
         this.author = author;
         this.firebaseId = firebaseId;
+        this.category = category;
         this.date = date;
     }
 
@@ -90,4 +92,6 @@ public class Expense {
     public void setFirebaseId(String firebaseId) {
         this.firebaseId = firebaseId;
     }
+
+    public String getCategory() { return category; }
 }

@@ -41,6 +41,7 @@ dependencies {
     })
 
 
+    compile group: 'com.yahoofinance-api', name: 'YahooFinanceAPI', version: '3.8.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.mikhaellopez:circularfillableloaders:1.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -62,6 +63,7 @@ dependencies {
     compile 'com.github.chrisbanes:PhotoView:1.2.6'
     testCompile 'junit:junit:4.12'
 }
+
 
 
 
