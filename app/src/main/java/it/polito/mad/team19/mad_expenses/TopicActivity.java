@@ -68,7 +68,7 @@ public class TopicActivity extends AppCompatActivity {
         Log.d("Topic","type: "+topicType);
         Log.d("Topic","id: "+tid);
 
-        getSupportActionBar().setTitle("Discussione - " +name);
+        getSupportActionBar().setTitle(getString(R.string.topic) + " - " + name);
 
         msg_lv = (ListView) findViewById(R.id.messagesContainer);
         final ArrayList<Topic> msgList = new ArrayList<Topic>();

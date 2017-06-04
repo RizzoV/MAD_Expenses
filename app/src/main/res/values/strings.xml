@@ -50,7 +50,7 @@
     <string name="create_proposal_button">Create proposal</string>
 
     <!-- Personal profile -->
-    <string name="debits_and_credits">Debits and credits</string>
+    <string name="debits_and_credits">Debts and credits</string>
     <string name="mandatory_field">Mandatory Field!</string>
     <string name="invalid_cost_field">Invalid Field!</string>
 
@@ -228,6 +228,7 @@
     <string name="reset_password">Reset password</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper convallis diam, non porta sem feugiat et. Curabitur iaculis vestibulum arcu, non tincidunt tortor blandit a. Nam sit amet lacus vitae quam rutrum rutrum ac eget nulla. Vivamus ac leo eget lorem mattis euismod.</string>
     <string name="personal_profile">Personal profile</string>
+    <string name="topic">Topic</string>
 
 
 </resources>

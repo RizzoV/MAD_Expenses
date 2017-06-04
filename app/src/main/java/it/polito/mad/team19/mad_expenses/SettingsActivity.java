@@ -54,7 +54,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     private static final String TAG = "FirebaseSignIn";
     FirebaseAuth.AuthStateListener mAuthListener;
     Button signOut;
-    Button pswd_reset;
     ImageView edit_name;
     TextView email;
     TextView displayedName;
@@ -80,7 +79,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         registerReceiver(netChange, filter);
 
         signOut = (Button) findViewById(R.id.btn_signout);
-        pswd_reset = (Button) findViewById(R.id.reset_passwd);
         edit_name = (ImageView) findViewById(R.id.edit_user_name);
         currenciesSpinner = (Spinner) findViewById(R.id.currencies_spinner);
 
@@ -135,10 +133,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         else
             currenciesSpinner.setSelection(currenciesAdapter.searchInCurrenciesCodes(currencyPreference.getString("currency", "")));
 
-
-        if (mAuth.getCurrentUser().getProviders().contains("firebase")) {
-            pswd_reset.setVisibility(View.VISIBLE);
-        }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
