@@ -92,7 +92,8 @@ public class ExpenseHistoryAdapter extends BaseAdapter {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat format1 = new SimpleDateFormat(context.getResources().getString(R.string.date_time_format));
         c.setTimeInMillis(Long.parseLong(historyList.get(position).getModTime()));
-        modifyTime.setText(context.getResources().getString(R.string.modify_on) + c.toString());
+        String cToString = format1.format(c.getTime());
+        modifyTime.setText(/*context.getString(R.string.modify_on) + */cToString);
 
         //Jured: se provo a settare la data nel campo principale lo fa tranquillamente
         //modifyData.setText(format1.format(c.getTime()));

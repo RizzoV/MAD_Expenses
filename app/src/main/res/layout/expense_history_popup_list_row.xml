@@ -26,7 +26,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.7"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/activity_horizontal_margin">
         <TextView
             android:id="@+id/history_item_tv"
             android:layout_height="wrap_content"
@@ -50,6 +51,7 @@
             android:maxEms="1"
             android:ellipsize="end"
             android:text="@string/lorem"
+            android:textColor="@color/grey"
             android:layout_weight="0.4"/>
     </LinearLayout>
 </LinearLayout>
