@@ -114,7 +114,7 @@ public class ProposalsRecyclerAdapter extends RecyclerView.Adapter<ProposalsRecy
             this.name.setText(current.getName());
             this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getExtimatedCost() * exchangeRate) + " " + currencySymbol);
             this.description.setText(current.getDescription());
-            this.image.setImageResource(R.mipmap.ic_proposals);
+            this.image.setImageResource(R.drawable.ic_proposal_2);
             this.position = position;
         }
     }

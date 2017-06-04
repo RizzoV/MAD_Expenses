@@ -102,7 +102,7 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
         private void setData(final Expense current, int position) {
             this.name.setText(current.getName());
             this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost() * exchangeRate) + " " + currencySymbol);
-            this.image.setImageResource(R.drawable.expenses_icon);
+            this.image.setImageResource(R.drawable.ic_expense_2);
             this.position = position;
             this.current = current;
             this.description.setText(current.getDescritpion());

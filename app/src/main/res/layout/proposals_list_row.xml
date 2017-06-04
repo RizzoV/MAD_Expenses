@@ -15,17 +15,17 @@
 
         <ImageView
             android:id="@+id/proposal_imageView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:src="@mipmap/ic_proposals" />
+            android:src="@drawable/ic_proposal_2" />
 
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="10dp"
             android:layout_weight="0.7"
             android:orientation="vertical">
 
