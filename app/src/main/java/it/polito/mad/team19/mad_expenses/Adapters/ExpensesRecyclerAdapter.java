@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,10 +100,45 @@ public class ExpensesRecyclerAdapter extends RecyclerView.Adapter<ExpensesRecycl
             }
         }
 
-        private void setData(final Expense current, int position) {
+        private void setData(Expense current, int position) {
             this.name.setText(current.getName());
+            this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost()) + " " + Currency.getInstance("EUR").getSymbol());
+            //this.image.setImageResource(R.drawable.expenses_icon);
+
+
+            //prendere da Firebase la categoria
+            if (current.getCategory() == null) {
+                this.image.setImageResource(R.drawable.ic_expense_2);
+            }
+            else
+            {
+                if (current.getCategory().trim().equals("transport")) {
+                    this.image.setImageResource(R.mipmap.ic_transport);
+                }
+
+
+                if (current.getCategory().trim().equals("house")) {
+                    this.image.setImageResource(R.mipmap.ic_house);
+                }
+
+                if (current.getCategory().trim().equals("food")) {
+                    this.image.setImageResource(R.mipmap.ic_food);
+                }
+
+                if (current.getCategory().trim().equals("drink")) {
+                    this.image.setImageResource(R.mipmap.ic_drink);
+                }
+
+                if (current.getCategory().trim().equals("shopping")) {
+                    this.image.setImageResource(R.mipmap.ic_shopping);
+                }
+                if (current.getCategory().trim().equals("other"))
+                {
+                    this.image.setImageResource(R.mipmap.ic_other);
+                }
+            }
+
             this.amount.setText(String.format(Locale.getDefault(), "%.2f", current.getCost() * exchangeRate) + " " + currencySymbol);
-            this.image.setImageResource(R.drawable.ic_expense_2);
             this.position = position;
             this.current = current;
             this.description.setText(current.getDescritpion());

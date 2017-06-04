@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activitiesBackgroundColor"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/select_contributors_description_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:text="@string/select_category_description"
+        android:textColor="@color/secondaryText"
+        android:textSize="@dimen/normal_text_size" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/select_transport"
+        android:paddingBottom="@dimen/smaller_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/smaller_vertical_margin">
+
+
+            <ImageView
+                android:id="@+id/transport_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_transport" />
+
+            <TextView
+                android:id="@+id/transport_icon_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/text_margin"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxEms="1"
+                android:maxLines="1"
+                android:text="Transport"
+                android:textSize="@dimen/titles_size"
+                android:focusableInTouchMode="false"
+                android:focusable="false"
+                android:textColor="@color/primaryText"/>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/select_house"
+        android:paddingBottom="@dimen/smaller_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/smaller_vertical_margin">
+
+
+            <ImageView
+                android:id="@+id/house_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_house" />
+
+
+
+        <TextView
+            android:id="@+id/house_icon_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxEms="1"
+            android:maxLines="1"
+            android:text="Rent"
+            android:textSize="@dimen/titles_size"
+            android:focusableInTouchMode="false"
+            android:focusable="false"
+            android:textColor="@color/primaryText"/>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/select_food"
+        android:paddingBottom="@dimen/smaller_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/smaller_vertical_margin">
+
+
+
+            <ImageView
+                android:id="@+id/food_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_food" />
+
+
+
+        <TextView
+            android:id="@+id/food_icon_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxEms="1"
+            android:maxLines="1"
+            android:text="Food"
+            android:textSize="@dimen/titles_size"
+            android:focusableInTouchMode="false"
+            android:focusable="false"
+            android:textColor="@color/primaryText"/>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/select_drink"
+        android:paddingBottom="@dimen/smaller_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/smaller_vertical_margin">
+
+
+            <ImageView
+                android:id="@+id/drink_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_drink" />
+
+
+        <TextView
+            android:id="@+id/drink_icon_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxEms="1"
+            android:maxLines="1"
+            android:text="Drink"
+            android:textSize="@dimen/titles_size"
+            android:focusableInTouchMode="false"
+            android:focusable="false"
+            android:textColor="@color/primaryText"/>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/select_shopping"
+        android:paddingBottom="@dimen/smaller_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/smaller_vertical_margin">
+
+
+
+            <ImageView
+                android:id="@+id/shopping_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_shopping" />
+
+
+        <TextView
+            android:id="@+id/shopping_icon_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxEms="1"
+            android:maxLines="1"
+            android:text="Shopping"
+            android:textSize="@dimen/titles_size"
+            android:focusableInTouchMode="false"
+            android:focusable="false"
+            android:textColor="@color/primaryText"/>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/select_other"
+        android:paddingBottom="@dimen/smaller_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/smaller_vertical_margin">
+
+
+            <ImageView
+                android:id="@+id/other_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_other" />
+
+        <TextView
+            android:id="@+id/other_icon_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxEms="1"
+            android:maxLines="1"
+            android:text="Other"
+            android:textSize="@dimen/titles_size"
+            android:focusableInTouchMode="false"
+            android:focusable="false"
+            android:textColor="@color/primaryText"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>
+
+

@@ -3,7 +3,6 @@
     <string-array name="image_source_array">
         <item>Gallery</item>
         <item>Camera</item>
-
     //Stringhe dialog per opzioni su membro gruppo
     </string-array>
     <string-array name="member_option_array">
