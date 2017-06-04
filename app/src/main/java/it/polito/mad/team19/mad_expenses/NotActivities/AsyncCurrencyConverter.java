@@ -26,7 +26,7 @@ public class AsyncCurrencyConverter extends AsyncTask<Void, Integer, Double> {
 
 
     public AsyncCurrencyConverter(Context context, String toCurrency) {
-        this.context = context;
+        this.context = context.getApplicationContext();
         this.toCurrency = toCurrency;
     }
 
