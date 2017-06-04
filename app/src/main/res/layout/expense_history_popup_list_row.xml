@@ -22,18 +22,34 @@
             android:src="@drawable/ic_user_noimg" />
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/history_item_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:layout_weight="1"
-        android:ellipsize="end"
-        android:maxEms="1"
-        android:maxLines="1"
-        android:textSize="@dimen/titles_size"
-        android:focusableInTouchMode="false"
-        android:focusable="false"
-        android:textColor="@color/primaryText"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/history_item_tv"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/titles_size"
+            android:textColor="@color/primaryText"
+            android:layout_weight="0.5"
+            android:maxEms="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/lorem"
+            android:gravity="bottom"
+            android:paddingBottom="2dp"/>
 
+        <TextView
+            android:id="@+id/history_modify_time_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/little_text_size"
+            android:maxLines="1"
+            android:maxEms="1"
+            android:ellipsize="end"
+            android:text="@string/lorem"
+            android:layout_weight="0.4"/>
+    </LinearLayout>
 </LinearLayout>

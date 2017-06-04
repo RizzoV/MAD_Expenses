@@ -20,6 +20,7 @@ public class FirebaseExpense
     private String currencyCode;
     private String image;
     private String date;
+    private String modTime;
 
     public FirebaseExpense () {}
 
@@ -33,6 +34,14 @@ public class FirebaseExpense
         //this.key = null;
         this.currencyCode = currencyCode;
         this.date = date;
+    }
+
+    public String getModTime() {
+        return modTime;
+    }
+
+    public void setModTime(String modTime) {
+        this.modTime = modTime;
     }
 
     public String getAuthor() {

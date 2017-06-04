@@ -253,7 +253,7 @@ public class ExpensesListFragment extends Fragment {
         containerExpenses.setVisibility(View.INVISIBLE);
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("gruppi").child(groupId).child("expenses");
+        DatabaseReference myRef = database.getReference("gruppi").child(groupId);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -264,10 +264,10 @@ public class ExpensesListFragment extends Fragment {
                 balancesMap.clear();
 
 
-                if (dataSnapshot.hasChildren() && free) {
+                if (dataSnapshot.child("expenses").hasChildren() && free) {
                     noExpenses_tv.setVisibility(View.GONE);
 
-                    for (DataSnapshot expense : dataSnapshot.getChildren()) {
+                    for (DataSnapshot expense : dataSnapshot.child("expenses").getChildren()) {
 
                         FirebaseExpense firebaseExpense = expense.getValue(FirebaseExpense.class);
                         firebaseExpense.setKey(expense.getKey());
@@ -354,11 +354,13 @@ public class ExpensesListFragment extends Fragment {
                     SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
                     String formattedDate[] = df.format(c.getTime()).split("-");
 
-                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("credito").setValue(creditAmount);
-                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("debito").setValue(debtAmount);
+                    if(dataSnapshot.child("membri").child(myUid).child("deleted").getValue() != null) {
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("credito").setValue(creditAmount);
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("bilancio").child(formattedDate[2]).child(formattedDate[1]).child(formattedDate[0]).child("debito").setValue(debtAmount);
 
-                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
-                    database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("credito").setValue(creditAmount);
+                        database.getReference("utenti").child(myUid).child("gruppi").child(groupId).child("debito").setValue(debtAmount);
+                    }
 
                     pBar.setVisibility(View.GONE);
 

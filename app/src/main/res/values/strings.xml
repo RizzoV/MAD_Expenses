@@ -229,6 +229,7 @@
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper convallis diam, non porta sem feugiat et. Curabitur iaculis vestibulum arcu, non tincidunt tortor blandit a. Nam sit amet lacus vitae quam rutrum rutrum ac eget nulla. Vivamus ac leo eget lorem mattis euismod.</string>
     <string name="personal_profile">Personal profile</string>
     <string name="topic">Topic</string>
+    <string name="date_time_format">yyyy-MM-dd HH:mm</string>
 
 
 </resources>

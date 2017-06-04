@@ -505,7 +505,7 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                                     .child("gruppi").child(groupId).child("nome");
                             groupNameRef.setValue(new_string.getText().toString());
 
-                            //TODO: cambiare il nome in tutti gli utenti
+                            //Jured: cambio nome gruppo in tutti gli utenti
                             DatabaseReference userGroupNameRef = database.getReference().child("gruppi").child(groupId)
                                     .child("membri");
                             userGroupNameRef.addListenerForSingleValueEvent(new ValueEventListener() {

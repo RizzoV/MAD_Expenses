@@ -141,8 +141,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
         viewTopic_cv = (CardView) findViewById(R.id.expense_topic_cw);
         viewHistory_cv = (CardView) findViewById(R.id.expense_history_cw);
         expense_date = (TextView) findViewById(R.id.expense_date);
-        expense_date = (TextView) findViewById(R.id.expense_date);
-        viewHistory_cv = (CardView) findViewById(R.id.expense_history_cw);
+
 
         expense_name.setText(name);
         expense_desc.setText(desc);
