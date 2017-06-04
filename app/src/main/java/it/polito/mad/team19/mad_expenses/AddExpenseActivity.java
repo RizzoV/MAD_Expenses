@@ -83,6 +83,7 @@ import it.polito.mad.team19.mad_expenses.NotActivities.CurrenciesListGetter;
 public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCameraDialog.NoticeDialogListener {
 
     private static final int STORAGE_REQUEST = 666;
+    private static final int IMAGE_CATEGORY = 999;
     private ImageView imageView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -103,7 +104,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
     private double expenseTotal;
     private String idExpense;
     private String idExpenseTemp;
-    private String category;
+    private String category = "other";
     private ProgressDialog barProgressDialog = null;
     private ArrayList<FirebaseGroupMember> contributorsList = new ArrayList<>();
     private ArrayList<FirebaseGroupMember> excludedList = new ArrayList<>();
@@ -131,6 +132,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
 
     private ArrayList<String> currenciesList = new ArrayList<>();
     private CurrenciesAdapter currenciesAdapter;
+    private String imageCategory = "other";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,6 +283,11 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Log.d("DebugTakePhoto2", mCurrentPhotoPath);
                 setImageViewGlide(mCurrentPhotoPath);
             }
+        }
+
+        if(requestCode== IMAGE_CATEGORY)
+        {
+            category = data.getStringExtra("ExpenseThumb");
         }
 
         if (requestCode == REQUEST_GALLERY_IMAGE) {
@@ -499,7 +506,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                 Intent i = new Intent(AddExpenseActivity.this, CategoryPopupActivity.class);
                 i.putExtra("groupId", groupId);
                 i.putExtra("expenseId", idExpense);
-                startActivity(i);
+                startActivityForResult(i,IMAGE_CATEGORY);
             }
         });
     }
