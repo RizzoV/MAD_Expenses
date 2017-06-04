@@ -115,7 +115,7 @@ public class ExpensesListFragment extends Fragment {
         Double exchangeRate = 1d;
         if(!customCurrencyCode.equals("EUR")) {
             try {
-                exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+                exchangeRate = (new AsyncCurrencyConverter(mActivity, customCurrencyCode)).execute().get();
             } catch (ExecutionException | InterruptedException e) {
                 Log.e("AddExpenseActivity", e.getMessage());
             }
@@ -338,7 +338,7 @@ public class ExpensesListFragment extends Fragment {
                         Double exchangeRate = 1d;
                         if (!customCurrencyCode.equals("EUR")) {
                             try {
-                                exchangeRate = (new AsyncCurrencyConverter(getContext(), customCurrencyCode)).execute().get();
+                                exchangeRate = (new AsyncCurrencyConverter(mActivity, customCurrencyCode)).execute().get();
                             } catch (ExecutionException | InterruptedException e) {
                                 Log.e("AddExpenseActivity", e.getMessage());
                             }
