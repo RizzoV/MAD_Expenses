@@ -53,8 +53,8 @@
     <string name="create_new_expense">Crea una nuova spesa</string>
     <string name="add_expense_image">Aggiungi un\'immagine alla spesa</string>
     <string name="create_expense_button">Crea Spesa</string>
-    <string name="select_contributors">Seleziona contribuenti</string>
-    <string name="select_exluded">Seleziona esclusi</string>
+    <string name="select_contributors">Chi sta pangando?</string>
+    <string name="select_exluded">Chi non partecipa?</string>
     <string name="select_contributors_description">Seleziona le persone che hanno già pagato la spesa:</string>
     <string name="select_excluded_description">Seleziona le persone escluse dalla spesa:</string>
     <string name="no_image">Nessuna immagine</string>

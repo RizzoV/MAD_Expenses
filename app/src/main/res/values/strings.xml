@@ -33,8 +33,8 @@
     <string name="create_new_expense">Create a new expense</string>
     <string name="add_expense_image">Add a proof of the expense</string>
     <string name="create_expense_button">Create expense</string>
-    <string name="select_contributors">Select contributors</string>
-    <string name="select_exluded">Select excluded</string>
+    <string name="select_contributors">Who is paying?</string>
+    <string name="select_exluded">Who does not take part?</string>
     <string name="select_contributors_description">Select the people who already paid for the expense:</string>
     <string name="select_excluded_description">Select the people who is excluded from the expense:</string>
     <string name="expense_name_suggestion"><i>e.g: Hotel room</i></string>
