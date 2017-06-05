@@ -190,20 +190,19 @@ public class MeActivity extends AppCompatActivity {
         });
     }
 
-    private void getChart()
-    {
+    private void getChart() {
         //Ludo grafico storico
 
         chart = (LineChart) findViewById(R.id.chart);
 
         //Ludo: hashmap da popolare per i grafici
 
-        HashMap<Integer,Float> daysCredit = new HashMap<>();
-        HashMap<Integer,Float> monthsCredit = new HashMap<>();
-        HashMap<Integer,Float> yearsCredit = new HashMap<>();
-        HashMap<Integer,Float> daysDebit = new HashMap<>();
-        HashMap<Integer,Float> monthsDebit = new HashMap<>();
-        HashMap<Integer,Float> yearsDebit = new HashMap<>();
+        HashMap<Integer, Float> daysCredit = new HashMap<>();
+        HashMap<Integer, Float> monthsCredit = new HashMap<>();
+        HashMap<Integer, Float> yearsCredit = new HashMap<>();
+        HashMap<Integer, Float> daysDebit = new HashMap<>();
+        HashMap<Integer, Float> monthsDebit = new HashMap<>();
+        HashMap<Integer, Float> yearsDebit = new HashMap<>();
 
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
@@ -221,64 +220,61 @@ public class MeActivity extends AppCompatActivity {
         getBalance.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("Snap",dataSnapshot.toString());
+                Log.d("Snap", dataSnapshot.toString());
                 boolean first = true;
                 int startingYear = 2017;
-                for(DataSnapshot year : dataSnapshot.getChildren())
-                {
+                for (DataSnapshot year : dataSnapshot.getChildren()) {
                     float yearCredit = 0;
                     float yearDebit = 0;
-                    if(first) {
+                    if (first) {
                         startingYear = Integer.parseInt(year.getKey());
                     }
 
                     float monthCredit = 0;
-                    float monthDebit =0;
+                    float monthDebit = 0;
 
-                    for(DataSnapshot month : year.getChildren())
-                    {
+                    for (DataSnapshot month : year.getChildren()) {
 
-                        for(DataSnapshot day: month.getChildren())
-                        {
-                            float dayCredit = Float.parseFloat(day.child("credito").getValue().toString());
-                            float dayDebit = Float.parseFloat(day.child("debito").getValue().toString());
+                        for (DataSnapshot day : month.getChildren()) {
+                            float dayCredit = Float.parseFloat(day.child("credito").getValue().toString()) * exchangeRate.floatValue();
+                            float dayDebit = Float.parseFloat(day.child("debito").getValue().toString()) * exchangeRate.floatValue();
 
-                            daysCredit.put(Integer.parseInt(day.getKey()),dayCredit);
-                            daysDebit.put(Integer.parseInt(day.getKey()),dayDebit);
+                            daysCredit.put(Integer.parseInt(day.getKey()), dayCredit);
+                            daysDebit.put(Integer.parseInt(day.getKey()), dayDebit);
 
-                            if(monthCredit<dayCredit)
-                                monthCredit+=dayCredit-monthCredit;
-                            if(monthDebit<dayDebit)
-                                monthDebit+=dayDebit-monthDebit;
+                            if (monthCredit < dayCredit)
+                                monthCredit += dayCredit - monthCredit;
+                            if (monthDebit < dayDebit)
+                                monthDebit += dayDebit - monthDebit;
                         }
-                        monthsCredit.put(Integer.parseInt(month.getKey()),monthCredit);
-                        monthsDebit.put(Integer.parseInt(month.getKey()),monthDebit);
+                        monthsCredit.put(Integer.parseInt(month.getKey()), monthCredit);
+                        monthsDebit.put(Integer.parseInt(month.getKey()), monthDebit);
 
-                        if(yearCredit<monthCredit)
-                            yearCredit+=monthCredit-yearCredit;
-                        if(yearDebit<monthDebit)
-                            yearDebit+=monthDebit-yearDebit;
+                        if (yearCredit < monthCredit)
+                            yearCredit += monthCredit - yearCredit;
+                        if (yearDebit < monthDebit)
+                            yearDebit += monthDebit - yearDebit;
                     }
-                    yearsCredit.put(Integer.parseInt(year.getKey()),yearCredit);
-                    yearsDebit.put(Integer.parseInt(year.getKey()),yearDebit);
+                    yearsCredit.put(Integer.parseInt(year.getKey()), yearCredit);
+                    yearsDebit.put(Integer.parseInt(year.getKey()), yearDebit);
                 }
 
                 //Ludo: il primo grafico che viene visulizzaro quando si pare l'acitivty
-                setChartDayView(daysCredit,daysDebit,currentMonth,currentDay);
+                setChartDayView(daysCredit, daysDebit, currentMonth, currentDay);
 
                 int finalStartingYear = startingYear;
                 chartViewSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        switch(position){
+                        switch (position) {
                             case 0:
-                                setChartDayView(daysCredit,daysDebit,currentMonth,currentDay);
+                                setChartDayView(daysCredit, daysDebit, currentMonth, currentDay);
                                 break;
                             case 1:
-                                setChartMonthView(monthsCredit,monthsDebit,currentMonth);
+                                setChartMonthView(monthsCredit, monthsDebit, currentMonth);
                                 break;
                             case 2:
-                                setChartYearView(yearsCredit,yearsDebit, finalStartingYear,currentYear);
+                                setChartYearView(yearsCredit, yearsDebit, finalStartingYear, currentYear);
                                 break;
                         }
                     }
@@ -344,7 +340,7 @@ public class MeActivity extends AppCompatActivity {
                 final Me balance = adapter.getItemAtPosition(position);
                 final String otherId = balance.getId();
 
-                if(balance.getAmount() > 0 ) {
+                if (balance.getAmount() > 0) {
                     alertDialog = new AlertDialog.Builder(MeActivity.this)
                             .setTitle(R.string.confirmDebtExtinctionTitle)
                             .setMessage(R.string.confirmDebtExtinction)
@@ -432,8 +428,7 @@ public class MeActivity extends AppCompatActivity {
                         }
                     });
                     alertDialog.show();
-                }
-                else if(balance.getAmount() < 0 ){
+                } else if (balance.getAmount() < 0) {
                     Snackbar.make(findViewById(android.R.id.content), R.string.cannotExtinguish, Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -451,8 +446,7 @@ public class MeActivity extends AppCompatActivity {
         credito_tv.setText(String.format(Locale.getDefault(), "%.2f", credito * exchangeRate) + " " + Currency.getInstance(customCurrencyCode).getSymbol());
     }
 
-    private void setChartYearView(HashMap<Integer, Float> yearsCredit, HashMap<Integer, Float> yearsDebit, int startingYear, int endingYear)
-    {
+    private void setChartYearView(HashMap<Integer, Float> yearsCredit, HashMap<Integer, Float> yearsDebit, int startingYear, int endingYear) {
         chart.setData(null);
         chart.notifyDataSetChanged();
         chart.invalidate();
@@ -484,7 +478,7 @@ public class MeActivity extends AppCompatActivity {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return ((int) value)+"";
+                return ((int) value) + "";
             }
         });
 
@@ -492,17 +486,15 @@ public class MeActivity extends AppCompatActivity {
         float currentDebit = 0;
 
 
+        for (int i = startingYear - 1; i < endingYear + 1; i++) {
 
-        for(int i=startingYear-1;i<endingYear+1;i++)
-        {
-
-            if(yearsCredit.containsKey(i))
+            if (yearsCredit.containsKey(i))
                 currentCredit = yearsCredit.get(i);
-            if(yearsDebit.containsKey(i))
-                currentDebit =  yearsDebit.get(i);
+            if (yearsDebit.containsKey(i))
+                currentDebit = yearsDebit.get(i);
 
-            entries.add(new Entry(i,currentCredit));
-            entries2.add(new Entry(i,currentDebit));
+            entries.add(new Entry(i, currentCredit));
+            entries2.add(new Entry(i, currentDebit));
         }
 
         LineDataSet creditoSet = new LineDataSet(entries, getResources().getString(R.string.credit));
@@ -510,19 +502,18 @@ public class MeActivity extends AppCompatActivity {
         creditoSet.setDrawCircles(false);
         creditoSet.setDrawValues(false);
         creditoSet.setLineWidth(2);
-        LineDataSet debitoSet = new LineDataSet(entries2,getResources().getString(R.string.debit));
+        LineDataSet debitoSet = new LineDataSet(entries2, getResources().getString(R.string.debit));
         debitoSet.setDrawCircles(false);
         debitoSet.setDrawValues(false);
         debitoSet.setLineWidth(2);
         debitoSet.setColor(getResources().getColor(R.color.redMaterial));
 
-        LineData Data = new LineData(creditoSet,debitoSet);
+        LineData Data = new LineData(creditoSet, debitoSet);
         chart.setData(Data);
         chart.invalidate();
     }
 
-    private void setChartMonthView(HashMap<Integer, Float> monthsCredit, HashMap<Integer, Float> monthsDebit, int currentMonth)
-    {
+    private void setChartMonthView(HashMap<Integer, Float> monthsCredit, HashMap<Integer, Float> monthsDebit, int currentMonth) {
         chart.setData(null);
         chart.notifyDataSetChanged();
         chart.invalidate();
@@ -545,8 +536,7 @@ public class MeActivity extends AppCompatActivity {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                switch((int)value)
-                {
+                switch ((int) value) {
                     case 1:
                         return getResources().getString(R.string.january);
                     case 2:
@@ -573,7 +563,7 @@ public class MeActivity extends AppCompatActivity {
                         return getResources().getString(R.string.december);
 
                     default:
-                        return value+"";
+                        return value + "";
 
                 }
             }
@@ -588,16 +578,15 @@ public class MeActivity extends AppCompatActivity {
         float currentCredit = 0;
         float currentDebit = 0;
 
-        for(int i=1;i<currentMonth+1;i++)
-        {
+        for (int i = 1; i < currentMonth + 1; i++) {
 
-            if(monthsCredit.containsKey(i))
+            if (monthsCredit.containsKey(i))
                 currentCredit = monthsCredit.get(i);
-            if(monthsDebit.containsKey(i))
-                currentDebit =  monthsDebit.get(i);
+            if (monthsDebit.containsKey(i))
+                currentDebit = monthsDebit.get(i);
 
-            entries.add(new Entry(i,currentCredit));
-            entries2.add(new Entry(i,currentDebit));
+            entries.add(new Entry(i, currentCredit));
+            entries2.add(new Entry(i, currentDebit));
         }
 
         LineDataSet creditoSet = new LineDataSet(entries, getResources().getString(R.string.credit));
@@ -605,26 +594,25 @@ public class MeActivity extends AppCompatActivity {
         creditoSet.setDrawCircles(false);
         creditoSet.setDrawValues(false);
         creditoSet.setLineWidth(2);
-        LineDataSet debitoSet = new LineDataSet(entries2,getResources().getString(R.string.debit));
+        LineDataSet debitoSet = new LineDataSet(entries2, getResources().getString(R.string.debit));
         debitoSet.setDrawCircles(false);
         debitoSet.setDrawValues(false);
         debitoSet.setLineWidth(2);
         debitoSet.setColor(getResources().getColor(R.color.redMaterial));
 
-        LineData Data = new LineData(creditoSet,debitoSet);
+        LineData Data = new LineData(creditoSet, debitoSet);
         chart.setData(Data);
         chart.invalidate();
     }
 
-    private void setChartDayView(HashMap<Integer, Float> daysCredit, HashMap<Integer, Float> daysDebit, int currentMonth, int currentDay)
-    {
+    private void setChartDayView(HashMap<Integer, Float> daysCredit, HashMap<Integer, Float> daysDebit, int currentMonth, int currentDay) {
         int monthDays = 31;
 
-        if(currentMonth==11 || currentMonth==4 || currentMonth==9 || currentMonth==6)
+        if (currentMonth == 11 || currentMonth == 4 || currentMonth == 9 || currentMonth == 6)
             monthDays = 30;
 
-        if(currentMonth==2)
-            monthDays=28;
+        if (currentMonth == 2)
+            monthDays = 28;
 
 
         chart.setData(null);
@@ -654,7 +642,7 @@ public class MeActivity extends AppCompatActivity {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return ((int) value)+"";
+                return ((int) value) + "";
             }
         });
 
@@ -664,16 +652,15 @@ public class MeActivity extends AppCompatActivity {
         float currentCredit = 0;
         float currentDebit = 0;
 
-        for(int i=1;i<currentDay+1;i++)
-        {
+        for (int i = 1; i < currentDay + 1; i++) {
 
-            if(daysCredit.containsKey(i))
+            if (daysCredit.containsKey(i))
                 currentCredit = daysCredit.get(i);
-            if(daysDebit.containsKey(i))
-                currentDebit =  daysDebit.get(i);
+            if (daysDebit.containsKey(i))
+                currentDebit = daysDebit.get(i);
 
-            entries.add(new Entry(i,currentCredit));
-            entries2.add(new Entry(i,currentDebit));
+            entries.add(new Entry(i, currentCredit));
+            entries2.add(new Entry(i, currentDebit));
         }
 
         LineDataSet creditoSet = new LineDataSet(entries, getResources().getString(R.string.credit));
@@ -681,13 +668,13 @@ public class MeActivity extends AppCompatActivity {
         creditoSet.setDrawCircles(false);
         creditoSet.setDrawValues(false);
         creditoSet.setLineWidth(2);
-        LineDataSet debitoSet = new LineDataSet(entries2,getResources().getString(R.string.debit));
+        LineDataSet debitoSet = new LineDataSet(entries2, getResources().getString(R.string.debit));
         debitoSet.setDrawCircles(false);
         debitoSet.setDrawValues(false);
         debitoSet.setLineWidth(2);
         debitoSet.setColor(getResources().getColor(R.color.redMaterial));
 
-        LineData Data = new LineData(creditoSet,debitoSet);
+        LineData Data = new LineData(creditoSet, debitoSet);
         chart.setData(Data);
         chart.invalidate();
 
@@ -735,8 +722,8 @@ public class MeActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if(alertDialog != null)
-            if(alertDialog.isShowing())
+        if (alertDialog != null)
+            if (alertDialog.isShowing())
                 alertDialog.dismiss();
 
         if (netChange != null) {
