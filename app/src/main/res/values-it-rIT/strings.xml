@@ -244,6 +244,7 @@
 
     <string name="date_time_format">dd-MM-yyyy HH:mm</string>
     <string name="modify_on">Modificato il:</string>
+    <string name="admin">Amministratore</string>
 
 
 </resources>

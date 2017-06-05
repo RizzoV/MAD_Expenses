@@ -367,9 +367,9 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         final Button contributorsButton = (Button) findViewById(R.id.contributors_button);
 
         if (mAuth.getCurrentUser().getPhotoUrl() != null)
-            contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getPhotoUrl().toString(), mAuth.getCurrentUser().getUid()));
+            contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getPhotoUrl().toString(), mAuth.getCurrentUser().getUid(), 0f));
         else
-            contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid()));
+            contributorsList.add(new FirebaseGroupMember(mAuth.getCurrentUser().getDisplayName(), null, mAuth.getCurrentUser().getUid(), 0f));
 
         //Log.d("Contributors", contributorsList.get(0).getName());
 
@@ -637,7 +637,7 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                     if (dataSnapshot.hasChildren()) {
                         for (DataSnapshot groupMember : dataSnapshot.getChildren()) {
                             if(groupMember.child("deleted").getValue() == null)
-                                groupMembersList.add(new FirebaseGroupMember(groupMember.child("nome").getValue(String.class), groupMember.child("immagine").getValue(String.class), groupMember.getKey()));
+                                groupMembersList.add(new FirebaseGroupMember(groupMember.child("nome").getValue(String.class), groupMember.child("immagine").getValue(String.class), groupMember.getKey(), 0f));
                         }
                     }
 

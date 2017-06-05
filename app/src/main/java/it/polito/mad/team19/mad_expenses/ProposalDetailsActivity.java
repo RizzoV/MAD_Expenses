@@ -525,7 +525,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
 
-                contributors.add(new FirebaseGroupMember(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString(), userId));
+                contributors.add(new FirebaseGroupMember(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString(), userId, 0f));
 
                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -534,7 +534,7 @@ public class ProposalDetailsActivity extends AppCompatActivity {
 
                         if (dataSnapshot.hasChildren()) {
                             for (DataSnapshot refuser : dataSnapshot.getChildren()) {
-                                excluded.add(new FirebaseGroupMember(refuser.child("nome").getValue(String.class), refuser.child("immagine").getValue(String.class), refuser.getKey()));
+                                excluded.add(new FirebaseGroupMember(refuser.child("nome").getValue(String.class), refuser.child("immagine").getValue(String.class), refuser.getKey(), 0f));
                             }
                         }
 

@@ -14,15 +14,17 @@ public class FirebaseGroupMember implements Parcelable {
     private String uid;
     private String name;
     private String imgUrl;
+    private Float isAdmin;
 
     //LUDO: per ceccare
     private boolean checked = false;
 
-    public FirebaseGroupMember(String name, String imgUrl, String uid)
+    public FirebaseGroupMember(String name, String imgUrl, String uid, Float isAdmin)
     {
         this.name = name;
         this.uid = uid;
         this.imgUrl = imgUrl;
+        this.isAdmin = isAdmin;
     }
 
     public String getName(){return name;}
@@ -39,11 +41,12 @@ public class FirebaseGroupMember implements Parcelable {
         dest.writeString(name);
         dest.writeString(imgUrl);
         dest.writeString(uid);
+        dest.writeFloat(0f);
     }
 
     public static final Parcelable.Creator<FirebaseGroupMember> CREATOR = new Parcelable.Creator<FirebaseGroupMember>() {
         public FirebaseGroupMember createFromParcel(Parcel in) {
-            return new FirebaseGroupMember(in.readString(), in.readString(), in.readString());
+            return new FirebaseGroupMember(in.readString(), in.readString(), in.readString(), 0f);
         }
 
         @Override
@@ -63,4 +66,6 @@ public class FirebaseGroupMember implements Parcelable {
     {
         return checked;
     }
+
+    public float isAdmin() { return isAdmin; }
 }
