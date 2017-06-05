@@ -36,7 +36,7 @@
     <string name="select_contributors">Who is paying?</string>
     <string name="select_exluded">Who does not take part?</string>
     <string name="select_contributors_description">Select the people who already paid for the expense:</string>
-    <string name="select_excluded_description">Select the people who is excluded from the expense:</string>
+    <string name="select_excluded_description">Exclude the people who isn\'t participating to the expense:</string>
     <string name="expense_name_suggestion"><i>e.g: Hotel room</i></string>
     <string name="expense_description_suggestion"><i>e.g: Double room, two nights</i></string>
     <string name="expense_cost_suggestion"><i>e.g: 23</i></string>
@@ -140,12 +140,12 @@
     <string name="delete_proposal">Delete the proposal</string>
     <string name="confirm_proposal_deletion">Are you sure you want to delete the proposal?</string>
 
-    <string name="transport">transport</string>
-    <string name="rent">rent</string>
-    <string name="food">food</string>
-    <string name="drink">drink</string>
-    <string name="shopping">shopping</string>
-    <string name="other">other</string>
+    <string name="transport">Transports</string>
+    <string name="rent">Rent</string>
+    <string name="food">Food</string>
+    <string name="drink">Drink</string>
+    <string name="shopping">Shopping</string>
+    <string name="other">Other</string>
 
 
     <string name="chartviewSpinnerPrompt">Choose the view:</string>

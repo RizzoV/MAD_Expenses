@@ -29,6 +29,14 @@ public class CategoryAdapter  extends BaseAdapter {
         this.context = context;
     }
 
+    public int getItemPositionByName(String name) {
+        for(int i = 0; i < categories.size(); i++) {
+            if(categories.get(i).equals(name))
+                return i;
+        }
+        return 0;
+    }
+
     @Override
     public int getCount() {
             return categories.size();

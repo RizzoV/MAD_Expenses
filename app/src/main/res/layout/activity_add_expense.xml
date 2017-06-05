@@ -184,27 +184,41 @@
 
                 </LinearLayout>
 
-
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/category_tv"
-                        android:gravity="center"
-                        android:layout_marginRight="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="@string/category"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="18sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/smaller_vertical_margin"
+                    android:layout_marginTop="@dimen/smaller_vertical_margin">
 
-                    <Spinner
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/category">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.25" />
 
-                    </Spinner>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="0.75">
+
+                        <TextView
+                            android:id="@+id/category_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="10dp"
+                            android:gravity="center"
+                            android:text="@string/category"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="18sp" />
+
+                        <Spinner
+                            android:id="@+id/category"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                        </Spinner>
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -221,7 +235,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/activity_horizontal_margin"
                         android:layout_marginStart="@dimen/smaller_horizontal_margin"
-                        android:layout_marginTop="@dimen/smaller_vertical_margin"
+                        android:layout_marginTop="10dp"
                         android:layout_weight="0.5"
                         android:background="@drawable/buttons_background"
                         android:text="@string/select_contributors"
@@ -233,7 +247,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/smaller_vertical_margin"
                         android:layout_marginEnd="@dimen/smaller_horizontal_margin"
-                        android:layout_marginTop="@dimen/smaller_vertical_margin"
+                        android:layout_marginTop="10dp"
                         android:layout_weight="0.5"
                         android:background="@drawable/buttons_background"
                         android:text="@string/select_exluded"

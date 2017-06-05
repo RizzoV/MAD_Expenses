@@ -18,12 +18,12 @@
     <string name="chartviewSpinnerPrompt">Scegli la vista:</string>
 
     <string name="category">Categoria: </string>
-    <string name="transport">mezzi</string>
-    <string name="rent">affitto</string>
-    <string name="food">cibo</string>
-    <string name="drink">bere</string>
-    <string name="shopping">spesa</string>
-    <string name="other">altro</string>
+    <string name="transport">Mezzi</string>
+    <string name="rent">Affitto</string>
+    <string name="food">Cibo</string>
+    <string name="drink">Drink</string>
+    <string name="shopping">Spesa</string>
+    <string name="other">Altro</string>
 
 
     <!-- Group list activity -->
@@ -56,7 +56,7 @@
     <string name="select_contributors">Chi sta pangando?</string>
     <string name="select_exluded">Chi non partecipa?</string>
     <string name="select_contributors_description">Seleziona le persone che hanno già pagato la spesa:</string>
-    <string name="select_excluded_description">Seleziona le persone escluse dalla spesa:</string>
+    <string name="select_excluded_description">Escludi le persone che non partecipano alla spesa:</string>
     <string name="no_image">Nessuna immagine</string>
     <string name="expense_name_suggestion"><i>e.g: Camera d\'albergo</i></string>
     <string name="expense_description_suggestion"><i>e.g: Matrimoniale, due notti</i></string>

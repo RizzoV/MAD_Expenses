@@ -175,6 +175,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
         CategoryAdapter categoryAdapter = new CategoryAdapter(this,list_categories);
         categories.setAdapter(categoryAdapter);
 
+        categories.setSelection(categoryAdapter.getItemPositionByName("other"));
+
         categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
