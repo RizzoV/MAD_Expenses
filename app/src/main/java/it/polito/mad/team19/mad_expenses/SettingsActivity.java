@@ -208,13 +208,13 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
 
                     Glide.with(getApplicationContext()
-                    ).load(user.getPhotoUrl()).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(image) {
+                    ).load(user.getPhotoUrl().toString().replace("/s96-c/photo.jpg", "/s400-c/photo.jpg")).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(image) {
                         @Override
                         protected void setResource(Bitmap resource) {
                             RoundedBitmapDrawable circularBitmapDrawable =
                                     RoundedBitmapDrawableFactory.create(getResources(), resource);
 
-                            circularBitmapDrawable.setCircular(true);
+
                             image.setImageBitmap(resource);
                             //userImg.setImageDrawable(circularBitmapDrawable);
                         }
