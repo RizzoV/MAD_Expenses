@@ -94,7 +94,7 @@ public class ContributorsPopupActivity extends Activity {
                         if (child.child("immagine").exists())
                             img = child.child("immagine").getValue().toString();
 
-                        contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), img, child.getKey()));
+                        contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), img, child.getKey(), 0f));
                         nMembers++;
                     }
                 }

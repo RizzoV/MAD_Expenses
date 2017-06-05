@@ -183,9 +183,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     if (child.child("deleted").getValue() == null) {
                         if (child.child("immagine").exists())
-                            contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
+                            contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey(), child.child("tipo").getValue(Float.class)));
                         else
-                            contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                            contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey(), child.child("tipo").getValue(Float.class)));
 
                         nMembers++;
                     }

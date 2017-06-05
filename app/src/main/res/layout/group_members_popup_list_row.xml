@@ -26,28 +26,51 @@
             android:id="@+id/contributor_checkbox"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:visibility="invisible"
-
-            android:src="@mipmap/ic_check"
-            android:layout_marginTop="30dp"
             android:layout_marginLeft="30dp"
-            />
+
+            android:layout_marginTop="30dp"
+            android:src="@mipmap/ic_check"
+            android:visibility="invisible" />
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/username_checkedtv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:layout_weight="1"
-        android:ellipsize="end"
-        android:maxEms="1"
-        android:maxLines="1"
-        android:text="@string/username"
-        android:textSize="@dimen/titles_size"
-        android:focusableInTouchMode="false"
-        android:focusable="false"
-        android:textColor="@color/primaryText"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/username_checkedtv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:ellipsize="end"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:maxLines="1"
+            android:maxEms="1"
+            android:layout_weight="1"
+            android:text="@string/username"
+            android:textColor="@color/primaryText"
+            android:textSize="@dimen/titles_size" />
+
+        <TextView
+            android:id="@+id/isAdmin_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/admin"
+            android:gravity="center_vertical"
+            android:textColor="#FFFFFF"
+            android:paddingStart="@dimen/smaller_horizontal_margin"
+            android:paddingEnd="@dimen/smaller_horizontal_margin"
+            android:background="@drawable/rounded_corners_green"
+            android:visibility="gone"/>
+
 
     </LinearLayout>
+
+
+
+</LinearLayout>

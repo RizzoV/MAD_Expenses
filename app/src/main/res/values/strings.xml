@@ -242,6 +242,7 @@
     <string name="topic">Topic</string>
     <string name="date_time_format">yyyy-MM-dd HH:mm</string>
     <string name="modify_on">Modified on:</string>
+    <string name="admin">Admin</string>
 
 
 </resources>

@@ -173,9 +173,9 @@ public class MeActivity extends AppCompatActivity {
                     if (child.child("deleted").getValue() == null) {
                         Log.d("MembriSnap", dataSnapshot.getValue().toString());
                         if (child.child("immagine").hasChildren())
-                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey()));
+                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey(), 0f));
                         else
-                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey()));
+                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), null, child.getKey(), 0f));
                     }
                 }
 

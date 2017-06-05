@@ -268,14 +268,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 //                                expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.valueOf(Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, "EUR", userCurrencyCode[0]));
 //                                edAdapter.notifyDataSetChanged();
 //                            }
-                            historyContributorsMemberList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));
+                            historyContributorsMemberList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey(), 0f));
                         }
                         for (DataSnapshot currentExcluded : expense.child("excluded").getChildren()) {
-                            historyExcludedMemberList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey()));
+                            historyExcludedMemberList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey(), 0f));
                             Log.d("DebugHistory", "escluso trovato: " + currentExcluded.getKey());
                         }
                         for (DataSnapshot debtor : expense.child("debtors").getChildren()) {
-                            historyDebtorMemberList.add(new FirebaseGroupMember(debtor.child("nome").getValue(String.class), debtor.child("immagine").getValue(String.class), debtor.getKey()));
+                            historyDebtorMemberList.add(new FirebaseGroupMember(debtor.child("nome").getValue(String.class), debtor.child("immagine").getValue(String.class), debtor.getKey(), 0f));
                             Log.d("DebugHistory", "debitore trovato: " + debtor.getKey());
                         }
                         final HistoryMemberAdapter hmAdapter = new HistoryMemberAdapter(ExpenseDetailsActivity.this,historyContributorsMemberList,historyExcludedMemberList,historyDebtorMemberList);
@@ -338,10 +338,10 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                             expenseDetailsList.add(new ExpenseDetail(contributor.child("nome").getValue().toString(), debtor.child("nome").getValue().toString(), contributor.getKey(), debtor.getKey(), String.valueOf(Float.valueOf(debtor.child("amount").getValue(String.class))), contributor_img, debtor_img, "EUR", userCurrencyCode[0]));
                             edAdapter.notifyDataSetChanged();
                         }
-                        contributorsList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey()));
+                        contributorsList.add(new FirebaseGroupMember(contributor.child("nome").getValue(String.class), contributor.child("immagine").getValue(String.class), contributor.getKey(), 0f));
                     }
                     for (DataSnapshot currentExcluded : expense.child("excluded").getChildren()) {
-                        excludedList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey()));
+                        excludedList.add(new FirebaseGroupMember(currentExcluded.child("nome").getValue(String.class), currentExcluded.child("immagine").getValue(String.class), currentExcluded.getKey(), 0f));
                     }
 
                     // Vale: dialog per la modifica dell'importo dovuto

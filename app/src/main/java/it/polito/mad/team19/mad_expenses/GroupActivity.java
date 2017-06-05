@@ -563,9 +563,9 @@ public class GroupActivity extends AppCompatActivity {
                     if (child.child("deleted").getValue() == null) {
                         Log.d("MembriSnap", dataSnapshot.getValue().toString());
                         if (child.child("immagine").exists())
-                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue(String.class), child.child("immagine").getValue(String.class), child.getKey()));
+                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue(String.class), child.child("immagine").getValue(String.class), child.getKey(), 0f));
                         else
-                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue(String.class), null, child.getKey()));
+                            groupMembersList.add(new FirebaseGroupMember(child.child("nome").getValue(String.class), null, child.getKey(), 0f));
                     }
                 }
 

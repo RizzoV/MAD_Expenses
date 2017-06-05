@@ -76,12 +76,14 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
         int position;
         FirebaseGroupMember current;
         ImageView thumb;
+        TextView isAdmin;
 
 
         public MyViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.username_checkedtv);
             thumb = (ImageView) itemView.findViewById(R.id.user_img_contacts_list);
+            isAdmin = (TextView) itemView.findViewById(R.id.isAdmin_tv);
             //LUDO: aggiunto metodo onItemClickListener
             itemView.setOnClickListener(this);
         }
@@ -109,6 +111,9 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
             this.name.setText(current.getName());
             this.current = current;
             this.position = position;
+            if(current.isAdmin() == 1) {
+                this.isAdmin.setVisibility(View.VISIBLE);
+            }
             if(current.getImgUrl() != null)
             {
                 //modo più semplice per caricare immagini e renderle tonde
