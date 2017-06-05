@@ -4,14 +4,18 @@ import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -62,6 +67,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     IntentFilter filter;
     AlertDialog alertDialog;
     Spinner currenciesSpinner;
+    private CollapsingToolbarLayout collapsingToolbar;
+    private ImageView image;
+    private Toolbar toolbar;
 
     private ArrayList<String> currenciesList = new ArrayList<>();
 
@@ -81,6 +89,16 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         signOut = (Button) findViewById(R.id.btn_signout);
         edit_name = (ImageView) findViewById(R.id.edit_user_name);
         currenciesSpinner = (Spinner) findViewById(R.id.currencies_spinner);
+
+        image = (ImageView) findViewById(R.id.user_setting_toolbar_image_iv);
+        toolbar = (Toolbar) findViewById(R.id.user_setting_tb);
+        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.user_setting_ctb);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         SharedPreferences currencyPreference = getSharedPreferences("currencySetting", MODE_PRIVATE);
 
@@ -178,7 +196,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
                     displayedName = (TextView) findViewById(R.id.displayed_name_tv);
                     email = (TextView) findViewById(R.id.email_tv);
-                    final ImageView userImg = (ImageView) findViewById(R.id.user_img);
+                    //final ImageView userImg = (ImageView) findViewById(R.id.user_img);
 
                     if (user.getDisplayName() != null)
                         displayedName.setText(user.getDisplayName());
@@ -190,14 +208,15 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
 
                     Glide.with(getApplicationContext()
-                    ).load(user.getPhotoUrl()).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(userImg) {
+                    ).load(user.getPhotoUrl()).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(image) {
                         @Override
                         protected void setResource(Bitmap resource) {
                             RoundedBitmapDrawable circularBitmapDrawable =
                                     RoundedBitmapDrawableFactory.create(getResources(), resource);
 
                             circularBitmapDrawable.setCircular(true);
-                            userImg.setImageDrawable(circularBitmapDrawable);
+                            image.setImageBitmap(resource);
+                            //userImg.setImageDrawable(circularBitmapDrawable);
                         }
                     });
                 } else {

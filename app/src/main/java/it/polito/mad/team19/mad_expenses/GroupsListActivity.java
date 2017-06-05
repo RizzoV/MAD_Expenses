@@ -140,8 +140,9 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
 
         userLogVerification();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_launcher);
+        //Jured: eliminata icona app
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        //getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_launcher);
         getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
 
         debug_tv = (TextView) findViewById(R.id.debug_tv);
