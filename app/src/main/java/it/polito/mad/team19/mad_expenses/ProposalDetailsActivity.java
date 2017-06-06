@@ -530,7 +530,12 @@ public class ProposalDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final ArrayList<FirebaseGroupMember> contributors = new ArrayList<>();
 
-                contributors.add(new FirebaseGroupMember(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString(), userId, 0f));
+                String photourl = null;
+
+                if(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()!=null)
+                    photourl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
+
+                contributors.add(new FirebaseGroupMember(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), photourl, userId, 0f));
 
                 database.getReference().child("gruppi").child(groupId).child("proposals").child(proposalId).child("refusers").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
