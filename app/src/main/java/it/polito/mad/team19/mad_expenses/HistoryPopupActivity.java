@@ -128,6 +128,7 @@ public class HistoryPopupActivity extends Activity {
                 intent.putExtra("ExpenseId", clicked.getKey());
                 intent.putExtra("isHistoryActivity", "true");
                 intent.putExtra("historyId", expenseId);
+                intent.putExtra("ExpenseDate", clicked.getDate());
                 //intent.putExtra("currentPersonalBalance", String.valueOf(creditAmount - debtAmount));
                 //startActivityForResult(intent, EXPENSE_DETAILS);
                 startActivity(intent);
