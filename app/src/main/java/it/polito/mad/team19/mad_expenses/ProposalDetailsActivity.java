@@ -131,8 +131,13 @@ public class ProposalDetailsActivity extends AppCompatActivity {
             }
         });
 
+        final String userImgUrl;
+
         final String username = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-        final String userImgUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
+        if(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()!=null)
+            userImgUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
+        else
+            userImgUrl = "none";
 
         desc_tv.setText(desc);
         name_tv.setText(name);
