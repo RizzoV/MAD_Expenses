@@ -349,6 +349,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
                         final View itemView = edAdapter.getView(i, null, expense_details_listview);
                         final String expenseContributorId = ((ExpenseDetail) edAdapter.getItem(i)).getCreditorId();
                         final String expenseDebtorId = ((ExpenseDetail) edAdapter.getItem(i)).getDebtorId();
+                        //final String amountValue = ((ExpenseDetail) edAdapter.getItem(i)).getAmount();
                         final int position = i;
                         itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
