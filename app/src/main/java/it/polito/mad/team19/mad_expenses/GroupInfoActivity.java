@@ -368,16 +368,6 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 .child("gruppi").child(groupId);
         userToDeleteRef.removeValue();
 
-        // Vale: aggiorna subito la lista
-        if(userToDelete.compareTo(uid) != 0) {
-            for (FirebaseGroupMember member : contributors) {
-                if (member.getUid().equals(userToDelete)) {
-                    contributors.remove(member);
-                    break;
-                }
-            }
-            adapter.notifyDataSetChanged();
-        }
 
         //se elimino l'admin aggiorno l'admin
         if (userToDelete.compareTo(admin) == 0) {
@@ -422,6 +412,17 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         userToDeleteRef = database.getReference().child("utenti").child(userToDelete)
                 .child("gruppi").child(groupId);
         userToDeleteRef.removeValue();
+
+        // Vale: aggiorna subito la lista
+        if(userToDelete.compareTo(uid) != 0) {
+            for (int i = 0; i < contributors.size(); i++) {
+                if (contributors.get(i).getUid().equals(userToDelete)) {
+                    contributors.remove(i);
+                    break;
+                }
+            }
+            adapter.notifyDataSetChanged();
+        }
 
         //se mi autoelimino aggiorno l'admin
         if (userToDelete.compareTo(uid.toString()) == 0) {
