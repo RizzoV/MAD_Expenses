@@ -197,7 +197,7 @@ public class ExpensesListFragment extends Fragment {
                 previous[0] += dy;
                 if (dy > 0) {
                     fab.hide();
-                    if (previous[0] > cards.getHeight()) {
+                   /* if (previous[0] > cards.getHeight()) {
                         cards.animate()
                                 .translationY(0)
                                 .alpha(0.0f)
@@ -209,10 +209,10 @@ public class ExpensesListFragment extends Fragment {
                                         previous[0] = 0;
                                     }
                                 });
-                    }
+                    }*/
                 } else if (dy < 0) {
                     fab.show();
-                    if (previous[0] < -cards.getHeight())
+                    /*if (previous[0] < -cards.getHeight())
                         cards.animate()
                                 .translationY(1)
                                 .alpha(1f)
@@ -223,7 +223,7 @@ public class ExpensesListFragment extends Fragment {
                                         cards.setVisibility(View.VISIBLE);
                                         previous[0] = 0;
                                     }
-                                });
+                                });*/
                 }
             }
         });
