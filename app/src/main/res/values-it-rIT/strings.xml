@@ -176,7 +176,7 @@
     <string name="notififcationAddExpenseText"> ha aggiunto una nuova spesa.</string>
     <string name="notififcationAddExpenseFromProposalActivity">ExpenseFromProposalDetailsActivity</string>
     <string name="notififcationAddExpenseFromProposalText"> ha trasformato una proposta in spesa.</string>
-    <string name="notififcationAddProposalActivity">ProposalsDetailsActivity</string>
+    <string name="notififcationAddProposalActivity">ProposalDetailsActivity</string>
     <string name="notififcationAddProposalText"> ha aggiunto una nuova proposta.</string>
     <string name="notififcationAddGroupActivity">GroupInfoActivity</string>
     <string name="notififcationAddGroupText"> ha creato il gruppo.</string>
