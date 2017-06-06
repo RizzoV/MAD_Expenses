@@ -17,7 +17,7 @@
             android:layout_marginTop="100dp"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:src="@mipmap/ic_piggy"
+            android:src="@drawable/login2"
             app:cfl_border="true"
             app:cfl_border_width="12dp"
             app:cfl_progress="90"
