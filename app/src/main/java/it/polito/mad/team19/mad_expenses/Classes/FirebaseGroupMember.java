@@ -49,7 +49,6 @@ public class FirebaseGroupMember implements Parcelable {
         dest.writeString(name);
         dest.writeString(imgUrl);
         dest.writeString(uid);
-        dest.writeFloat(0f);
     }
 
     public static final Parcelable.Creator<FirebaseGroupMember> CREATOR = new Parcelable.Creator<FirebaseGroupMember>() {
