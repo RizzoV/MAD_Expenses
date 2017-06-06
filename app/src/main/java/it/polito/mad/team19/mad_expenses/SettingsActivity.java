@@ -207,18 +207,21 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     StrictMode.setThreadPolicy(policy);
 
 
-                    Glide.with(getApplicationContext()
-                    ).load(user.getPhotoUrl().toString().replace("/s96-c/photo.jpg", "/s400-c/photo.jpg")).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(image) {
-                        @Override
-                        protected void setResource(Bitmap resource) {
-                            RoundedBitmapDrawable circularBitmapDrawable =
-                                    RoundedBitmapDrawableFactory.create(getResources(), resource);
+                    if(user.getPhotoUrl()!=null)
+                    {
+                        Glide.with(getApplicationContext()
+                        ).load(user.getPhotoUrl().toString().replace("/s96-c/photo.jpg", "/s400-c/photo.jpg")).asBitmap().centerCrop().error(R.mipmap.ic_group).into(new BitmapImageViewTarget(image) {
+                            @Override
+                            protected void setResource(Bitmap resource) {
+                                RoundedBitmapDrawable circularBitmapDrawable =
+                                        RoundedBitmapDrawableFactory.create(getResources(), resource);
 
 
-                            image.setImageBitmap(resource);
-                            //userImg.setImageDrawable(circularBitmapDrawable);
-                        }
-                    });
+                                image.setImageBitmap(resource);
+                                //userImg.setImageDrawable(circularBitmapDrawable);
+                            }
+                        });
+                    }
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
