@@ -31,6 +31,14 @@ public class FirebaseGroupMember implements Parcelable {
     public String getUid(){return uid;}
     public String getImgUrl(){return imgUrl;}
 
+    public Float getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Float isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
     @Override
     public int describeContents() {
         return 0;

@@ -82,6 +82,8 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
     private String mCurrentPhotoName;
     private Uri mCurrentPhotoFirebaseUri;
 
+    private String admin;
+
 
     RecyclerView members_lv;
 
@@ -182,6 +184,9 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
                 int nMembers = 0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     if (child.child("deleted").getValue() == null) {
+                        if(child.child("tipo").getValue(Float.class) == 1) {
+                            admin = child.getKey();
+                        }
                         if (child.child("immagine").exists())
                             contributors.add(new FirebaseGroupMember(child.child("nome").getValue().toString(), child.child("immagine").getValue().toString(), child.getKey(), child.child("tipo").getValue(Float.class)));
                         else
@@ -364,27 +369,35 @@ public class GroupInfoActivity extends AppCompatActivity implements DeleteMember
         userToDeleteRef.removeValue();
 
         // Vale: aggiorna subito la lista
-        for(FirebaseGroupMember member : contributors) {
-            if(member.getUid().equals(userToDelete))
-                contributors.remove(member);
+        if(userToDelete.compareTo(uid) != 0) {
+            for (FirebaseGroupMember member : contributors) {
+                if (member.getUid().equals(userToDelete)) {
+                    contributors.remove(member);
+                    break;
+                }
+            }
+            adapter.notifyDataSetChanged();
         }
-        adapter.notifyDataSetChanged();
 
-        //se mi autoelimino aggiorno l'admin
-        if (userToDelete.compareTo(uid.toString()) == 0) {
+        //se elimino l'admin aggiorno l'admin
+        if (userToDelete.compareTo(admin) == 0) {
             if (nexAdminId != null)
                 database.getReference().child("gruppi").child(groupId)
-                        .child("membri").child(nexAdminId).child("tipo").setValue("1");
+                        .child("membri").child(nexAdminId).child("tipo").setValue(1f);
             else {
                 DatabaseReference groupToDeleteRef = database.getReference().child("gruppi").child(groupId);
                 groupToDeleteRef.removeValue();
             }
-            //TODO Jured: se esco dal gruppo devo tornare alla groupListActivity
+
+            //Intent intent = new Intent(dialog.getActivity(), GroupActivity.class);
+            //startActivity(intent);
+        }
+
+        // se mi autoelimino
+        if(userToDelete.compareTo(uid) == 0) {
             Log.d("DebugGroupQuitted", "GROUP_QUITTED result set");
             setResult(GROUP_QUITTED);
             finish();
-            //Intent intent = new Intent(dialog.getActivity(), GroupActivity.class);
-            //startActivity(intent);
         }
     }
 
