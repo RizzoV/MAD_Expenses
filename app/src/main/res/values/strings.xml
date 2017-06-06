@@ -244,6 +244,7 @@
     <string name="modify_on">Modified on:</string>
     <string name="admin">Admin</string>
     <string name="expense_detail">Expense Detail</string>
+    <string name="progressDialogModifyText">Modifying the expense</string>
 
 
 </resources>

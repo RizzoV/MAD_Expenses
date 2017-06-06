@@ -424,6 +424,8 @@ public class AddExpenseActivity extends AppCompatActivity implements GalleryOrCa
                         getWindow().setLayout(AppBarLayout.LayoutParams.MATCH_PARENT,
                                 AppBarLayout.LayoutParams.MATCH_PARENT);
                         imageLoader = (CircularFillableLoaders) barProgressDialog.findViewById(R.id.circularFillableLoaders);
+                        if (isModifyActivity)
+                            ((TextView) barProgressDialog.findViewById(R.id.tv_progressmsg)).setText(getResources().getString(R.string.progressDialogModifyText));
                     }
                 };
 
