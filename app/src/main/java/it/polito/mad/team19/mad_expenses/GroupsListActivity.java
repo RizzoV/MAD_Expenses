@@ -495,6 +495,10 @@ public class GroupsListActivity extends AppCompatActivity implements GoogleApiCl
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("tipo").setValue(0);
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("nome").setValue(uName);
 
+                    try {
+                        addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).child("deleted").removeValue();
+                    }catch (Exception e){}
+
                     addGroupRef.child("gruppi").child(groupIdName).child("membri").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
